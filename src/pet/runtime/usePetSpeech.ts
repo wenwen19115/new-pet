@@ -1,0 +1,181 @@
+import { type Ref } from "vue";
+import { showPetBubble } from "../bubbleWindow";
+import { buildSkinIntro } from "../intro";
+import { pickPetLine, pickTapEggLine, pickUsbLine } from "../lines";
+import type { PetMood, PetSettings, PetUsbAnnouncePayload } from "../types";
+import type { PetModelKind } from "../skins/types";
+import { linePickOptsFromSettings } from "./usePetLines";
+import { cancelPetTts, speakPetTts } from "../tts";
+
+type SpeakOptions = { keepMotion?: boolean; force?: boolean };
+
+export function usePetSpeech(deps: {
+  settings: Ref<PetSettings>;
+  model: Ref<PetModelKind> | { value: PetModelKind };
+  mood: Ref<PetMood>;
+  speaking: Ref<boolean>;
+  lastLine: Ref<string | null>;
+  idleMotion: Ref<string>;
+  isDragging: Ref<boolean>;
+  isMotionLocked: () => boolean;
+  resetSleepTimer: () => void;
+  scheduleAutoSpeak: () => void;
+  clearTimer: (id: number | null) => void;
+  setBubbleTimer: (id: number | null) => void;
+  setMoodResetTimer: (id: number | null) => void;
+  getBubbleTimer: () => number | null;
+  getMoodResetTimer: () => number | null;
+  bubbleMs?: number;
+}) {
+  const BUBBLE_MS = deps.bubbleMs ?? 4500;
+
+  function playClickSound() {
+    if (deps.settings.value.muted) return;
+    try {
+      const Ctx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext })
+          .webkitAudioContext;
+      const ctx = new Ctx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "square";
+      osc.frequency.value =
+        deps.settings.value.tone === "snarky" ? 240 : 520;
+      gain.gain.value = 0.025;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
+      osc.stop(ctx.currentTime + 0.11);
+      window.setTimeout(() => void ctx.close(), 180);
+    } catch {
+      // ignore
+    }
+  }
+
+  function playLineTts(line: string) {
+    const s = deps.settings.value;
+    if (s.muted || !s.ttsEnabled) {
+      cancelPetTts();
+      return;
+    }
+    void speakPetTts(line, {
+      model: deps.model.value,
+      personality: s.personality,
+      voiceUri: s.ttsVoiceUri,
+    });
+  }
+
+  async function speakText(
+    line: string,
+    fromAuto = false,
+    options: SpeakOptions = {}
+  ) {
+    if (!line) return;
+    if (deps.speaking.value && fromAuto && !options.force) return;
+    if (deps.isDragging.value && !options.force) return;
+    if (
+      fromAuto &&
+      deps.isMotionLocked() &&
+      !options.keepMotion &&
+      !options.force
+    )
+      return;
+
+    deps.lastLine.value = line;
+    deps.speaking.value = true;
+    deps.mood.value =
+      deps.settings.value.tone === "snarky" ? "grumpy" : "happy";
+    if (!options.keepMotion && !deps.isMotionLocked()) {
+      deps.idleMotion.value = "happy-bounce";
+    }
+
+    const durationMs = Math.max(BUBBLE_MS, 1200 + line.length * 42);
+    playLineTts(line);
+    try {
+      await showPetBubble({
+        text: line,
+        tone: deps.settings.value.tone,
+        durationMs,
+      });
+    } catch (err) {
+      console.warn("[pet] bubble failed", err);
+    }
+
+    deps.clearTimer(deps.getBubbleTimer());
+    deps.setBubbleTimer(
+      window.setTimeout(() => {
+        deps.speaking.value = false;
+      }, durationMs)
+    );
+
+    deps.clearTimer(deps.getMoodResetTimer());
+    deps.setMoodResetTimer(
+      window.setTimeout(() => {
+        if (
+          deps.mood.value !== "sleep" &&
+          !deps.isDragging.value &&
+          !deps.isMotionLocked()
+        ) {
+          deps.mood.value = "idle";
+          if (!options.keepMotion) deps.idleMotion.value = "idle-float";
+        }
+      }, 1600)
+    );
+
+    if (!fromAuto) playClickSound();
+    deps.resetSleepTimer();
+    deps.scheduleAutoSpeak();
+  }
+
+  async function speak(fromAuto = false, options: SpeakOptions = {}) {
+    const model = deps.model.value;
+    const opts = linePickOptsFromSettings(deps.settings.value, model);
+    const line = pickPetLine(
+      deps.settings.value.tone,
+      deps.lastLine.value,
+      deps.settings.value.personality,
+      model,
+      opts
+    );
+    await speakText(line, fromAuto, options);
+  }
+
+  function speakIntro() {
+    const line = buildSkinIntro(deps.settings.value);
+    void speakText(line, false);
+  }
+
+  function speakTapEgg(model: PetModelKind) {
+    const opts = linePickOptsFromSettings(deps.settings.value, model);
+    const line = pickTapEggLine(
+      model,
+      deps.settings.value.personality,
+      opts
+    );
+    void speakText(line, false, { force: true, keepMotion: true });
+  }
+
+  function speakUsb(payload: PetUsbAnnouncePayload) {
+    if (!deps.settings.value.usbWatchEnabled) return;
+    if (deps.mood.value === "sleep") deps.mood.value = "idle";
+    const model = deps.model.value;
+    const opts = linePickOptsFromSettings(deps.settings.value, model);
+    const text = pickUsbLine(
+      payload,
+      deps.settings.value.personality,
+      opts
+    );
+    void speakText(text, false, { force: true });
+  }
+
+  return {
+    playClickSound,
+    speakText,
+    speak,
+    speakIntro,
+    speakTapEgg,
+    speakUsb,
+  };
+}

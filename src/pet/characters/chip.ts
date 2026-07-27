@@ -1,0 +1,81 @@
+import type { CharacterDef } from "./types";
+import { formChip } from "../skins/forms";
+import { STANDARD_LOOK_IDS } from "../skins/looks";
+import { PET_CHIP_DEMO_MOTIONS } from "../motions";
+import { lines } from "./lines/chip";
+import { remapChipMotion } from "./motionRemap";
+import PetChipModel from "../models/PetChipModel.vue";
+
+export const characterChip: CharacterDef = {
+  id: "chip",
+  form: formChip,
+  capabilities: [
+    "custom-lines",
+    "motion-toggle",
+    "look-swatches",
+    "preview-orbit",
+  ],
+  demoMotions: PET_CHIP_DEMO_MOTIONS,
+  idleMotions: [
+    "screen-dash",
+    "screen-hop",
+    "screen-glide",
+    "screen-zip",
+    "fly-dash",
+    "fly-orbit",
+    "figure-eight",
+    "barrel-roll",
+    "victory-burst",
+    "peekaboo",
+  ],
+  defaults: {
+    demoMotion: "screen-dash",
+    lookId: "cyan",
+  },
+  lookIds: STANDARD_LOOK_IDS,
+  size: {
+    safeMargin: 28,
+    bubbleOffsetYFactor: 0,
+    bodyBox: (scale, screen) => {
+      const short = Math.min(screen.availW, screen.availH);
+      const side = Math.round(
+        Math.min(140, Math.max(112, short * 0.085)) * scale
+      );
+      return { w: side, h: side };
+    },
+  },
+  previewHintKey: "pet.previewDragHint",
+  appearance: {
+    nicknameFrom: "look-chip",
+    nameFrom: "look",
+  },
+  lines,
+  resolveMotion: remapChipMotion,
+  runtime: {
+    gaze: { max: 2.2, range: 160, follow: 0.32 },
+    tickLeds: true,
+    tapFallbackMotion: "screen-zip",
+    screenFlight: "fly",
+  },
+  view: {
+    shell: "bob",
+    previewPad: "orbit",
+    showBobShadow: true,
+    previewOrbit: { yaw: -38, pitch: 22 },
+    Model: PetChipModel,
+    bindRuntime: (ctx) => ({
+      visual: ctx.visual,
+      mood: ctx.mood,
+      blinking: ctx.blinking,
+      gaze: ctx.gaze,
+      pinColors: ctx.pinColors,
+    }),
+    bindPreview: (ctx) => ({
+      visual: ctx.visual,
+      mood: ctx.mood,
+      blinking: false,
+      gaze: { x: 0.4, y: 0.1 },
+      pinColors: ctx.pinColors,
+    }),
+  },
+};

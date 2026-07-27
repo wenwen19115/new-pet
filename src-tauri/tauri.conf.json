@@ -1,0 +1,56 @@
+{
+  "build": {
+    "beforeDevCommand": "yarn dev",
+    "beforeBuildCommand": "yarn build",
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:1421"
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/icon.ico"
+      },
+      "webviewInstallMode": {
+        "type": "embedBootstrapper"
+      }
+    }
+  },
+  "productName": "Desktop Pet",
+  "mainBinaryName": "Desktop Pet",
+  "version": "0.1.0",
+  "identifier": "com.vaemc.desktop.pet",
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "label": "main",
+        "center": true,
+        "visible": true,
+        "dragDropEnabled": true,
+        "theme": "Dark",
+        "height": 780,
+        "minHeight": 620,
+        "title": "Desktop Pet",
+        "width": 1100,
+        "minWidth": 1000,
+        "useHttpsScheme": true
+      }
+    ],
+    "security": {
+      "assetProtocol": {
+        "scope": ["**"],
+        "enable": true
+      },
+      "csp": null
+    }
+  }
+}

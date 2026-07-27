@@ -1,0 +1,44 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "identifier": "main",
+  "description": "Settings window: create pet webviews, dialog, fs, serial",
+  "local": true,
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:event:default",
+    "core:webview:allow-create-webview-window",
+    "core:window:allow-close",
+    "core:window:allow-destroy",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-set-focus",
+    "core:window:allow-unminimize",
+    "core:window:allow-set-ignore-cursor-events",
+    "core:window:allow-set-size",
+    "core:window:allow-set-position",
+    "core:window:allow-outer-position",
+    "core:window:allow-outer-size",
+    "core:window:allow-scale-factor",
+    "core:window:allow-current-monitor",
+    "core:window:allow-cursor-position",
+    "dialog:default",
+    "allow-get-serial-port-details",
+    "allow-edge-tts",
+    "fs:allow-exists",
+    "fs:allow-read-file",
+    "fs:allow-mkdir",
+    "fs:allow-write-file",
+    "fs:allow-remove",
+    "fs:allow-size",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        { "path": "$APPDATA/**" },
+        { "path": "$APPDATA/pet-vrm/**" },
+        { "path": "$RESOURCE/**" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "name": "desktop-pet",
+  "private": true,
+  "version": "0.1.0",
+  "author": "wheat <vaemc520@qq.com>",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
+    "@pixiv/three-vrm": "^3.5.5",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "~2",
+    "@tauri-apps/plugin-fs": "~2",
+    "ant-design-vue": "^4.2.6",
+    "three": "^0.185.1",
+    "vue": "^3.4.29",
+    "vue-i18n": "^9.13.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.4",
+    "@types/node": "^18.7.10",
+    "@types/three": "^0.185.1",
+    "@vitejs/plugin-vue": "^5.0.5",
+    "typescript": "^5.9.3",
+    "vite": "^5.2.13",
+    "vue-tsc": "^2.0.21"
+  }
+}

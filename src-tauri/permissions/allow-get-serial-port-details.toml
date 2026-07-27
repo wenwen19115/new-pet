@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-get-serial-port-details"
+description = "Allows enumerating USB/serial ports for pet USB watch"
+commands.allow = ["get_serial_port_details"]

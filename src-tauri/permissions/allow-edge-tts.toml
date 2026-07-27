@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-edge-tts"
+description = "Allows Edge neural TTS voice list and synthesis"
+commands.allow = ["list_edge_tts_voices", "synthesize_edge_tts"]
