@@ -28,6 +28,19 @@
   </SettingsItemRow>
   <SettingsItemRow
     class="span-2"
+    :title="$t('pet.sysStatsExpandTitle')"
+    :description="$t('pet.sysStatsExpandDesc')"
+    tone="pet"
+  >
+    <template #icon><DashboardOutlined /></template>
+    <a-switch
+      v-model:checked="ctx.sysStatsDefaultExpanded.value"
+      size="small"
+      @change="ctx.onSysStatsDefaultExpanded"
+    />
+  </SettingsItemRow>
+  <SettingsItemRow
+    class="span-2"
     :title="$t('pet.previewAutoOrbitTitle')"
     :description="
       ctx.canPreviewOrbit.value
@@ -47,7 +60,12 @@
 
 <script setup lang="ts">
 import { inject } from "vue";
-import { BulbOutlined, PushpinOutlined, SyncOutlined } from "@ant-design/icons-vue";
+import {
+  BulbOutlined,
+  DashboardOutlined,
+  PushpinOutlined,
+  SyncOutlined,
+} from "@ant-design/icons-vue";
 import SettingsItemRow from "@/components/SettingsItemRow.vue";
 import { PET_SETTINGS_PAGE_KEY } from "@/settings/context";
 

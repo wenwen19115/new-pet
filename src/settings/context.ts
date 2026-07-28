@@ -26,6 +26,7 @@ export type PetSettingsPageCtx = {
   catchphraseChance: Ref<number>;
   uiTheme: Ref<AppUiTheme>;
   settingsAlwaysOnTop: Ref<boolean>;
+  sysStatsDefaultExpanded: Ref<boolean>;
   customVrmMotions: Ref<CustomVrmMotion[]>;
   customLines: Ref<PetCustomLine[]>;
   customLinesOnly: Ref<boolean>;
@@ -81,6 +82,7 @@ export type PetSettingsPageCtx = {
   onPlayMotion: () => void | Promise<void>;
   onUiTheme: (v: unknown) => void | Promise<void>;
   onSettingsPin: (v: unknown) => void | Promise<void>;
+  onSysStatsDefaultExpanded: (v: unknown) => void | Promise<void>;
   persistOnly: () => void | Promise<void>;
   persistCustomMotions: () => void | Promise<void>;
   onAddCustomMotion: () => void | Promise<void>;

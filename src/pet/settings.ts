@@ -339,6 +339,10 @@ export function normalizePetSettings(
     settingsAlwaysOnTop: Boolean(
       raw?.settingsAlwaysOnTop ?? DEFAULT_PET_SETTINGS.settingsAlwaysOnTop
     ),
+    sysStatsDefaultExpanded: Boolean(
+      raw?.sysStatsDefaultExpanded ??
+        DEFAULT_PET_SETTINGS.sysStatsDefaultExpanded
+    ),
     profiles,
     ...active,
   };
@@ -508,7 +512,9 @@ export async function patchPetSettings(
   const globalOnly =
     keys.length > 0 &&
     keys.every((k) =>
-      ["settingsAlwaysOnTop", "enabled", "uiTheme"].includes(k)
+      ["settingsAlwaysOnTop", "enabled", "uiTheme", "sysStatsDefaultExpanded"].includes(
+        k
+      )
     );
   if (globalOnly) {
     const next = normalizePetSettings({ ...current, ...patch });

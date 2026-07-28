@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod serial;
+mod system_stats;
 mod tts;
 
 use tauri::Manager;
@@ -24,6 +25,7 @@ fn main() {
         .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             get_serial_port_details,
+            system_stats::get_system_stats,
             tts::list_edge_tts_voices,
             tts::synthesize_edge_tts,
         ])

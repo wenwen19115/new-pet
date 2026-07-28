@@ -1,17 +1,23 @@
 import { LogicalPosition, LogicalSize } from "@tauri-apps/api/dpi";
-import { emit, emitTo } from "@tauri-apps/api/event";
+import { emit, emitTo, listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { currentMonitor, getCurrentWindow } from "@tauri-apps/api/window";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { petBodyBox } from "./sizes";
 import { loadPetSettings } from "./settings";
 import { resolveAppearance } from "./skins";
 import {
+  PET_MENU_ACTIVITY_EVENT,
   PET_MENU_GAP,
   PET_MENU_H,
+  PET_MENU_H_COLLAPSED,
   PET_MENU_HIDE_EVENT,
+  PET_MENU_IDLE_MS,
   PET_MENU_LABEL,
+  PET_MENU_LAYOUT_EVENT,
   PET_MENU_SHOW_EVENT,
   PET_MENU_W,
+  petMenuHeight,
+  type PetMenuLayoutPayload,
   type PetMenuPayload,
 } from "./menuTypes";
 
@@ -59,7 +65,7 @@ async function ensureMenuWindow(): Promise<WebviewWindow | null> {
     url: menuUrl(),
     title: "Chip Pet Menu",
     width: PET_MENU_W,
-    height: PET_MENU_H,
+    height: PET_MENU_H_COLLAPSED,
     resizable: false,
     maximizable: false,
     minimizable: false,
@@ -76,7 +82,7 @@ async function ensureMenuWindow(): Promise<WebviewWindow | null> {
   return await waitWebviewReady(win);
 }
 
-async function resolveMenuPlacement(): Promise<{
+async function resolveMenuPlacement(menuH: number): Promise<{
   x: number;
   y: number;
 }> {
@@ -129,7 +135,7 @@ async function resolveMenuPlacement(): Promise<{
   const minX = workLeft + 4;
   const maxX = Math.max(minX, workRight - PET_MENU_W - 4);
   const minY = workTop + 4;
-  const maxY = Math.max(minY, workBottom - PET_MENU_H - 4);
+  const maxY = Math.max(minY, workBottom - menuH - 4);
 
   x = clamp(x, minX, maxX);
   y = clamp(y, minY, maxY);
@@ -153,13 +159,65 @@ async function resolveMenuPlacement(): Promise<{
 async function applyMenuGeometry(
   win: WebviewWindow,
   x: number,
-  y: number
+  y: number,
+  h: number
 ): Promise<void> {
-  await win.setSize(new LogicalSize(PET_MENU_W, PET_MENU_H));
+  await win.setSize(new LogicalSize(PET_MENU_W, h));
   await win.setPosition(new LogicalPosition(x, y));
 }
 
 let menuOpen = false;
+let menuExpanded = false;
+let menuPlace: { x: number; y: number } | null = null;
+let idleTimer: number | null = null;
+let unlistenActivity: UnlistenFn | null = null;
+let unlistenLayout: UnlistenFn | null = null;
+let listenersReady = false;
+
+function clearIdleTimer() {
+  if (idleTimer == null) return;
+  window.clearTimeout(idleTimer);
+  idleTimer = null;
+}
+
+function bumpIdleTimer() {
+  clearIdleTimer();
+  if (!menuOpen) return;
+  idleTimer = window.setTimeout(() => {
+    void hidePetMenu();
+  }, PET_MENU_IDLE_MS);
+}
+
+async function ensureMenuListeners() {
+  if (listenersReady) return;
+  listenersReady = true;
+  unlistenActivity = await listen(PET_MENU_ACTIVITY_EVENT, () => {
+    bumpIdleTimer();
+  });
+  unlistenLayout = await listen<PetMenuLayoutPayload>(
+    PET_MENU_LAYOUT_EVENT,
+    (ev) => {
+      bumpIdleTimer();
+      const expanded = Boolean(ev.payload?.expanded);
+      menuExpanded = expanded;
+      const measured = ev.payload?.height;
+      const h =
+        typeof measured === "number" && measured > 0
+          ? Math.ceil(measured)
+          : petMenuHeight(expanded);
+      const win = WebviewWindow.getByLabel(PET_MENU_LABEL);
+      void (async () => {
+        const w = await win;
+        if (!w || !menuPlace) return;
+        try {
+          await applyMenuGeometry(w, menuPlace.x, menuPlace.y, h);
+        } catch {
+          // ignore
+        }
+      })();
+    }
+  );
+}
 
 export function isPetMenuOpen(): boolean {
   return menuOpen;
@@ -168,15 +226,22 @@ export function isPetMenuOpen(): boolean {
 export async function showPetMenu(options: {
   openLabel: string;
   pinLabel: string;
+  statsExpandDefault?: boolean;
 }): Promise<void> {
+  await ensureMenuListeners();
   const win = await ensureMenuWindow();
   if (!win) return;
 
-  const place = await resolveMenuPlacement();
+  menuExpanded = Boolean(options.statsExpandDefault);
+  const h = petMenuHeight(menuExpanded);
+  // Place against expanded height so expanding later stays on-screen
+  const place = await resolveMenuPlacement(PET_MENU_H);
+  menuPlace = place;
   menuOpen = true;
+  bumpIdleTimer();
 
   try {
-    await applyMenuGeometry(win, place.x, place.y);
+    await applyMenuGeometry(win, place.x, place.y, h);
     await win.setAlwaysOnTop(true);
     try {
       await win.setShadow(false);
@@ -189,9 +254,9 @@ export async function showPetMenu(options: {
     } catch {
       // ignore
     }
-    await applyMenuGeometry(win, place.x, place.y);
+    await applyMenuGeometry(win, place.x, place.y, h);
     window.setTimeout(() => {
-      void applyMenuGeometry(win, place.x, place.y);
+      void applyMenuGeometry(win, place.x, place.y, h);
     }, 48);
   } catch (err) {
     console.warn("[pet] menu place failed", err);
@@ -200,6 +265,7 @@ export async function showPetMenu(options: {
   const payload: PetMenuPayload = {
     openLabel: options.openLabel,
     pinLabel: options.pinLabel,
+    statsExpandDefault: menuExpanded,
   };
 
   await new Promise((r) => window.setTimeout(r, 40));
@@ -216,6 +282,8 @@ export async function showPetMenu(options: {
 
 export async function hidePetMenu(): Promise<void> {
   menuOpen = false;
+  menuPlace = null;
+  clearIdleTimer();
   try {
     await emitTo(PET_MENU_LABEL, PET_MENU_HIDE_EVENT, null);
   } catch {
@@ -237,6 +305,13 @@ export async function hidePetMenu(): Promise<void> {
 
 export async function closeMenuWindow(): Promise<void> {
   menuOpen = false;
+  menuPlace = null;
+  clearIdleTimer();
+  unlistenActivity?.();
+  unlistenLayout?.();
+  unlistenActivity = null;
+  unlistenLayout = null;
+  listenersReady = false;
   const existing = await WebviewWindow.getByLabel(PET_MENU_LABEL);
   if (!existing) return;
   try {

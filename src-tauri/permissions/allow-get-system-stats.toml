@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-get-system-stats"
+description = "Allows reading host CPU and memory usage for pet menu preview"
+commands.allow = ["get_system_stats"]

@@ -616,6 +616,7 @@ async function onContextMenu() {
   await showPetMenu({
     openLabel: ctxLabels.value.open,
     pinLabel: ctxLabels.value.pin,
+    statsExpandDefault: settings.value.sysStatsDefaultExpanded,
   });
 }
 

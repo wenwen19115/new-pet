@@ -65,6 +65,8 @@ const messages = {
       uiThemeDay: "白天",
       settingsPinTitle: "设置页置顶",
       settingsPinDesc: "保持 Desktop Pet 设置窗口浮在其它窗口之上",
+      sysStatsExpandTitle: "右键菜单展开系统信息",
+      sysStatsExpandDesc: "默认展开摸鱼仪表盘（CPU / 运行内存 / 磁盘 / 网络）；关闭则收起，点击再展开",
       customMotionTitle: "酥酥自定义动作",
       customMotionDesc: "用骨骼姿态关键帧设计动作，可加入随机表演池；编辑时左侧预览会同步",
       customMotionAdd: "新建",
@@ -304,6 +306,9 @@ const messages = {
       uiThemeDay: "Day",
       settingsPinTitle: "Pin settings",
       settingsPinDesc: "Keep the Desktop Pet settings window above others",
+      sysStatsExpandTitle: "Expand system peek in menu",
+      sysStatsExpandDesc:
+        "Open the system peek (CPU / RAM / disk / net) by default; off keeps it collapsed until tapped",
       customMotionTitle: "Susu custom motions",
       customMotionDesc:
         "Design motions with skeletal keyframes; optional random pool. Preview updates while editing",

@@ -89,6 +89,7 @@ const catchphrases = ref<string[]>([]);
 const catchphraseChance = ref(CATCHPHRASE_DEFAULT_CHANCE);
 const uiTheme = ref<AppUiTheme>("night");
 const settingsAlwaysOnTop = ref(false);
+const sysStatsDefaultExpanded = ref(false);
 const customVrmMotions = ref<CustomVrmMotion[]>([]);
 const customLines = ref<PetCustomLine[]>([]);
 const customLinesOnly = ref(false);
@@ -397,6 +398,7 @@ function applyLocalFromSettings(s: PetSettings) {
   catchphraseChance.value = clampCatchphraseChance(s.catchphraseChance);
   uiTheme.value = isAppUiTheme(s.uiTheme) ? s.uiTheme : "night";
   settingsAlwaysOnTop.value = Boolean(s.settingsAlwaysOnTop);
+  sysStatsDefaultExpanded.value = Boolean(s.sysStatsDefaultExpanded);
   customVrmMotions.value = s.customVrmMotions.map((m) => ({ ...m }));
   const profile = s.profiles[s.modelKind];
   customLines.value = (profile?.customLines ?? []).map((l) => ({ ...l }));
@@ -430,6 +432,7 @@ function currentSettings(): PetSettings {
     catchphraseChance: clampCatchphraseChance(catchphraseChance.value),
     uiTheme: uiTheme.value,
     settingsAlwaysOnTop: settingsAlwaysOnTop.value,
+    sysStatsDefaultExpanded: sysStatsDefaultExpanded.value,
     customVrmMotions: customVrmMotions.value.map((m) => ({ ...m })),
     vrmModelName: vrmModelName.value,
     vrmModelRev: vrmModelRev.value,
@@ -479,6 +482,7 @@ onMounted(() => {
       return;
     }
     settingsAlwaysOnTop.value = Boolean(incoming.settingsAlwaysOnTop);
+    sysStatsDefaultExpanded.value = Boolean(incoming.sysStatsDefaultExpanded);
     uiTheme.value = isAppUiTheme(incoming.uiTheme)
       ? incoming.uiTheme
       : uiTheme.value;
@@ -502,6 +506,7 @@ function onSettingsStorage(ev: StorageEvent) {
       return;
     }
     settingsAlwaysOnTop.value = Boolean(incoming.settingsAlwaysOnTop);
+    sysStatsDefaultExpanded.value = Boolean(incoming.sysStatsDefaultExpanded);
     settingsBag.value = incoming;
   } catch {
     // ignore
@@ -742,6 +747,11 @@ async function onSettingsPin(checked: unknown) {
   await applySettingsWindowPin(settingsAlwaysOnTop.value);
 }
 
+async function onSysStatsDefaultExpanded(value: unknown) {
+  sysStatsDefaultExpanded.value = Boolean(value);
+  await persistOnly();
+}
+
 async function persistCustomMotions() {
   await persistOnly();
 }
@@ -810,6 +820,7 @@ const pageCtx: PetSettingsPageCtx = {
   catchphraseChance,
   uiTheme,
   settingsAlwaysOnTop,
+  sysStatsDefaultExpanded,
   customVrmMotions,
   customLines,
   customLinesOnly,
@@ -857,6 +868,7 @@ const pageCtx: PetSettingsPageCtx = {
   onPlayMotion,
   onUiTheme,
   onSettingsPin,
+  onSysStatsDefaultExpanded,
   persistOnly,
   persistCustomMotions,
   onAddCustomMotion,

@@ -67,6 +67,8 @@ export interface PetSettings {
   modelKind: PetModelKind;
   uiTheme: AppUiTheme;
   settingsAlwaysOnTop: boolean;
+  /** Right-click menu: expand system peek (CPU/RAM/…) by default */
+  sysStatsDefaultExpanded: boolean;
   profiles: PetModelProfiles;
   /**
    * Mirrored from active profile / vrm extension for convenience.
@@ -146,6 +148,7 @@ export const DEFAULT_PET_SETTINGS: PetSettings = {
   catchphraseChance: CATCHPHRASE_DEFAULT_CHANCE,
   uiTheme: "night",
   settingsAlwaysOnTop: false,
+  sysStatsDefaultExpanded: false,
   customVrmMotions: [],
   profiles: createDefaultProfiles(),
   tone: "cute",
