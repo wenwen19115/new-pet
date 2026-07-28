@@ -109,6 +109,12 @@
       />
     </SettingsItemRow>
 
+    <CatchphraseEditor
+      v-model="ctx.catchphrases.value"
+      v-model:chance="ctx.catchphraseChance.value"
+      @change="ctx.persistOnly"
+    />
+
     <CustomLinesEditor
       v-if="ctx.capabilities.value.has('custom-lines')"
       v-model="ctx.customLines.value"
@@ -143,6 +149,7 @@ import {
 } from "@ant-design/icons-vue";
 import SettingsItemRow from "@/components/SettingsItemRow.vue";
 import CustomLinesEditor from "./CustomLinesEditor.vue";
+import CatchphraseEditor from "./CatchphraseEditor.vue";
 import BuiltInIdToggles from "./BuiltInIdToggles.vue";
 import { BUILTIN_LINE_CATEGORIES } from "@/pet/characters/lineTypes";
 import { PET_SETTINGS_PAGE_KEY } from "@/settings/context";

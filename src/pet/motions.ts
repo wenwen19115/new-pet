@@ -34,7 +34,8 @@ export type PetIdleMotion =
   | "toon-splash"
   | "toon-thunder"
   | "toon-dodge"
-  | "vrm-walk";
+  | "vrm-walk"
+  | "vrm-scratch";
 
 export const PET_CHIP_DEMO_MOTIONS: PetIdleMotion[] = [
   "screen-dash",
@@ -78,6 +79,7 @@ export const PET_VRM_DEMO_MOTIONS: PetIdleMotion[] = [
   "happy-bounce",
   "sway-step",
   "bow-nod",
+  "vrm-scratch",
   "vrm-walk",
 ];
 
@@ -99,7 +101,7 @@ export const PET_MOTION_EVENT = "pet://play-motion";
 export const PET_OPEN_SETTINGS_EVENT = "pet://open-settings";
 
 export interface PetMotionPayload {
-  /** Built-in idle motion id, or `custom:…` Lexin motion id */
+  /** Built-in idle motion id, or `custom:…` Susu motion id */
   motion: PetIdleMotion | string;
 }
 
@@ -116,6 +118,7 @@ const ALL_MOTIONS: PetIdleMotion[] = [
     "cartwheel",
     "toon-spin",
     "vrm-walk",
+    "vrm-scratch",
   ]),
 ];
 
@@ -137,6 +140,7 @@ export function motionHoldMs(motion: PetIdleMotion): number {
     case "vrm-walk":
       return 13000;
     case "fly-orbit":
+      return 3250;
     case "figure-eight":
     case "sway-step":
     case "toon-sway":
@@ -144,7 +148,7 @@ export function motionHoldMs(motion: PetIdleMotion): number {
     case "toon-tea":
     case "toon-water":
     case "toon-grass":
-      return 3200;
+      return 3450;
     case "fly-dash":
     case "side-hop":
     case "tip-toe":
@@ -155,17 +159,18 @@ export function motionHoldMs(motion: PetIdleMotion): number {
     case "toon-splash":
     case "toon-thunder":
     case "toon-dodge":
-      return 2600;
+      return 2850;
     case "barrel-roll":
     case "cartwheel":
     case "bow-nod":
     case "stretch-up":
-      return 2400;
+    case "vrm-scratch":
+      return 2650;
     case "rocket-jump":
     case "victory-burst":
     case "peekaboo":
     case "tap-frenzy":
-      return 2100;
+      return 2350;
     case "happy-bounce":
       return 700;
     default:

@@ -1,3 +1,6 @@
+import type { PersonalityPolish } from "./characters/lineTypes";
+import { SHARED_POLISH } from "./characters/lines/shared";
+
 export type PetPersonality = "sunny" | "shy" | "cool" | "fiery";
 
 export function isPetPersonality(value: unknown): value is PetPersonality {
@@ -15,34 +18,6 @@ function stripTrailingFlavor(text: string): string {
     .trimEnd();
 }
 
-const ZH_END: Record<PetPersonality, string[]> = {
-  sunny: ["～", "！", "呀～", "哦！", "嘿！", "耶！"],
-  shy: ["……", "呢……", "嘛……", "……啦", "呢", "……好吗"],
-  cool: ["。", "……", "。", "罢了。", "即可。"],
-  fiery: ["！", "啊？！", "哼！", "！切。", "烦死了！", "听见没！"],
-};
-
-const ZH_PREFIX: Record<PetPersonality, string[]> = {
-  sunny: ["", "嘿嘿，", "呀，", "好耶，", ""],
-  shy: ["", "那个……", "嗯……", "对、对不起，", "我……"],
-  cool: ["", "……", "呵，", "行吧，", ""],
-  fiery: ["", "喂，", "哈？", "啧，", "说你呢，"],
-};
-
-const EN_END: Record<PetPersonality, string[]> = {
-  sunny: ["!", "~", "!!", "!"],
-  shy: ["...", "...", "~", "..."],
-  cool: [".", "...", ".", "."],
-  fiery: ["!", "?!", " Hmph!", "!", "—now!"],
-};
-
-const EN_PREFIX: Record<PetPersonality, string[]> = {
-  sunny: ["", "Hehe, ", "Yay— ", ""],
-  shy: ["", "Um... ", "I... ", ""],
-  cool: ["", "...", "Hmph. ", ""],
-  fiery: ["", "Hey— ", "What? ", "Tch. "],
-};
-
 function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]!;
 }
@@ -50,27 +25,30 @@ function pick<T>(arr: T[]): T {
 export function flavorPetLine(
   line: string,
   personality: PetPersonality,
-  lang: "zh" | "en" = "zh"
+  lang: "zh" | "en" = "zh",
+  polish: PersonalityPolish = SHARED_POLISH[personality]
 ): string {
   const base = stripTrailingFlavor(line);
   if (!base) return line;
 
-  if (lang === "zh") {
-    const prefix = pick(ZH_PREFIX[personality]);
-    const end = pick(ZH_END[personality]);
-    if (personality === "cool" && base.length > 18 && Math.random() < 0.35) {
-      return `${prefix}${base.slice(0, 14)}……${end}`;
-    }
-    if (personality === "fiery" && Math.random() < 0.25) {
-      return `${prefix}${base}${end}听见没！`;
-    }
-    if (personality === "shy" && Math.random() < 0.3) {
-      return `${prefix}${base}……就这样。`;
-    }
-    return `${prefix}${base}${end}`;
+  const prefix = pick(polish.prefix[lang]);
+  const end = pick(polish.end[lang]);
+  const trunc = polish.truncateLong;
+  if (
+    trunc &&
+    base.length > trunc.minLen &&
+    Math.random() < trunc.chance
+  ) {
+    return `${prefix}${base.slice(0, trunc.keep)}${trunc.ellipsis[lang]}${end}`;
   }
 
-  const prefix = pick(EN_PREFIX[personality]);
-  const end = pick(EN_END[personality]);
-  return `${prefix}${base}${end}`;
+  let out = `${prefix}${base}${end}`;
+  if (
+    polish.extraSuffix &&
+    polish.extraSuffixChance &&
+    Math.random() < polish.extraSuffixChance
+  ) {
+    out += pick(polish.extraSuffix[lang]);
+  }
+  return out;
 }

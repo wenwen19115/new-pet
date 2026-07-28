@@ -1,6 +1,8 @@
-﻿import { WebviewWindow, getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { LogicalSize } from "@tauri-apps/api/dpi";
+import { WebviewWindow, getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { currentMonitor } from "@tauri-apps/api/window";
 import { closeBubbleWindow } from "./bubbleWindow";
+import { closeMenuWindow } from "./menuWindow";
 import { loadPetSettings } from "./settings";
 import { resolveAppearance } from "./skins";
 import { petWindowSize } from "./sizes";
@@ -49,12 +51,36 @@ async function resolveDefaultPetPosition(): Promise<{ x: number; y: number }> {
   };
 }
 
-async function closePetWindow(): Promise<void> {
-  await closeBubbleWindow();
-  const existing = await WebviewWindow.getByLabel(PET_WINDOW_LABEL);
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+async function getPetWindow(): Promise<WebviewWindow | null> {
+  try {
+    return (await WebviewWindow.getByLabel(PET_WINDOW_LABEL)) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function waitUntilPetWindowGone(timeoutMs = 5000): Promise<boolean> {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    if (!(await getPetWindow())) return true;
+    await sleep(50);
+  }
+  return !(await getPetWindow());
+}
+
+async function destroyPetLabel(): Promise<void> {
+  const existing = await getPetWindow();
   if (!existing) return;
   try {
-    // destroy：强制关掉，避免 close 再走 closeRequested 卡死主窗退出流程
+    await existing.hide();
+  } catch {
+    // ignore
+  }
+  try {
     await existing.destroy();
   } catch {
     try {
@@ -65,16 +91,48 @@ async function closePetWindow(): Promise<void> {
   }
 }
 
-async function openPetWindow(): Promise<WebviewWindow | null> {
-  const existing = await WebviewWindow.getByLabel(PET_WINDOW_LABEL);
-  if (existing) {
-    try {
-      await existing.show();
-      await existing.setAlwaysOnTop(true);
-    } catch {
-      // ignore
-    }
-    return existing;
+async function closePetWindow(): Promise<void> {
+  await closeMenuWindow().catch(() => undefined);
+  await closeBubbleWindow().catch(() => undefined);
+  await destroyPetLabel();
+  if (await waitUntilPetWindowGone()) return;
+
+  console.warn("[pet] window label still held after destroy; retrying");
+  await destroyPetLabel();
+  if (!(await waitUntilPetWindowGone(2000))) {
+    console.warn("[pet] failed to release pet window label");
+  }
+}
+
+async function waitWebviewReady(
+  win: WebviewWindow,
+  timeoutMs = 8000
+): Promise<WebviewWindow | null> {
+  return await new Promise((resolve) => {
+    let settled = false;
+    const finish = (value: WebviewWindow | null) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      resolve(value);
+    };
+    const timer = window.setTimeout(() => {
+      finish(win);
+    }, timeoutMs);
+    void win.once("tauri://created", () => finish(win));
+    void win.once("tauri://error", () => {
+      void win.destroy().catch(() => undefined);
+      finish(null);
+    });
+  });
+}
+
+async function createPetWindow(): Promise<WebviewWindow | null> {
+  if (await getPetWindow()) {
+    await closePetWindow();
+  }
+  if (await getPetWindow()) {
+    return null;
   }
 
   const pos = await resolveDefaultPetPosition();
@@ -100,40 +158,70 @@ async function openPetWindow(): Promise<WebviewWindow | null> {
     y: pos.y,
   });
 
-  return await waitWebviewReady(pet);
-}
-
-async function waitWebviewReady(
-  win: WebviewWindow,
-  timeoutMs = 2500
-): Promise<WebviewWindow | null> {
-  return await new Promise((resolve) => {
-    let settled = false;
-    const finish = (value: WebviewWindow | null) => {
-      if (settled) return;
-      settled = true;
-      window.clearTimeout(timer);
-      resolve(value);
-    };
-    const timer = window.setTimeout(() => {
-      void win.destroy().catch(() => undefined);
-      finish(null);
-    }, timeoutMs);
-    void win.once("tauri://created", () => finish(win));
-    void win.once("tauri://error", () => {
-      void win.destroy().catch(() => undefined);
-      finish(null);
-    });
-  });
-}
-
-export async function syncPetWindow(): Promise<void> {
-  const settings = loadPetSettings();
-  if (settings.enabled && isPetVrmReady(settings)) {
-    await openPetWindow();
-  } else {
-    await closePetWindow();
+  const ready = await waitWebviewReady(pet);
+  if (!ready) return null;
+  try {
+    await ready.show();
+    await ready.setAlwaysOnTop(true);
+  } catch {
+    // ignore
   }
+  return ready;
+}
+
+async function openPetWindow(): Promise<WebviewWindow | null> {
+  const existing = await getPetWindow();
+  if (existing) {
+    try {
+      await existing.show();
+      await existing.setAlwaysOnTop(true);
+      const size = currentPetWindowSize();
+      try {
+        await existing.setSize(new LogicalSize(size.w, size.h));
+      } catch {
+        // ignore
+      }
+      return existing;
+    } catch {
+      await destroyPetLabel();
+      await waitUntilPetWindowGone();
+    }
+  }
+
+  let created = await createPetWindow();
+  if (!created) {
+    await sleep(150);
+    created = await createPetWindow();
+  }
+  return created;
+}
+
+let syncChain: Promise<void> = Promise.resolve();
+
+export async function syncPetWindow(options?: {
+  recreate?: boolean;
+}): Promise<void> {
+  const recreate = Boolean(options?.recreate);
+  const run = async () => {
+    const settings = loadPetSettings();
+    const shouldShow = settings.enabled && isPetVrmReady(settings);
+
+    if (!shouldShow) {
+      await closePetWindow();
+      return;
+    }
+
+    if (recreate) {
+      await closePetWindow();
+      await openPetWindow();
+      return;
+    }
+
+    await openPetWindow();
+  };
+
+  syncChain = syncChain.then(run, run);
+  await syncChain;
 }
 
 let hostInited = false;

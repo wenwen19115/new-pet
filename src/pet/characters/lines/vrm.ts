@@ -274,4 +274,18 @@ export const lines: CharacterLineBundle = {
       ],
     },
   },
+  catchphrases: L(
+    ["嗯……", "我在呢", "慢慢来"],
+    ["Mm…", "I'm here", "Take it slow"]
+  ),
+  intro: {
+    zh: {
+      cute: "嗯……我是{name}。我会安静陪在你身边，写代码也不孤单。",
+      snarky: "我是{name}。催你休息的时候，也会尽量温柔一点。",
+    },
+    en: {
+      cute: "Hi… I'm {name}. I'll stay quietly by your side while you code.",
+      snarky: "I'm {name}. When I nudge you to rest, I'll try to be gentle.",
+    },
+  },
 };

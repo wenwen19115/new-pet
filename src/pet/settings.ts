@@ -4,7 +4,6 @@ import {
   defaultProfileForModel,
   PET_MODEL_KINDS,
   PET_SETTINGS_EVENT,
-  PET_SETTINGS_KEY,
   type PetModelProfile,
   type PetModelProfiles,
   type PetSettings,
@@ -29,6 +28,10 @@ import {
   normalizeCustomLines,
   normalizeDisabledMotions,
 } from "./customLines";
+import {
+  clampCatchphraseChance,
+  normalizeCatchphrases,
+} from "./catchphrases";
 import {
   emptyVrmExtension,
   normalizeExtensions,
@@ -69,7 +72,13 @@ function normalizePersonality(value: unknown): PetPersonality {
 
 type ProfileFallbacks = Pick<
   PetModelProfile,
-  "muted" | "ttsEnabled" | "ttsVoiceUri" | "opacity" | "usbWatchEnabled" | "randomIdleEnabled"
+  | "muted"
+  | "ttsEnabled"
+  | "ttsVoiceUri"
+  | "opacity"
+  | "usbWatchEnabled"
+  | "randomIdleEnabled"
+  | "hitBoundsEnabled"
 >;
 
 function normalizeOneProfile(
@@ -145,6 +154,17 @@ function normalizeOneProfile(
       raw?.randomIdleEnabled === undefined
         ? Boolean(fallbacks?.randomIdleEnabled ?? base.randomIdleEnabled)
         : Boolean(raw.randomIdleEnabled),
+    hitBoundsEnabled:
+      raw?.hitBoundsEnabled === undefined
+        ? Boolean(fallbacks?.hitBoundsEnabled ?? base.hitBoundsEnabled)
+        : Boolean(raw.hitBoundsEnabled),
+    catchphrases: normalizeCatchphrases(
+      raw?.catchphrases ?? base.catchphrases,
+      model
+    ),
+    catchphraseChance: clampCatchphraseChance(
+      raw?.catchphraseChance ?? base.catchphraseChance
+    ),
     customLines: normalizeCustomLines(raw?.customLines ?? base.customLines),
     customLinesOnly: Boolean(raw?.customLinesOnly ?? base.customLinesOnly),
     disabledMotions: normalizeDisabledMotions(
@@ -184,6 +204,10 @@ function legacySharedFallbacks(
       raw?.randomIdleEnabled === undefined
         ? DEFAULT_PET_SETTINGS.randomIdleEnabled
         : Boolean(raw.randomIdleEnabled),
+    hitBoundsEnabled:
+      raw?.hitBoundsEnabled === undefined
+        ? DEFAULT_PET_SETTINGS.hitBoundsEnabled
+        : Boolean(raw.hitBoundsEnabled),
   };
 }
 
@@ -265,6 +289,9 @@ function applyActiveProfile(
   | "opacity"
   | "usbWatchEnabled"
   | "randomIdleEnabled"
+  | "hitBoundsEnabled"
+  | "catchphrases"
+  | "catchphraseChance"
   | "vrmModelName"
   | "vrmModelRev"
   | "customVrmMotions"
@@ -284,7 +311,10 @@ function applyActiveProfile(
     opacity: p.opacity,
     usbWatchEnabled: p.usbWatchEnabled,
     randomIdleEnabled: p.randomIdleEnabled,
-    // Always expose Lexin's VRM bag on the mirror fields (shared asset)
+    hitBoundsEnabled: p.hitBoundsEnabled,
+    catchphrases: p.catchphrases,
+    catchphraseChance: p.catchphraseChance,
+    // Always expose Susu's VRM bag on the mirror fields (shared asset)
     vrmModelName: vrm.modelName,
     vrmModelRev: vrm.modelRev,
     customVrmMotions: vrm.customMotions,
@@ -303,10 +333,6 @@ export function normalizePetSettings(
   return {
     enabled: Boolean(raw?.enabled),
     modelKind,
-    hitBoundsEnabled:
-      raw?.hitBoundsEnabled === undefined
-        ? DEFAULT_PET_SETTINGS.hitBoundsEnabled
-        : Boolean(raw.hitBoundsEnabled),
     uiTheme: isAppUiTheme(raw?.uiTheme)
       ? raw.uiTheme
       : DEFAULT_PET_SETTINGS.uiTheme,
@@ -329,36 +355,49 @@ function syncActiveProfileIntoProfiles(
     modelRev: settings.vrmModelRev,
   });
 
+  const activeExtensions =
+    model === "vrm"
+      ? { ...prev.extensions, vrm: vrmExt }
+      : prev.extensions;
+
+  const updatedActive = normalizeOneProfile(model, {
+    nickname: settings.nickname,
+    personality: settings.personality,
+    tone: settings.tone,
+    lookId: settings.lookId,
+    zoomPercent: settings.zoomPercent,
+    demoMotion: settings.demoMotion,
+    muted: settings.muted,
+    ttsEnabled: settings.ttsEnabled,
+    ttsVoiceUri: settings.ttsVoiceUri,
+    opacity: settings.opacity,
+    usbWatchEnabled: settings.usbWatchEnabled,
+    randomIdleEnabled: settings.randomIdleEnabled,
+    hitBoundsEnabled: settings.hitBoundsEnabled,
+    catchphrases: settings.catchphrases,
+    catchphraseChance: settings.catchphraseChance,
+    customLines: prev.customLines,
+    customLinesOnly: prev.customLinesOnly,
+    disabledMotions: prev.disabledMotions,
+    disabledBuiltInLines: prev.disabledBuiltInLines,
+    extensions: activeExtensions,
+  });
+
   const profiles: PetModelProfiles = {
     ...settings.profiles,
-    [model]: normalizeOneProfile(model, {
-      nickname: settings.nickname,
-      personality: settings.personality,
-      tone: settings.tone,
-      lookId: settings.lookId,
-      zoomPercent: settings.zoomPercent,
-      demoMotion: settings.demoMotion,
-      muted: settings.muted,
-      ttsEnabled: settings.ttsEnabled,
-      ttsVoiceUri: settings.ttsVoiceUri,
-      opacity: settings.opacity,
-      usbWatchEnabled: settings.usbWatchEnabled,
-      randomIdleEnabled: settings.randomIdleEnabled,
-      customLines: prev.customLines,
-      customLinesOnly: prev.customLinesOnly,
-      disabledMotions: prev.disabledMotions,
-      disabledBuiltInLines: prev.disabledBuiltInLines,
-      extensions: prev.extensions,
-    }),
-    // Always keep VRM extension bag in sync with mirror fields
-    vrm: normalizeOneProfile("vrm", {
+    [model]: updatedActive,
+  };
+
+  if (model !== "vrm") {
+    profiles.vrm = normalizeOneProfile("vrm", {
       ...settings.profiles.vrm,
       extensions: {
         ...settings.profiles.vrm?.extensions,
         vrm: vrmExt,
       },
-    }),
-  };
+    });
+  }
+
   return normalizePetSettings({ ...settings, profiles });
 }
 
@@ -442,6 +481,11 @@ export async function publishPetSettings(
   settings: PetSettings
 ): Promise<PetSettings> {
   const next = savePetSettings(settings);
+  await emitPetSettings(next);
+  return next;
+}
+
+async function emitPetSettings(next: PetSettings): Promise<void> {
   try {
     const { emit } = await import("@tauri-apps/api/event");
     await emit(PET_SETTINGS_EVENT, next);
@@ -454,16 +498,26 @@ export async function publishPetSettings(
   } catch {
     // ignore
   }
-  return next;
 }
 
-export function patchPetSettings(
+export async function patchPetSettings(
   patch: Partial<PetSettings>
 ): Promise<PetSettings> {
+  const current = loadPetSettings();
+  const keys = Object.keys(patch);
+  const globalOnly =
+    keys.length > 0 &&
+    keys.every((k) =>
+      ["settingsAlwaysOnTop", "enabled", "uiTheme"].includes(k)
+    );
+  if (globalOnly) {
+    const next = normalizePetSettings({ ...current, ...patch });
+    writeSettingsRaw(JSON.stringify(next));
+    await emitPetSettings(next);
+    return next;
+  }
   return publishPetSettings({
-    ...loadPetSettings(),
+    ...current,
     ...patch,
   });
 }
-
-export { PET_SETTINGS_KEY };

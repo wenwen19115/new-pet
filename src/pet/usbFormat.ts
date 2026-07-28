@@ -1,6 +1,7 @@
+import { getLinePack } from "./characters/lines";
+import { resolveUsb } from "./characters/lines/shared";
 import type { PetUsbAnnouncePayload } from "./types";
 
-/** 格式化设备管理器风格的一行：友好名 (COMx) */
 function formatPortLine(port: {
   portName: string;
   friendlyName?: string | null;
@@ -17,21 +18,22 @@ function formatPortLine(port: {
 
 export function buildUsbAnnounceText(
   payload: PetUsbAnnouncePayload,
-  lang: "zh" | "en"
+  lang: "zh" | "en",
+  model = "chip"
 ): string {
-  const lines = payload.ports.map(formatPortLine);
-  if (lang === "en") {
-    const head =
-      payload.added.length === 1
-        ? `New USB serial: ${payload.added[0]}`
-        : `New USB serials: ${payload.added.join(", ")}`;
-    if (lines.length === 0) return `${head}\nNo ports right now.`;
-    return `${head}\nCurrent ports:\n${lines.map((l) => `· ${l}`).join("\n")}`;
+  const tpl = resolveUsb(getLinePack(model));
+  const join = lang === "zh" ? "、" : ", ";
+  const added = payload.added.join(join);
+  const headTpl =
+    payload.added.length === 1 ? tpl.addedOne[lang] : tpl.addedMany[lang];
+  const head = headTpl.replaceAll("{added}", added || "—");
+
+  const portLines = payload.ports.map(formatPortLine);
+  if (portLines.length === 0) {
+    return `${head}\n${tpl.emptyTail[lang]}`;
   }
-  const head =
-    payload.added.length === 1
-      ? `发现新串口：${payload.added[0]}`
-      : `发现新串口：${payload.added.join("、")}`;
-  if (lines.length === 0) return `${head}\n目前没有端口。`;
-  return `${head}\n目前有：\n${lines.map((l) => `· ${l}`).join("\n")}`;
+  const list = portLines
+    .map((item) => tpl.bullet[lang].replaceAll("{item}", item))
+    .join("\n");
+  return `${head}\n${tpl.listHeader[lang]}\n${list}`;
 }

@@ -19,11 +19,10 @@
         />
       </div>
       <div class="hero-text">
-        <p class="hero-kicker">{{ $t("pet.pageTitle") }}</p>
-        <h1 class="hero-name">{{ displayName || $t("pet.pageTitle") }}</h1>
+        <p class="hero-role">{{ $t(activeLook.modelNameKey) }}</p>
+        <h1 class="hero-name">{{ displayName || $t(activeLook.modelNameKey) }}</h1>
         <p class="hero-tagline">{{ $t("pet.pageTagline") }}</p>
         <div class="hero-meta">
-          <span class="meta-pill">{{ $t(activeLook.modelNameKey) }}</span>
           <span class="meta-pill meta-pill--theme">
             <i class="theme-dot" :style="{ background: v.accent }" />
             {{ $t(activeLook.nameKey) }}
@@ -277,17 +276,16 @@ const {
   min-height: 0;
 }
 
-.hero-kicker {
+.hero-role {
   margin: 0;
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--hero-accent, #00e5ff) 75%, rgba(255, 255, 255, 0.4));
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: color-mix(in srgb, var(--hero-accent, #00e5ff) 70%, rgba(255, 255, 255, 0.45));
 }
 
 .hero-name {
   margin: 0;
-  font-size: clamp(20px, 2.4vw, 28px);
+  font-size: clamp(22px, 2.6vw, 32px);
   font-weight: 650;
   color: var(--ui-text, rgba(255, 255, 255, 0.96));
   letter-spacing: 0.02em;

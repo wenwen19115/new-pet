@@ -76,6 +76,8 @@ export function remapVrmMotion(motion: PetIdleMotion): PetIdleMotion {
     case "toon-tilt":
     case "peekaboo":
       return "bow-nod";
+    case "vrm-scratch":
+      return "vrm-scratch";
     case "toon-water":
     case "toon-grass":
     case "toon-fire":

@@ -1,5 +1,5 @@
 /**
- * 灵宠（像素神话兽）动作状态
+ * 狐青青（像素神话兽）动作状态
  */
 import type { PetIdleMotion } from "./motions";
 

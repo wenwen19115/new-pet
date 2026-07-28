@@ -107,7 +107,7 @@ const byLookId: Record<string, PetTrailStyle> = {
   violet: star,
 };
 
-/** 根据当前形象解析拖尾风格（主题色系；灵宠优先 decor） */
+/** 根据当前形象解析拖尾风格（主题色系；狐青青优先 decor） */
 export function resolveTrailStyle(options: {
   lookId: string;
   model: PetModelKind;

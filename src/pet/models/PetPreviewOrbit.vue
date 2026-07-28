@@ -564,8 +564,8 @@ onUnmounted(() => {
 }
 
 .orbit-rig :deep(.chip-slab) {
-  --body: 92px;
-  --body-half: 46px;
+  --body: min(92px, 80cqmin);
+  --body-half: calc(var(--body) * 0.5);
   --chip-depth: 64px;
   --chip-half: 32px;
   position: absolute;

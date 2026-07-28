@@ -266,6 +266,28 @@ function poseSleep(_t: number): VrmPoseFrame {
   };
 }
 
+function poseScratch(t: number): VrmPoseFrame {
+  const cycle = (Math.sin(t * 5.2) + 1) * 0.5;
+  const scratch = cycle * 0.35;
+  const tilt = 0.18 + Math.sin(t * 1.8) * 0.06;
+  return {
+    rootY: -0.005,
+    bones: mergePose(restArms({ swingL: 0.08, swingR: -0.15 }), {
+      hips: e(FWD * 0.04, 0.04, 0),
+      spine: e(FWD * 0.06, 0.08, 0),
+      chest: e(FWD * 0.04, 0.1, 0),
+      neck: e(FWD * 0.12 + tilt * 0.35, 0.22, -0.08),
+      head: e(FWD * 0.18 + tilt * 0.5, 0.28, -0.12),
+      rightShoulder: e(0.2, -0.35, -0.4),
+      rightUpperArm: e(-0.55 - scratch * 0.4, -0.85, ZR - 0.55),
+      rightLowerArm: e(1.35 + scratch * 0.55, -0.2, -0.35),
+      rightHand: e(0.35, -0.15, -0.25 + scratch * 0.2),
+      leftUpperArm: e(0.12, 0.25, ZL + 0.12),
+      leftLowerArm: e(0.5, 0.1, 0.15),
+    }),
+  };
+}
+
 export function resolveVrmPose(
   motion: PetIdleMotion | string | undefined,
   mood: PetMood,
@@ -299,6 +321,9 @@ export function resolveVrmPose(
         break;
       case "bow-nod":
         pose = poseBow(t);
+        break;
+      case "vrm-scratch":
+        pose = poseScratch(t);
         break;
       case "sway-step":
       case "side-hop":

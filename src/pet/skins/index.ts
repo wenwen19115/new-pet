@@ -17,16 +17,12 @@ interface PetAppearance {
   lookId: string;
   /** Look / decor display name */
   nameKey: string;
-  /** Character form label (芯宠 / 梨宝 / …) */
+  /** Character form label (天问7号 / 梨宝 / …) */
   modelNameKey: string;
   defaultNickname: string;
   visual: PetSkinVisual;
   figArtId?: PetFigArtId;
   toonDecor?: PetToonDecorId;
-  intro: {
-    zh: { cute: string; snarky: string };
-    en: { cute: string; snarky: string };
-  };
 }
 
 export function resolveAppearance(
@@ -60,7 +56,6 @@ export function resolveAppearance(
     visual: look.visual,
     figArtId: look.figArtId,
     toonDecor: policy.attachToonDecor ? look.toonDecor : undefined,
-    intro: form.intro,
   };
 }
 

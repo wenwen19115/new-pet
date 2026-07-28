@@ -1,6 +1,6 @@
 ﻿<template>
   <!--
-    灵宠：像素神话小兽（狐火精灵）
+    狐青青：像素神话小兽（狐火精灵）
     40×40 像素格 + 分层动画（耳/尾/狐火独立），铺满父级本体框。
   -->
   <div
@@ -985,10 +985,11 @@ const scenePixels = computed((): Pix[] => {
       ];
     case "thunder":
       return [
-        // 雷云
-        { x: 14, y: 3, fill: cloudD },
+        { x: 12, y: 4, fill: cloudD },
+        { x: 13, y: 3, fill: cloud },
+        { x: 14, y: 2, fill: cloud },
         { x: 15, y: 2, fill: cloud },
-        { x: 16, y: 2, fill: cloud },
+        { x: 16, y: 1, fill: cloud },
         { x: 17, y: 1, fill: cloud },
         { x: 18, y: 1, fill: cloud },
         { x: 19, y: 1, fill: cloud },
@@ -996,9 +997,12 @@ const scenePixels = computed((): Pix[] => {
         { x: 21, y: 1, fill: cloud },
         { x: 22, y: 2, fill: cloud },
         { x: 23, y: 2, fill: cloud },
-        { x: 24, y: 3, fill: cloudD },
+        { x: 24, y: 3, fill: cloud },
+        { x: 25, y: 4, fill: cloudD },
+        { x: 13, y: 4, fill: cloud },
+        { x: 14, y: 3, fill: cloudD },
         { x: 15, y: 3, fill: cloud },
-        { x: 16, y: 3, fill: cloudD },
+        { x: 16, y: 2, fill: cloudD },
         { x: 17, y: 2, fill: cloud },
         { x: 18, y: 2, fill: cloudD },
         { x: 19, y: 2, fill: cloud },
@@ -1006,15 +1010,27 @@ const scenePixels = computed((): Pix[] => {
         { x: 21, y: 2, fill: cloud },
         { x: 22, y: 3, fill: cloud },
         { x: 23, y: 3, fill: cloudD },
-        // 闪电 Z 形
-        { x: 19, y: 4, fill: bolt },
+        { x: 24, y: 4, fill: cloud },
+        { x: 14, y: 4, fill: cloudD },
+        { x: 15, y: 4, fill: cloud },
+        { x: 16, y: 3, fill: cloud },
+        { x: 21, y: 3, fill: cloud },
+        { x: 22, y: 4, fill: cloudD },
+        { x: 19, y: 5, fill: bolt },
         { x: 20, y: 5, fill: bolt },
-        { x: 19, y: 6, fill: bolt },
-        { x: 18, y: 6, fill: bolt },
+        { x: 20, y: 6, fill: bolt },
+        { x: 19, y: 7, fill: bolt },
         { x: 18, y: 7, fill: bolt },
-        { x: 19, y: 8, fill: bolt },
-        { x: 20, y: 9, fill: a },
+        { x: 18, y: 8, fill: bolt },
+        { x: 17, y: 8, fill: bolt },
+        { x: 18, y: 9, fill: bolt },
+        { x: 19, y: 9, fill: bolt },
         { x: 19, y: 10, fill: bolt },
+        { x: 20, y: 11, fill: bolt },
+        { x: 21, y: 11, fill: a },
+        { x: 20, y: 12, fill: bolt },
+        { x: 19, y: 13, fill: bolt },
+        { x: 18, y: 14, fill: a },
       ];
     case "dodge":
       return [
@@ -1252,6 +1268,9 @@ const scenePixels = computed((): Pix[] => {
 }
 .pix[data-anim="peek"] .pix-stage {
   animation: peek 1.05s ease-in-out 1;
+}
+.pix[data-anim="peek"] .pix-scene {
+  animation: peek-fade 1.05s ease-in-out 1;
 }
 .pix[data-anim="sleep"] .pix-stage {
   animation: sleep 2.2s ease-in-out infinite;
@@ -1618,6 +1637,16 @@ const scenePixels = computed((): Pix[] => {
   50% {
     opacity: 0.45;
     transform: translateX(-6%);
+  }
+}
+@keyframes peek-fade {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  35%,
+  65% {
+    opacity: 0.28;
   }
 }
 @keyframes wormhole-sink {

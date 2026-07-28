@@ -45,30 +45,17 @@
           :key="motionPlayId"
           :style="bobStyle"
         >
-          <i
-            v-if="activeCharacter.view.showBobShadow"
-            class="chip-ground-shadow"
-          />
           <component
             :is="activeCharacter.view.Model"
             v-bind="runtimeModelProps"
           />
         </span>
+        <i
+          v-if="activeCharacter.view.showBobShadow"
+          class="chip-ground-shadow"
+          aria-hidden="true"
+        />
       </div>
-    </div>
-
-    <div
-      v-if="ctxMenu.open"
-      class="pet-ctx-menu"
-      :style="{ left: `${ctxMenu.x}px`, top: `${ctxMenu.y}px` }"
-      @pointerdown.stop
-    >
-      <button type="button" class="pet-ctx-item" @click="onCtxOpenSettings">
-        {{ ctxLabels.open }}
-      </button>
-      <button type="button" class="pet-ctx-item" @click="onCtxPinSettings">
-        {{ ctxLabels.pin }}
-      </button>
     </div>
   </div>
 </template>
@@ -83,6 +70,15 @@ import {
 } from "@tauri-apps/api/window";
 import { hidePetBubble, syncPetBubbleToPet } from "./bubbleWindow";
 import { requestOpenPetSettings, requestPinPetSettings } from "./hostBridge";
+import {
+  PET_MENU_ACTION_EVENT,
+  type PetMenuAction,
+} from "./menuTypes";
+import {
+  hidePetMenu,
+  isPetMenuOpen,
+  showPetMenu,
+} from "./menuWindow";
 import { pickMotionLine } from "./lines";
 import { filterEnabledMotions } from "./customLines";
 import { linePickOptsFromSettings } from "./runtime/usePetLines";
@@ -141,7 +137,6 @@ const mood = ref<PetMood>("idle");
 const lastLine = ref<string | null>(null);
 const blinking = ref(false);
 const idleMotion = ref<string>("idle-float");
-const ctxMenu = reactive({ open: false, x: 0, y: 0 });
 const ctxLabels = computed(() => {
   const en = getPetLocale() === "en";
   return {
@@ -282,6 +277,7 @@ let autoSpeakTimer: number | null = null;
 let unlistenSettings: UnlistenFn | null = null;
 let unlistenMotion: UnlistenFn | null = null;
 let unlistenIntro: UnlistenFn | null = null;
+let unlistenMenuAction: UnlistenFn | null = null;
 let rafId = 0;
 let motionLockUntil = 0;
 let motionGen = 0;
@@ -616,27 +612,19 @@ const idleLoop = usePetIdleLoop({
 });
 const { scheduleIdleAction } = idleLoop;
 
-async function openPetSettingsPage() {
-  closeCtxMenu();
-  await requestOpenPetSettings();
+async function onContextMenu() {
+  await showPetMenu({
+    openLabel: ctxLabels.value.open,
+    pinLabel: ctxLabels.value.pin,
+  });
 }
 
-function closeCtxMenu() {
-  ctxMenu.open = false;
-}
-
-function onContextMenu(ev: MouseEvent) {
-  ctxMenu.x = Math.max(4, Math.min(ev.clientX, winSize.value.w - 148));
-  ctxMenu.y = Math.max(4, Math.min(ev.clientY, winSize.value.h - 72));
-  ctxMenu.open = true;
-}
-
-function onCtxOpenSettings() {
-  void openPetSettingsPage();
-}
-
-function onCtxPinSettings() {
-  closeCtxMenu();
+function onCtxMenuAction(action: PetMenuAction) {
+  void hidePetMenu();
+  if (action === "open") {
+    void requestOpenPetSettings();
+    return;
+  }
   void requestPinPetSettings();
 }
 
@@ -759,7 +747,7 @@ async function resizePetWindow() {
 
 function onPointerDown(e: PointerEvent) {
   if (e.button !== 0) return;
-  closeCtxMenu();
+  void hidePetMenu();
   e.preventDefault();
   pointerDown = true;
   dragStarted = false;
@@ -808,13 +796,13 @@ async function beginPhysicsDrag() {
     mood.value = "curious";
     speaking.value = false;
     void hidePetBubble();
-    idleMotion.value = "idle-float";
     motionGen += 1;
     motionLockUntil = 0;
     clearTimer(idleHoldTimer);
     clearTimer(idleActionTimer);
 
     isDragging.value = true;
+    wantPos = { x: outer.x, y: outer.y };
   } catch {
     dragStarted = false;
   }
@@ -993,10 +981,14 @@ async function sampleCursor() {
     const halfH = bodyBox.value.h / 2 + HIT_PAD;
     const overPet =
       isDragging.value ||
+      isPetMenuOpen() ||
       (Math.abs(cursor.x - winCenter.x) <= halfW &&
         Math.abs(cursor.y - winCenter.y) <= halfH);
     showHitBounds.value =
-      settings.value.hitBoundsEnabled && overPet && !isDragging.value;
+      settings.value.hitBoundsEnabled &&
+      overPet &&
+      !isDragging.value &&
+      !isPetMenuOpen();
     void syncCursorPassThrough(overPet);
 
     if (mood.value !== "sleep") {
@@ -1104,6 +1096,14 @@ onMounted(async () => {
     applySettings(loadPetSettings(), { introIfSkinChanged: false });
     speakIntro();
   });
+  unlistenMenuAction = await listen<{ action?: PetMenuAction }>(
+    PET_MENU_ACTION_EVENT,
+    (event) => {
+      const action = event.payload?.action;
+      if (action !== "open" && action !== "pin") return;
+      onCtxMenuAction(action);
+    }
+  );
   refreshUsbWatch();
   window.addEventListener("storage", onStorage);
 });
@@ -1133,9 +1133,11 @@ onUnmounted(() => {
   unlistenSettings?.();
   unlistenMotion?.();
   unlistenIntro?.();
+  unlistenMenuAction?.();
   stopPetUsbWatch();
   window.removeEventListener("storage", onStorage);
   void hidePetBubble();
+  void hidePetMenu();
   showHitBounds.value = false;
   if (ignoreCursor) {
     ignoreCursor = false;
@@ -1155,39 +1157,6 @@ onUnmounted(() => {
   user-select: none;
   touch-action: none;
   pointer-events: none;
-}
-
-.pet-ctx-menu {
-  position: fixed;
-  z-index: 80;
-  min-width: 132px;
-  padding: 4px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(12, 16, 22, 0.92);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  pointer-events: auto;
-}
-
-.pet-ctx-item {
-  appearance: none;
-  border: 0;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 12px;
-  text-align: left;
-  padding: 8px 10px;
-  border-radius: 7px;
-  cursor: pointer;
-}
-
-.pet-ctx-item:hover {
-  background: rgba(64, 196, 255, 0.18);
-  color: #9fe4ff;
 }
 
 .pet-root:active {
@@ -1285,19 +1254,20 @@ onUnmounted(() => {
 
 .chip-ground-shadow {
   position: absolute;
-  left: 18%;
-  right: 18%;
-  bottom: 2%;
+  left: 50%;
+  bottom: calc(50% - var(--pet-body-h, 108px) * 0.42);
+  width: calc(var(--pet-body-w, 108px) * 0.62);
   height: 14px;
+  margin-left: calc(var(--pet-body-w, 108px) * -0.31);
   border-radius: 50%;
   background: radial-gradient(
     ellipse at center,
     rgba(0, 0, 0, 0.55) 0%,
     rgba(0, 0, 0, 0) 72%
   );
-  transform: translateZ(-28px) rotateX(80deg);
   pointer-events: none;
   z-index: 0;
+  transform: none;
 }
 
 .pet-avatar[data-model="chip"][data-physics="0"][data-idle="idle-float"] .chip-bob {

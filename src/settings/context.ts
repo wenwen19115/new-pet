@@ -22,6 +22,8 @@ export type PetSettingsPageCtx = {
   usbWatchEnabled: Ref<boolean>;
   randomIdleEnabled: Ref<boolean>;
   hitBoundsEnabled: Ref<boolean>;
+  catchphrases: Ref<string[]>;
+  catchphraseChance: Ref<number>;
   uiTheme: Ref<AppUiTheme>;
   settingsAlwaysOnTop: Ref<boolean>;
   customVrmMotions: Ref<CustomVrmMotion[]>;

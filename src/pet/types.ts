@@ -5,7 +5,10 @@ import type { AppUiTheme } from "@/theme/uiTheme";
 import type { CustomVrmMotion } from "./customVrmMotions";
 import type { PetCustomLine } from "./customLines";
 import type { CharacterExtensions } from "./domain/extensions";
-import { PET_SETTINGS_KEY as STORAGE_SETTINGS_KEY } from "./storageKeys";
+import {
+  CATCHPHRASE_DEFAULT_CHANCE,
+  defaultCatchphrasesForModel,
+} from "./catchphrases";
 import {
   getCharacter,
   listCharacters,
@@ -45,6 +48,9 @@ export interface PetModelProfile {
   opacity: number;
   usbWatchEnabled: boolean;
   randomIdleEnabled: boolean;
+  hitBoundsEnabled: boolean;
+  catchphrases: string[];
+  catchphraseChance: number;
   customLines: PetCustomLine[];
   customLinesOnly: boolean;
   disabledMotions: string[];
@@ -59,7 +65,6 @@ export type PetModelProfiles = Record<PetModelKind, PetModelProfile>;
 export interface PetSettings {
   enabled: boolean;
   modelKind: PetModelKind;
-  hitBoundsEnabled: boolean;
   uiTheme: AppUiTheme;
   settingsAlwaysOnTop: boolean;
   profiles: PetModelProfiles;
@@ -76,6 +81,9 @@ export interface PetSettings {
   opacity: number;
   usbWatchEnabled: boolean;
   randomIdleEnabled: boolean;
+  hitBoundsEnabled: boolean;
+  catchphrases: string[];
+  catchphraseChance: number;
   tone: PetTone;
   demoMotion: string;
   lookId: string;
@@ -85,7 +93,6 @@ export interface PetSettings {
 }
 
 export const PET_WINDOW_LABEL = "pet";
-export const PET_SETTINGS_KEY = STORAGE_SETTINGS_KEY;
 export const PET_SETTINGS_EVENT = "pet://settings-changed";
 export const PET_INTRO_EVENT = "pet://intro";
 
@@ -104,6 +111,9 @@ export function defaultProfileForModel(model: PetModelKind): PetModelProfile {
     opacity: 1,
     usbWatchEnabled: true,
     randomIdleEnabled: true,
+    hitBoundsEnabled: true,
+    catchphrases: defaultCatchphrasesForModel(model),
+    catchphraseChance: CATCHPHRASE_DEFAULT_CHANCE,
     customLines: [],
     customLinesOnly: false,
     disabledMotions: [],
@@ -132,6 +142,8 @@ export const DEFAULT_PET_SETTINGS: PetSettings = {
   vrmModelName: "",
   vrmModelRev: 0,
   hitBoundsEnabled: true,
+  catchphrases: defaultCatchphrasesForModel(DEFAULT_PET_MODEL),
+  catchphraseChance: CATCHPHRASE_DEFAULT_CHANCE,
   uiTheme: "night",
   settingsAlwaysOnTop: false,
   customVrmMotions: [],

@@ -1,5 +1,7 @@
 ﻿import { resolveAppearance, resolveNickname } from "./skins";
 import { flavorPetLine } from "./personality";
+import { getLinePack } from "./characters/lines";
+import { resolvePolish } from "./characters/lines/shared";
 import type { PetSettings, PetTone } from "./types";
 
 function detectLang(): "zh" | "en" {
@@ -23,7 +25,13 @@ export function buildSkinIntro(
   const name = resolveNickname(settings.nickname, look);
   const tone = options?.tone ?? settings.tone;
   const lang = options?.lang ?? detectLang();
-  const template = look.intro[lang][tone === "snarky" ? "snarky" : "cute"];
+  const pack = getLinePack(settings.modelKind);
+  const template = pack.intro[lang][tone === "snarky" ? "snarky" : "cute"];
   const base = template.replaceAll("{name}", name);
-  return flavorPetLine(base, settings.personality, lang);
+  return flavorPetLine(
+    base,
+    settings.personality,
+    lang,
+    resolvePolish(pack, settings.personality)
+  );
 }

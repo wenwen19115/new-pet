@@ -2,26 +2,55 @@ import type { PetPersonality } from "../personality";
 
 export type LineLangPack = { zh: string[]; en: string[] };
 
-/** Per-personality dialogue; tone = cute / snarky within */
+export type LineBilingual = { zh: string; en: string };
+
 export interface CharacterPersonalityLines {
   idleCute: LineLangPack;
   idleSnarky: LineLangPack;
   tap: LineLangPack;
-  /** High-weight personality lines (replaces old global personality pool) */
   flavor: LineLangPack;
+}
+
+export interface PersonalityPolish {
+  prefix: LineLangPack;
+  end: LineLangPack;
+  extraSuffix?: LineLangPack;
+  extraSuffixChance?: number;
+  truncateLong?: {
+    minLen: number;
+    keep: number;
+    chance: number;
+    ellipsis: LineBilingual;
+  };
+}
+
+export interface UsbLineTemplates {
+  addedOne: LineBilingual;
+  addedMany: LineBilingual;
+  emptyTail: LineBilingual;
+  listHeader: LineBilingual;
+  bullet: LineBilingual;
+}
+
+export interface CharacterIntroLines {
+  zh: { cute: string; snarky: string };
+  en: { cute: string; snarky: string };
 }
 
 export interface CharacterLineBundle {
   byPersonality: Record<PetPersonality, CharacterPersonalityLines>;
-  /** Slight mix-ins keyed by lookId（形象） */
   byLook?: Record<string, LineLangPack>;
   motionLines?: {
     zh: Record<string, string[]>;
     en: Record<string, string[]>;
   };
+  care?: LineLangPack;
+  catchphrases: LineLangPack;
+  intro: CharacterIntroLines;
+  usb?: UsbLineTemplates;
+  polish?: Partial<Record<PetPersonality, PersonalityPolish>>;
 }
 
-/** Built-in dialogue categories that can be toggled like motions */
 export const BUILTIN_LINE_CATEGORIES = [
   "idle",
   "tap",

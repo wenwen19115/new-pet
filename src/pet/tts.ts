@@ -1,13 +1,14 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { PetPersonality } from "./personality";
 import type { PetModelKind } from "./skins/types";
+import type { PetTone } from "./types";
 import { getPetLocale } from "./locale";
 
 export interface PetTtsOptions {
   model: PetModelKind;
   personality: PetPersonality;
+  tone?: PetTone;
   lang?: "zh" | "en";
-  /** Edge ShortName（如 zh-CN-XiaoxiaoNeural）；空=按角色自动 */
   voiceUri?: string;
 }
 
@@ -33,7 +34,7 @@ const EDGE_DEFAULT: Record<PetModelKind, { zh: string; en: string }> = {
   chip: { zh: "zh-CN-YunxiNeural", en: "en-US-GuyNeural" },
   "fig-sci": { zh: "zh-CN-XiaoxiaoNeural", en: "en-US-JennyNeural" },
   toon: { zh: "zh-CN-XiaoyiNeural", en: "en-US-AnaNeural" },
-  vrm: { zh: "zh-CN-YunjianNeural", en: "en-US-AriaNeural" },
+  vrm: { zh: "zh-CN-XiaoxiaoNeural", en: "en-US-AriaNeural" },
 };
 
 let edgeVoiceCache: PetTtsVoiceOption[] | null = null;
@@ -47,17 +48,37 @@ function sanitizeForTts(text: string): string {
     .trim();
 }
 
-function edgeProsody(personality: PetPersonality): { rate: number; pitch: number } {
+function edgeProsody(
+  personality: PetPersonality,
+  tone?: PetTone
+): { rate: number; pitch: number } {
+  let rate = 0;
+  let pitch = 0;
   switch (personality) {
     case "sunny":
-      return { rate: 4, pitch: 2 };
+      rate = 4;
+      pitch = 2;
+      break;
     case "shy":
-      return { rate: -8, pitch: 1 };
+      rate = -8;
+      pitch = 1;
+      break;
     case "cool":
-      return { rate: -6, pitch: -4 };
+      rate = -6;
+      pitch = -4;
+      break;
     case "fiery":
-      return { rate: 10, pitch: 4 };
+      rate = 10;
+      pitch = 4;
+      break;
   }
+  if (tone === "snarky") {
+    rate -= 2;
+    pitch -= 2;
+  } else if (tone === "cute") {
+    pitch += 1;
+  }
+  return { rate, pitch };
 }
 
 function resolveEdgeVoice(
@@ -117,16 +138,16 @@ export async function listPetTtsVoices(
 export async function speakPetTts(
   text: string,
   opts: PetTtsOptions
-): Promise<void> {
+): Promise<number> {
   const cleaned = sanitizeForTts(text);
-  if (!cleaned) return;
+  if (!cleaned) return 0;
 
   const lang = opts.lang ?? getPetLocale();
   cancelPetTts();
   const token = playToken;
 
   const voice = resolveEdgeVoice(opts.model, lang, opts.voiceUri);
-  const { rate, pitch } = edgeProsody(opts.personality);
+  const { rate, pitch } = edgeProsody(opts.personality, opts.tone);
   try {
     const audio = await invoke<EdgeTtsAudio>("synthesize_edge_tts", {
       text: cleaned,
@@ -134,15 +155,44 @@ export async function speakPetTts(
       rate,
       pitch,
     });
-    if (token !== playToken) return;
+    if (token !== playToken) return 0;
     stopAudioElement();
     const el = new Audio(`data:${audio.mime};base64,${audio.base64}`);
     activeAudio = el;
+
+    const durationMs = await new Promise<number>((resolve) => {
+      let settled = false;
+      const finish = (ms: number) => {
+        if (settled) return;
+        settled = true;
+        resolve(ms);
+      };
+      el.onloadedmetadata = () => {
+        const d = el.duration;
+        finish(Number.isFinite(d) && d > 0 ? d * 1000 : 0);
+      };
+      el.onerror = () => finish(0);
+      window.setTimeout(() => finish(0), 2500);
+    });
+
+    if (token !== playToken) {
+      stopAudioElement();
+      return 0;
+    }
+
     el.onended = () => {
       if (activeAudio === el) activeAudio = null;
     };
-    await el.play();
+    try {
+      await el.play();
+    } catch (err) {
+      console.warn("[pet] tts play failed", err);
+      if (activeAudio === el) activeAudio = null;
+      return 0;
+    }
+    return durationMs > 0 ? durationMs : Math.max(1200, cleaned.length * 90);
   } catch (err) {
     console.warn("[pet] edge tts failed", err);
+    return 0;
   }
 }

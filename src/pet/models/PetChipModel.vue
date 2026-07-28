@@ -337,10 +337,10 @@ const pins: PinDef[] = [
 
 <style scoped>
 .chip-slab {
-  --chip-depth: 46px;
-  --chip-half: 23px;
-  --body: 70px;
-  --body-half: 35px;
+  --chip-depth: calc(var(--body) * 0.66);
+  --chip-half: calc(var(--body) * 0.33);
+  --body: calc(min(var(--pet-body-w, 112px), var(--pet-body-h, 112px)) * 0.62);
+  --body-half: calc(var(--body) * 0.5);
   position: absolute;
   left: 50%;
   top: 50%;

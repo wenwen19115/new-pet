@@ -9,36 +9,16 @@ import {
 import { getPetLocale } from "./locale";
 import { buildUsbAnnounceText } from "./usbFormat";
 import type { PetUsbAnnouncePayload } from "./types";
-import { getCharacter } from "./characters";
+import { getLinePack } from "./characters/lines";
+import { resolveCare, resolvePolish } from "./characters/lines/shared";
 import type { BuiltInLineCategory } from "./characters/lineTypes";
 
 export interface PetLinePickOptions {
   customLines?: PetCustomLine[];
   customLinesOnly?: boolean;
-  /** Categories closed like motion toggles */
   disabledBuiltInLines?: string[];
   lookId?: string;
 }
-
-const CARE_ZH = [
-  "喝口水吧，嘴巴别只用来叹气。",
-  "抬抬头，让颈椎透透气。",
-  "远眺二十秒：眼睛保养小程序已启动。",
-  "站起来走两步，血液循环会感谢你。",
-  "该眨眼了。真的，现在就眨。",
-  "适当休息不是偷懒，是续航策略。",
-  "肩膀往下沉一点……对，别端着。",
-];
-
-const CARE_EN = [
-  "Drink water. Sighing doesn't hydrate.",
-  "Lift your chin. Give the neck some air.",
-  "Look afar for twenty seconds. Eye care routine.",
-  "Stand and walk two steps. Circulation thanks you.",
-  "Blink. Really. Now.",
-  "Rest isn't laziness. It's battery strategy.",
-  "Drop your shoulders… yes, like that.",
-];
 
 function pickLocale(): "zh" | "en" {
   return getPetLocale();
@@ -75,15 +55,30 @@ function mergeScenePool(
   return [...custom, ...builtIn];
 }
 
-function personalityLines(
-  model: PetModelKind,
-  personality: PetPersonality
-) {
-  return getCharacter(model).lines.byPersonality[personality];
+function packFor(model: PetModelKind) {
+  return getLinePack(model);
+}
+
+function personalityLines(model: PetModelKind, personality: PetPersonality) {
+  return packFor(model).byPersonality[personality];
 }
 
 function packLang(pack: { zh: string[]; en: string[] }): string[] {
   return pickLocale() === "zh" ? pack.zh : pack.en;
+}
+
+function withFlavor(
+  line: string,
+  personality: PetPersonality,
+  model: PetModelKind
+): string {
+  if (!line) return "";
+  return flavorPetLine(
+    line,
+    personality,
+    pickLocale(),
+    resolvePolish(packFor(model), personality)
+  );
 }
 
 function idlePool(
@@ -104,12 +99,12 @@ function flavorPool(
 
 function lookPool(model: PetModelKind, lookId?: string): string[] {
   if (!lookId) return [];
-  const pack = getCharacter(model).lines.byLook?.[lookId];
+  const pack = packFor(model).byLook?.[lookId];
   return pack ? packLang(pack) : [];
 }
 
-function carePool(): string[] {
-  return pickLocale() === "zh" ? CARE_ZH : CARE_EN;
+function carePool(model: PetModelKind): string[] {
+  return packLang(resolveCare(packFor(model)));
 }
 
 export function pickPetLine(
@@ -119,12 +114,10 @@ export function pickPetLine(
   model: PetModelKind = "chip",
   opts?: PetLinePickOptions
 ): string {
-  const lang = pickLocale();
   const customIdle = enabledCustomLineTexts(opts?.customLines ?? [], "idle");
 
   if (opts?.customLinesOnly && customIdle.length > 0) {
-    const next = pickFromPool(customIdle, avoid);
-    return next ? flavorPetLine(next, personality, lang) : "";
+    return withFlavor(pickFromPool(customIdle, avoid), personality, model);
   }
 
   if (
@@ -134,7 +127,7 @@ export function pickPetLine(
   ) {
     const special = pickFromPool(flavorPool(model, personality), avoid);
     if (special && (!avoid || special !== avoid)) {
-      return flavorPetLine(special, personality, lang);
+      return withFlavor(special, personality, model);
     }
   }
 
@@ -147,7 +140,7 @@ export function pickPetLine(
     lineCatOn("care", opts) &&
     Math.random() < 0.18
   ) {
-    builtIn.push(...carePool());
+    builtIn.push(...carePool(model));
   }
   if (
     !opts?.customLinesOnly &&
@@ -158,8 +151,7 @@ export function pickPetLine(
   }
 
   const pool = mergeScenePool(builtIn, "idle", opts);
-  const next = pickFromPool(pool, avoid);
-  return next ? flavorPetLine(next, personality, lang) : "";
+  return withFlavor(pickFromPool(pool, avoid), personality, model);
 }
 
 function builtInTapLines(
@@ -178,8 +170,7 @@ export function pickTapEggLine(
     ? builtInTapLines(model, personality)
     : [];
   const pool = mergeScenePool(builtIn, "tap", opts);
-  const line = pickFromPool(pool);
-  return line ? flavorPetLine(line, personality, pickLocale()) : "";
+  return withFlavor(pickFromPool(pool), personality, model);
 }
 
 function fillUsbTemplate(
@@ -196,21 +187,21 @@ function fillUsbTemplate(
     .replaceAll("{added}", added || "—");
 }
 
-/** USB 插拔：自定义句 ∪ 内置格式化文案 */
 export function pickUsbLine(
   payload: PetUsbAnnouncePayload,
   personality: PetPersonality = "sunny",
-  opts?: PetLinePickOptions
+  opts?: PetLinePickOptions,
+  model: PetModelKind = "chip"
 ): string {
   const custom = enabledCustomLineTexts(opts?.customLines ?? [], "usb").map(
     (t) => fillUsbTemplate(t, payload)
   );
   const builtIn = lineCatOn("usb", opts)
-    ? [buildUsbAnnounceText(payload, pickLocale())]
+    ? [buildUsbAnnounceText(payload, pickLocale(), model)]
     : [];
 
   if (opts?.customLinesOnly && custom.length > 0) {
-    return flavorPetLine(pickFromPool(custom), personality, pickLocale());
+    return withFlavor(pickFromPool(custom), personality, model);
   }
   const pool = opts?.customLinesOnly
     ? custom.length > 0
@@ -219,12 +210,9 @@ export function pickUsbLine(
     : [...custom, ...builtIn];
   const line = pickFromPool(pool);
   if (!line) return "";
-  return custom.includes(line)
-    ? flavorPetLine(line, personality, pickLocale())
-    : line;
+  return custom.includes(line) ? withFlavor(line, personality, model) : line;
 }
 
-/** 按动作挑一句（试播 / 随机动作时用） */
 export function pickMotionLine(
   motion: string,
   tone: PetTone,
@@ -234,11 +222,11 @@ export function pickMotionLine(
 ): string {
   if (!lineCatOn("motion", opts)) return "";
   const zh = pickLocale() === "zh";
-  const bundle = getCharacter(model).lines.motionLines;
+  const bundle = packFor(model).motionLines;
   const pool = (zh ? bundle?.zh : bundle?.en)?.[motion];
   if (pool?.length) {
     const line = pool[Math.floor(Math.random() * pool.length)]!;
-    return flavorPetLine(line, personality, pickLocale());
+    return withFlavor(line, personality, model);
   }
   return pickPetLine(tone, null, personality, model, opts);
 }

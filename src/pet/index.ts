@@ -1,7 +1,5 @@
 export {
   initPetHostBridge,
-  requestOpenPetSettings,
-  requestPinPetSettings,
   applySettingsWindowPin,
 } from "./hostBridge";
 

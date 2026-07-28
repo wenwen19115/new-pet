@@ -46,7 +46,7 @@ export const characterChip: CharacterDef = {
   },
   previewHintKey: "pet.previewDragHint",
   appearance: {
-    nicknameFrom: "look-chip",
+    nicknameFrom: "form",
     nameFrom: "look",
   },
   lines,

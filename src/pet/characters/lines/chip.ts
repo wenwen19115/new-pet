@@ -1,7 +1,7 @@
 import type { CharacterLineBundle } from "../lineTypes";
 import { L, P } from "./helpers";
 
-/** 芯宝：硅基机器人桌宠 — 生活向，无烧录/串口黑话 */
+/** 天问7号：硅基桌宠 — 生活向，无烧录/串口黑话 */
 export const lines: CharacterLineBundle = {
   byPersonality: {
     sunny: P(
@@ -305,6 +305,20 @@ export const lines: CharacterLineBundle = {
       "barrel-roll": ["Barrel roll! Gyro joy sparks.", "Side flip: cool rank."],
       "victory-burst": ["Victory pose! Even for drinking water.", "Mini celebration on~"],
       "peekaboo": ["Peekaboo—found you!", "Hey, I'm right here."],
+    },
+  },
+  catchphrases: L(
+    ["嘀嘀～", "同步完成", "收到收到"],
+    ["Beep~", "Synced", "Roger that"]
+  ),
+  intro: {
+    zh: {
+      cute: "嘀——我是{name}，你的桌面小伙伴，心跳已同步！",
+      snarky: "我是{name}。别指望我替你加班，但可以陪你优雅翻车。",
+    },
+    en: {
+      cute: "Beep — I'm {name}, your desktop buddy. Heartbeat synced!",
+      snarky: "Name's {name}. I won't do your overtime, but I'll watch you brick.",
     },
   },
 };

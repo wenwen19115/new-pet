@@ -11,7 +11,7 @@ fn get_serial_port_details() -> Result<Vec<serial::port_info::SerialPortEntry>, 
 }
 
 fn destroy_pet_windows(app: &tauri::AppHandle) {
-    for label in ["pet", "pet-bubble"] {
+    for label in ["pet", "pet-bubble", "pet-menu"] {
         if let Some(win) = app.get_webview_window(label) {
             let _ = win.destroy();
         }

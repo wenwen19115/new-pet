@@ -8,7 +8,10 @@ import type { CharacterLineBundle } from "./lineTypes";
 export type {
   CharacterLineBundle,
   CharacterPersonalityLines,
+  CharacterIntroLines,
   LineLangPack,
+  PersonalityPolish,
+  UsbLineTemplates,
   BuiltInLineCategory,
 } from "./lineTypes";
 export { BUILTIN_LINE_CATEGORIES, isBuiltInLineCategory } from "./lineTypes";

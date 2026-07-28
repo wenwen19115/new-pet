@@ -1,7 +1,8 @@
 import { type Ref } from "vue";
-import { showPetBubble } from "../bubbleWindow";
+import { showPetBubble, hidePetBubble } from "../bubbleWindow";
 import { buildSkinIntro } from "../intro";
 import { pickPetLine, pickTapEggLine, pickUsbLine } from "../lines";
+import { applyCatchphrase } from "../catchphrases";
 import type { PetMood, PetSettings, PetUsbAnnouncePayload } from "../types";
 import type { PetModelKind } from "../skins/types";
 import { linePickOptsFromSettings } from "./usePetLines";
@@ -28,6 +29,7 @@ export function usePetSpeech(deps: {
   bubbleMs?: number;
 }) {
   const BUBBLE_MS = deps.bubbleMs ?? 4500;
+  let speakGen = 0;
 
   function playClickSound() {
     if (deps.settings.value.muted) return;
@@ -54,17 +56,9 @@ export function usePetSpeech(deps: {
     }
   }
 
-  function playLineTts(line: string) {
+  function withCatchphrase(line: string): string {
     const s = deps.settings.value;
-    if (s.muted || !s.ttsEnabled) {
-      cancelPetTts();
-      return;
-    }
-    void speakPetTts(line, {
-      model: deps.model.value,
-      personality: s.personality,
-      voiceUri: s.ttsVoiceUri,
-    });
+    return applyCatchphrase(line, s.catchphrases, s.catchphraseChance);
   }
 
   async function speakText(
@@ -83,7 +77,13 @@ export function usePetSpeech(deps: {
     )
       return;
 
-    deps.lastLine.value = line;
+    const text = withCatchphrase(line);
+    if (!text) return;
+
+    const gen = ++speakGen;
+    cancelPetTts();
+
+    deps.lastLine.value = text;
     deps.speaking.value = true;
     deps.mood.value =
       deps.settings.value.tone === "snarky" ? "grumpy" : "happy";
@@ -91,28 +91,52 @@ export function usePetSpeech(deps: {
       deps.idleMotion.value = "happy-bounce";
     }
 
-    const durationMs = Math.max(BUBBLE_MS, 1200 + line.length * 42);
-    playLineTts(line);
+    const estimateMs = Math.max(BUBBLE_MS, 1200 + text.length * 42);
+    const s = deps.settings.value;
+    const wantTts = !s.muted && s.ttsEnabled;
+
+    const ttsPromise = wantTts
+      ? speakPetTts(text, {
+          model: deps.model.value,
+          personality: s.personality,
+          tone: s.tone,
+          voiceUri: s.ttsVoiceUri,
+        }).catch((err) => {
+          console.warn("[pet] tts failed", err);
+          return 0;
+        })
+      : Promise.resolve(0);
+
     try {
       await showPetBubble({
-        text: line,
-        tone: deps.settings.value.tone,
-        durationMs,
+        text,
+        tone: s.tone,
+        durationMs: Math.max(estimateMs, 18000),
       });
     } catch (err) {
       console.warn("[pet] bubble failed", err);
     }
 
+    if (gen !== speakGen) return;
+
+    const audioMs = await ttsPromise;
+    if (gen !== speakGen) return;
+
+    const holdMs = Math.max(estimateMs, audioMs > 0 ? audioMs + 280 : 0);
     deps.clearTimer(deps.getBubbleTimer());
     deps.setBubbleTimer(
       window.setTimeout(() => {
+        if (gen !== speakGen) return;
         deps.speaking.value = false;
-      }, durationMs)
+        void hidePetBubble();
+        cancelPetTts();
+      }, holdMs)
     );
 
     deps.clearTimer(deps.getMoodResetTimer());
     deps.setMoodResetTimer(
       window.setTimeout(() => {
+        if (gen !== speakGen) return;
         if (
           deps.mood.value !== "sleep" &&
           !deps.isDragging.value &&
@@ -165,7 +189,8 @@ export function usePetSpeech(deps: {
     const text = pickUsbLine(
       payload,
       deps.settings.value.personality,
-      opts
+      opts,
+      model
     );
     void speakText(text, false, { force: true });
   }

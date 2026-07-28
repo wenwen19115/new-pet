@@ -319,4 +319,18 @@ export const lines: CharacterLineBundle = {
       "peekaboo": ["Peekaboo—caught your eyes!", "Hey, right here."],
     },
   },
+  catchphrases: L(
+    ["呀哈～", "记好啦", "别忘了我哦"],
+    ["Hiya~", "Got it", "Don't forget me"]
+  ),
+  intro: {
+    zh: {
+      cute: "呀哈～我是{name}，你的桌面梨宝。记得喝水、眨眼、偶尔站起来哦！",
+      snarky: "我是{name}。脸可以很可爱，提醒你休息这件事我很认真。",
+    },
+    en: {
+      cute: "Hiya~ I'm {name}, your desktop Li Bao. Drink water, blink, stretch!",
+      snarky: "I'm {name}. Cute face, serious about your breaks.",
+    },
+  },
 };

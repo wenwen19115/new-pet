@@ -22,6 +22,7 @@ export const characterVrm: CharacterDef = {
     "happy-bounce",
     "sway-step",
     "bow-nod",
+    "vrm-scratch",
     "vrm-walk",
   ],
   defaults: {

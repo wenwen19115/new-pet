@@ -1,13 +1,13 @@
 import type { CharacterLineBundle } from "../lineTypes";
 import { L, P } from "./helpers";
 
-/** 灵宠：上古精灵 — 狐火/灵气感，生活向 */
+/** 狐青青：上古精灵 — 狐火/灵气感，生活向 */
 export const lines: CharacterLineBundle = {
   byPersonality: {
     sunny: P(
       L(
         [
-          "嗷呜～小灵报到！桌面有狐火，你不孤单。",
+          "嗷呜～狐青青报到！桌面有狐火，你不孤单。",
           "蹦！碎步警告：该起来走动啦。",
           "狐火招手～看到了吗？喝口水吧。",
           "打个转给你看！灵体虽小，活力拉满。",
@@ -305,6 +305,20 @@ export const lines: CharacterLineBundle = {
       "toon-wave": ["Hi! Foxfire wave~", "Saw you—wave!"],
       "toon-tea": ["Fwoosh—tiny flame for warmth.", "Snack-flame mode on."],
       "toon-read": ["Sniff… luck scent is your idea.", "Sniff sniff—air smells nice."],
+    },
+  },
+  catchphrases: L(
+    ["嗷呜～", "狐火闪闪", "蹦一下！"],
+    ["Awoo~", "Foxfire sparkle", "Hop!"]
+  ),
+  intro: {
+    zh: {
+      cute: "嗷呜～我是{name}，桌面狐火小精灵！蹦蹦跳跳陪你写代码。",
+      snarky: "我是{name}。像素虽小，监督你喝水休息可不含糊。",
+    },
+    en: {
+      cute: "Awoo~ I'm {name}, your pixel foxfire spirit. Hop hop!",
+      snarky: "I'm {name}. Tiny pixels, serious about your breaks.",
     },
   },
 };

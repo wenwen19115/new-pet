@@ -23,6 +23,7 @@ export default defineConfig(async () => ({
         main: resolve(__dirname, "index.html"),
         pet: resolve(__dirname, "src/pet/pet.html"),
         "pet-bubble": resolve(__dirname, "src/pet/pet-bubble.html"),
+        "pet-menu": resolve(__dirname, "src/pet/pet-menu.html"),
       },
       output: {
         manualChunks(id) {

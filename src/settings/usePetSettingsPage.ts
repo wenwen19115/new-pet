@@ -2,6 +2,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref, watch } f
 import { message } from "ant-design-vue";
 import { open } from "@tauri-apps/plugin-dialog";
 import { useI18n } from "vue-i18n";
+import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { isPetIdleMotion } from "@/pet/motions";
 import {
   applySettingsWindowPin,
@@ -29,6 +30,7 @@ import {
   type PetPersonality,
 } from "@/pet/personality";
 import type { PetSettings, PetTone } from "@/pet/types";
+import { PET_SETTINGS_EVENT } from "@/pet/types";
 import {
   createEmptyCustomVrmMotion,
   isCustomVrmMotionId,
@@ -54,8 +56,13 @@ import {
   PET_SETTINGS_PAGE_KEY,
   type PetSettingsPageCtx,
 } from "./context";
+import { isSettingsStorageKey } from "@/pet/storageKeys";
+import {
+  CATCHPHRASE_DEFAULT_CHANCE,
+  clampCatchphraseChance,
+} from "@/pet/catchphrases";
 
-export type UsePetSettingsPageOptions = {
+type UsePetSettingsPageOptions = {
   onUiThemeChange?: (theme: AppUiTheme) => void;
 };
 
@@ -78,6 +85,8 @@ const personality = ref<PetPersonality>("sunny");
 const usbWatchEnabled = ref(true);
 const randomIdleEnabled = ref(true);
 const hitBoundsEnabled = ref(true);
+const catchphrases = ref<string[]>([]);
+const catchphraseChance = ref(CATCHPHRASE_DEFAULT_CHANCE);
 const uiTheme = ref<AppUiTheme>("night");
 const settingsAlwaysOnTop = ref(false);
 const customVrmMotions = ref<CustomVrmMotion[]>([]);
@@ -273,7 +282,6 @@ function bindFormPickerRo() {
   formPickerRo = null;
   const root = formPickerRef.value;
   if (!root || typeof ResizeObserver === "undefined") return;
-  // Keep CSS transition — never force transition:none here (that killed the slide).
   formPickerRo = new ResizeObserver(() => syncFormThumb(true));
   formPickerRo.observe(root);
 }
@@ -306,11 +314,6 @@ watch(settingsTab, async (tab) => {
   await nextTick();
   syncFormThumb(false);
   bindFormPickerRo();
-});
-
-onBeforeUnmount(() => {
-  formPickerRo?.disconnect();
-  formPickerRo = null;
 });
 
 const motionOptions = computed(() =>
@@ -390,6 +393,8 @@ function applyLocalFromSettings(s: PetSettings) {
   usbWatchEnabled.value = s.usbWatchEnabled;
   randomIdleEnabled.value = s.randomIdleEnabled;
   hitBoundsEnabled.value = s.hitBoundsEnabled;
+  catchphrases.value = [...(s.catchphrases ?? [])];
+  catchphraseChance.value = clampCatchphraseChance(s.catchphraseChance);
   uiTheme.value = isAppUiTheme(s.uiTheme) ? s.uiTheme : "night";
   settingsAlwaysOnTop.value = Boolean(s.settingsAlwaysOnTop);
   customVrmMotions.value = s.customVrmMotions.map((m) => ({ ...m }));
@@ -421,6 +426,8 @@ function currentSettings(): PetSettings {
     usbWatchEnabled: usbWatchEnabled.value,
     randomIdleEnabled: randomIdleEnabled.value,
     hitBoundsEnabled: hitBoundsEnabled.value,
+    catchphrases: catchphrases.value.map((t) => t.trim()).filter(Boolean),
+    catchphraseChance: clampCatchphraseChance(catchphraseChance.value),
     uiTheme: uiTheme.value,
     settingsAlwaysOnTop: settingsAlwaysOnTop.value,
     customVrmMotions: customVrmMotions.value.map((m) => ({ ...m })),
@@ -462,6 +469,51 @@ onMounted(() => {
     syncFormThumb(false);
     if (enabled.value) bindFormPickerRo();
   });
+
+  void listen<PetSettings>(PET_SETTINGS_EVENT, (event) => {
+    if (!event.payload) return;
+    const incoming = event.payload;
+    if (incoming.modelKind !== modelKind.value) {
+      applyLocalFromSettings(incoming);
+      void refreshVrmPreview();
+      return;
+    }
+    settingsAlwaysOnTop.value = Boolean(incoming.settingsAlwaysOnTop);
+    uiTheme.value = isAppUiTheme(incoming.uiTheme)
+      ? incoming.uiTheme
+      : uiTheme.value;
+    settingsBag.value = incoming;
+  }).then((fn) => {
+    unlistenSettings = fn;
+  });
+
+  window.addEventListener("storage", onSettingsStorage);
+});
+
+let unlistenSettings: UnlistenFn | null = null;
+
+function onSettingsStorage(ev: StorageEvent) {
+  if (!isSettingsStorageKey(ev.key) || !ev.newValue) return;
+  try {
+    const incoming = JSON.parse(ev.newValue) as PetSettings;
+    if (incoming.modelKind !== modelKind.value) {
+      applyLocalFromSettings(incoming);
+      void refreshVrmPreview();
+      return;
+    }
+    settingsAlwaysOnTop.value = Boolean(incoming.settingsAlwaysOnTop);
+    settingsBag.value = incoming;
+  } catch {
+    // ignore
+  }
+}
+
+onBeforeUnmount(() => {
+  formPickerRo?.disconnect();
+  formPickerRo = null;
+  unlistenSettings?.();
+  unlistenSettings = null;
+  window.removeEventListener("storage", onSettingsStorage);
 });
 
 async function onEnabled(value: boolean) {
@@ -497,7 +549,10 @@ async function onModel(value: string | number) {
   if (!okBuiltIn && !okCustom) {
     demoMotion.value = allowed[0] ?? "happy-bounce";
   }
-  await persistAndSync();
+  const next = await publishPetSettings(currentSettings());
+  settingsBag.value = next;
+  const crossedVrm = (fromModel === "vrm") !== (value === "vrm");
+  await syncPetWindow({ recreate: crossedVrm });
   await refreshVrmPreview();
 }
 
@@ -605,7 +660,12 @@ async function onPickVrm() {
     vrmSrc.value = imported.src;
     vrmModelName.value = imported.name;
     vrmModelRev.value = Date.now();
-    await persistAndSync();
+    if (modelKind.value !== "vrm") {
+      modelKind.value = "vrm";
+    }
+    const next = await publishPetSettings(currentSettings());
+    settingsBag.value = next;
+    await syncPetWindow({ recreate: true });
     message.success(t("pet.vrmUploadOk"));
   } catch (err) {
     console.warn("[pet] pick vrm failed", err);
@@ -746,6 +806,8 @@ const pageCtx: PetSettingsPageCtx = {
   usbWatchEnabled,
   randomIdleEnabled,
   hitBoundsEnabled,
+  catchphrases,
+  catchphraseChance,
   uiTheme,
   settingsAlwaysOnTop,
   customVrmMotions,
@@ -830,7 +892,5 @@ provide(PET_SETTINGS_PAGE_KEY, pageCtx);
     displayName,
     heroPanelStyle,
     personalityLabel,
-    // pageCtx already provided
-    pageCtx,
   };
 }
