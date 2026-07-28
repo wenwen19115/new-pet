@@ -388,8 +388,9 @@ function tick(now: number) {
 
   ctx.clearRect(0, 0, cssW, cssH);
 
-  if (!particles.length && spd < 0.03) {
-    raf = requestAnimationFrame(tick);
+  if (!particles.length && !props.active && spd < 0.03) {
+    fading.value = false;
+    raf = 0;
     return;
   }
 
@@ -435,6 +436,9 @@ onUnmounted(() => {
 watch(
   () => [props.palette.id, props.active] as const,
   () => {
+    if (props.active && !raf) {
+      raf = requestAnimationFrame(tick);
+    }
     if (!props.active) return;
     particles = [];
     emitCarry = 0;

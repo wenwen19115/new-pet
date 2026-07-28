@@ -173,7 +173,6 @@ let idleTimer: number | null = null;
 let unlistenActivity: UnlistenFn | null = null;
 let unlistenLayout: UnlistenFn | null = null;
 let listenersReady = false;
-
 function clearIdleTimer() {
   if (idleTimer == null) return;
   window.clearTimeout(idleTimer);
@@ -280,10 +279,25 @@ export async function showPetMenu(options: {
   }
 }
 
-export async function hidePetMenu(): Promise<void> {
+async function hideMenuWindow(): Promise<void> {
   menuOpen = false;
   menuPlace = null;
   clearIdleTimer();
+  let existing: Awaited<ReturnType<typeof WebviewWindow.getByLabel>> = null;
+  try {
+    existing = await WebviewWindow.getByLabel(PET_MENU_LABEL);
+  } catch {
+    return;
+  }
+  if (!existing) return;
+  try {
+    await existing.hide();
+  } catch {
+    // ignore
+  }
+}
+
+export async function hidePetMenu(): Promise<void> {
   try {
     await emitTo(PET_MENU_LABEL, PET_MENU_HIDE_EVENT, null);
   } catch {
@@ -294,16 +308,10 @@ export async function hidePetMenu(): Promise<void> {
   } catch {
     // ignore
   }
-  const existing = await WebviewWindow.getByLabel(PET_MENU_LABEL);
-  if (!existing) return;
-  try {
-    await existing.hide();
-  } catch {
-    // ignore
-  }
+  await hideMenuWindow();
 }
 
-export async function closeMenuWindow(): Promise<void> {
+export async function destroyMenuWindow(): Promise<void> {
   menuOpen = false;
   menuPlace = null;
   clearIdleTimer();
@@ -312,15 +320,16 @@ export async function closeMenuWindow(): Promise<void> {
   unlistenActivity = null;
   unlistenLayout = null;
   listenersReady = false;
-  const existing = await WebviewWindow.getByLabel(PET_MENU_LABEL);
+  let existing: Awaited<ReturnType<typeof WebviewWindow.getByLabel>> = null;
+  try {
+    existing = await WebviewWindow.getByLabel(PET_MENU_LABEL);
+  } catch {
+    return;
+  }
   if (!existing) return;
   try {
     await existing.destroy();
   } catch {
-    try {
-      await existing.close();
-    } catch {
-      // ignore
-    }
+    // ignore
   }
 }

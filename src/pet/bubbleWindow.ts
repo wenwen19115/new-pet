@@ -29,17 +29,39 @@ function bubbleUrl(): string {
   return "src/pet/pet-bubble.html";
 }
 
-export async function closeBubbleWindow(): Promise<void> {
-  const existing = await WebviewWindow.getByLabel(PET_BUBBLE_LABEL);
+let activeBubble:
+  | { w: number; h: number; until: number }
+  | null = null;
+
+async function hideBubbleWindow(): Promise<void> {
+  activeBubble = null;
+  let existing: Awaited<ReturnType<typeof WebviewWindow.getByLabel>> = null;
+  try {
+    existing = await WebviewWindow.getByLabel(PET_BUBBLE_LABEL);
+  } catch {
+    return;
+  }
+  if (!existing) return;
+  try {
+    await existing.hide();
+  } catch {
+    // ignore
+  }
+}
+
+export async function destroyBubbleWindow(): Promise<void> {
+  activeBubble = null;
+  let existing: Awaited<ReturnType<typeof WebviewWindow.getByLabel>> = null;
+  try {
+    existing = await WebviewWindow.getByLabel(PET_BUBBLE_LABEL);
+  } catch {
+    return;
+  }
   if (!existing) return;
   try {
     await existing.destroy();
   } catch {
-    try {
-      await existing.close();
-    } catch {
-      // ignore
-    }
+    // ignore
   }
 }
 
@@ -229,10 +251,6 @@ async function applyBubbleGeometry(
   await win.setPosition(new LogicalPosition(x, y));
 }
 
-let activeBubble:
-  | { w: number; h: number; until: number }
-  | null = null;
-
 export async function syncPetBubbleToPet(): Promise<void> {
   if (!activeBubble || Date.now() > activeBubble.until) {
     activeBubble = null;
@@ -308,7 +326,6 @@ export async function showPetBubble(options: {
 }
 
 export async function hidePetBubble(): Promise<void> {
-  activeBubble = null;
   try {
     await emitTo(PET_BUBBLE_LABEL, PET_BUBBLE_HIDE_EVENT, null);
   } catch {
@@ -319,11 +336,5 @@ export async function hidePetBubble(): Promise<void> {
   } catch {
     // ignore
   }
-  const existing = await WebviewWindow.getByLabel(PET_BUBBLE_LABEL);
-  if (!existing) return;
-  try {
-    await existing.hide();
-  } catch {
-    // ignore
-  }
+  await hideBubbleWindow();
 }

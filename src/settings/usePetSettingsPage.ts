@@ -556,8 +556,10 @@ async function onModel(value: string | number) {
   }
   const next = await publishPetSettings(currentSettings());
   settingsBag.value = next;
-  const crossedVrm = (fromModel === "vrm") !== (value === "vrm");
-  await syncPetWindow({ recreate: crossedVrm });
+  // Soft sync only: recreating the pet webview on VRM cross races WebView2
+  // PostMessage against a dead HWND (0x80070578). Size/model update via
+  // settings event + openPetWindow setSize is enough.
+  await syncPetWindow();
   await refreshVrmPreview();
 }
 
@@ -670,7 +672,7 @@ async function onPickVrm() {
     }
     const next = await publishPetSettings(currentSettings());
     settingsBag.value = next;
-    await syncPetWindow({ recreate: true });
+    await syncPetWindow();
     message.success(t("pet.vrmUploadOk"));
   } catch (err) {
     console.warn("[pet] pick vrm failed", err);

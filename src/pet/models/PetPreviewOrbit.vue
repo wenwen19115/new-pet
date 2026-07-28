@@ -267,6 +267,25 @@ function tick(now: number) {
   raf = window.requestAnimationFrame(tick);
 }
 
+function startOrbitLoop() {
+  if (raf) return;
+  raf = window.requestAnimationFrame(tick);
+}
+
+function stopOrbitLoop() {
+  if (!raf) return;
+  window.cancelAnimationFrame(raf);
+  raf = 0;
+}
+
+function onVisibilityChange() {
+  if (document.visibilityState === "hidden") {
+    stopOrbitLoop();
+  } else {
+    startOrbitLoop();
+  }
+}
+
 function scheduleIdleClip() {
   window.clearTimeout(idleCycleTimer);
   if (!props.autoIdleClips || props.motionOverride) {
@@ -323,12 +342,14 @@ watch(
 );
 
 onMounted(() => {
-  raf = window.requestAnimationFrame(tick);
+  document.addEventListener("visibilitychange", onVisibilityChange);
+  startOrbitLoop();
   scheduleIdleClip();
 });
 
 onUnmounted(() => {
-  if (raf) window.cancelAnimationFrame(raf);
+  document.removeEventListener("visibilitychange", onVisibilityChange);
+  stopOrbitLoop();
   window.clearTimeout(idleCycleTimer);
 });
 </script>

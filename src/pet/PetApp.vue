@@ -115,7 +115,9 @@ import { resolveTrailStyle } from "./trailStyles";
 import { resolvePetVrmSrc } from "./vrmStorage";
 import {
   PET_INTRO_EVENT,
+  PET_RESUME_EVENT,
   PET_SETTINGS_EVENT,
+  PET_SUSPEND_EVENT,
   type PetMood,
   type PetSettings,
   type PetUsbAnnouncePayload,
@@ -123,6 +125,7 @@ import {
 import {
   stopPetUsbWatch,
   syncPetUsbWatch,
+  setPetUsbWatchRelaxed,
 } from "./usbWatch";
 
 const SLEEP_MS = 3 * 60 * 1000;
@@ -278,6 +281,8 @@ let unlistenSettings: UnlistenFn | null = null;
 let unlistenMotion: UnlistenFn | null = null;
 let unlistenIntro: UnlistenFn | null = null;
 let unlistenMenuAction: UnlistenFn | null = null;
+let unlistenSuspend: UnlistenFn | null = null;
+let unlistenResume: UnlistenFn | null = null;
 let rafId = 0;
 let motionLockUntil = 0;
 let motionGen = 0;
@@ -302,9 +307,12 @@ let winCenter = { x: 0, y: 0 };
 let wantPos: { x: number; y: number } | null = null;
 let posWriting = false;
 let ignoreCursor = false;
+/** False while suspended/tearing down — skip HWND IPC (avoids PostMessage 0x80070578). */
+let hostAlive = true;
 const HIT_PAD = 2;
 
 async function syncCursorPassThrough(overPet: boolean) {
+  if (!hostAlive) return;
   const shouldIgnore = !overPet && !isDragging.value;
   if (shouldIgnore === ignoreCursor) return;
   ignoreCursor = shouldIgnore;
@@ -545,9 +553,15 @@ function beginMotion(
   }, hold);
 }
 
+function wakeFromSleepIfNeeded() {
+  if (mood.value !== "sleep") return;
+  mood.value = "idle";
+  setPetUsbWatchRelaxed(false);
+}
+
 function playMotionOnce(motion: PetIdleMotion | string) {
   if (isDragging.value) return;
-  if (mood.value === "sleep") mood.value = "idle";
+  wakeFromSleepIfNeeded();
   speaking.value = false;
   void hidePetBubble();
   clearTimer(moodResetTimer);
@@ -557,11 +571,12 @@ function playMotionOnce(motion: PetIdleMotion | string) {
 
 function resetSleepTimer() {
   clearTimer(sleepTimer);
-  if (mood.value === "sleep") mood.value = "idle";
+  wakeFromSleepIfNeeded();
   sleepTimer = window.setTimeout(() => {
     void hidePetBubble();
     speaking.value = false;
     mood.value = "sleep";
+    setPetUsbWatchRelaxed(true);
     idleMotion.value = "idle-float";
     motionGen += 1;
     motionLockUntil = 0;
@@ -671,6 +686,7 @@ function onUsbAnnounce(payload: PetUsbAnnouncePayload) {
 
 function refreshUsbWatch() {
   syncPetUsbWatch(settings.value.usbWatchEnabled, onUsbAnnounce);
+  setPetUsbWatchRelaxed(mood.value === "sleep");
 }
 
 async function refreshVrmSrc() {
@@ -704,10 +720,10 @@ function applySettings(
   if (options?.introIfSkinChanged && nextLook.id !== prevId) {
     speakIntro();
   }
-  if (settings.value.usbWatchEnabled !== prevUsb) {
+  if (hostAlive && settings.value.usbWatchEnabled !== prevUsb) {
     refreshUsbWatch();
   }
-  if (settings.value.randomIdleEnabled !== prevRandomIdle) {
+  if (hostAlive && settings.value.randomIdleEnabled !== prevRandomIdle) {
     if (settings.value.randomIdleEnabled) {
       scheduleIdleAction();
     } else {
@@ -716,8 +732,9 @@ function applySettings(
     }
   }
   if (
-    settings.value.vrmModelName !== prevVrmName ||
-    settings.value.vrmModelRev !== prevVrmRev
+    hostAlive &&
+    (settings.value.vrmModelName !== prevVrmName ||
+      settings.value.vrmModelRev !== prevVrmRev)
   ) {
     void refreshVrmSrc();
   }
@@ -730,6 +747,7 @@ function applySettings(
 }
 
 async function resizePetWindow() {
+  if (!hostAlive) return;
   try {
     const win = getCurrentWindow();
     const size = winSize.value;
@@ -853,11 +871,11 @@ function onPointerUp(e: PointerEvent) {
 }
 
 async function pumpWindowPos() {
-  if (posWriting) return;
+  if (posWriting || !hostAlive) return;
   posWriting = true;
   try {
     const win = getCurrentWindow();
-    while (wantPos && isDragging.value) {
+    while (wantPos && isDragging.value && hostAlive) {
       const p = wantPos;
       wantPos = null;
       try {
@@ -872,7 +890,7 @@ async function pumpWindowPos() {
     }
   } finally {
     posWriting = false;
-    if (wantPos && isDragging.value) void pumpWindowPos();
+    if (wantPos && isDragging.value && hostAlive) void pumpWindowPos();
   }
 }
 
@@ -948,6 +966,7 @@ function tickSwing(dt: number) {
 }
 
 async function sampleCursor() {
+  if (!hostAlive) return;
   try {
     const scale = cachedScale || (await getCurrentWindow().scaleFactor());
     cachedScale = scale;
@@ -1010,17 +1029,21 @@ async function sampleCursor() {
 }
 
 function loop(now: number) {
+  if (!hostAlive) return;
   const dt = lastTick ? clamp((now - lastTick) / 1000, 0.001, 0.04) : 0.016;
   lastTick = now;
   frame += 1;
 
-  if (activeCharacter.value.runtime.tickLeds) {
-    tickLeds(now);
+  const sleeping = mood.value === "sleep" && !isDragging.value;
+  if (!sleeping || frame % 4 === 0) {
+    if (activeCharacter.value.runtime.tickLeds) {
+      tickLeds(now);
+    }
+    tickSwing(dt);
   }
-  tickSwing(dt);
 
-  // VRM 也隔帧采样，降低 cursorPosition IPC
-  if (isDragging.value || frame % 2 === 0) {
+  // Sleep: skip cursor IPC; awake: sample every other frame
+  if (isDragging.value || (!sleeping && frame % 2 === 0)) {
     void sampleCursor();
   }
 
@@ -1053,7 +1076,71 @@ function scheduleAutoSpeak() {
   }, 45000 + Math.random() * 50000);
 }
 
+function clearHostTimers() {
+  clearTimer(bubbleTimer);
+  bubbleTimer = null;
+  clearTimer(sleepTimer);
+  sleepTimer = null;
+  clearTimer(moodResetTimer);
+  moodResetTimer = null;
+  clearTimer(blinkTimer);
+  blinkTimer = null;
+  clearTimer(idleActionTimer);
+  idleActionTimer = null;
+  clearTimer(idleHoldTimer);
+  idleHoldTimer = null;
+  clearTimer(autoSpeakTimer);
+  autoSpeakTimer = null;
+}
+
+function suspendHost() {
+  hostAlive = false;
+  if (flySignal) flySignal.cancelled = true;
+  wantPos = null;
+  pointerDown = false;
+  dragStarted = false;
+  isDragging.value = false;
+  if (rafId) {
+    window.cancelAnimationFrame(rafId);
+    rafId = 0;
+  }
+  clearHostTimers();
+  cancelPetTts();
+  stopPetUsbWatch();
+  vrmSrc.value = null;
+  lastLine.value = null;
+  speaking.value = false;
+}
+
+async function resumeHost() {
+  if (hostAlive) return;
+  hostAlive = true;
+  settings.value = loadPetSettings();
+  petStore.setSettings(settings.value);
+  try {
+    const win = getCurrentWindow();
+    await win.setSize(new LogicalSize(winSize.value.w, winSize.value.h));
+    cachedScale = await win.scaleFactor();
+    const outer = (await win.outerPosition()).toLogical(cachedScale);
+    winCenter = {
+      x: outer.x + winSize.value.w / 2,
+      y: outer.y + winSize.value.h / 2,
+    };
+  } catch {
+    // ignore
+  }
+  lastTick = 0;
+  if (!rafId) rafId = window.requestAnimationFrame(loop);
+  resetSleepTimer();
+  scheduleBlink();
+  scheduleIdleAction();
+  scheduleAutoSpeak();
+  await refreshVrmSrc();
+  refreshUsbWatch();
+}
+
 onMounted(async () => {
+  hostAlive = true;
   document.documentElement.style.background = "transparent";
   document.body.style.background = "transparent";
 
@@ -1080,10 +1167,17 @@ onMounted(async () => {
   scheduleAutoSpeak();
   void refreshVrmSrc();
 
+  unlistenSuspend = await listen(PET_SUSPEND_EVENT, () => {
+    suspendHost();
+  });
+  unlistenResume = await listen(PET_RESUME_EVENT, () => {
+    void resumeHost();
+  });
   unlistenSettings = await listen<PetSettings>(PET_SETTINGS_EVENT, (event) => {
     applySettings(event.payload, { introIfSkinChanged: true });
   });
   unlistenMotion = await listen<PetMotionPayload>(PET_MOTION_EVENT, (event) => {
+    if (!hostAlive) return;
     const motion = event.payload?.motion;
     if (typeof motion !== "string") return;
     if (isCustomVrmMotionId(motion)) {
@@ -1094,12 +1188,14 @@ onMounted(async () => {
     playMotionOnce(motion);
   });
   unlistenIntro = await listen(PET_INTRO_EVENT, () => {
+    if (!hostAlive) return;
     applySettings(loadPetSettings(), { introIfSkinChanged: false });
     speakIntro();
   });
   unlistenMenuAction = await listen<{ action?: PetMenuAction }>(
     PET_MENU_ACTION_EVENT,
     (event) => {
+      if (!hostAlive) return;
       const action = event.payload?.action;
       if (action !== "open" && action !== "pin") return;
       onCtxMenuAction(action);
@@ -1121,29 +1217,16 @@ function onStorage(ev: StorageEvent) {
 }
 
 onUnmounted(() => {
-  if (flySignal) flySignal.cancelled = true;
-  cancelPetTts();
-  clearTimer(bubbleTimer);
-  clearTimer(sleepTimer);
-  clearTimer(moodResetTimer);
-  clearTimer(blinkTimer);
-  clearTimer(idleActionTimer);
-  clearTimer(idleHoldTimer);
-  clearTimer(autoSpeakTimer);
-  if (rafId) window.cancelAnimationFrame(rafId);
+  suspendHost();
+  unlistenSuspend?.();
+  unlistenResume?.();
   unlistenSettings?.();
   unlistenMotion?.();
   unlistenIntro?.();
   unlistenMenuAction?.();
-  stopPetUsbWatch();
   window.removeEventListener("storage", onStorage);
-  void hidePetBubble();
-  void hidePetMenu();
   showHitBounds.value = false;
-  if (ignoreCursor) {
-    ignoreCursor = false;
-    void getCurrentWindow().setIgnoreCursorEvents(false);
-  }
+  ignoreCursor = false;
 });
 </script>
 

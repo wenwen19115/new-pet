@@ -1,3 +1,4 @@
+import { convertFileSrc } from "@tauri-apps/api/core";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { mkdir, readFile, remove, size, writeFile } from "@tauri-apps/plugin-fs";
 
@@ -17,7 +18,11 @@ export class PetVrmImportException extends Error {
   }
 }
 
-let activeBlobUrl: string | null = null;
+/** Per-webview cache: avoid re-resolving the same rev into a new URL. */
+let cachedRev = Number.NaN;
+let cachedSrc: string | null = null;
+/** Legacy blob URL from older builds; revoke on upgrade path. */
+let legacyBlobUrl: string | null = null;
 
 async function getPetVrmStoragePath(): Promise<string> {
   return join(await appDataDir(), PET_VRM_DIR, PET_VRM_FILE);
@@ -33,27 +38,36 @@ async function ensurePetVrmDir(): Promise<string> {
   return dir;
 }
 
-function revokeActiveBlobUrl() {
-  if (!activeBlobUrl) return;
+function revokeLegacyBlobUrl() {
+  if (!legacyBlobUrl) return;
   try {
-    URL.revokeObjectURL(activeBlobUrl);
+    URL.revokeObjectURL(legacyBlobUrl);
   } catch {
     // ignore
   }
-  activeBlobUrl = null;
+  legacyBlobUrl = null;
 }
 
-function blobUrlFromBytes(data: Uint8Array): string {
-  revokeActiveBlobUrl();
+function clearSrcCache() {
+  revokeLegacyBlobUrl();
+  cachedRev = Number.NaN;
+  cachedSrc = null;
+}
+
+function fileSrcFromPath(path: string): string {
+  revokeLegacyBlobUrl();
+  return convertFileSrc(path);
+}
+
+function blobSrcFromBytes(data: Uint8Array): string {
+  revokeLegacyBlobUrl();
+  // Copy: underlying buffer may be a shared Tauri/FS view.
   const copy = new Uint8Array(data.byteLength);
   copy.set(data);
-  const blob = new Blob([copy], { type: "model/gltf-binary" });
-  activeBlobUrl = URL.createObjectURL(blob);
-  return activeBlobUrl;
-}
-
-async function readSourceBytes(sourcePath: string): Promise<number> {
-  return await size(sourcePath);
+  legacyBlobUrl = URL.createObjectURL(
+    new Blob([copy], { type: "model/gltf-binary" })
+  );
+  return legacyBlobUrl;
 }
 
 function fileNameFromPath(sourcePath: string): string {
@@ -61,14 +75,38 @@ function fileNameFromPath(sourcePath: string): string {
   return parts[parts.length - 1] || "custom.vrm";
 }
 
-export async function resolvePetVrmSrc(_rev = 0): Promise<string | null> {
+/**
+ * Resolve VRM for GLTFLoader via asset URL (no full-file blob copy in JS heap).
+ * Falls back to blob if convertFileSrc fails.
+ */
+export async function resolvePetVrmSrc(rev = 0): Promise<string | null> {
+  if (cachedSrc != null && cachedRev === rev) return cachedSrc;
   try {
     const path = await getPetVrmStoragePath();
-    const data = await readFile(path);
-    if (!data.byteLength) return null;
-    return blobUrlFromBytes(data);
+    const bytes = await size(path);
+    if (!bytes) {
+      clearSrcCache();
+      return null;
+    }
+    try {
+      const src = fileSrcFromPath(path);
+      cachedSrc = src;
+      cachedRev = rev;
+      return src;
+    } catch (err) {
+      console.warn("[pet] convertFileSrc failed, blob fallback", err);
+      const data = await readFile(path);
+      if (!data.byteLength) {
+        clearSrcCache();
+        return null;
+      }
+      cachedSrc = blobSrcFromBytes(data);
+      cachedRev = rev;
+      return cachedSrc;
+    }
   } catch (err) {
     console.warn("[pet] resolve vrm src failed", err);
+    clearSrcCache();
     return null;
   }
 }
@@ -81,31 +119,25 @@ export async function importPetVrmFromPath(
     throw new PetVrmImportException("not_vrm");
   }
 
-  let bytes = 0;
-  try {
-    bytes = await readSourceBytes(sourcePath);
-  } catch (err) {
-    throw new PetVrmImportException(
-      "failed",
-      err instanceof Error ? err.message : String(err)
-    );
-  }
-  if (bytes > PET_VRM_MAX_BYTES) {
-    throw new PetVrmImportException("too_large");
-  }
-
   await ensurePetVrmDir();
   const dest = await getPetVrmStoragePath();
 
   let data: Uint8Array;
   try {
     data = await readFile(sourcePath);
-    if (data.byteLength > PET_VRM_MAX_BYTES) {
-      throw new PetVrmImportException("too_large");
-    }
+  } catch (err) {
+    throw new PetVrmImportException(
+      "failed",
+      err instanceof Error ? err.message : String(err)
+    );
+  }
+  if (data.byteLength > PET_VRM_MAX_BYTES) {
+    throw new PetVrmImportException("too_large");
+  }
+
+  try {
     await writeFile(dest, data);
   } catch (err) {
-    if (err instanceof PetVrmImportException) throw err;
     console.warn("[pet] vrm import failed", sourcePath, err);
     throw new PetVrmImportException(
       "failed",
@@ -113,13 +145,18 @@ export async function importPetVrmFromPath(
     );
   }
 
+  clearSrcCache();
   const name = fileNameFromPath(sourcePath);
-
-  return { name, src: blobUrlFromBytes(data) };
+  try {
+    return { name, src: fileSrcFromPath(dest) };
+  } catch (err) {
+    console.warn("[pet] convertFileSrc after import failed, blob fallback", err);
+    return { name, src: blobSrcFromBytes(data) };
+  }
 }
 
 export async function clearPetVrmFile(): Promise<void> {
-  revokeActiveBlobUrl();
+  clearSrcCache();
   try {
     const path = await getPetVrmStoragePath();
     await remove(path);

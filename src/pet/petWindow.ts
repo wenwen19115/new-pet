@@ -1,12 +1,23 @@
 import { LogicalSize } from "@tauri-apps/api/dpi";
+import { emit, emitTo } from "@tauri-apps/api/event";
 import { WebviewWindow, getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { currentMonitor } from "@tauri-apps/api/window";
-import { closeBubbleWindow } from "./bubbleWindow";
-import { closeMenuWindow } from "./menuWindow";
+import {
+  destroyBubbleWindow,
+  hidePetBubble,
+} from "./bubbleWindow";
+import {
+  destroyMenuWindow,
+  hidePetMenu,
+} from "./menuWindow";
 import { loadPetSettings } from "./settings";
 import { resolveAppearance } from "./skins";
 import { petWindowSize } from "./sizes";
-import { PET_WINDOW_LABEL } from "./types";
+import {
+  PET_RESUME_EVENT,
+  PET_SUSPEND_EVENT,
+  PET_WINDOW_LABEL,
+} from "./types";
 import { isPetVrmReady } from "./vrmStorage";
 
 function petUrl(): string {
@@ -72,36 +83,56 @@ async function waitUntilPetWindowGone(timeoutMs = 5000): Promise<boolean> {
   return !(await getPetWindow());
 }
 
-async function destroyPetLabel(): Promise<void> {
-  const existing = await getPetWindow();
-  if (!existing) return;
+async function destroyLabel(label: string): Promise<void> {
+  let existing: WebviewWindow | null = null;
   try {
-    await existing.hide();
+    existing = (await WebviewWindow.getByLabel(label)) ?? null;
   } catch {
-    // ignore
+    return;
   }
+  if (!existing) return;
   try {
     await existing.destroy();
   } catch {
+    // ignore
+  }
+}
+
+async function emitPet(event: string): Promise<void> {
+  try {
+    await emitTo(PET_WINDOW_LABEL, event, null);
+  } catch {
     try {
-      await existing.close();
+      await emit(event, null);
     } catch {
       // ignore
     }
   }
 }
 
-async function closePetWindow(): Promise<void> {
-  await closeMenuWindow().catch(() => undefined);
-  await closeBubbleWindow().catch(() => undefined);
-  await destroyPetLabel();
-  if (await waitUntilPetWindowGone()) return;
-
-  console.warn("[pet] window label still held after destroy; retrying");
-  await destroyPetLabel();
-  if (!(await waitUntilPetWindowGone(2000))) {
-    console.warn("[pet] failed to release pet window label");
+/** Soft dismiss: hide webviews, keep HWNDs (avoids WebView2 PostMessage after destroy). */
+async function dismissPetWindow(): Promise<void> {
+  await emitPet(PET_SUSPEND_EVENT);
+  await sleep(40);
+  await hidePetMenu().catch(() => undefined);
+  await hidePetBubble().catch(() => undefined);
+  const pet = await getPetWindow();
+  if (!pet) return;
+  try {
+    await pet.hide();
+  } catch {
+    // ignore
   }
+}
+
+/** App exit / forced recreate: tear down HWNDs. */
+async function destroyPetWindow(): Promise<void> {
+  await emitPet(PET_SUSPEND_EVENT);
+  await sleep(80);
+  await destroyMenuWindow().catch(() => undefined);
+  await destroyBubbleWindow().catch(() => undefined);
+  await destroyLabel(PET_WINDOW_LABEL);
+  await waitUntilPetWindowGone(2000);
 }
 
 async function waitWebviewReady(
@@ -128,12 +159,9 @@ async function waitWebviewReady(
 }
 
 async function createPetWindow(): Promise<WebviewWindow | null> {
-  if (await getPetWindow()) {
-    await closePetWindow();
-  }
-  if (await getPetWindow()) {
-    return null;
-  }
+  // Soft-dismiss leaves the label alive — never create a second pet.
+  const existing = await getPetWindow();
+  if (existing) return existing;
 
   const pos = await resolveDefaultPetPosition();
   const size = currentPetWindowSize();
@@ -173,17 +201,18 @@ async function openPetWindow(): Promise<WebviewWindow | null> {
   const existing = await getPetWindow();
   if (existing) {
     try {
-      await existing.show();
-      await existing.setAlwaysOnTop(true);
       const size = currentPetWindowSize();
       try {
         await existing.setSize(new LogicalSize(size.w, size.h));
       } catch {
         // ignore
       }
+      await existing.show();
+      await existing.setAlwaysOnTop(true);
+      await emitPet(PET_RESUME_EVENT);
       return existing;
     } catch {
-      await destroyPetLabel();
+      await destroyLabel(PET_WINDOW_LABEL);
       await waitUntilPetWindowGone();
     }
   }
@@ -207,12 +236,12 @@ export async function syncPetWindow(options?: {
     const shouldShow = settings.enabled && isPetVrmReady(settings);
 
     if (!shouldShow) {
-      await closePetWindow();
+      await dismissPetWindow();
       return;
     }
 
     if (recreate) {
-      await closePetWindow();
+      await destroyPetWindow();
       await openPetWindow();
       return;
     }
@@ -242,7 +271,7 @@ export async function initPetHost(): Promise<void> {
     await main.onCloseRequested(async (event) => {
       event.preventDefault();
       try {
-        await closePetWindow();
+        await destroyPetWindow();
       } catch {
         // ignore
       }

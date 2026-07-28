@@ -97,6 +97,10 @@ export interface PetSettings {
 export const PET_WINDOW_LABEL = "pet";
 export const PET_SETTINGS_EVENT = "pet://settings-changed";
 export const PET_INTRO_EVENT = "pet://intro";
+/** Host → pet: soft dismiss / hard teardown prelude — stop work & unload VRM */
+export const PET_SUSPEND_EVENT = "pet://suspend";
+/** Host → pet: soft dismiss ended — resume loops & reload VRM */
+export const PET_RESUME_EVENT = "pet://resume";
 
 export function defaultProfileForModel(model: PetModelKind): PetModelProfile {
   const character = getCharacter(model);

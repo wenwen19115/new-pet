@@ -4,11 +4,13 @@ import {
   type PetUsbAnnouncePayload,
 } from "./types";
 
-const POLL_MS = 1500;
+const POLL_MS_ACTIVE = 1500;
+const POLL_MS_SLEEP = 6000;
 
 type PetUsbAnnounceHandler = (payload: PetUsbAnnouncePayload) => void;
 
 let timer: ReturnType<typeof setInterval> | null = null;
+let pollMs = POLL_MS_ACTIVE;
 let knownPorts = new Set<string>();
 let bootstrapped = false;
 let polling = false;
@@ -62,15 +64,24 @@ async function pollOnce(): Promise<void> {
   }
 }
 
+function armTimer() {
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
+  if (!handler) return;
+  timer = setInterval(() => {
+    void pollOnce();
+  }, pollMs);
+}
+
 function startPetUsbWatch(onAnnounce: PetUsbAnnounceHandler): void {
   handler = onAnnounce;
   if (timer) return;
   bootstrapped = false;
   knownPorts = new Set();
   void pollOnce();
-  timer = setInterval(() => {
-    void pollOnce();
-  }, POLL_MS);
+  armTimer();
 }
 
 export function stopPetUsbWatch(): void {
@@ -80,6 +91,14 @@ export function stopPetUsbWatch(): void {
   timer = null;
   bootstrapped = false;
   knownPorts = new Set();
+}
+
+/** Slow USB polling while pet sleeps to cut background IPC. */
+export function setPetUsbWatchRelaxed(relaxed: boolean): void {
+  const next = relaxed ? POLL_MS_SLEEP : POLL_MS_ACTIVE;
+  if (next === pollMs) return;
+  pollMs = next;
+  if (handler && timer) armTimer();
 }
 
 export function syncPetUsbWatch(

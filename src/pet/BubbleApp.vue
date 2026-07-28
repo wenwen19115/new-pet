@@ -112,6 +112,26 @@ function tryReadStorage() {
   }
 }
 
+function startPoll() {
+  if (pollTimer != null) return;
+  tryReadStorage();
+  pollTimer = window.setInterval(tryReadStorage, 150);
+}
+
+function stopPoll() {
+  if (pollTimer == null) return;
+  window.clearInterval(pollTimer);
+  pollTimer = null;
+}
+
+function onVisibilityChange() {
+  if (document.visibilityState === "hidden") {
+    stopPoll();
+  } else if (visible.value) {
+    startPoll();
+  }
+}
+
 onMounted(async () => {
   document.documentElement.style.background = "transparent";
   document.body.style.background = "transparent";
@@ -124,7 +144,10 @@ onMounted(async () => {
     // ignore
   }
 
+  document.addEventListener("visibilitychange", onVisibilityChange);
+
   unlistenShow = await listen<PetBubblePayload>(PET_BUBBLE_EVENT, (e) => {
+    startPoll();
     void applyPayload(e.payload);
   });
   unlistenHide = await listen(PET_BUBBLE_HIDE_EVENT, async () => {
@@ -132,6 +155,7 @@ onMounted(async () => {
     typing.value = false;
     clearHideTimer();
     clearTypeTimer();
+    stopPoll();
     try {
       await getCurrentWindow().hide();
     } catch {
@@ -139,14 +163,14 @@ onMounted(async () => {
     }
   });
 
-  tryReadStorage();
-  pollTimer = window.setInterval(tryReadStorage, 150);
+  startPoll();
 });
 
 onUnmounted(() => {
+  document.removeEventListener("visibilitychange", onVisibilityChange);
   clearHideTimer();
   clearTypeTimer();
-  if (pollTimer != null) window.clearInterval(pollTimer);
+  stopPoll();
   unlistenShow?.();
   unlistenHide?.();
 });

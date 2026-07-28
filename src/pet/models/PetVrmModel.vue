@@ -230,6 +230,15 @@ function applyBlink() {
 
 function tick(now: number) {
   if (disposed) return;
+  raf = 0;
+
+  const sleepThrottle =
+    props.mood === "sleep" && !props.lifting ? 100 : 0;
+  if (sleepThrottle > 0 && lastTs && now - lastTs < sleepThrottle) {
+    raf = requestAnimationFrame(tick);
+    return;
+  }
+
   const dt = lastTs ? Math.min(0.05, (now - lastTs) / 1000) : 0.016;
   lastTs = now;
 
@@ -245,6 +254,26 @@ function tick(now: number) {
     renderer.render(scene, camera);
   }
   raf = requestAnimationFrame(tick);
+}
+
+function startRenderLoop() {
+  if (disposed || raf) return;
+  lastTs = 0;
+  raf = requestAnimationFrame(tick);
+}
+
+function stopRenderLoop() {
+  if (!raf) return;
+  cancelAnimationFrame(raf);
+  raf = 0;
+}
+
+function onVisibilityChange() {
+  if (document.visibilityState === "hidden") {
+    stopRenderLoop();
+  } else {
+    startRenderLoop();
+  }
 }
 
 function resizeToCanvas() {
@@ -351,7 +380,8 @@ onMounted(async () => {
   await nextTick();
   resizeToCanvas();
   void loadModel(props.src);
-  raf = requestAnimationFrame(tick);
+  document.addEventListener("visibilitychange", onVisibilityChange);
+  startRenderLoop();
   const canvas = canvasRef.value;
   if (canvas && typeof ResizeObserver !== "undefined") {
     ro = new ResizeObserver(() => resizeToCanvas());
@@ -362,9 +392,10 @@ onMounted(async () => {
 onUnmounted(() => {
   disposed = true;
   loadGen += 1;
+  document.removeEventListener("visibilitychange", onVisibilityChange);
   ro?.disconnect();
   ro = null;
-  if (raf) cancelAnimationFrame(raf);
+  stopRenderLoop();
   disposeVrm();
   renderer?.dispose();
   renderer = null;
