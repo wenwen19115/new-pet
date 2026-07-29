@@ -113,7 +113,7 @@ const {
 .pet-page {
   display: grid;
   /* Always side-by-side: preview | (nav + panel). Never stack on shrink. */
-  grid-template-columns: minmax(220px, 0.95fr) minmax(400px, 1.2fr);
+  grid-template-columns: minmax(200px, 0.78fr) minmax(420px, 1.35fr);
   grid-template-rows: minmax(0, 1fr);
   justify-content: stretch;
   align-content: stretch;
@@ -460,7 +460,7 @@ const {
 /* Shrink: keep side-by-side; never hide labels; keep switches on the right */
 @media (max-width: 1100px) {
   .pet-page {
-    grid-template-columns: minmax(220px, 0.9fr) minmax(420px, 1.2fr);
+    grid-template-columns: minmax(190px, 0.72fr) minmax(420px, 1.4fr);
     column-gap: 10px;
     padding: 10px 12px;
   }
@@ -493,7 +493,7 @@ const {
 
 @media (max-width: 980px) {
   .pet-page {
-    grid-template-columns: minmax(200px, 0.82fr) minmax(400px, 1.28fr);
+    grid-template-columns: minmax(180px, 0.68fr) minmax(400px, 1.45fr);
     column-gap: 8px;
     padding: 8px 10px;
   }

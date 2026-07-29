@@ -14,6 +14,12 @@ import {
   listCharacters,
   PET_MODEL_KINDS,
 } from "./characters";
+import {
+  DEFAULT_PET_CHAT_AI,
+  type PetChatAiConfig,
+} from "./chat/providers";
+
+export type { PetChatAiConfig, PetChatProviderId } from "./chat/providers";
 
 export type PetTone = "cute" | "snarky";
 export type { AppUiTheme };
@@ -45,6 +51,8 @@ export interface PetModelProfile {
   ttsEnabled: boolean;
   /** Edge ShortName; empty = auto by character */
   ttsVoiceUri: string;
+  /** Per-character AI provider / model / key */
+  chatAi: PetChatAiConfig;
   opacity: number;
   usbWatchEnabled: boolean;
   randomIdleEnabled: boolean;
@@ -69,6 +77,10 @@ export interface PetSettings {
   settingsAlwaysOnTop: boolean;
   /** Right-click menu: expand system peek (CPU/RAM/…) by default */
   sysStatsDefaultExpanded: boolean;
+  /** App-level: show Chat in right-click menu */
+  chatEnabled: boolean;
+  /** Mirrored from active profile (per-character AI chat config) */
+  chatAi: PetChatAiConfig;
   profiles: PetModelProfiles;
   /**
    * Mirrored from active profile / vrm extension for convenience.
@@ -114,6 +126,7 @@ export function defaultProfileForModel(model: PetModelKind): PetModelProfile {
     muted: false,
     ttsEnabled: false,
     ttsVoiceUri: "",
+    chatAi: { ...DEFAULT_PET_CHAT_AI },
     opacity: 1,
     usbWatchEnabled: true,
     randomIdleEnabled: true,
@@ -141,6 +154,7 @@ export const DEFAULT_PET_SETTINGS: PetSettings = {
   muted: false,
   ttsEnabled: false,
   ttsVoiceUri: "",
+  chatEnabled: true,
   opacity: 1,
   modelKind: DEFAULT_PET_MODEL,
   usbWatchEnabled: true,
@@ -153,6 +167,7 @@ export const DEFAULT_PET_SETTINGS: PetSettings = {
   uiTheme: "night",
   settingsAlwaysOnTop: false,
   sysStatsDefaultExpanded: false,
+  chatAi: { ...DEFAULT_PET_CHAT_AI },
   customVrmMotions: [],
   profiles: createDefaultProfiles(),
   tone: "cute",

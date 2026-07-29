@@ -16,6 +16,16 @@ import {
   switchPetModel,
   patchActiveProfile,
 } from "@/pet/settings";
+import {
+  DEFAULT_PET_CHAT_AI,
+  PET_CHAT_PROVIDERS,
+  addCustomChatModel,
+  builtinChatModelIds,
+  isPetChatProviderId,
+  normalizePetChatAi,
+  removeCustomChatModel,
+  type PetChatProviderId,
+} from "@/pet/chat/providers";
 import { syncPetWindow } from "@/pet/petWindow";
 import {
   coerceLookIdForModel,
@@ -74,6 +84,12 @@ const enabled = ref(false);
 const muted = ref(false);
 const ttsEnabled = ref(false);
 const ttsVoiceUri = ref("");
+const chatEnabled = ref(true);
+const chatAiProvider = ref<PetChatProviderId>(DEFAULT_PET_CHAT_AI.provider);
+const chatAiApiKey = ref("");
+const chatAiBaseUrl = ref("");
+const chatAiModel = ref("");
+const chatAiCustomModels = ref<string[]>([]);
 const opacityPercent = ref(100);
 const zoomPercent = ref(0);
 const tone = ref<PetTone>("cute");
@@ -147,7 +163,14 @@ const activeModule = computed<SettingsModule | undefined>(() =>
 
 const activeTabTitle = computed(() => {
   const mod = activeModule.value;
-  return mod ? t(mod.labelKey) : "";
+  if (!mod) return "";
+  const base = t(mod.labelKey);
+  if (mod.id !== "chat") return base;
+  // Show last saved provider — not the unsaved draft selection
+  const saved = savedChatAi();
+  const provider =
+    PET_CHAT_PROVIDERS[saved.provider] ?? PET_CHAT_PROVIDERS.local;
+  return `${base} · ${t(provider.labelKey)}`;
 });
 
 const previewMotionOverride = computed(() =>
@@ -379,6 +402,8 @@ function applyLocalFromSettings(s: PetSettings) {
   muted.value = s.muted;
   ttsEnabled.value = Boolean(s.ttsEnabled);
   ttsVoiceUri.value = typeof s.ttsVoiceUri === "string" ? s.ttsVoiceUri : "";
+  chatEnabled.value = Boolean(s.chatEnabled);
+  applyChatAiDraft(s.chatAi);
   opacityPercent.value = Math.round(s.opacity * 100);
   void refreshTtsVoiceOptions();
   zoomPercent.value = s.zoomPercent;
@@ -410,6 +435,48 @@ function applyLocalFromSettings(s: PetSettings) {
   opts.onUiThemeChange?.(uiTheme.value);
 }
 
+function applyChatAiDraft(raw: unknown) {
+  const cfg = normalizePetChatAi(
+    raw && typeof raw === "object"
+      ? (raw as Partial<typeof DEFAULT_PET_CHAT_AI>)
+      : DEFAULT_PET_CHAT_AI
+  );
+  chatAiProvider.value = cfg.provider;
+  chatAiApiKey.value = cfg.apiKey;
+  chatAiBaseUrl.value = cfg.baseUrl;
+  chatAiModel.value = cfg.model;
+  chatAiCustomModels.value = [...cfg.customModels];
+}
+
+function savedChatAi() {
+  return normalizePetChatAi(
+    settingsBag.value.chatAi ?? DEFAULT_PET_CHAT_AI
+  );
+}
+
+function sameStringList(a: string[], b: string[]) {
+  if (a.length !== b.length) return false;
+  return a.every((v, i) => v === b[i]);
+}
+
+const chatAiDirty = computed(() => {
+  const saved = savedChatAi();
+  return (
+    chatAiProvider.value !== saved.provider ||
+    chatAiApiKey.value.trim() !== saved.apiKey ||
+    chatAiBaseUrl.value.trim() !== saved.baseUrl ||
+    chatAiModel.value.trim() !== saved.model ||
+    !sameStringList(chatAiCustomModels.value, saved.customModels)
+  );
+});
+
+const canAddChatAiModel = computed(() => {
+  const id = chatAiModel.value.trim();
+  if (!id || chatAiProvider.value === "local") return false;
+  if (builtinChatModelIds(chatAiProvider.value).includes(id)) return false;
+  return !chatAiCustomModels.value.includes(id);
+});
+
 function currentSettings(): PetSettings {
   const base: PetSettings = {
     ...settingsBag.value,
@@ -417,6 +484,9 @@ function currentSettings(): PetSettings {
     muted: muted.value,
     ttsEnabled: ttsEnabled.value,
     ttsVoiceUri: ttsVoiceUri.value,
+    chatEnabled: chatEnabled.value,
+    // Keep saved chat AI until user clicks Save (draft lives in refs)
+    chatAi: savedChatAi(),
     opacity: opacityPercent.value / 100,
     tone: tone.value,
     demoMotion: demoMotion.value,
@@ -616,6 +686,68 @@ async function onTtsVoice(value: unknown) {
   await persistOnly();
 }
 
+async function onChatEnabled(value: boolean) {
+  chatEnabled.value = value;
+  await persistOnly();
+}
+
+function onChatAiProvider(value: unknown) {
+  if (!isPetChatProviderId(value)) return;
+  chatAiProvider.value = value;
+  chatAiModel.value = "";
+  chatAiBaseUrl.value = "";
+}
+
+function onChatAiModel(value: unknown) {
+  chatAiModel.value = typeof value === "string" ? value : "";
+}
+
+function onChatAiAddModel() {
+  if (!canAddChatAiModel.value) return;
+  chatAiCustomModels.value = addCustomChatModel(
+    chatAiProvider.value,
+    chatAiCustomModels.value,
+    chatAiModel.value
+  );
+  message.success(t("pet.chatModelAdded"));
+}
+
+function onChatAiRemoveModel(id: string) {
+  chatAiCustomModels.value = removeCustomChatModel(
+    chatAiCustomModels.value,
+    id
+  );
+}
+
+async function onChatAiSave() {
+  const next = await publishPetSettings({
+    ...currentSettings(),
+    chatAi: normalizePetChatAi({
+      provider: chatAiProvider.value,
+      apiKey: chatAiApiKey.value,
+      baseUrl: chatAiBaseUrl.value,
+      model: chatAiModel.value,
+      customModels: addCustomChatModel(
+        chatAiProvider.value,
+        chatAiCustomModels.value,
+        chatAiModel.value
+      ),
+    }),
+  });
+  settingsBag.value = next;
+  applyChatAiDraft(next.chatAi);
+  message.success(t("pet.chatAiSaved"));
+}
+
+function onChatAiReset() {
+  if (!chatAiDirty.value) {
+    message.info(t("pet.chatAiResetClean"));
+    return;
+  }
+  applyChatAiDraft(savedChatAi());
+  message.success(t("pet.chatAiResetOk"));
+}
+
 async function onOpacity(value: number) {
   opacityPercent.value = value;
   await persistOnly();
@@ -807,6 +939,12 @@ const pageCtx: PetSettingsPageCtx = {
   muted,
   ttsEnabled,
   ttsVoiceUri,
+  chatEnabled,
+  chatAiProvider,
+  chatAiApiKey,
+  chatAiBaseUrl,
+  chatAiModel,
+  chatAiCustomModels,
   opacityPercent,
   zoomPercent,
   tone,
@@ -856,6 +994,15 @@ const pageCtx: PetSettingsPageCtx = {
   onMuted,
   onTtsEnabled,
   onTtsVoice,
+  onChatEnabled,
+  onChatAiProvider,
+  onChatAiModel,
+  onChatAiAddModel,
+  onChatAiRemoveModel,
+  onChatAiSave,
+  onChatAiReset,
+  chatAiDirty,
+  canAddChatAiModel,
   onOpacity,
   onZoom,
   resetOpacity,

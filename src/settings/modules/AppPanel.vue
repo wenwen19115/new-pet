@@ -1,6 +1,19 @@
 ﻿<template>
   <SettingsItemRow
     class="span-2"
+    :title="$t('pet.chatTitle')"
+    :description="$t('pet.chatDesc')"
+    tone="pet"
+  >
+    <template #icon><MessageOutlined /></template>
+    <a-switch
+      v-model:checked="ctx.chatEnabled.value"
+      size="small"
+      @change="ctx.onChatEnabled"
+    />
+  </SettingsItemRow>
+  <SettingsItemRow
+    class="span-2"
     :title="$t('pet.uiThemeTitle')"
     :description="$t('pet.uiThemeDesc')"
     tone="pet"
@@ -63,6 +76,7 @@ import { inject } from "vue";
 import {
   BulbOutlined,
   DashboardOutlined,
+  MessageOutlined,
   PushpinOutlined,
   SyncOutlined,
 } from "@ant-design/icons-vue";

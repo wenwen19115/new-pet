@@ -9,6 +9,7 @@ import {
   type PetSettings,
   type PetTone,
 } from "./types";
+import { normalizePetChatAi } from "./chat/providers";
 import { isPetIdleMotion } from "./motions";
 import {
   isPetModelKind,
@@ -75,6 +76,7 @@ type ProfileFallbacks = Pick<
   | "muted"
   | "ttsEnabled"
   | "ttsVoiceUri"
+  | "chatAi"
   | "opacity"
   | "usbWatchEnabled"
   | "randomIdleEnabled"
@@ -139,6 +141,9 @@ function normalizeOneProfile(
       typeof raw?.ttsVoiceUri === "string"
         ? raw.ttsVoiceUri
         : (fallbacks?.ttsVoiceUri ?? base.ttsVoiceUri),
+    chatAi: normalizePetChatAi(
+      raw?.chatAi !== undefined ? raw.chatAi : fallbacks?.chatAi ?? base.chatAi
+    ),
     opacity: clampOpacity(
       Number(
         raw?.opacity === undefined
@@ -193,6 +198,7 @@ function legacySharedFallbacks(
       typeof raw?.ttsVoiceUri === "string"
         ? raw.ttsVoiceUri
         : DEFAULT_PET_SETTINGS.ttsVoiceUri,
+    chatAi: normalizePetChatAi(raw?.chatAi),
     opacity: clampOpacity(
       Number(raw?.opacity ?? DEFAULT_PET_SETTINGS.opacity)
     ),
@@ -232,10 +238,18 @@ function normalizeProfiles(
 
   const next = { ...defaults };
   for (const kind of PET_MODEL_KINDS) {
+    const profileRaw = incoming[kind];
+    // Only migrate root chatAi into an existing profile that still lacks the field
+    const chatAiFallback =
+      profileRaw &&
+      profileRaw.chatAi === undefined &&
+      raw?.chatAi !== undefined
+        ? { chatAi: normalizePetChatAi(raw.chatAi) }
+        : undefined;
     next[kind] = normalizeOneProfile(
       kind,
-      incoming[kind],
-      undefined,
+      profileRaw,
+      chatAiFallback,
       kind === "vrm" ? legacyVrm : undefined
     );
   }
@@ -286,6 +300,7 @@ function applyActiveProfile(
   | "muted"
   | "ttsEnabled"
   | "ttsVoiceUri"
+  | "chatAi"
   | "opacity"
   | "usbWatchEnabled"
   | "randomIdleEnabled"
@@ -308,6 +323,7 @@ function applyActiveProfile(
     muted: p.muted,
     ttsEnabled: p.ttsEnabled,
     ttsVoiceUri: p.ttsVoiceUri,
+    chatAi: p.chatAi,
     opacity: p.opacity,
     usbWatchEnabled: p.usbWatchEnabled,
     randomIdleEnabled: p.randomIdleEnabled,
@@ -319,6 +335,21 @@ function applyActiveProfile(
     vrmModelRev: vrm.modelRev,
     customVrmMotions: vrm.customMotions,
   };
+}
+
+function resolveGlobalChatEnabled(
+  raw: Partial<PetSettings> | null | undefined,
+  modelKind: PetModelKind
+): boolean {
+  if (raw?.chatEnabled !== undefined) return Boolean(raw.chatEnabled);
+  // Migrate from former per-profile chatEnabled
+  const profile = (
+    raw?.profiles as Partial<Record<PetModelKind, Record<string, unknown>>> | undefined
+  )?.[modelKind];
+  if (profile && typeof profile.chatEnabled === "boolean") {
+    return profile.chatEnabled;
+  }
+  return DEFAULT_PET_SETTINGS.chatEnabled;
 }
 
 export function normalizePetSettings(
@@ -343,6 +374,7 @@ export function normalizePetSettings(
       raw?.sysStatsDefaultExpanded ??
         DEFAULT_PET_SETTINGS.sysStatsDefaultExpanded
     ),
+    chatEnabled: resolveGlobalChatEnabled(raw, modelKind),
     profiles,
     ...active,
   };
@@ -374,6 +406,7 @@ function syncActiveProfileIntoProfiles(
     muted: settings.muted,
     ttsEnabled: settings.ttsEnabled,
     ttsVoiceUri: settings.ttsVoiceUri,
+    chatAi: settings.chatAi,
     opacity: settings.opacity,
     usbWatchEnabled: settings.usbWatchEnabled,
     randomIdleEnabled: settings.randomIdleEnabled,
@@ -512,7 +545,7 @@ export async function patchPetSettings(
   const globalOnly =
     keys.length > 0 &&
     keys.every((k) =>
-      ["settingsAlwaysOnTop", "enabled", "uiTheme", "sysStatsDefaultExpanded"].includes(
+      ["settingsAlwaysOnTop", "enabled", "uiTheme", "sysStatsDefaultExpanded", "chatEnabled"].includes(
         k
       )
     );

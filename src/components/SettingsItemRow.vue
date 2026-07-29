@@ -1,5 +1,5 @@
 <template>
-  <div class="settings-item">
+  <div class="settings-item" :data-stack="stack ? '1' : '0'">
     <div class="item-main">
       <div class="item-icon" :data-tone="tone">
         <slot name="icon" />
@@ -21,10 +21,13 @@ withDefaults(
     title: string;
     description?: string;
     tone?: "default" | "pet";
+    /** Put controls on the next line (wide inputs / avoid crushing description) */
+    stack?: boolean;
   }>(),
   {
     description: "",
     tone: "default",
+    stack: false,
   }
 );
 </script>
@@ -41,12 +44,17 @@ withDefaults(
   background: var(--ui-surface, rgba(0, 0, 0, 0.22));
 }
 
+.settings-item[data-stack="1"] {
+  flex-direction: column;
+  align-items: stretch;
+}
+
 .item-main {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-width: 0;
-  flex: 1;
+  min-width: 160px;
+  flex: 1 1 auto;
 }
 
 .item-icon {
@@ -70,6 +78,7 @@ withDefaults(
 
 .item-text {
   min-width: 0;
+  flex: 1;
 }
 
 .item-title {
@@ -84,7 +93,12 @@ withDefaults(
   font-size: 12px;
   color: var(--ui-text-faint, rgba(255, 255, 255, 0.45));
   line-height: 1.4;
-  word-break: break-all;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .item-actions {
@@ -94,5 +108,12 @@ withDefaults(
   flex: 0 0 auto;
   flex-shrink: 0;
   margin-left: auto;
+}
+
+.settings-item[data-stack="1"] .item-actions {
+  margin-left: 0;
+  width: 100%;
+  padding-left: 48px;
+  box-sizing: border-box;
 }
 </style>

@@ -10,6 +10,7 @@ import {
   destroyMenuWindow,
   hidePetMenu,
 } from "./menuWindow";
+import { destroyChatWindow, hidePetChat } from "./chat";
 import { loadPetSettings } from "./settings";
 import { resolveAppearance } from "./skins";
 import { petWindowSize } from "./sizes";
@@ -115,6 +116,7 @@ async function dismissPetWindow(): Promise<void> {
   await emitPet(PET_SUSPEND_EVENT);
   await sleep(40);
   await hidePetMenu().catch(() => undefined);
+  await hidePetChat().catch(() => undefined);
   await hidePetBubble().catch(() => undefined);
   const pet = await getPetWindow();
   if (!pet) return;
@@ -130,6 +132,7 @@ async function destroyPetWindow(): Promise<void> {
   await emitPet(PET_SUSPEND_EVENT);
   await sleep(80);
   await destroyMenuWindow().catch(() => undefined);
+  await destroyChatWindow().catch(() => undefined);
   await destroyBubbleWindow().catch(() => undefined);
   await destroyLabel(PET_WINDOW_LABEL);
   await waitUntilPetWindowGone(2000);

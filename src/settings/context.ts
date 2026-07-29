@@ -11,6 +11,12 @@ export type PetSettingsPageCtx = {
   muted: Ref<boolean>;
   ttsEnabled: Ref<boolean>;
   ttsVoiceUri: Ref<string>;
+  chatEnabled: Ref<boolean>;
+  chatAiProvider: Ref<import("@/pet/chat/providers").PetChatProviderId>;
+  chatAiApiKey: Ref<string>;
+  chatAiBaseUrl: Ref<string>;
+  chatAiModel: Ref<string>;
+  chatAiCustomModels: Ref<string[]>;
   opacityPercent: Ref<number>;
   zoomPercent: Ref<number>;
   tone: Ref<PetTone>;
@@ -68,6 +74,15 @@ export type PetSettingsPageCtx = {
   onMuted: (v: boolean) => void | Promise<void>;
   onTtsEnabled: (v: boolean) => void | Promise<void>;
   onTtsVoice: (v: unknown) => void | Promise<void>;
+  onChatEnabled: (v: boolean) => void | Promise<void>;
+  onChatAiProvider: (v: unknown) => void;
+  onChatAiModel: (v: unknown) => void;
+  onChatAiAddModel: () => void;
+  onChatAiRemoveModel: (id: string) => void;
+  onChatAiSave: () => void | Promise<void>;
+  onChatAiReset: () => void;
+  chatAiDirty: ComputedRef<boolean>;
+  canAddChatAiModel: ComputedRef<boolean>;
   onOpacity: (v: number) => void | Promise<void>;
   onZoom: (v: number) => void | Promise<void>;
   resetOpacity: () => void | Promise<void>;

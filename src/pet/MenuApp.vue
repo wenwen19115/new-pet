@@ -35,6 +35,14 @@
     </div>
 
     <div class="pet-ctx-divider" />
+    <button
+      v-if="chatLabel"
+      type="button"
+      class="pet-ctx-item"
+      @click="emitAction('chat')"
+    >
+      {{ chatLabel }}
+    </button>
     <button type="button" class="pet-ctx-item" @click="emitAction('open')">
       {{ openLabel }}
     </button>
@@ -65,6 +73,7 @@ const visible = ref(false);
 const statsExpanded = ref(false);
 const openLabel = ref("打开设置");
 const pinLabel = ref("置顶设置页");
+const chatLabel = ref("");
 const cpuPct = ref(0);
 const memPct = ref(0);
 const diskPct = ref(0);
@@ -202,6 +211,8 @@ function toggleStats() {
 function applyPayload(payload: PetMenuPayload) {
   openLabel.value = payload.openLabel;
   pinLabel.value = payload.pinLabel;
+  chatLabel.value =
+    typeof payload.chatLabel === "string" ? payload.chatLabel.trim() : "";
   statsExpanded.value = Boolean(payload.statsExpandDefault);
   visible.value = true;
   void pingActivity();

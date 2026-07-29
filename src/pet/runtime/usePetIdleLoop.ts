@@ -10,6 +10,8 @@ export function usePetIdleLoop(deps: {
   isDragging: Ref<boolean>;
   mood: Ref<string>;
   isMotionLocked: () => boolean;
+  /** When true (e.g. AI chat open), do not schedule random idle motions */
+  isPaused?: () => boolean;
   beginMotion: (id: string, opts?: { withSpeakChance?: number }) => void;
   clearTimer: (id: number | null) => void;
   getIdleActionTimer: () => number | null;
@@ -17,13 +19,13 @@ export function usePetIdleLoop(deps: {
 }) {
   function scheduleIdleAction() {
     deps.clearTimer(deps.getIdleActionTimer());
-    if (!deps.settings.value.randomIdleEnabled) {
+    if (deps.isPaused?.() || !deps.settings.value.randomIdleEnabled) {
       deps.setIdleActionTimer(null);
       return;
     }
     deps.setIdleActionTimer(
       window.setTimeout(() => {
-        if (!deps.settings.value.randomIdleEnabled) {
+        if (deps.isPaused?.() || !deps.settings.value.randomIdleEnabled) {
           deps.setIdleActionTimer(null);
           return;
         }

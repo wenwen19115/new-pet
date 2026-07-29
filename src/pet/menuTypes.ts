@@ -5,11 +5,13 @@ export const PET_MENU_ACTION_EVENT = "pet://menu-action";
 export const PET_MENU_ACTIVITY_EVENT = "pet://menu-activity";
 export const PET_MENU_LAYOUT_EVENT = "pet://menu-layout";
 
-export type PetMenuAction = "open" | "pin";
+export type PetMenuAction = "open" | "pin" | "chat";
 
 export interface PetMenuPayload {
   openLabel: string;
   pinLabel: string;
+  /** Empty → hide chat row */
+  chatLabel: string;
   /** Whether system stats panel starts expanded */
   statsExpandDefault: boolean;
 }
@@ -24,9 +26,9 @@ export interface PetMenuLayoutPayload {
 export const PET_MENU_IDLE_MS = 15_000;
 
 export const PET_MENU_W = 228;
-/** toggle + divider + 2 items; keep a little headroom for DPI */
-export const PET_MENU_H_COLLAPSED = 144;
-export const PET_MENU_H_EXPANDED = 196;
+/** toggle + divider + 3 items; keep a little headroom for DPI */
+export const PET_MENU_H_COLLAPSED = 176;
+export const PET_MENU_H_EXPANDED = 228;
 /** Placement uses expanded height so opening near screen edge still fits when expanded */
 export const PET_MENU_H = PET_MENU_H_EXPANDED;
 export const PET_MENU_GAP = -6;

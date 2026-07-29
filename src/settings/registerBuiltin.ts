@@ -1,5 +1,6 @@
 import {
   BulbOutlined,
+  CommentOutlined,
   EyeOutlined,
   RobotOutlined,
   ThunderboltOutlined,
@@ -8,6 +9,7 @@ import { registerSettingsModule } from "./registry";
 import CompanionPanel from "./modules/CompanionPanel.vue";
 import LookPanel from "./modules/LookPanel.vue";
 import MotionPanel from "./modules/MotionPanel.vue";
+import ChatPanel from "./modules/ChatPanel.vue";
 import AppPanel from "./modules/AppPanel.vue";
 
 let registered = false;
@@ -39,6 +41,14 @@ export function registerBuiltinSettingsModules(): void {
     labelKey: "pet.tabMotion",
     icon: ThunderboltOutlined,
     panel: MotionPanel,
+  });
+
+  registerSettingsModule({
+    id: "chat",
+    order: 40,
+    labelKey: "pet.tabChat",
+    icon: CommentOutlined,
+    panel: ChatPanel,
   });
 
   registerSettingsModule({

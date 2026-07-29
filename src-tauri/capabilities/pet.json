@@ -2,7 +2,7 @@
   "identifier": "pet",
   "description": "Desktop pet + bubble: window/event + read user VRM from AppData",
   "local": true,
-  "windows": ["pet", "pet-bubble", "pet-menu"],
+  "windows": ["pet", "pet-bubble", "pet-menu", "pet-chat"],
   "permissions": [
     "core:default",
     "core:event:default",

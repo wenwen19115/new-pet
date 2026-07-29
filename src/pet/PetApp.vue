@@ -79,11 +79,18 @@ import {
   isPetMenuOpen,
   showPetMenu,
 } from "./menuWindow";
+import {
+  hidePetChat,
+  showPetChat,
+  PET_CHAT_REPLY_EVENT,
+  PET_CHAT_OPEN_STATE_EVENT,
+  type PetChatOpenStatePayload,
+} from "./chat";
 import { pickMotionLine } from "./lines";
 import { filterEnabledMotions } from "./customLines";
 import { linePickOptsFromSettings } from "./runtime/usePetLines";
 import { petStore } from "./store";
-import { isSettingsStorageKey } from "./storageKeys";
+import { isSettingsStorageKey, writeSettingsRaw } from "./storageKeys";
 import { getPetLocale } from "./locale";
 import { characterHas, getCharacter, resolveMotionForModel } from "./characters";
 import { usePetSpeech, usePetIdleLoop } from "./runtime";
@@ -145,6 +152,7 @@ const ctxLabels = computed(() => {
   return {
     open: en ? "Open settings" : "打开设置",
     pin: en ? "Pin settings on top" : "置顶设置页",
+    chat: en ? "Chat" : "聊天",
   };
 });
 const motionPlayId = ref(0);
@@ -276,11 +284,15 @@ let moodResetTimer: number | null = null;
 let blinkTimer: number | null = null;
 let idleActionTimer: number | null = null;
 let idleHoldTimer: number | null = null;
+/** While AI chat is open, pause random-idle motions / their random speech */
+let chatPausesRandomIdle = false;
 let autoSpeakTimer: number | null = null;
 let unlistenSettings: UnlistenFn | null = null;
 let unlistenMotion: UnlistenFn | null = null;
 let unlistenIntro: UnlistenFn | null = null;
 let unlistenMenuAction: UnlistenFn | null = null;
+let unlistenChatReply: UnlistenFn | null = null;
+let unlistenChatOpen: UnlistenFn | null = null;
 let unlistenSuspend: UnlistenFn | null = null;
 let unlistenResume: UnlistenFn | null = null;
 let rafId = 0;
@@ -574,6 +586,7 @@ function resetSleepTimer() {
   wakeFromSleepIfNeeded();
   sleepTimer = window.setTimeout(() => {
     void hidePetBubble();
+    void hidePetChat();
     speaking.value = false;
     mood.value = "sleep";
     setPetUsbWatchRelaxed(true);
@@ -618,6 +631,7 @@ const idleLoop = usePetIdleLoop({
   isDragging,
   mood,
   isMotionLocked,
+  isPaused: () => chatPausesRandomIdle,
   beginMotion,
   clearTimer,
   getIdleActionTimer: () => idleActionTimer,
@@ -627,10 +641,25 @@ const idleLoop = usePetIdleLoop({
 });
 const { scheduleIdleAction } = idleLoop;
 
+function setChatPausesRandomIdle(open: boolean) {
+  chatPausesRandomIdle = open;
+  if (open) {
+    clearTimer(idleActionTimer);
+    idleActionTimer = null;
+    if (flySignal) flySignal.cancelled = true;
+    return;
+  }
+  if (hostAlive && settings.value.randomIdleEnabled) {
+    scheduleIdleAction();
+  }
+}
+
 async function onContextMenu() {
+  void hidePetChat();
   await showPetMenu({
     openLabel: ctxLabels.value.open,
     pinLabel: ctxLabels.value.pin,
+    chatLabel: settings.value.chatEnabled ? ctxLabels.value.chat : "",
     statsExpandDefault: settings.value.sysStatsDefaultExpanded,
   });
 }
@@ -641,7 +670,15 @@ function onCtxMenuAction(action: PetMenuAction) {
     void requestOpenPetSettings();
     return;
   }
-  void requestPinPetSettings();
+  if (action === "pin") {
+    void requestPinPetSettings();
+    return;
+  }
+  if (action === "chat") {
+    void hidePetBubble();
+    speaking.value = false;
+    void showPetChat();
+  }
 }
 
 function triggerTapEgg() {
@@ -710,8 +747,17 @@ function applySettings(
   const prevVrmRev = settings.value.vrmModelRev;
   settings.value = normalizePetSettings(next);
   petStore.setSettings(settings.value);
+  try {
+    // Keep this webview's localStorage aligned (settings UI is another webview)
+    writeSettingsRaw(JSON.stringify(settings.value));
+  } catch {
+    // ignore
+  }
   if (settings.value.muted || !settings.value.ttsEnabled) {
     cancelPetTts();
+  }
+  if (!settings.value.chatEnabled) {
+    void hidePetChat();
   }
   const nextLook = resolveAppearance(
     settings.value.modelKind,
@@ -724,7 +770,7 @@ function applySettings(
     refreshUsbWatch();
   }
   if (hostAlive && settings.value.randomIdleEnabled !== prevRandomIdle) {
-    if (settings.value.randomIdleEnabled) {
+    if (settings.value.randomIdleEnabled && !chatPausesRandomIdle) {
       scheduleIdleAction();
     } else {
       clearTimer(idleActionTimer);
@@ -815,6 +861,7 @@ async function beginPhysicsDrag() {
     mood.value = "curious";
     speaking.value = false;
     void hidePetBubble();
+    void hidePetChat();
     motionGen += 1;
     motionLockUntil = 0;
     clearTimer(idleHoldTimer);
@@ -1106,6 +1153,7 @@ function suspendHost() {
   }
   clearHostTimers();
   cancelPetTts();
+  void hidePetChat();
   stopPetUsbWatch();
   vrmSrc.value = null;
   lastLine.value = null;
@@ -1197,8 +1245,28 @@ onMounted(async () => {
     (event) => {
       if (!hostAlive) return;
       const action = event.payload?.action;
-      if (action !== "open" && action !== "pin") return;
+      if (action !== "open" && action !== "pin" && action !== "chat") return;
       onCtxMenuAction(action);
+    }
+  );
+  unlistenChatReply = await listen(PET_CHAT_REPLY_EVENT, () => {
+    if (!hostAlive) return;
+    mood.value = settings.value.tone === "snarky" ? "grumpy" : "happy";
+    window.setTimeout(() => {
+      if (
+        mood.value !== "sleep" &&
+        !isDragging.value &&
+        Date.now() >= motionLockUntil
+      ) {
+        mood.value = "idle";
+      }
+    }, 1600);
+  });
+  unlistenChatOpen = await listen<PetChatOpenStatePayload>(
+    PET_CHAT_OPEN_STATE_EVENT,
+    (event) => {
+      if (!hostAlive) return;
+      setChatPausesRandomIdle(Boolean(event.payload?.open));
     }
   );
   refreshUsbWatch();
@@ -1224,6 +1292,8 @@ onUnmounted(() => {
   unlistenMotion?.();
   unlistenIntro?.();
   unlistenMenuAction?.();
+  unlistenChatReply?.();
+  unlistenChatOpen?.();
   window.removeEventListener("storage", onStorage);
   showHitBounds.value = false;
   ignoreCursor = false;
