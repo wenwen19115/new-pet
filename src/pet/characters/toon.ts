@@ -1,7 +1,7 @@
 import type { CharacterDef } from "./types";
 import { formToon } from "../skins/forms";
 import { STANDARD_LOOK_IDS } from "../skins/looks";
-import { PET_TOON_DEMO_MOTIONS } from "../motions";
+import { PET_TOON_DEMO_MOTIONS } from "../content/motions";
 import { lines } from "./lines/toon";
 import { remapToonMotion } from "./motionRemap";
 import PetToonModel from "../models/PetToonModel.vue";

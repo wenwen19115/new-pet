@@ -1,5 +1,5 @@
-import type { CustomVrmMotion } from "../customVrmMotions";
-import { normalizeCustomVrmMotions } from "../customVrmMotions";
+import type { CustomVrmMotion } from "../content/customVrmMotions";
+import { normalizeCustomVrmMotions } from "../content/customVrmMotions";
 
 /** Per-character extension bags — only the owning character uses them */
 export interface VrmCharacterExtension {

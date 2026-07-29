@@ -133,7 +133,7 @@ import {
   PET_CHAT_WINDOW_MAX,
   type PetChatHistoryItem,
 } from "./history";
-import { loadPetSettings } from "../settings";
+import { loadPetSettings } from "../data/settings";
 import { normalizePetChatAi, type PetChatAiConfig } from "./providers";
 import {
   PET_CHAT_ACTIVITY_EVENT,
@@ -144,10 +144,10 @@ import {
   PET_CHAT_SHOW_EVENT,
   type PetChatShowPayload,
 } from "./types";
-import { PET_SETTINGS_EVENT, type PetSettings, type PetTone } from "../types";
-import { isPetPersonality, type PetPersonality } from "../personality";
+import { PET_SETTINGS_EVENT, type PetSettings, type PetTone } from "../data/types";
+import { isPetPersonality, type PetPersonality } from "../content/personality";
 import type { PetModelKind } from "../skins/types";
-import { speakPetTts, cancelPetTts } from "../tts";
+import { speakPetTts, cancelPetTts } from "../bridge/tts";
 
 const visible = ref(false);
 const draft = ref("");

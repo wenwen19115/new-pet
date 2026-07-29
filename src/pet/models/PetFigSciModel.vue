@@ -21,8 +21,8 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { PetIdleMotion } from "../motions";
-import type { PetMood } from "../types";
+import type { PetIdleMotion } from "../content/motions";
+import type { PetMood } from "../data/types";
 import type { PetFigArtId, PetSkinVisual } from "../skins";
 
 import artCool from "../assets/fig/cool.png";

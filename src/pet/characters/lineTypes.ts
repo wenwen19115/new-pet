@@ -1,4 +1,4 @@
-import type { PetPersonality } from "../personality";
+import type { PetPersonality } from "../content/personality";
 
 export type LineLangPack = { zh: string[]; en: string[] };
 

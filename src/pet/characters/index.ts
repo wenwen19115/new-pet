@@ -1,5 +1,5 @@
 import type { PetModelKind } from "../skins/types";
-import type { PetIdleMotion } from "../motions";
+import type { PetIdleMotion } from "../content/motions";
 import type { CharacterDef, PetCapability } from "./types";
 import { characterChip } from "./chip";
 import { characterFig } from "./fig-sci";

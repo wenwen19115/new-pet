@@ -276,7 +276,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { PetMood } from "../types";
+import type { PetMood } from "../data/types";
 import type { PetSkinVisual } from "../skins/types";
 
 const props = defineProps<{

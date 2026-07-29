@@ -1,4 +1,4 @@
-import type { PetModelKind } from "./types";
+import type { PetModelKind } from "@/pet/skins/types";
 
 export interface PetFormDef {
   model: PetModelKind;

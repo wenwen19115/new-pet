@@ -25,8 +25,8 @@ import PetSettings from "./views/PetSettings.vue";
 import {
   applySettingsWindowPin,
   initPetHostBridge,
-} from "./pet/hostBridge";
-import { loadPetSettings } from "./pet/settings";
+} from "./pet/bridge/hostBridge";
+import { loadPetSettings } from "./pet/data/settings";
 import {
   isAppUiTheme,
   type AppUiTheme,

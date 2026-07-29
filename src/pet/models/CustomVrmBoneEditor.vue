@@ -81,8 +81,8 @@ import {
   radToDeg,
   setBoneAxisDeg,
   type CustomVrmMotion,
-} from "@/pet/customVrmMotions";
-import type { VrmBoneName } from "@/pet/vrmPoses";
+} from "@/pet/content/customVrmMotions";
+import type { VrmBoneName } from "@/pet/data/vrmPoses";
 
 const props = defineProps<{
   motion: CustomVrmMotion;

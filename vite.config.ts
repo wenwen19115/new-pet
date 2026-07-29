@@ -21,9 +21,9 @@ export default defineConfig(async () => ({
     rollupOptions: {
       input: {
         main: resolve(__dirname, "index.html"),
-        pet: resolve(__dirname, "src/pet/pet.html"),
-        "pet-bubble": resolve(__dirname, "src/pet/pet-bubble.html"),
-        "pet-menu": resolve(__dirname, "src/pet/pet-menu.html"),
+        pet: resolve(__dirname, "src/pet/windows/pet/pet.html"),
+        "pet-bubble": resolve(__dirname, "src/pet/windows/bubble/bubble.html"),
+        "pet-menu": resolve(__dirname, "src/pet/windows/menu/menu.html"),
         "pet-chat": resolve(__dirname, "src/pet/chat/chat.html"),
       },
       output: {

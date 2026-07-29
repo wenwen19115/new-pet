@@ -1,12 +1,12 @@
 import { type Ref } from "vue";
-import { showPetBubble, hidePetBubble } from "../bubbleWindow";
-import { buildSkinIntro } from "../intro";
-import { pickPetLine, pickTapEggLine, pickUsbLine } from "../lines";
-import { applyCatchphrase } from "../catchphrases";
-import type { PetMood, PetSettings, PetUsbAnnouncePayload } from "../types";
+import { showPetBubble, hidePetBubble } from "@/pet/windows/bubble";
+import { buildSkinIntro } from "../content/intro";
+import { pickPetLine, pickTapEggLine, pickUsbLine } from "../content/lines";
+import { applyCatchphrase } from "../content/catchphrases";
+import type { PetMood, PetSettings, PetUsbAnnouncePayload } from "../data/types";
 import type { PetModelKind } from "../skins/types";
 import { linePickOptsFromSettings } from "./usePetLines";
-import { cancelPetTts, speakPetTts } from "../tts";
+import { cancelPetTts, speakPetTts } from "../bridge/tts";
 
 type SpeakOptions = { keepMotion?: boolean; force?: boolean };
 

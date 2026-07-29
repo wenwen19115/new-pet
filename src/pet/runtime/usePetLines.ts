@@ -1,6 +1,6 @@
-import type { PetSettings } from "../types";
+import type { PetSettings } from "../data/types";
 import type { PetModelKind } from "../skins/types";
-import type { PetLinePickOptions } from "../lines";
+import type { PetLinePickOptions } from "../content/lines";
 
 /** Active character profile → line pick options */
 export function linePickOptsFromSettings(

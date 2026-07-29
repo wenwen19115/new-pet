@@ -1,7 +1,7 @@
 import type { CharacterDef } from "./types";
 import { formFig } from "../skins/forms";
 import { FIG_LOOK_IDS } from "../skins/looks";
-import { PET_FIG_DEMO_MOTIONS } from "../motions";
+import { PET_FIG_DEMO_MOTIONS } from "../content/motions";
 import { lines } from "./lines/fig-sci";
 import { remapFigMotion } from "./motionRemap";
 import PetFigSciModel from "../models/PetFigSciModel.vue";

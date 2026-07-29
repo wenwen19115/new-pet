@@ -1,6 +1,6 @@
 import type { CharacterDef } from "./types";
 import { formVrm } from "../skins/forms";
-import { PET_VRM_DEMO_MOTIONS } from "../motions";
+import { PET_VRM_DEMO_MOTIONS } from "../content/motions";
 import { emptyVrmExtension } from "../domain/extensions";
 import { lines } from "./lines/vrm";
 import { remapVrmMotion } from "./motionRemap";

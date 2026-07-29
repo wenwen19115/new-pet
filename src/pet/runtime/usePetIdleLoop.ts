@@ -1,5 +1,5 @@
 import type { Ref } from "vue";
-import type { PetSettings } from "../types";
+import type { PetSettings } from "../data/types";
 import type { PetModelKind } from "../skins/types";
 import { buildIdleMotionPool, resolveMotionPlay } from "../domain/motionPlayer";
 

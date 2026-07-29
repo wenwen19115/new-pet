@@ -10,18 +10,18 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { VRMLoaderPlugin, VRMUtils, type VRM } from "@pixiv/three-vrm";
-import type { PetIdleMotion } from "../motions";
-import type { PetMood } from "../types";
+import type { PetIdleMotion } from "../content/motions";
+import type { PetMood } from "../data/types";
 import {
   resolveVrmPose,
   type BoneEuler,
   type VrmBoneName,
-} from "../vrmPoses";
+} from "../data/vrmPoses";
 import {
   findCustomVrmMotion,
   isCustomVrmMotionId,
   resolveCustomVrmPose,
-} from "../customVrmMotions";
+} from "../content/customVrmMotions";
 
 function defaultVrmLoadFailText(): string {
   return localStorage.getItem("language") === "en"
@@ -35,7 +35,7 @@ const props = withDefaults(
     mood: PetMood;
     gaze: { x: number; y: number };
     motion?: PetIdleMotion | string;
-    customMotions?: import("../customVrmMotions").CustomVrmMotion[];
+    customMotions?: import("../content/customVrmMotions").CustomVrmMotion[];
     blinking?: boolean;
     lifting?: boolean;
     faceYaw?: number;

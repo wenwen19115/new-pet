@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="lines-editor span-2">
     <header class="lines-head">
       <div>
@@ -66,7 +66,7 @@ import {
   PET_LINE_SCENES,
   type PetCustomLine,
   type PetLineScene,
-} from "@/pet/customLines";
+} from "@/pet/content/customLines";
 
 const props = defineProps<{
   modelValue: PetCustomLine[];

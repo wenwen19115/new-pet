@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from "vue";
-import type { PetTrailStyle, TrailParticleShape } from "../trailStyles";
+import type { PetTrailStyle, TrailParticleShape } from "../content/trailStyles";
 
 const props = withDefaults(
   defineProps<{
@@ -233,7 +233,7 @@ function drawShape(
   ctx.fill();
 }
 
-/** Soft meteor streamer ? no hard triangle blade */
+/** Soft meteor streamer — no hard triangle blade */
 function drawCometHead(
   ctx: CanvasRenderingContext2D,
   cx: number,
@@ -286,7 +286,7 @@ function drawCometHead(
   ctx.fill();
   ctx.shadowBlur = 0;
 
-  // Soft core glow (dimmer ? avoid blinding white center)
+  // Soft core glow (dimmer — avoid blinding white center)
   const core = ctx.createRadialGradient(2, 0, 0, 2, 0, 6 + spd * 5);
   core.addColorStop(0, hexAlpha(st.head, 0.22 + spd * 0.1));
   core.addColorStop(0.35, hexAlpha(st.core, 0.14));

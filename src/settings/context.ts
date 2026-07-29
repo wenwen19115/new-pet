@@ -1,9 +1,9 @@
 import type { InjectionKey, Ref, ComputedRef } from "vue";
 import type { PetModelKind } from "@/pet/skins";
-import type { PetPersonality } from "@/pet/personality";
-import type { PetTone } from "@/pet/types";
-import type { CustomVrmMotion } from "@/pet/customVrmMotions";
-import type { PetCustomLine } from "@/pet/customLines";
+import type { PetPersonality } from "@/pet/content/personality";
+import type { PetTone } from "@/pet/data/types";
+import type { CustomVrmMotion } from "@/pet/content/customVrmMotions";
+import type { PetCustomLine } from "@/pet/content/customLines";
 import type { AppUiTheme } from "@/theme/uiTheme";
 
 export type PetSettingsPageCtx = {

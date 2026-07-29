@@ -1,4 +1,4 @@
-import type { PetPersonality } from "../../personality";
+import type { PetPersonality } from "../../content/personality";
 import type {
   CharacterLineBundle,
   LineLangPack,

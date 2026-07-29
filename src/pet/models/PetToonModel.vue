@@ -238,11 +238,11 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { PetIdleMotion } from "../motions";
-import type { PetMood } from "../types";
+import type { PetIdleMotion } from "../content/motions";
+import type { PetMood } from "../data/types";
 import type { PetSkinVisual } from "../skins";
 import type { PetToonDecorId } from "../skins/looks";
-import { resolveToonAnimState } from "../toonAnim";
+import { resolveToonAnimState } from "../content/toonAnim";
 
 const props = withDefaults(
   defineProps<{

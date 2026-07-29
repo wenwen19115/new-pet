@@ -78,14 +78,14 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import type { PetIdleMotion } from "@/pet/motions";
-import type { CustomVrmMotion } from "@/pet/customVrmMotions";
+import type { PetIdleMotion } from "@/pet/content/motions";
+import type { CustomVrmMotion } from "@/pet/content/customVrmMotions";
 import type { PetFigArtId, PetModelKind, PetSkinVisual } from "@/pet/skins";
 import {
   clampPreviewBoost,
   previewBoostScale,
-} from "@/pet/sizes";
-import type { PetMood } from "@/pet/types";
+} from "@/pet/bridge/sizes";
+import type { PetMood } from "@/pet/data/types";
 import type { PetToonDecorId } from "@/pet/skins/looks";
 import { characterHas, getCharacter } from "@/pet/characters";
 

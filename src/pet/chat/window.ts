@@ -2,11 +2,11 @@ import { LogicalPosition, LogicalSize } from "@tauri-apps/api/dpi";
 import { emit, emitTo, listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { currentMonitor, getCurrentWindow } from "@tauri-apps/api/window";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { petBodyBox } from "../sizes";
-import { loadPetSettings } from "../settings";
-import { petStore } from "../store";
+import { petBodyBox } from "../bridge/sizes";
+import { loadPetSettings } from "../data/settings";
+import { petStore } from "../data/store";
 import { resolveAppearance } from "../skins";
-import { getPetLocale } from "../locale";
+import { getPetLocale } from "../bridge/locale";
 import { getCharacter } from "../characters";
 import {
   PET_CHAT_ACTIVITY_EVENT,
@@ -22,6 +22,8 @@ import {
   type PetChatShowPayload,
 } from "./types";
 import { normalizePetChatAi } from "./providers";
+import { waitWebviewReady } from "@/pet/windows/shared/waitWebviewReady";
+
 function chatUrl(): string {
   if (import.meta.env.DEV) {
     return `${window.location.origin}/src/pet/chat/chat.html`;
@@ -32,30 +34,6 @@ function chatUrl(): string {
 function clamp(n: number, min: number, max: number): number {
   if (max < min) return min;
   return Math.min(max, Math.max(min, n));
-}
-
-async function waitWebviewReady(
-  win: WebviewWindow,
-  timeoutMs = 2500
-): Promise<WebviewWindow | null> {
-  return await new Promise((resolve) => {
-    let settled = false;
-    const finish = (value: WebviewWindow | null) => {
-      if (settled) return;
-      settled = true;
-      window.clearTimeout(timer);
-      resolve(value);
-    };
-    const timer = window.setTimeout(() => {
-      void win.destroy().catch(() => undefined);
-      finish(null);
-    }, timeoutMs);
-    void win.once("tauri://created", () => finish(win));
-    void win.once("tauri://error", () => {
-      void win.destroy().catch(() => undefined);
-      finish(null);
-    });
-  });
 }
 
 async function ensureChatWindow(): Promise<WebviewWindow | null> {

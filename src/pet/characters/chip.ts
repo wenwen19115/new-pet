@@ -1,7 +1,7 @@
 import type { CharacterDef } from "./types";
 import { formChip } from "../skins/forms";
 import { STANDARD_LOOK_IDS } from "../skins/looks";
-import { PET_CHIP_DEMO_MOTIONS } from "../motions";
+import { PET_CHIP_DEMO_MOTIONS } from "../content/motions";
 import { lines } from "./lines/chip";
 import { remapChipMotion } from "./motionRemap";
 import PetChipModel from "../models/PetChipModel.vue";

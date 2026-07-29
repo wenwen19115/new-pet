@@ -1,5 +1,5 @@
-import type { PetPersonality } from "../personality";
-import type { PetTone } from "../types";
+import type { PetPersonality } from "../content/personality";
+import type { PetTone } from "../data/types";
 import {
   DEFAULT_PET_CHAT_AI,
   normalizePetChatAi,

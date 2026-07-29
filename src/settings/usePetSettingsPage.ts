@@ -1,9 +1,8 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, provide, ref, watch } from "vue";
 import { message } from "ant-design-vue";
-import { open } from "@tauri-apps/plugin-dialog";
 import { useI18n } from "vue-i18n";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
-import { isPetIdleMotion } from "@/pet/motions";
+import { isPetIdleMotion } from "@/pet/content/motions";
 import {
   applySettingsWindowPin,
   requestPetIntro,
@@ -15,20 +14,10 @@ import {
   resetActiveModelProfile,
   switchPetModel,
   patchActiveProfile,
-} from "@/pet/settings";
+} from "@/pet/data/settings";
+import { PET_CHAT_PROVIDERS } from "@/pet/chat/providers";
+import { syncPetWindow } from "@/pet/windows/pet";
 import {
-  DEFAULT_PET_CHAT_AI,
-  PET_CHAT_PROVIDERS,
-  addCustomChatModel,
-  builtinChatModelIds,
-  isPetChatProviderId,
-  normalizePetChatAi,
-  removeCustomChatModel,
-  type PetChatProviderId,
-} from "@/pet/chat/providers";
-import { syncPetWindow } from "@/pet/petWindow";
-import {
-  coerceLookIdForModel,
   isPetModelKind,
   listPetLooksForModel,
   resolveAppearance,
@@ -38,23 +27,16 @@ import {
 import {
   isPetPersonality,
   type PetPersonality,
-} from "@/pet/personality";
-import type { PetSettings, PetTone } from "@/pet/types";
-import { PET_SETTINGS_EVENT } from "@/pet/types";
+} from "@/pet/content/personality";
+import type { PetSettings, PetTone } from "@/pet/data/types";
+import { PET_SETTINGS_EVENT } from "@/pet/data/types";
 import {
   createEmptyCustomVrmMotion,
   isCustomVrmMotionId,
   type CustomVrmMotion,
-} from "@/pet/customVrmMotions";
-import type { PetCustomLine } from "@/pet/customLines";
-import { listPetTtsVoices } from "@/pet/tts";
+} from "@/pet/content/customVrmMotions";
+import type { PetCustomLine } from "@/pet/content/customLines";
 import { isAppUiTheme, type AppUiTheme } from "@/theme/uiTheme";
-import {
-  clearPetVrmFile,
-  importPetVrmFromPath,
-  PetVrmImportException,
-  resolvePetVrmSrc,
-} from "@/pet/vrmStorage";
 import { listCharacters, characterCapabilities, getCharacter, characterHas } from "@/pet/characters";
 import { demoMotionOptions } from "@/pet/domain/motionPlayer";
 import {
@@ -66,11 +48,18 @@ import {
   PET_SETTINGS_PAGE_KEY,
   type PetSettingsPageCtx,
 } from "./context";
-import { isSettingsStorageKey } from "@/pet/storageKeys";
+import { isSettingsStorageKey } from "@/pet/data/storageKeys";
 import {
   CATCHPHRASE_DEFAULT_CHANCE,
   clampCatchphraseChance,
-} from "@/pet/catchphrases";
+} from "@/pet/content/catchphrases";
+import {
+  useChatAiDraft,
+  useFormPicker,
+  useTtsSettings,
+  useVrmSettings,
+  usePetSettingsHydrate,
+} from "./composables";
 
 type UsePetSettingsPageOptions = {
   onUiThemeChange?: (theme: AppUiTheme) => void;
@@ -80,957 +69,693 @@ export function usePetSettingsPage(opts: UsePetSettingsPageOptions = {}) {
   registerBuiltinSettingsModules();
   const { t } = useI18n();
 
-const enabled = ref(false);
-const muted = ref(false);
-const ttsEnabled = ref(false);
-const ttsVoiceUri = ref("");
-const chatEnabled = ref(true);
-const chatAiProvider = ref<PetChatProviderId>(DEFAULT_PET_CHAT_AI.provider);
-const chatAiApiKey = ref("");
-const chatAiBaseUrl = ref("");
-const chatAiModel = ref("");
-const chatAiCustomModels = ref<string[]>([]);
-const opacityPercent = ref(100);
-const zoomPercent = ref(0);
-const tone = ref<PetTone>("cute");
-const demoMotion = ref<string>("fly-orbit");
-const modelKind = ref<PetModelKind>("chip");
-const lookId = ref("cyan");
-const nickname = ref("");
-const personality = ref<PetPersonality>("sunny");
-const usbWatchEnabled = ref(true);
-const randomIdleEnabled = ref(true);
-const hitBoundsEnabled = ref(true);
-const catchphrases = ref<string[]>([]);
-const catchphraseChance = ref(CATCHPHRASE_DEFAULT_CHANCE);
-const uiTheme = ref<AppUiTheme>("night");
-const settingsAlwaysOnTop = ref(false);
-const sysStatsDefaultExpanded = ref(false);
-const customVrmMotions = ref<CustomVrmMotion[]>([]);
-const customLines = ref<PetCustomLine[]>([]);
-const customLinesOnly = ref(false);
-const disabledMotions = ref<string[]>([]);
-const disabledBuiltInLines = ref<string[]>([]);
-const editingCustomId = ref<string | null>(null);
-const previewAutoOrbit = ref(false);
-const canPreviewOrbit = computed(() =>
-  characterCapabilities(modelKind.value).has("preview-orbit")
-);
-const effectivePreviewAutoOrbit = computed(
-  () => canPreviewOrbit.value && previewAutoOrbit.value
-);
+  const enabled = ref(false);
+  const muted = ref(false);
+  const chatEnabled = ref(true);
+  const opacityPercent = ref(100);
+  const zoomPercent = ref(0);
+  const tone = ref<PetTone>("cute");
+  const demoMotion = ref<string>("fly-orbit");
+  const modelKind = ref<PetModelKind>("chip");
+  const lookId = ref("cyan");
+  const nickname = ref("");
+  const personality = ref<PetPersonality>("sunny");
+  const usbWatchEnabled = ref(true);
+  const randomIdleEnabled = ref(true);
+  const hitBoundsEnabled = ref(true);
+  const catchphrases = ref<string[]>([]);
+  const catchphraseChance = ref(CATCHPHRASE_DEFAULT_CHANCE);
+  const uiTheme = ref<AppUiTheme>("night");
+  const settingsAlwaysOnTop = ref(false);
+  const sysStatsDefaultExpanded = ref(false);
+  const customVrmMotions = ref<CustomVrmMotion[]>([]);
+  const customLines = ref<PetCustomLine[]>([]);
+  const customLinesOnly = ref(false);
+  const disabledMotions = ref<string[]>([]);
+  const disabledBuiltInLines = ref<string[]>([]);
+  const editingCustomId = ref<string | null>(null);
+  const previewAutoOrbit = ref(false);
+  const canPreviewOrbit = computed(() =>
+    characterCapabilities(modelKind.value).has("preview-orbit")
+  );
+  const effectivePreviewAutoOrbit = computed(
+    () => canPreviewOrbit.value && previewAutoOrbit.value
+  );
 
-watch(canPreviewOrbit, (ok) => {
-  if (!ok) previewAutoOrbit.value = false;
-});
+  watch(canPreviewOrbit, (ok) => {
+    if (!ok) previewAutoOrbit.value = false;
+  });
 
-type SettingsTabId = string;
-const settingsTab = ref<SettingsTabId>("buddy");
-const vrmModelName = ref("");
-const vrmModelRev = ref(0);
-const vrmSrc = ref<string | null>(null);
-const vrmBusy = ref(false);
-const settingsBag = ref<PetSettings>(loadPetSettings());
+  type SettingsTabId = string;
+  const settingsTab = ref<SettingsTabId>("buddy");
+  const settingsBag = ref<PetSettings>(loadPetSettings());
 
-const uiThemeOptions = computed(() => [
-  { label: t("pet.uiThemeNight"), value: "night" },
-  { label: t("pet.uiThemeDay"), value: "day" },
-]);
+  let persistAndSyncImpl = async () => {};
+  let persistOnlyImpl = async () => {};
+  const getCurrentSettings = () => currentSettings();
 
-const moduleCtx = computed(() => ({
-  enabled: enabled.value,
-  modelKind: modelKind.value,
-  capabilities: characterCapabilities(modelKind.value),
-  vrmUploaded: Boolean(vrmModelName.value.trim()),
-}));
+  const {
+    ttsEnabled,
+    ttsVoiceUri,
+    ttsVoiceOptions,
+    refreshTtsVoiceOptions,
+    applyTtsFromSettings,
+    onTtsEnabled,
+    onTtsVoice,
+  } = useTtsSettings({ persistOnly: () => persistOnlyImpl() });
 
-const settingsModules = computed(() =>
-  listSettingsModules(moduleCtx.value)
-);
+  const {
+    chatAiProvider,
+    chatAiApiKey,
+    chatAiBaseUrl,
+    chatAiModel,
+    chatAiCustomModels,
+    chatAiDirty,
+    canAddChatAiModel,
+    applyChatAiDraft,
+    savedChatAi,
+    onChatAiProvider,
+    onChatAiModel,
+    onChatAiAddModel,
+    onChatAiRemoveModel,
+    onChatAiSave,
+    onChatAiReset,
+  } = useChatAiDraft({ settingsBag, getCurrentSettings });
 
-const settingsTabs = computed(() =>
-  settingsModules.value.map((m) => ({
-    id: m.id,
-    label: t(m.labelKey),
-    icon: m.icon,
-  }))
-);
+  const {
+    formPickerRef,
+    formThumbStyle,
+    syncFormThumb,
+    bindFormPickerRo,
+  } = useFormPicker({ modelKind, enabled, settingsTab });
 
-const activeModule = computed<SettingsModule | undefined>(() =>
-  settingsModules.value.find((m) => m.id === settingsTab.value) ??
-  settingsModules.value[0]
-);
+  const {
+    vrmModelName,
+    vrmModelRev,
+    vrmSrc,
+    vrmBusy,
+    isVrmPending,
+    refreshVrmPreview,
+    applyVrmFromSettings,
+    onPickVrm,
+    onClearVrm,
+  } = useVrmSettings({
+    modelKind,
+    settingsBag,
+    getCurrentSettings,
+    persistAndSync: () => persistAndSyncImpl(),
+  });
 
-const activeTabTitle = computed(() => {
-  const mod = activeModule.value;
-  if (!mod) return "";
-  const base = t(mod.labelKey);
-  if (mod.id !== "chat") return base;
-  // Show last saved provider — not the unsaved draft selection
-  const saved = savedChatAi();
-  const provider =
-    PET_CHAT_PROVIDERS[saved.provider] ?? PET_CHAT_PROVIDERS.local;
-  return `${base} · ${t(provider.labelKey)}`;
-});
+  const uiThemeOptions = computed(() => [
+    { label: t("pet.uiThemeNight"), value: "night" },
+    { label: t("pet.uiThemeDay"), value: "day" },
+  ]);
 
-const previewMotionOverride = computed(() =>
-  editingCustomId.value &&
-  characterHas(modelKind.value, "vrm-bone-editor")
-    ? editingCustomId.value
-    : null
-);
+  const moduleCtx = computed(() => ({
+    enabled: enabled.value,
+    modelKind: modelKind.value,
+    capabilities: characterCapabilities(modelKind.value),
+    vrmUploaded: Boolean(vrmModelName.value.trim()),
+  }));
 
-const previewAutoIdleClips = computed(
-  () =>
-    settingsTab.value !== "motion" &&
-    !editingCustomId.value &&
-    !previewMotionOverride.value
-);
+  const settingsModules = computed(() =>
+    listSettingsModules(moduleCtx.value)
+  );
 
-function onSettingsTab(id: SettingsTabId) {
-  settingsTab.value = id;
-  if (id !== "motion") editingCustomId.value = null;
-}
+  const settingsTabs = computed(() =>
+    settingsModules.value.map((m) => ({
+      id: m.id,
+      label: t(m.labelKey),
+      icon: m.icon,
+    }))
+  );
 
-const looks = computed(() => listPetLooksForModel(modelKind.value));
+  const activeModule = computed<SettingsModule | undefined>(() =>
+    settingsModules.value.find((m) => m.id === settingsTab.value) ??
+    settingsModules.value[0]
+  );
 
-const isVrmPending = computed(
-  () =>
-    moduleCtx.value.capabilities.has("vrm-upload") &&
-    !vrmModelName.value.trim()
-);
+  const activeTabTitle = computed(() => {
+    const mod = activeModule.value;
+    if (!mod) return "";
+    const base = t(mod.labelKey);
+    if (mod.id !== "chat") return base;
+    const saved = savedChatAi();
+    const provider =
+      PET_CHAT_PROVIDERS[saved.provider] ?? PET_CHAT_PROVIDERS.local;
+    return `${base} · ${t(provider.labelKey)}`;
+  });
 
-function lookLabel(theme: { nameKey: string; toonNameKey?: string }) {
-  const policy = getCharacter(modelKind.value).appearance;
-  if (policy.nameFrom === "look-toon" && theme.toonNameKey) {
-    return t(theme.toonNameKey);
-  }
-  return t(theme.nameKey);
-}
+  const previewMotionOverride = computed(() =>
+    editingCustomId.value &&
+    characterHas(modelKind.value, "vrm-bone-editor")
+      ? editingCustomId.value
+      : null
+  );
 
-const toneOptions = computed(() => [
-  { label: t("pet.toneCute"), value: "cute" },
-  { label: t("pet.toneSnarky"), value: "snarky" },
-]);
+  const previewAutoIdleClips = computed(
+    () =>
+      settingsTab.value !== "motion" &&
+      !editingCustomId.value &&
+      !previewMotionOverride.value
+  );
 
-const ttsVoiceOptions = ref<Array<{ label: string; value: string }>>([
-  { label: "", value: "" },
-]);
-
-async function refreshTtsVoiceOptions() {
-  const voices = await listPetTtsVoices();
-  ttsVoiceOptions.value = [
-    { label: t("pet.ttsVoiceAuto"), value: "" },
-    ...voices.map((v) => ({
-      label: v.name,
-      value: v.uri,
-    })),
-  ];
-}
-
-const personalityOptions = computed(() => [
-  { label: t("pet.personalitySunny"), value: "sunny" },
-  { label: t("pet.personalityShy"), value: "shy" },
-  { label: t("pet.personalityCool"), value: "cool" },
-  { label: t("pet.personalityFiery"), value: "fiery" },
-]);
-
-const formOptions = computed(() =>
-  listCharacters().map((c) => ({
-    label: t(c.form.nameKey),
-    value: c.id,
-  }))
-);
-
-const formPickerRef = ref<HTMLElement | null>(null);
-const formThumbStyle = ref<Record<string, string>>({
-  opacity: "0",
-  transform: "translateX(0)",
-  width: "0px",
-});
-
-/** Transition lives in CSS; only disable briefly for instant initial layout. */
-function setThumbTransitionEnabled(on: boolean) {
-  const thumb = formPickerRef.value?.querySelector(
-    ".form-picker-thumb"
-  ) as HTMLElement | null;
-  if (!thumb) return;
-  thumb.style.transition = on ? "" : "none";
-}
-
-function syncFormThumb(animate: boolean) {
-  const root = formPickerRef.value;
-  if (!root) return;
-  const active = root.querySelector(
-    ".form-picker-item.is-active"
-  ) as HTMLElement | null;
-  if (!active) {
-    setThumbTransitionEnabled(false);
-    formThumbStyle.value = {
-      opacity: "0",
-      transform: "translateX(0)",
-      width: "0px",
-    };
-    return;
+  function onSettingsTab(id: SettingsTabId) {
+    settingsTab.value = id;
+    if (id !== "motion") editingCustomId.value = null;
   }
 
-  if (!animate) {
-    setThumbTransitionEnabled(false);
+  const looks = computed(() => listPetLooksForModel(modelKind.value));
+
+  function lookLabel(theme: { nameKey: string; toonNameKey?: string }) {
+    const policy = getCharacter(modelKind.value).appearance;
+    if (policy.nameFrom === "look-toon" && theme.toonNameKey) {
+      return t(theme.toonNameKey);
+    }
+    return t(theme.nameKey);
   }
 
-  formThumbStyle.value = {
-    opacity: "1",
-    width: `${active.offsetWidth}px`,
-    transform: `translateX(${active.offsetLeft}px)`,
-  };
+  const toneOptions = computed(() => [
+    { label: t("pet.toneCute"), value: "cute" },
+    { label: t("pet.toneSnarky"), value: "snarky" },
+  ]);
 
-  if (!animate) {
-    // Reflow, then restore CSS transition for subsequent slides.
-    void root.offsetWidth;
-    setThumbTransitionEnabled(true);
-  }
-}
+  const personalityOptions = computed(() => [
+    { label: t("pet.personalitySunny"), value: "sunny" },
+    { label: t("pet.personalityShy"), value: "shy" },
+    { label: t("pet.personalityCool"), value: "cool" },
+    { label: t("pet.personalityFiery"), value: "fiery" },
+  ]);
 
-watch(
-  modelKind,
-  async () => {
-    await nextTick();
-    syncFormThumb(true);
-  }
-);
+  const formOptions = computed(() =>
+    listCharacters().map((c) => ({
+      label: t(c.form.nameKey),
+      value: c.id,
+    }))
+  );
 
-let formPickerRo: ResizeObserver | null = null;
+  const motionOptions = computed(() =>
+    demoMotionOptions(modelKind.value, customVrmMotions.value).map((o) => ({
+      value: o.value,
+      label: o.label ?? (o.labelKey ? t(o.labelKey) : o.value),
+    }))
+  );
 
-function bindFormPickerRo() {
-  formPickerRo?.disconnect();
-  formPickerRo = null;
-  const root = formPickerRef.value;
-  if (!root || typeof ResizeObserver === "undefined") return;
-  formPickerRo = new ResizeObserver(() => syncFormThumb(true));
-  formPickerRo.observe(root);
-}
+  const motionPoolIds = computed(
+    () => [...getCharacter(modelKind.value).demoMotions] as string[]
+  );
 
-watch(formPickerRef, async (el) => {
-  if (!el) {
-    formPickerRo?.disconnect();
-    formPickerRo = null;
-    return;
-  }
-  await nextTick();
-  syncFormThumb(false);
-  bindFormPickerRo();
-});
+  const activeLook = computed(() =>
+    resolveAppearance(modelKind.value, lookId.value)
+  );
 
-watch(enabled, async (on) => {
-  if (!on) {
-    formPickerRo?.disconnect();
-    formPickerRo = null;
-    return;
-  }
-  if (settingsTab.value !== "buddy") return;
-  await nextTick();
-  syncFormThumb(false);
-  bindFormPickerRo();
-});
+  const previewHint = computed(() => {
+    const character = getCharacter(activeLook.value.model);
+    if (
+      characterHas(activeLook.value.model, "vrm-upload") &&
+      (!vrmModelName.value.trim() || !vrmSrc.value)
+    ) {
+      return t("pet.previewVrmUploadHint");
+    }
+    return t(character.previewHintKey);
+  });
 
-watch(settingsTab, async (tab) => {
-  if (tab !== "buddy" || !enabled.value) return;
-  await nextTick();
-  syncFormThumb(false);
-  bindFormPickerRo();
-});
+  const skinDefaultNickname = computed(() => activeLook.value.defaultNickname);
+  const displayName = computed(() =>
+    resolveNickname(nickname.value, activeLook.value)
+  );
+  const v = computed(() => activeLook.value.visual);
 
-const motionOptions = computed(() =>
-  demoMotionOptions(modelKind.value, customVrmMotions.value).map((o) => ({
-    value: o.value,
-    label: o.label ?? (o.labelKey ? t(o.labelKey) : o.value),
-  }))
-);
-
-const motionPoolIds = computed(
-  () => [...getCharacter(modelKind.value).demoMotions] as string[]
-);
-
-const activeLook = computed(() =>
-  resolveAppearance(modelKind.value, lookId.value)
-);
-
-const previewHint = computed(() => {
-  const character = getCharacter(activeLook.value.model);
-  if (
-    characterHas(activeLook.value.model, "vrm-upload") &&
-    !vrmModelName.value.trim()
-  ) {
-    return t("pet.previewVrmUploadHint");
-  }
-  return t(character.previewHintKey);
-});
-
-const skinDefaultNickname = computed(() => activeLook.value.defaultNickname);
-const displayName = computed(() =>
-  resolveNickname(nickname.value, activeLook.value)
-);
-const v = computed(() => activeLook.value.visual);
-
-const heroPanelStyle = computed(() => {
-  const vis = v.value;
-  const day = uiTheme.value === "day";
-  const base = day
-    ? `linear-gradient(165deg, rgba(255, 252, 248, 0.92), rgba(244, 241, 234, 0.96))`
-    : `linear-gradient(165deg, rgba(16, 18, 28, 0.94), rgba(6, 8, 14, 0.98))`;
-  return {
-    "--hero-accent": vis.accent,
-    "--hero-accent-soft": vis.accentSoft,
-    background: `
+  const heroPanelStyle = computed(() => {
+    const vis = v.value;
+    const day = uiTheme.value === "day";
+    const base = day
+      ? `linear-gradient(165deg, rgba(255, 252, 248, 0.92), rgba(244, 241, 234, 0.96))`
+      : `linear-gradient(165deg, rgba(16, 18, 28, 0.94), rgba(6, 8, 14, 0.98))`;
+    return {
+      "--hero-accent": vis.accent,
+      "--hero-accent-soft": vis.accentSoft,
+      background: `
       radial-gradient(ellipse at 30% 18%, color-mix(in srgb, ${vis.accent} 22%, transparent), transparent 52%),
       radial-gradient(ellipse at 82% 90%, color-mix(in srgb, ${vis.accentSoft} 14%, transparent), transparent 48%),
       ${base}
     `,
-  } as Record<string, string>;
-});
-
-const personalityLabel = computed(() => {
-  if (personality.value === "shy") return t("pet.personalityShy");
-  if (personality.value === "cool") return t("pet.personalityCool");
-  if (personality.value === "fiery") return t("pet.personalityFiery");
-  return t("pet.personalitySunny");
-});
-
-function applyLocalFromSettings(s: PetSettings) {
-  settingsBag.value = s;
-  enabled.value = s.enabled;
-  muted.value = s.muted;
-  ttsEnabled.value = Boolean(s.ttsEnabled);
-  ttsVoiceUri.value = typeof s.ttsVoiceUri === "string" ? s.ttsVoiceUri : "";
-  chatEnabled.value = Boolean(s.chatEnabled);
-  applyChatAiDraft(s.chatAi);
-  opacityPercent.value = Math.round(s.opacity * 100);
-  void refreshTtsVoiceOptions();
-  zoomPercent.value = s.zoomPercent;
-  tone.value = s.tone;
-  demoMotion.value =
-    isPetIdleMotion(s.demoMotion) || isCustomVrmMotionId(s.demoMotion)
-      ? s.demoMotion
-      : "fly-orbit";
-  modelKind.value = s.modelKind;
-  lookId.value = coerceLookIdForModel(s.lookId, s.modelKind);
-  nickname.value = s.nickname;
-  personality.value = s.personality;
-  usbWatchEnabled.value = s.usbWatchEnabled;
-  randomIdleEnabled.value = s.randomIdleEnabled;
-  hitBoundsEnabled.value = s.hitBoundsEnabled;
-  catchphrases.value = [...(s.catchphrases ?? [])];
-  catchphraseChance.value = clampCatchphraseChance(s.catchphraseChance);
-  uiTheme.value = isAppUiTheme(s.uiTheme) ? s.uiTheme : "night";
-  settingsAlwaysOnTop.value = Boolean(s.settingsAlwaysOnTop);
-  sysStatsDefaultExpanded.value = Boolean(s.sysStatsDefaultExpanded);
-  customVrmMotions.value = s.customVrmMotions.map((m) => ({ ...m }));
-  const profile = s.profiles[s.modelKind];
-  customLines.value = (profile?.customLines ?? []).map((l) => ({ ...l }));
-  customLinesOnly.value = Boolean(profile?.customLinesOnly);
-  disabledMotions.value = [...(profile?.disabledMotions ?? [])];
-  disabledBuiltInLines.value = [...(profile?.disabledBuiltInLines ?? [])];
-  vrmModelName.value = s.vrmModelName;
-  vrmModelRev.value = s.vrmModelRev;
-  opts.onUiThemeChange?.(uiTheme.value);
-}
-
-function applyChatAiDraft(raw: unknown) {
-  const cfg = normalizePetChatAi(
-    raw && typeof raw === "object"
-      ? (raw as Partial<typeof DEFAULT_PET_CHAT_AI>)
-      : DEFAULT_PET_CHAT_AI
-  );
-  chatAiProvider.value = cfg.provider;
-  chatAiApiKey.value = cfg.apiKey;
-  chatAiBaseUrl.value = cfg.baseUrl;
-  chatAiModel.value = cfg.model;
-  chatAiCustomModels.value = [...cfg.customModels];
-}
-
-function savedChatAi() {
-  return normalizePetChatAi(
-    settingsBag.value.chatAi ?? DEFAULT_PET_CHAT_AI
-  );
-}
-
-function sameStringList(a: string[], b: string[]) {
-  if (a.length !== b.length) return false;
-  return a.every((v, i) => v === b[i]);
-}
-
-const chatAiDirty = computed(() => {
-  const saved = savedChatAi();
-  return (
-    chatAiProvider.value !== saved.provider ||
-    chatAiApiKey.value.trim() !== saved.apiKey ||
-    chatAiBaseUrl.value.trim() !== saved.baseUrl ||
-    chatAiModel.value.trim() !== saved.model ||
-    !sameStringList(chatAiCustomModels.value, saved.customModels)
-  );
-});
-
-const canAddChatAiModel = computed(() => {
-  const id = chatAiModel.value.trim();
-  if (!id || chatAiProvider.value === "local") return false;
-  if (builtinChatModelIds(chatAiProvider.value).includes(id)) return false;
-  return !chatAiCustomModels.value.includes(id);
-});
-
-function currentSettings(): PetSettings {
-  const base: PetSettings = {
-    ...settingsBag.value,
-    enabled: enabled.value,
-    muted: muted.value,
-    ttsEnabled: ttsEnabled.value,
-    ttsVoiceUri: ttsVoiceUri.value,
-    chatEnabled: chatEnabled.value,
-    // Keep saved chat AI until user clicks Save (draft lives in refs)
-    chatAi: savedChatAi(),
-    opacity: opacityPercent.value / 100,
-    tone: tone.value,
-    demoMotion: demoMotion.value,
-    modelKind: modelKind.value,
-    lookId: lookId.value,
-    nickname: nickname.value.trim(),
-    personality: personality.value,
-    zoomPercent: zoomPercent.value,
-    usbWatchEnabled: usbWatchEnabled.value,
-    randomIdleEnabled: randomIdleEnabled.value,
-    hitBoundsEnabled: hitBoundsEnabled.value,
-    catchphrases: catchphrases.value.map((t) => t.trim()).filter(Boolean),
-    catchphraseChance: clampCatchphraseChance(catchphraseChance.value),
-    uiTheme: uiTheme.value,
-    settingsAlwaysOnTop: settingsAlwaysOnTop.value,
-    sysStatsDefaultExpanded: sysStatsDefaultExpanded.value,
-    customVrmMotions: customVrmMotions.value.map((m) => ({ ...m })),
-    vrmModelName: vrmModelName.value,
-    vrmModelRev: vrmModelRev.value,
-  };
-  return patchActiveProfile(base, {
-    customLines: customLines.value.map((l) => ({ ...l })),
-    customLinesOnly: customLinesOnly.value,
-    disabledMotions: [...disabledMotions.value],
-    disabledBuiltInLines: [...disabledBuiltInLines.value],
+    } as Record<string, string>;
   });
-}
 
-async function refreshVrmPreview() {
-  if (!vrmModelName.value) {
-    vrmSrc.value = null;
-    return;
+  const personalityLabel = computed(() => {
+    if (personality.value === "shy") return t("pet.personalityShy");
+    if (personality.value === "cool") return t("pet.personalityCool");
+    if (personality.value === "fiery") return t("pet.personalityFiery");
+    return t("pet.personalitySunny");
+  });
+
+  const { applyLocalFromSettings } = usePetSettingsHydrate({
+    settingsBag,
+    enabled,
+    muted,
+    chatEnabled,
+    opacityPercent,
+    zoomPercent,
+    tone,
+    demoMotion,
+    modelKind,
+    lookId,
+    nickname,
+    personality,
+    usbWatchEnabled,
+    randomIdleEnabled,
+    hitBoundsEnabled,
+    catchphrases,
+    catchphraseChance,
+    uiTheme,
+    settingsAlwaysOnTop,
+    sysStatsDefaultExpanded,
+    customVrmMotions,
+    customLines,
+    customLinesOnly,
+    disabledMotions,
+    disabledBuiltInLines,
+    applyTtsFromSettings,
+    applyChatAiDraft,
+    applyVrmFromSettings,
+    refreshTtsVoiceOptions,
+    onUiThemeChange: opts.onUiThemeChange,
+  });
+
+  function currentSettings(): PetSettings {
+    const base: PetSettings = {
+      ...settingsBag.value,
+      enabled: enabled.value,
+      muted: muted.value,
+      ttsEnabled: ttsEnabled.value,
+      ttsVoiceUri: ttsVoiceUri.value,
+      chatEnabled: chatEnabled.value,
+      chatAi: savedChatAi(),
+      opacity: opacityPercent.value / 100,
+      tone: tone.value,
+      demoMotion: demoMotion.value,
+      modelKind: modelKind.value,
+      lookId: lookId.value,
+      nickname: nickname.value.trim(),
+      personality: personality.value,
+      zoomPercent: zoomPercent.value,
+      usbWatchEnabled: usbWatchEnabled.value,
+      randomIdleEnabled: randomIdleEnabled.value,
+      hitBoundsEnabled: hitBoundsEnabled.value,
+      catchphrases: catchphrases.value.map((t) => t.trim()).filter(Boolean),
+      catchphraseChance: clampCatchphraseChance(catchphraseChance.value),
+      uiTheme: uiTheme.value,
+      settingsAlwaysOnTop: settingsAlwaysOnTop.value,
+      sysStatsDefaultExpanded: sysStatsDefaultExpanded.value,
+      customVrmMotions: customVrmMotions.value.map((m) => ({ ...m })),
+      vrmModelName: vrmModelName.value,
+      vrmModelRev: vrmModelRev.value,
+    };
+    return patchActiveProfile(base, {
+      customLines: customLines.value.map((l) => ({ ...l })),
+      customLinesOnly: customLinesOnly.value,
+      disabledMotions: [...disabledMotions.value],
+      disabledBuiltInLines: [...disabledBuiltInLines.value],
+    });
   }
-  vrmSrc.value = await resolvePetVrmSrc(vrmModelRev.value);
-}
 
-async function persistAndSync() {
-  const next = await publishPetSettings(currentSettings());
-  settingsBag.value = next;
-  await syncPetWindow();
-}
-
-async function persistOnly() {
-  const next = await publishPetSettings(currentSettings());
-  settingsBag.value = next;
-}
-
-onMounted(() => {
-  applyLocalFromSettings(loadPetSettings());
-  void refreshVrmPreview();
-  void syncPetWindow();
-  void nextTick(() => {
-    syncFormThumb(false);
-    if (enabled.value) bindFormPickerRo();
-  });
-
-  void listen<PetSettings>(PET_SETTINGS_EVENT, (event) => {
-    if (!event.payload) return;
-    const incoming = event.payload;
-    if (incoming.modelKind !== modelKind.value) {
-      applyLocalFromSettings(incoming);
-      void refreshVrmPreview();
-      return;
-    }
-    settingsAlwaysOnTop.value = Boolean(incoming.settingsAlwaysOnTop);
-    sysStatsDefaultExpanded.value = Boolean(incoming.sysStatsDefaultExpanded);
-    uiTheme.value = isAppUiTheme(incoming.uiTheme)
-      ? incoming.uiTheme
-      : uiTheme.value;
-    settingsBag.value = incoming;
-  }).then((fn) => {
-    unlistenSettings = fn;
-  });
-
-  window.addEventListener("storage", onSettingsStorage);
-});
-
-let unlistenSettings: UnlistenFn | null = null;
-
-function onSettingsStorage(ev: StorageEvent) {
-  if (!isSettingsStorageKey(ev.key) || !ev.newValue) return;
-  try {
-    const incoming = JSON.parse(ev.newValue) as PetSettings;
-    if (incoming.modelKind !== modelKind.value) {
-      applyLocalFromSettings(incoming);
-      void refreshVrmPreview();
-      return;
-    }
-    settingsAlwaysOnTop.value = Boolean(incoming.settingsAlwaysOnTop);
-    sysStatsDefaultExpanded.value = Boolean(incoming.sysStatsDefaultExpanded);
-    settingsBag.value = incoming;
-  } catch {
-    // ignore
-  }
-}
-
-onBeforeUnmount(() => {
-  formPickerRo?.disconnect();
-  formPickerRo = null;
-  unlistenSettings?.();
-  unlistenSettings = null;
-  window.removeEventListener("storage", onSettingsStorage);
-});
-
-async function onEnabled(value: boolean) {
-  enabled.value = value;
-  if (value && isVrmPending.value) {
-    await persistOnly();
+  persistAndSyncImpl = async () => {
+    const next = await publishPetSettings(currentSettings());
+    settingsBag.value = next;
     await syncPetWindow();
-    message.info(t("pet.vrmNeedUploadFirst"));
-    return;
-  }
-  await persistAndSync();
-}
-
-async function onModel(value: string | number) {
-  if (!isPetModelKind(value)) return;
-  const fromModel = settingsBag.value.modelKind;
-  if (fromModel === value) return;
-
-  const snapshot: PetSettings = {
-    ...currentSettings(),
-    modelKind: fromModel,
   };
-  const switched = switchPetModel(snapshot, value, fromModel);
-  applyLocalFromSettings(switched);
 
-  const allowed = getCharacter(value).demoMotions;
-  const okBuiltIn =
-    isPetIdleMotion(demoMotion.value) &&
-    (allowed as readonly string[]).includes(demoMotion.value);
-  const okCustom =
-    characterHas(value, "vrm-bone-editor") &&
-    isCustomVrmMotionId(demoMotion.value);
-  if (!okBuiltIn && !okCustom) {
-    demoMotion.value = allowed[0] ?? "happy-bounce";
+  persistOnlyImpl = async () => {
+    const next = await publishPetSettings(currentSettings());
+    settingsBag.value = next;
+  };
+
+  async function persistAndSync() {
+    await persistAndSyncImpl();
   }
-  const next = await publishPetSettings(currentSettings());
-  settingsBag.value = next;
-  // Soft sync only: recreating the pet webview on VRM cross races WebView2
-  // PostMessage against a dead HWND (0x80070578). Size/model update via
-  // settings event + openPetWindow setSize is enough.
-  await syncPetWindow();
-  await refreshVrmPreview();
-}
 
-async function onLook(id: string) {
-  lookId.value = id;
-  await persistAndSync();
-}
-
-async function onResetProfile() {
-  const next = resetActiveModelProfile(currentSettings());
-  applyLocalFromSettings(next);
-  await persistAndSync();
-  message.success(t("pet.resetProfileOk"));
-}
-
-async function onHitBounds(value: boolean) {
-  hitBoundsEnabled.value = value;
-  await persistOnly();
-}
-
-async function onSaveNickname() {
-  await persistAndSync();
-  if (!enabled.value) {
-    message.warning(t("pet.motionNeedEnable"));
-    return;
+  async function persistOnly() {
+    await persistOnlyImpl();
   }
-  try {
-    await requestPetIntro();
-    message.success(t("pet.nicknameSaved"));
-  } catch {
-    message.error(t("pet.nicknameSaveFailed"));
-  }
-}
 
-async function onPersonality(value: string | number) {
-  if (!isPetPersonality(value)) return;
-  personality.value = value;
-  await persistOnly();
-}
+  onMounted(() => {
+    applyLocalFromSettings(loadPetSettings());
+    void refreshVrmPreview();
+    void syncPetWindow();
+    void nextTick(() => {
+      syncFormThumb(false);
+      if (enabled.value) bindFormPickerRo();
+    });
 
-async function onMuted(value: boolean) {
-  muted.value = value;
-  await persistOnly();
-}
+    void listen<PetSettings>(PET_SETTINGS_EVENT, (event) => {
+      if (!event.payload) return;
+      const incoming = event.payload;
+      if (incoming.modelKind !== modelKind.value) {
+        applyLocalFromSettings(incoming);
+        void refreshVrmPreview();
+        return;
+      }
+      settingsAlwaysOnTop.value = Boolean(incoming.settingsAlwaysOnTop);
+      sysStatsDefaultExpanded.value = Boolean(incoming.sysStatsDefaultExpanded);
+      uiTheme.value = isAppUiTheme(incoming.uiTheme)
+        ? incoming.uiTheme
+        : uiTheme.value;
+      settingsBag.value = incoming;
+    }).then((fn) => {
+      unlistenSettings = fn;
+    });
 
-async function onTtsEnabled(value: boolean) {
-  ttsEnabled.value = value;
-  if (value) void refreshTtsVoiceOptions();
-  await persistOnly();
-}
-
-async function onTtsVoice(value: unknown) {
-  ttsVoiceUri.value = typeof value === "string" ? value : "";
-  await persistOnly();
-}
-
-async function onChatEnabled(value: boolean) {
-  chatEnabled.value = value;
-  await persistOnly();
-}
-
-function onChatAiProvider(value: unknown) {
-  if (!isPetChatProviderId(value)) return;
-  chatAiProvider.value = value;
-  chatAiModel.value = "";
-  chatAiBaseUrl.value = "";
-}
-
-function onChatAiModel(value: unknown) {
-  chatAiModel.value = typeof value === "string" ? value : "";
-}
-
-function onChatAiAddModel() {
-  if (!canAddChatAiModel.value) return;
-  chatAiCustomModels.value = addCustomChatModel(
-    chatAiProvider.value,
-    chatAiCustomModels.value,
-    chatAiModel.value
-  );
-  message.success(t("pet.chatModelAdded"));
-}
-
-function onChatAiRemoveModel(id: string) {
-  chatAiCustomModels.value = removeCustomChatModel(
-    chatAiCustomModels.value,
-    id
-  );
-}
-
-async function onChatAiSave() {
-  const next = await publishPetSettings({
-    ...currentSettings(),
-    chatAi: normalizePetChatAi({
-      provider: chatAiProvider.value,
-      apiKey: chatAiApiKey.value,
-      baseUrl: chatAiBaseUrl.value,
-      model: chatAiModel.value,
-      customModels: addCustomChatModel(
-        chatAiProvider.value,
-        chatAiCustomModels.value,
-        chatAiModel.value
-      ),
-    }),
+    window.addEventListener("storage", onSettingsStorage);
   });
-  settingsBag.value = next;
-  applyChatAiDraft(next.chatAi);
-  message.success(t("pet.chatAiSaved"));
-}
 
-function onChatAiReset() {
-  if (!chatAiDirty.value) {
-    message.info(t("pet.chatAiResetClean"));
-    return;
+  let unlistenSettings: UnlistenFn | null = null;
+
+  function onSettingsStorage(ev: StorageEvent) {
+    if (!isSettingsStorageKey(ev.key) || !ev.newValue) return;
+    try {
+      const incoming = JSON.parse(ev.newValue) as PetSettings;
+      if (incoming.modelKind !== modelKind.value) {
+        applyLocalFromSettings(incoming);
+        void refreshVrmPreview();
+        return;
+      }
+      settingsAlwaysOnTop.value = Boolean(incoming.settingsAlwaysOnTop);
+      sysStatsDefaultExpanded.value = Boolean(incoming.sysStatsDefaultExpanded);
+      settingsBag.value = incoming;
+    } catch {
+      // ignore
+    }
   }
-  applyChatAiDraft(savedChatAi());
-  message.success(t("pet.chatAiResetOk"));
-}
 
-async function onOpacity(value: number) {
-  opacityPercent.value = value;
-  await persistOnly();
-}
-
-async function onZoom(value: number) {
-  zoomPercent.value = value;
-  await persistOnly();
-}
-
-async function resetOpacity() {
-  opacityPercent.value = 100;
-  await onOpacity(100);
-}
-
-async function resetZoom() {
-  zoomPercent.value = 0;
-  await onZoom(0);
-}
-
-async function onTone(value: string | number) {
-  tone.value = value === "snarky" ? "snarky" : "cute";
-  await persistOnly();
-}
-
-async function onUsbWatch(value: boolean) {
-  usbWatchEnabled.value = value;
-  await persistOnly();
-}
-
-async function onRandomIdle(value: boolean) {
-  randomIdleEnabled.value = value;
-  await persistOnly();
-}
-
-async function onPickVrm() {
-  if (vrmBusy.value) return;
-  const selected = await open({
-    multiple: false,
-    filters: [{ name: "VRM", extensions: ["vrm"] }],
+  onBeforeUnmount(() => {
+    unlistenSettings?.();
+    unlistenSettings = null;
+    window.removeEventListener("storage", onSettingsStorage);
   });
-  if (selected == null) return;
-  const path = Array.isArray(selected) ? selected[0] : selected;
-  if (!path) return;
 
-  vrmBusy.value = true;
-  try {
-    const imported = await importPetVrmFromPath(path);
-    vrmSrc.value = imported.src;
-    vrmModelName.value = imported.name;
-    vrmModelRev.value = Date.now();
-    if (modelKind.value !== "vrm") {
-      modelKind.value = "vrm";
+  async function onEnabled(value: boolean) {
+    enabled.value = value;
+    if (value && isVrmPending.value) {
+      await persistOnly();
+      await syncPetWindow();
+      message.info(t("pet.vrmNeedUploadFirst"));
+      return;
+    }
+    await persistAndSync();
+  }
+
+  async function onModel(value: string | number) {
+    if (!isPetModelKind(value)) return;
+    const fromModel = settingsBag.value.modelKind;
+    if (fromModel === value) return;
+
+    const snapshot: PetSettings = {
+      ...currentSettings(),
+      modelKind: fromModel,
+    };
+    const switched = switchPetModel(snapshot, value, fromModel);
+    applyLocalFromSettings(switched);
+
+    const allowed = getCharacter(value).demoMotions;
+    const okBuiltIn =
+      isPetIdleMotion(demoMotion.value) &&
+      (allowed as readonly string[]).includes(demoMotion.value);
+    const okCustom =
+      characterHas(value, "vrm-bone-editor") &&
+      isCustomVrmMotionId(demoMotion.value);
+    if (!okBuiltIn && !okCustom) {
+      demoMotion.value = allowed[0] ?? "happy-bounce";
     }
     const next = await publishPetSettings(currentSettings());
     settingsBag.value = next;
     await syncPetWindow();
-    message.success(t("pet.vrmUploadOk"));
-  } catch (err) {
-    console.warn("[pet] pick vrm failed", err);
-    if (err instanceof PetVrmImportException) {
-      if (err.code === "too_large") {
-        message.error(t("pet.vrmTooLarge"));
-      } else if (err.code === "not_vrm") {
-        message.error(t("pet.vrmInvalid"));
-      } else {
-        message.error(
-          err.message && err.message !== "failed"
-            ? `${t("pet.vrmUploadFail")}: ${err.message}`
-            : t("pet.vrmUploadFail")
-        );
-      }
-    } else {
-      const detail = err instanceof Error ? err.message : String(err);
-      message.error(
-        detail ? `${t("pet.vrmUploadFail")}: ${detail}` : t("pet.vrmUploadFail")
-      );
-    }
-  } finally {
-    vrmBusy.value = false;
+    await refreshVrmPreview();
   }
-}
 
-async function onClearVrm() {
-  if (vrmBusy.value) return;
-  vrmBusy.value = true;
-  try {
-    await clearPetVrmFile();
-    vrmModelName.value = "";
-    vrmModelRev.value = 0;
-    vrmSrc.value = null;
+  async function onLook(id: string) {
+    lookId.value = id;
     await persistAndSync();
-    message.success(t("pet.vrmCleared"));
-  } catch (err) {
-    console.warn("[pet] clear vrm failed", err);
-    message.error(t("pet.vrmUploadFail"));
-  } finally {
-    vrmBusy.value = false;
   }
-}
 
-async function onDemoMotion(value: unknown) {
-  if (typeof value !== "string") return;
-  if (!isPetIdleMotion(value) && !isCustomVrmMotionId(value)) return;
-  demoMotion.value = value;
-  await persistOnly();
-}
-
-async function onPlayMotion() {
-  if (!enabled.value) {
-    message.warning(t("pet.motionNeedEnable"));
-    return;
+  async function onResetProfile() {
+    const next = resetActiveModelProfile(currentSettings());
+    applyLocalFromSettings(next);
+    await persistAndSync();
+    message.success(t("pet.resetProfileOk"));
   }
-  try {
-    await requestPetMotion(demoMotion.value);
-  } catch {
-    message.error(t("pet.motionPlayFailed"));
+
+  async function onHitBounds(value: boolean) {
+    hitBoundsEnabled.value = value;
+    await persistOnly();
   }
-}
 
-async function onUiTheme(value: unknown) {
-  if (!isAppUiTheme(value)) return;
-  uiTheme.value = value;
-  opts.onUiThemeChange?.(value);
-  await persistOnly();
-}
-
-async function onSettingsPin(checked: unknown) {
-  settingsAlwaysOnTop.value = Boolean(checked);
-  await persistOnly();
-  await applySettingsWindowPin(settingsAlwaysOnTop.value);
-}
-
-async function onSysStatsDefaultExpanded(value: unknown) {
-  sysStatsDefaultExpanded.value = Boolean(value);
-  await persistOnly();
-}
-
-async function persistCustomMotions() {
-  await persistOnly();
-}
-
-async function onAddCustomMotion() {
-  const next = createEmptyCustomVrmMotion(
-    t("pet.customMotionDefaultName", {
-      n: customVrmMotions.value.length + 1,
-    })
-  );
-  customVrmMotions.value = [...customVrmMotions.value, next];
-  demoMotion.value = next.id;
-  editingCustomId.value = next.id;
-  await persistOnly();
-}
-
-function toggleEditCustom(id: string) {
-  editingCustomId.value = editingCustomId.value === id ? null : id;
-}
-
-function onCustomMotionBoneChange(next: CustomVrmMotion) {
-  customVrmMotions.value = customVrmMotions.value.map((m) =>
-    m.id === next.id ? next : m
-  );
-  void persistCustomMotions();
-}
-
-async function onRemoveCustomMotion(id: string) {
-  customVrmMotions.value = customVrmMotions.value.filter((m) => m.id !== id);
-  if (editingCustomId.value === id) editingCustomId.value = null;
-  if (demoMotion.value === id) {
-    demoMotion.value = getCharacter("vrm").demoMotions[0] ?? "happy-bounce";
+  async function onSaveNickname() {
+    await persistAndSync();
+    if (!enabled.value) {
+      message.warning(t("pet.motionNeedEnable"));
+      return;
+    }
+    try {
+      await requestPetIntro();
+      message.success(t("pet.nicknameSaved"));
+    } catch {
+      message.error(t("pet.nicknameSaveFailed"));
+    }
   }
-  await persistOnly();
-}
 
-async function onPlayCustomMotion(id: string) {
-  if (!enabled.value) {
-    message.warning(t("pet.motionNeedEnable"));
-    return;
+  async function onPersonality(value: string | number) {
+    if (!isPetPersonality(value)) return;
+    personality.value = value;
+    await persistOnly();
   }
-  try {
-    await requestPetMotion(id);
-  } catch {
-    message.error(t("pet.motionPlayFailed"));
+
+  async function onMuted(value: boolean) {
+    muted.value = value;
+    await persistOnly();
   }
-}
 
-const pageCtx: PetSettingsPageCtx = {
-  enabled,
-  muted,
-  ttsEnabled,
-  ttsVoiceUri,
-  chatEnabled,
-  chatAiProvider,
-  chatAiApiKey,
-  chatAiBaseUrl,
-  chatAiModel,
-  chatAiCustomModels,
-  opacityPercent,
-  zoomPercent,
-  tone,
-  demoMotion,
-  modelKind,
-  lookId,
-  nickname,
-  personality,
-  usbWatchEnabled,
-  randomIdleEnabled,
-  hitBoundsEnabled,
-  catchphrases,
-  catchphraseChance,
-  uiTheme,
-  settingsAlwaysOnTop,
-  sysStatsDefaultExpanded,
-  customVrmMotions,
-  customLines,
-  customLinesOnly,
-  disabledMotions,
-  disabledBuiltInLines,
-  editingCustomId,
-  previewAutoOrbit,
-  canPreviewOrbit,
-  vrmModelName,
-  vrmBusy,
-  isVrmPending,
-  looks,
-  formOptions,
-  formPickerRef,
-  formThumbStyle,
-  toneOptions,
-  ttsVoiceOptions,
-  personalityOptions,
-  uiThemeOptions,
-  motionOptions,
-  motionPoolIds,
-  skinDefaultNickname,
-  capabilities: computed(() => characterCapabilities(modelKind.value)),
-  lookLabel,
-  onEnabled,
-  onModel,
-  onLook,
-  onSaveNickname,
-  onPersonality,
-  onResetProfile,
-  onMuted,
-  onTtsEnabled,
-  onTtsVoice,
-  onChatEnabled,
-  onChatAiProvider,
-  onChatAiModel,
-  onChatAiAddModel,
-  onChatAiRemoveModel,
-  onChatAiSave,
-  onChatAiReset,
-  chatAiDirty,
-  canAddChatAiModel,
-  onOpacity,
-  onZoom,
-  resetOpacity,
-  resetZoom,
-  onTone,
-  onUsbWatch,
-  onRandomIdle,
-  onHitBounds,
-  onPickVrm,
-  onClearVrm,
-  onDemoMotion,
-  onPlayMotion,
-  onUiTheme,
-  onSettingsPin,
-  onSysStatsDefaultExpanded,
-  persistOnly,
-  persistCustomMotions,
-  onAddCustomMotion,
-  toggleEditCustom,
-  onCustomMotionBoneChange,
-  onRemoveCustomMotion,
-  onPlayCustomMotion,
-};
+  async function onChatEnabled(value: boolean) {
+    chatEnabled.value = value;
+    await persistOnly();
+  }
 
-provide(PET_SETTINGS_PAGE_KEY, pageCtx);
+  async function onOpacity(value: number) {
+    opacityPercent.value = value;
+    await persistOnly();
+  }
+
+  async function onZoom(value: number) {
+    zoomPercent.value = value;
+    await persistOnly();
+  }
+
+  async function resetOpacity() {
+    opacityPercent.value = 100;
+    await onOpacity(100);
+  }
+
+  async function resetZoom() {
+    zoomPercent.value = 0;
+    await onZoom(0);
+  }
+
+  async function onTone(value: string | number) {
+    tone.value = value === "snarky" ? "snarky" : "cute";
+    await persistOnly();
+  }
+
+  async function onUsbWatch(value: boolean) {
+    usbWatchEnabled.value = value;
+    await persistOnly();
+  }
+
+  async function onRandomIdle(value: boolean) {
+    randomIdleEnabled.value = value;
+    await persistOnly();
+  }
+
+  async function onDemoMotion(value: unknown) {
+    if (typeof value !== "string") return;
+    if (!isPetIdleMotion(value) && !isCustomVrmMotionId(value)) return;
+    demoMotion.value = value;
+    await persistOnly();
+  }
+
+  async function onPlayMotion() {
+    if (!enabled.value) {
+      message.warning(t("pet.motionNeedEnable"));
+      return;
+    }
+    try {
+      await requestPetMotion(demoMotion.value);
+    } catch {
+      message.error(t("pet.motionPlayFailed"));
+    }
+  }
+
+  async function onUiTheme(value: unknown) {
+    if (!isAppUiTheme(value)) return;
+    uiTheme.value = value;
+    opts.onUiThemeChange?.(value);
+    await persistOnly();
+  }
+
+  async function onSettingsPin(checked: unknown) {
+    settingsAlwaysOnTop.value = Boolean(checked);
+    await persistOnly();
+    await applySettingsWindowPin(settingsAlwaysOnTop.value);
+  }
+
+  async function onSysStatsDefaultExpanded(value: unknown) {
+    sysStatsDefaultExpanded.value = Boolean(value);
+    await persistOnly();
+  }
+
+  async function persistCustomMotions() {
+    await persistOnly();
+  }
+
+  async function onAddCustomMotion() {
+    const next = createEmptyCustomVrmMotion(
+      t("pet.customMotionDefaultName", {
+        n: customVrmMotions.value.length + 1,
+      })
+    );
+    customVrmMotions.value = [...customVrmMotions.value, next];
+    demoMotion.value = next.id;
+    editingCustomId.value = next.id;
+    await persistOnly();
+  }
+
+  function toggleEditCustom(id: string) {
+    editingCustomId.value = editingCustomId.value === id ? null : id;
+  }
+
+  function onCustomMotionBoneChange(next: CustomVrmMotion) {
+    customVrmMotions.value = customVrmMotions.value.map((m) =>
+      m.id === next.id ? next : m
+    );
+    void persistCustomMotions();
+  }
+
+  async function onRemoveCustomMotion(id: string) {
+    customVrmMotions.value = customVrmMotions.value.filter((m) => m.id !== id);
+    if (editingCustomId.value === id) editingCustomId.value = null;
+    if (demoMotion.value === id) {
+      demoMotion.value = getCharacter("vrm").demoMotions[0] ?? "happy-bounce";
+    }
+    await persistOnly();
+  }
+
+  async function onPlayCustomMotion(id: string) {
+    if (!enabled.value) {
+      message.warning(t("pet.motionNeedEnable"));
+      return;
+    }
+    try {
+      await requestPetMotion(id);
+    } catch {
+      message.error(t("pet.motionPlayFailed"));
+    }
+  }
+
+  const pageCtx: PetSettingsPageCtx = {
+    enabled,
+    muted,
+    ttsEnabled,
+    ttsVoiceUri,
+    chatEnabled,
+    chatAiProvider,
+    chatAiApiKey,
+    chatAiBaseUrl,
+    chatAiModel,
+    chatAiCustomModels,
+    opacityPercent,
+    zoomPercent,
+    tone,
+    demoMotion,
+    modelKind,
+    lookId,
+    nickname,
+    personality,
+    usbWatchEnabled,
+    randomIdleEnabled,
+    hitBoundsEnabled,
+    catchphrases,
+    catchphraseChance,
+    uiTheme,
+    settingsAlwaysOnTop,
+    sysStatsDefaultExpanded,
+    customVrmMotions,
+    customLines,
+    customLinesOnly,
+    disabledMotions,
+    disabledBuiltInLines,
+    editingCustomId,
+    previewAutoOrbit,
+    canPreviewOrbit,
+    vrmModelName,
+    vrmBusy,
+    isVrmPending,
+    looks,
+    formOptions,
+    formPickerRef,
+    formThumbStyle,
+    toneOptions,
+    ttsVoiceOptions,
+    personalityOptions,
+    uiThemeOptions,
+    motionOptions,
+    motionPoolIds,
+    skinDefaultNickname,
+    capabilities: computed(() => characterCapabilities(modelKind.value)),
+    lookLabel,
+    onEnabled,
+    onModel,
+    onLook,
+    onSaveNickname,
+    onPersonality,
+    onResetProfile,
+    onMuted,
+    onTtsEnabled,
+    onTtsVoice,
+    onChatEnabled,
+    onChatAiProvider,
+    onChatAiModel,
+    onChatAiAddModel,
+    onChatAiRemoveModel,
+    onChatAiSave,
+    onChatAiReset,
+    chatAiDirty,
+    canAddChatAiModel,
+    onOpacity,
+    onZoom,
+    resetOpacity,
+    resetZoom,
+    onTone,
+    onUsbWatch,
+    onRandomIdle,
+    onHitBounds,
+    onPickVrm,
+    onClearVrm,
+    onDemoMotion,
+    onPlayMotion,
+    onUiTheme,
+    onSettingsPin,
+    onSysStatsDefaultExpanded,
+    persistOnly,
+    persistCustomMotions,
+    onAddCustomMotion,
+    toggleEditCustom,
+    onCustomMotionBoneChange,
+    onRemoveCustomMotion,
+    onPlayCustomMotion,
+  };
+
+  provide(PET_SETTINGS_PAGE_KEY, pageCtx);
 
   return {
-    // shell
     enabled,
     tone,
     previewAutoOrbit,
@@ -1041,7 +766,6 @@ provide(PET_SETTINGS_PAGE_KEY, pageCtx);
     activeModule,
     activeTabTitle,
     onSettingsTab,
-    // hero
     activeLook,
     v,
     vrmModelRev,

@@ -1,4 +1,4 @@
-import type { PetIdleMotion } from "../motions";
+import type { PetIdleMotion } from "../content/motions";
 
 /** Cross-model motion ids → this character's playable id */
 export function remapChipMotion(motion: PetIdleMotion): PetIdleMotion {
