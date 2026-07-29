@@ -1,0 +1,390 @@
+/**
+ * Toon motion animations — data-anim / wormhole rules and motion keyframes.
+ */
+
+/* —— 动作 —— */
+.pix[data-anim="idle"] .pix-stage {
+  animation: idle-bob 1.35s ease-in-out infinite;
+}
+.pix[data-anim="sway"] .pix-stage {
+  animation: sway 0.95s ease-in-out infinite;
+}
+.pix[data-anim="walk"] .pix-stage {
+  animation: walk-bob 0.34s ease-in-out infinite;
+}
+.pix[data-anim="walk"] .pix-body {
+  animation: walk-nudge 0.34s ease-in-out infinite;
+}
+.pix[data-anim="walk"] .pix-tail {
+  animation: tail-wag 0.34s ease-in-out infinite;
+}
+.pix[data-anim="wave"] .pix-particle {
+  animation-duration: 1.4s;
+}
+.pix[data-anim="wave"] .pix-breath {
+  animation: aura-breath 1.2s ease-in-out infinite;
+}
+.pix[data-anim="wave"] .pix-stage {
+  animation: idle-bob 1s ease-in-out infinite;
+}
+.pix[data-anim="wave"] .pix-ears {
+  animation: ear-twitch 0.4s ease-in-out infinite;
+}
+.pix[data-anim="read"] .pix-stage {
+  animation: sniff 0.7s ease-in-out infinite;
+}
+.pix[data-anim="tea"] .pix-particle {
+  animation-duration: 1.2s;
+}
+.pix[data-anim="tea"] .pix-breath {
+  animation: aura-breath 1s ease-in-out infinite;
+}
+.pix[data-anim="tea"] .pix-stage {
+  animation: puff 0.55s ease-in-out infinite;
+}
+.pix[data-anim="tilt"] .pix-stage {
+  animation: tilt 0.85s ease-in-out infinite;
+}
+.pix[data-anim="happy"] .pix-stage {
+  animation: hop 0.42s ease-in-out 5;
+}
+.pix[data-anim="happy"] .pix-ears {
+  animation: ear-twitch 0.28s ease-in-out infinite;
+}
+.pix[data-anim="peek"] .pix-stage {
+  animation: peek 1.05s ease-in-out 1;
+}
+.pix[data-anim="peek"] .pix-scene {
+  animation: peek-fade 1.05s ease-in-out 1;
+}
+.pix[data-anim="sleep"] .pix-stage {
+  animation: sleep 2.2s ease-in-out infinite;
+}
+.pix[data-anim="sleep"] .pix-eyes,
+.pix[data-mood="sleep"] .pix-eyes {
+  opacity: 0;
+}
+.pix[data-anim="sleep"] .pix-aura,
+.pix[data-mood="sleep"] .pix-aura {
+  opacity: 0.4;
+}
+.pix[data-anim="sleep"] .pix-tail {
+  opacity: 0.35;
+  animation: none;
+}
+
+.pix[data-anim="water"] .pix-stage {
+  animation: sniff 0.75s ease-in-out infinite;
+}
+.pix[data-anim="water"] .pix-scene {
+  animation: scene-pour 0.55s ease-in-out infinite;
+}
+.pix[data-anim="grass"] .pix-stage {
+  animation: sway 0.9s ease-in-out infinite;
+}
+.pix[data-anim="grass"] .pix-scene {
+  animation: scene-sway 0.7s ease-in-out infinite;
+}
+.pix[data-anim="fire"] .pix-stage {
+  animation: puff 0.4s ease-in-out infinite;
+}
+.pix[data-anim="fire"] .pix-scene {
+  animation: scene-burst 0.35s ease-in-out infinite;
+}
+.pix[data-anim="splash"] .pix-stage {
+  animation: walk-bob 0.4s ease-in-out infinite;
+}
+.pix[data-anim="splash"] .pix-scene {
+  animation: scene-burst 0.32s ease-in-out infinite;
+}
+.pix[data-anim="thunder"] .pix-stage {
+  animation: hop 0.5s ease-in-out 3;
+}
+.pix[data-anim="thunder"] .pix-scene {
+  animation: scene-flash 0.28s steps(2) infinite;
+}
+.pix[data-anim="dodge"] .pix-stage {
+  animation: peek 0.7s ease-in-out infinite;
+}
+.pix[data-anim="dodge"] .pix-scene {
+  animation: scene-fade 0.45s ease-in-out infinite;
+}
+.pix[data-anim="wormhole"] .pix-stage {
+  animation: none;
+}
+
+/* 虫洞：下沉隐身 → 头顶传送门 → 自上而下掉出 */
+.pix[data-wormhole="out"] .pix-stage {
+  animation: wormhole-sink 0.36s ease-in forwards;
+}
+.pix[data-wormhole="out"] .pix-shadow {
+  animation: wormhole-shadow-out 0.36s ease-in forwards;
+}
+.pix[data-wormhole="warp"] .pix-stage {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-130%);
+}
+.pix[data-wormhole="warp"] .pix-shadow {
+  opacity: 0;
+}
+.pix[data-wormhole="warp"] .pix-portal {
+  animation: portal-open 0.28s ease-out forwards;
+}
+.pix[data-wormhole="in"] .pix-portal {
+  opacity: 1;
+  animation: portal-pulse 0.48s ease-in-out;
+}
+.pix[data-wormhole="in"] .pix-stage {
+  visibility: visible;
+  animation: wormhole-drop 0.48s cubic-bezier(0.22, 0.82, 0.2, 1) forwards;
+}
+.pix[data-wormhole="in"] .pix-shadow {
+  animation: wormhole-shadow-in 0.48s ease-out forwards;
+}
+
+.pix-scene {
+  transform-origin: 20px 22px;
+}
+
+@keyframes idle-bob {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  40% {
+    transform: translateY(-5%) scale(1.02, 0.98);
+  }
+  70% {
+    transform: translateY(-2%) scale(0.99, 1.01);
+  }
+}
+@keyframes sway {
+  0%,
+  100% {
+    transform: translateX(-4%) rotate(-5deg);
+  }
+  50% {
+    transform: translateX(4%) rotate(5deg);
+  }
+}
+@keyframes walk-bob {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1) rotate(0);
+  }
+  25% {
+    transform: translateY(-7%) scale(1.04, 0.96) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(0) scale(0.98, 1.03) rotate(0);
+  }
+  75% {
+    transform: translateY(-7%) scale(1.04, 0.96) rotate(2deg);
+  }
+}
+@keyframes walk-nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(2%);
+  }
+}
+@keyframes sniff {
+  0%,
+  100% {
+    transform: translateY(2%) rotate(3deg);
+  }
+  35% {
+    transform: translateY(4%) rotate(-4deg) scale(1.02, 0.98);
+  }
+  70% {
+    transform: translateY(1%) rotate(2deg);
+  }
+}
+@keyframes puff {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.06, 0.94) translateY(-2%);
+  }
+}
+@keyframes tilt {
+  0%,
+  100% {
+    transform: rotate(-10deg) translateX(-2%);
+  }
+  50% {
+    transform: rotate(-16deg) translateX(-3%);
+  }
+}
+@keyframes hop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  35% {
+    transform: translateY(-18%) scale(1.06, 0.92);
+  }
+  55% {
+    transform: translateY(-2%) scale(0.94, 1.08);
+  }
+}
+@keyframes peek {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0);
+  }
+  25% {
+    transform: translateX(10%) rotate(8deg);
+  }
+  55% {
+    transform: translateX(12%) rotate(10deg) scale(1.04, 0.96);
+  }
+  80% {
+    transform: translateX(4%) rotate(3deg);
+  }
+}
+@keyframes sleep {
+  0%,
+  100% {
+    transform: translateY(3%) rotate(-5deg);
+  }
+  50% {
+    transform: translateY(5%) rotate(-7deg);
+  }
+}
+@keyframes scene-pour {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(4%, 6%);
+  }
+}
+@keyframes scene-sway {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+@keyframes scene-burst {
+  0%,
+  100% {
+    transform: scale(0.9) translateX(0);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.2) translateX(-8%);
+    opacity: 1;
+  }
+}
+@keyframes scene-flash {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes scene-fade {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 0.45;
+    transform: translateX(-6%);
+  }
+}
+@keyframes peek-fade {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  35%,
+  65% {
+    opacity: 0.28;
+  }
+}
+@keyframes wormhole-sink {
+  0% {
+    transform: translateY(0) scale(1, 1);
+    opacity: 1;
+  }
+  60% {
+    transform: translateY(28%) scale(1.05, 0.72);
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateY(55%) scale(0.9, 0.35);
+    opacity: 0;
+  }
+}
+@keyframes wormhole-drop {
+  0% {
+    transform: translateY(-125%) scale(0.88, 1.12);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  58% {
+    transform: translateY(8%) scale(1.05, 0.88);
+    opacity: 1;
+  }
+  78% {
+    transform: translateY(-2%) scale(0.98, 1.04);
+  }
+  100% {
+    transform: translateY(0) scale(1, 1);
+    opacity: 1;
+  }
+}
+@keyframes wormhole-shadow-out {
+  to {
+    opacity: 0;
+    transform: scaleX(0.4);
+  }
+}
+@keyframes wormhole-shadow-in {
+  from {
+    opacity: 0;
+    transform: scaleX(0.4);
+  }
+  to {
+    opacity: 0.9;
+    transform: scaleX(1);
+  }
+}
+@keyframes portal-open {
+  from {
+    opacity: 0;
+    transform: scaleX(0.2) scaleY(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1) scaleY(1);
+  }
+}
+@keyframes portal-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.85;
+  }
+}

@@ -1,0 +1,412 @@
+{
+  "byPersonality": {
+    "sunny": {
+      "idleCute": {
+        "zh": [
+          "嗷呜～狐青青报到！桌面有狐火，你不孤单。",
+          "蹦！碎步警告：该起来走动啦。",
+          "狐火招手～看到了吗？喝口水吧。",
+          "打个转给你看！灵体虽小，活力拉满。",
+          "嗅到好运气味……原来是你的好心情。",
+          "呼——吐个小火苗，驱散困意！",
+          "轻轻晃～跟我一起放松肩膀。"
+        ],
+        "en": [
+          "Awoo~ Spirit here! Foxfire on your desk.",
+          "Hop! Stand up and walk a bit.",
+          "Foxfire wave—drink some water.",
+          "Spin! Tiny spirit, big energy.",
+          "Sniff… good luck scent. Oh, it's your mood.",
+          "Fwoosh—tiny flame to chase drowsiness!",
+          "Sway~ drop those shoulders with me."
+        ]
+      },
+      "idleSnarky": {
+        "zh": [
+          "还坐着？腿要长蘑菇了，小灵可看着呢。",
+          "眨眼。对，你不是石像。",
+          "喝水。意志力不能当灵泉。",
+          "狐火提醒：该休息了。已读不回算你输。",
+          "碎步表演我都会，你动一下会死吗？",
+          "像素虽小，监督休息这件事不含糊。"
+        ],
+        "en": [
+          "Still sitting? Legs growing mushrooms.",
+          "Blink. You're not a statue.",
+          "Drink water. Willpower isn't sacred spring.",
+          "Foxfire reminder: rest. Ignore = you lose.",
+          "I can hop. Can you move once?",
+          "Small spirit, serious break patrol."
+        ]
+      },
+      "tap": {
+        "zh": [
+          "点这么急？是想看我原地翻滚吗？那来吧！",
+          "哈哈，抓到你手痒了——看我狐火加速！",
+          "好啦好啦，被你戳醒了，加强版表演上桌！",
+          "轻点轻点……算了，陪你闹一场！"
+        ],
+        "en": [
+          "That impatient? Want a tumble? Fine—watch!",
+          "Heh, itchy fingers—foxfire turbo on!",
+          "Okay, you woke me up. Enhanced show!",
+          "Easy… nah, let's goof off!"
+        ]
+      },
+      "flavor": {
+        "zh": [
+          "嘿嘿，今天也要一起加油呀！",
+          "看到你我就开心！需要狐火陪着吗？",
+          "失败也没关系啦，我们再试一次就好！",
+          "休息一下嘛～喝口水，笑一个！",
+          "有我在就不孤单哦，上古小太阳上线！"
+        ],
+        "en": [
+          "Hehe—let's crush it together!",
+          "I'm happy seeing you! Need foxfire company?",
+          "Fail once? We bounce back!",
+          "Break~ sip water, smile!",
+          "Not alone—ancient sunshine online!"
+        ]
+      }
+    },
+    "shy": {
+      "idleCute": {
+        "zh": [
+          "那、那个……小灵只是想轻轻待着……",
+          "如果你不忙……要不要歇一会儿……",
+          "狐火调暗一点……不会吓到你的……",
+          "喝、喝口水好不好……我就说这一句……",
+          "……眼神对上了。我、我先把尾巴藏好。",
+          "你要是累了……告诉小灵也可以的……"
+        ],
+        "en": [
+          "Um… I'll just linger quietly…",
+          "If you're free… maybe rest…?",
+          "Foxfire dimmed… won't startle you…",
+          "M-maybe a sip… just that…",
+          "…Eye contact. Hiding my tail now.",
+          "If you're tired… you can tell me…"
+        ]
+      },
+      "idleSnarky": {
+        "zh": [
+          "对、对不起，是不是吵到你了……可是真的该眨眼……",
+          "坐太久了……小声：起来走走……",
+          "口渴了还嘴硬……灵泉在现实里叫水杯……",
+          "我不想催你……但肩膀放下来会舒服……"
+        ],
+        "en": [
+          "S-sorry if I'm loud… but please blink…",
+          "Long sit… quietly: walk…",
+          "Thirsty and stubborn… spring equals cup…",
+          "I hate nagging… shoulders down feels better…"
+        ]
+      },
+      "tap": {
+        "zh": [
+          "被、被点到了……火苗晃了一下……",
+          "轻轻的就好……小灵听见了……",
+          "好啦……陪你闹一下下……",
+          "别急……我跟你一起慢一点……"
+        ],
+        "en": [
+          "Y-you tapped… flame flickered…",
+          "Gently… I heard…",
+          "Okay… a tiny fuss…",
+          "No rush… slow with me…"
+        ]
+      },
+      "flavor": {
+        "zh": [
+          "我……我在这儿陪着你……不会乱跑的……",
+          "那个……看到你我就安心一点……",
+          "对、对不起，突然想跟你招一下火……",
+          "……今天也请多指教。"
+        ],
+        "en": [
+          "I… I'll stay. No running off…",
+          "Um… seeing you calms me…",
+          "S-sorry—suddenly wanted to wave fire…",
+          "…Please guide me today."
+        ]
+      }
+    },
+    "cool": {
+      "idleCute": {
+        "zh": [
+          "灵息平稳。陪伴继续。",
+          "提醒已发出。执行自理。",
+          "久坐会折损灵气。站一会儿。",
+          "饮水。一次。",
+          "桌面有灵。不必多言。",
+          "状态：清醒。情绪：克制。"
+        ],
+        "en": [
+          "Spirit breath steady. Company continues.",
+          "Reminder sent. Compliance optional.",
+          "Long sits dull aura. Stand.",
+          "Drink. Once.",
+          "Spirit on desk. Few words.",
+          "Status: awake. Mood: restrained."
+        ]
+      },
+      "idleSnarky": {
+        "zh": [
+          "提醒完毕。其余自理。",
+          "效率优先。情绪稍后。",
+          "眨眼。现在。",
+          "话说完了。继续。",
+          "……哼。还算清楚。"
+        ],
+        "en": [
+          "Noted. Self-manage.",
+          "Efficiency first. Feelings later.",
+          "Blink. Now.",
+          "Done. Continue.",
+          "…Hmph. Adequate."
+        ]
+      },
+      "tap": {
+        "zh": [
+          "敲击已收录。表演一次。",
+          "收到。转。",
+          "不要连点。一次足够。",
+          "……哼。狐火绕你一圈。"
+        ],
+        "en": [
+          "Tap logged. One show.",
+          "Received. Spin.",
+          "Don't spam. Once is enough.",
+          "…Hmph. Foxfire orbit once."
+        ]
+      },
+      "flavor": {
+        "zh": [
+          "已记录。不必解释。",
+          "休息是策略，不是软弱。",
+          "状态不佳。建议暂停三分钟。",
+          "……哼。灵火仍在。"
+        ],
+        "en": [
+          "Logged. No essay.",
+          "Rest is strategy, not weakness.",
+          "Suboptimal. Pause three minutes.",
+          "…Hmph. Flame still burns."
+        ]
+      }
+    },
+    "fiery": {
+      "idleCute": {
+        "zh": [
+          "喂！别装听不见！先眨眼！",
+          "哈？还坐着？腿要生根了！",
+          "喝水！现在！别跟狐火讨价还价！",
+          "切，又硬撑？灵火都比你诚实！",
+          "烦死了，再熬我就燎到你耳旁！",
+          "成功了也别飘，先把腰直起来！"
+        ],
+        "en": [
+          "Hey! Blink. Now.",
+          "Still sitting?! Roots growing?!",
+          "Drink water. Argue with foxfire later.",
+          "Tch—flame is more honest than you!",
+          "Keep grinding and I'll scorch your ear!",
+          "Win or not—back straight!"
+        ]
+      },
+      "idleSnarky": {
+        "zh": [
+          "又对着屏幕较劲？先跟自己和解！",
+          "眼睛要冒烟了知不知道！",
+          "别用意志力当灵泉！去喝水！",
+          "你那表情：既想摸鱼又想硬刚。选一个！"
+        ],
+        "en": [
+          "Fighting the screen? Make peace!",
+          "Eyes smoking—know that?!",
+          "Willpower isn't spring water! Hydrate!",
+          "Slack AND force-it. Pick one!"
+        ]
+      },
+      "tap": {
+        "zh": [
+          "戳这么急？那就狐火加速！",
+          "好啊，被你惹兴奋了！",
+          "再点？行，加强版喷火！",
+          "轻点——算了，陪你闹！"
+        ],
+        "en": [
+          "That impatient? Foxfire turbo!",
+          "Fine—you got me hyped!",
+          "Again? Enhanced flame!",
+          "Easy—nah, goof off!"
+        ]
+      },
+      "flavor": {
+        "zh": [
+          "喂喂喂，别装没事！小灵盯着你！",
+          "切，上古刺头上线了！",
+          "今天也要被我吵着休息！不服来辩！",
+          "看见你认真我就想喷火加油！"
+        ],
+        "en": [
+          "Hey—don't fake fine! Spirit watching!",
+          "Tch. Ancient troublemaker online!",
+          "I'll yell you into breaks!",
+          "See you focus and I want to flame-cheer!"
+        ]
+      }
+    }
+  },
+  "byLook": {
+    "cyan": {
+      "zh": [
+        "青灵火稳稳的，像山涧。",
+        "清透狐火：今天心情也干净。"
+      ],
+      "en": [
+        "Cyan spirit-fire steady—like a stream.",
+        "Clear foxfire: clean mood today."
+      ]
+    },
+    "amber": {
+      "zh": [
+        "暖火舔着桌角。像旧寺灯笼。",
+        "琥珀光一跳——跟你打个招呼。"
+      ],
+      "en": [
+        "Warm flame on the corner—old lantern.",
+        "Amber blink—hello."
+      ]
+    },
+    "rose": {
+      "zh": [
+        "粉霞灵火……想被轻轻摸摸头。",
+        "软火苗模式：适合悄悄关心你。"
+      ],
+      "en": [
+        "Rose spirit-fire… hoping for a head pat.",
+        "Soft flame—quiet care."
+      ]
+    },
+    "violet": {
+      "zh": [
+        "紫夜灵息。我守着秘境般的桌角。",
+        "星火一点——上古暗号：你好。"
+      ],
+      "en": [
+        "Violet night breath. Guarding this desk-realm.",
+        "Star spark—ancient hello."
+      ]
+    }
+  },
+  "motionLines": {
+    "zh": {
+      "toon-water": [
+        "浇浇浇～灵草也要喝水！",
+        "水壶满满，灵息也满满。"
+      ],
+      "toon-grass": [
+        "这片小草软乎乎的……让我蹭一下。",
+        "草地打卡！今日份绿意已签到。"
+      ],
+      "toon-fire": [
+        "嘿——狐火喷射！退后退后！",
+        "小心烫嘴……不对，烫桌面！"
+      ],
+      "toon-splash": [
+        "水箭发射！谁干眼症谁遭殃～",
+        "滋——清凉一下！"
+      ],
+      "toon-thunder": [
+        "咔嚓！雷灵附体三秒！",
+        "打雷啦……我不是在吓你（大概）。"
+      ],
+      "toon-dodge": [
+        "躲开！差点被鼠标光标砸到！",
+        "残影闪避成功，评分：可爱。"
+      ],
+      "screen-wormhole": [
+        "虫洞开门——下一站：随机桌角！",
+        "嗖——穿越成功，迷路失败。"
+      ],
+      "toon-wave": [
+        "嗨嗨！狐火跟你招手～",
+        "看见你了，挥一下！"
+      ],
+      "toon-tea": [
+        "呼——吐个小火苗暖暖手。",
+        "火苗小吃货模式开启。"
+      ],
+      "toon-read": [
+        "嘿嘿，嗅到好运气味……原来是你的灵感。",
+        "嗅嗅，空气香香的。"
+      ]
+    },
+    "en": {
+      "toon-water": [
+        "Watering~ spirit grass is thirsty!",
+        "Can full, aura full."
+      ],
+      "toon-grass": [
+        "Soft grass… let me nuzzle.",
+        "Grass check-in done!"
+      ],
+      "toon-fire": [
+        "Foxfire blast! Back up!",
+        "Hot mouth—hot desktop!"
+      ],
+      "toon-splash": [
+        "Water bolt! Dry eyes beware~",
+        "Splash—cool down!"
+      ],
+      "toon-thunder": [
+        "Zap! Thunder spirit 3s!",
+        "Thunder… not scary (maybe)."
+      ],
+      "toon-dodge": [
+        "Dodge! Almost hit by the cursor!",
+        "Afterimage dodge: cute rank."
+      ],
+      "screen-wormhole": [
+        "Wormhole open—next: random corner!",
+        "Whoosh—teleport OK, lost fail."
+      ],
+      "toon-wave": [
+        "Hi! Foxfire wave~",
+        "Saw you—wave!"
+      ],
+      "toon-tea": [
+        "Fwoosh—tiny flame for warmth.",
+        "Snack-flame mode on."
+      ],
+      "toon-read": [
+        "Sniff… luck scent is your idea.",
+        "Sniff sniff—air smells nice."
+      ]
+    }
+  },
+  "catchphrases": {
+    "zh": [
+      "嗷呜～",
+      "狐火闪闪",
+      "蹦一下！"
+    ],
+    "en": [
+      "Awoo~",
+      "Foxfire sparkle",
+      "Hop!"
+    ]
+  },
+  "intro": {
+    "zh": {
+      "cute": "嗷呜～我是{name}，桌面狐火小精灵！蹦蹦跳跳陪你写代码。",
+      "snarky": "我是{name}。像素虽小，监督你喝水休息可不含糊。"
+    },
+    "en": {
+      "cute": "Awoo~ I'm {name}, your pixel foxfire spirit. Hop hop!",
+      "snarky": "I'm {name}. Tiny pixels, serious about your breaks."
+    }
+  }
+}

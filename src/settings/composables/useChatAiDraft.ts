@@ -13,7 +13,7 @@ import {
 import { publishPetSettings } from "@/pet/data/settings";
 import type { PetSettings } from "@/pet/data/types";
 
-/** Per-character AI chat draft (Save applies; other persists keep last saved). */
+/** 按角色的陪聊草稿；点 Save 才进 settings，其它持久化仍用上次已存值。 */
 export function useChatAiDraft(options: {
   settingsBag: Ref<PetSettings>;
   getCurrentSettings: () => PetSettings;

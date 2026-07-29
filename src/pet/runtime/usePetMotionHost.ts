@@ -1,19 +1,19 @@
 import { ref, type Ref } from "vue";
 import { hidePetBubble, syncPetBubbleToPet } from "@/pet/windows/bubble";
-import { pickMotionLine } from "@/pet/content/lines";
+import { pickMotionLine } from "@/pet/content/dialogue/lines";
 import { linePickOptsFromSettings } from "@/pet/runtime/usePetLines";
 import { resolveMotionForModel } from "@/pet/characters";
 import {
   findCustomVrmMotion,
   isCustomVrmMotionId,
-} from "@/pet/content/customVrmMotions";
+} from "@/pet/content/motion/customVrmMotions";
 import {
   isPetIdleMotion,
   isScreenFlightMotion,
   isVrmWalkMotion,
   motionHoldMs,
   type PetIdleMotion,
-} from "@/pet/content/motions";
+} from "@/pet/content/motion/motions";
 import {
   flyPetWindowRandom,
   teleportPetWindowWormhole,
@@ -22,6 +22,7 @@ import {
 import type { CharacterRuntimeSpec } from "@/pet/characters/types";
 import type { PetMood, PetSettings } from "@/pet/data/types";
 import type { PetModelKind, PetSkinVisual } from "@/pet/skins/types";
+import { moodForMotion, type ApplyPetMood } from "./petHostMood";
 
 const PIN_COUNT = 14;
 
@@ -33,7 +34,6 @@ function hsl(h: number, s: number, l: number) {
   return `hsl(${((h % 360) + 360) % 360} ${s}% ${l}%)`;
 }
 
-/** Screen flight, wormhole, VRM walk, LED pins, and idle-motion playback. */
 export function usePetMotionHost(deps: {
   settings: Ref<PetSettings>;
   activeSkin: { value: { model: PetModelKind; visual: PetSkinVisual } };
@@ -41,6 +41,7 @@ export function usePetMotionHost(deps: {
   winSize: Ref<{ w: number; h: number }> | { value: { w: number; h: number } };
   mood: Ref<PetMood>;
   speaking: Ref<boolean>;
+  applyMood: ApplyPetMood;
   isDragging: Ref<boolean>;
   idleMotion: Ref<string>;
   clearTimer: (id: number | null) => void;
@@ -87,62 +88,7 @@ export function usePetMotionHost(deps: {
   }
 
   function applyMoodForMotion(motion: PetIdleMotion) {
-    if (
-      deps.speaking.value ||
-      deps.isDragging.value ||
-      deps.mood.value === "sleep"
-    ) {
-      return;
-    }
-    switch (motion) {
-      case "happy-bounce":
-      case "victory-burst":
-      case "rocket-jump":
-      case "cartwheel":
-      case "tap-frenzy":
-      case "toon-wave":
-      case "toon-tilt":
-      case "toon-tea":
-      case "toon-water":
-      case "toon-grass":
-      case "toon-splash":
-        deps.mood.value = "happy";
-        break;
-      case "toon-fire":
-      case "toon-thunder":
-      case "screen-wormhole":
-        deps.mood.value = "excited";
-        break;
-      case "toon-dodge":
-      case "toon-spin":
-        deps.mood.value = "curious";
-        break;
-      case "fly-orbit":
-      case "fly-dash":
-      case "barrel-roll":
-      case "figure-eight":
-      case "screen-dash":
-      case "screen-hop":
-      case "screen-glide":
-      case "screen-zip":
-      case "toon-walk":
-      case "vrm-walk":
-        deps.mood.value = "excited";
-        break;
-      case "peekaboo":
-      case "toon-read":
-        deps.mood.value = "curious";
-        break;
-      case "sway-step":
-      case "side-hop":
-      case "bow-nod":
-      case "tip-toe":
-      case "stretch-up":
-        deps.mood.value = "happy";
-        break;
-      default:
-        deps.mood.value = "idle";
-    }
+    deps.applyMood(moodForMotion(motion), "motion");
   }
 
   function isMotionLocked() {
@@ -224,7 +170,7 @@ export function usePetMotionHost(deps: {
     motionPlayId.value += 1;
     deps.idleMotion.value = resolved;
     if (!isCustom) applyMoodForMotion(resolved as PetIdleMotion);
-    else deps.mood.value = "happy";
+    else deps.applyMood("happy", "motion");
 
     if (isVrmWalkMotion(resolved as PetIdleMotion) && !deps.isDragging.value) {
       void walkPetWindowRandom(
@@ -250,7 +196,7 @@ export function usePetMotionHost(deps: {
           deps.mood.value !== "sleep"
         ) {
           deps.idleMotion.value = "idle-float";
-          if (!deps.speaking.value) deps.mood.value = "idle";
+          deps.applyMood("idle", "motion-end");
         }
         if (gen === motionGen) {
           motionLockUntil = 0;
@@ -333,7 +279,7 @@ export function usePetMotionHost(deps: {
       if (isVrmWalkMotion(resolved as PetIdleMotion)) return;
       if (!deps.isDragging.value && deps.mood.value !== "sleep") {
         deps.idleMotion.value = "idle-float";
-        if (!deps.speaking.value) deps.mood.value = "idle";
+        deps.applyMood("idle", "motion-end");
       }
       if (manual) {
         motionLockUntil = 0;

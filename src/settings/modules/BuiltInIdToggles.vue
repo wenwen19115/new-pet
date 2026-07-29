@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { isCustomVrmMotionId } from "@/pet/content/customVrmMotions";
+import { isCustomVrmMotionId } from "@/pet/content/motion/customVrmMotions";
 
 const props = withDefaults(
   defineProps<{

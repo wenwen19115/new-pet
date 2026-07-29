@@ -1,10 +1,10 @@
 import type { CharacterDef } from "./types";
 import { formVrm } from "../skins/forms";
-import { PET_VRM_DEMO_MOTIONS } from "../content/motions";
+import { PET_VRM_DEMO_MOTIONS } from "../content/motion/motions";
 import { emptyVrmExtension } from "../data/extensions";
 import { lines } from "./lines/vrm";
 import { remapVrmMotion } from "./motionRemap";
-import PetVrmModel from "../models/PetVrmModel.vue";
+import PetVrmModel from "../models/vrm/PetVrmModel.vue";
 
 export const characterVrm: CharacterDef = {
   id: "vrm",

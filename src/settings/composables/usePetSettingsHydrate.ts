@@ -1,19 +1,18 @@
 import type { Ref } from "vue";
 import type { PetSettings } from "@/pet/data/types";
-import type { PetPersonality } from "@/pet/content/personality";
+import type { PetPersonality } from "@/pet/content/dialogue/personality";
 import type { PetTone } from "@/pet/data/types";
 import type { PetModelKind } from "@/pet/skins/types";
-import type { CustomVrmMotion } from "@/pet/content/customVrmMotions";
-import type { PetCustomLine } from "@/pet/content/customLines";
+import type { CustomVrmMotion } from "@/pet/content/motion/customVrmMotions";
+import type { PetCustomLine } from "@/pet/content/dialogue/customLines";
 import type { AppUiTheme } from "@/theme/uiTheme";
-import { isPetIdleMotion } from "@/pet/content/motions";
-import { isCustomVrmMotionId } from "@/pet/content/customVrmMotions";
+import { isPetIdleMotion } from "@/pet/content/motion/motions";
+import { isCustomVrmMotionId } from "@/pet/content/motion/customVrmMotions";
 import { coerceLookIdForModel } from "@/pet/skins";
 import { isAppUiTheme } from "@/theme/uiTheme";
-import { clampCatchphraseChance } from "@/pet/content/catchphrases";
-import { isPetPersonality } from "@/pet/content/personality";
+import { clampCatchphraseChance } from "@/pet/content/dialogue/catchphrases";
+import { isPetPersonality } from "@/pet/content/dialogue/personality";
 
-/** Apply a PetSettings snapshot into settings-page form refs. */
 export function usePetSettingsHydrate(deps: {
   settingsBag: Ref<PetSettings>;
   enabled: Ref<boolean>;

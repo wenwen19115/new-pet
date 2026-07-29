@@ -1,4 +1,4 @@
-import type { PetIdleMotion } from "../content/motions";
+import type { PetIdleMotion } from "../content/motion/motions";
 import type { PetMood } from "./types";
 
 /** Euler XYZ in radians，相对 VRM normalized T-pose */

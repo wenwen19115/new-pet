@@ -1,5 +1,5 @@
 import type { PetModelKind } from "../skins/types";
-import type { PetIdleMotion } from "../content/motions";
+import type { PetIdleMotion } from "../content/motion/motions";
 import type { CharacterDef, PetCapability } from "./types";
 import { characterChip } from "./chip";
 import { characterFig } from "./fig-sci";
@@ -13,7 +13,6 @@ const REGISTRY: Record<string, CharacterDef> = {
   vrm: characterVrm,
 };
 
-/** Single source of truth for model order / kinds */
 const CHARACTER_ORDER: PetModelKind[] = [
   "chip",
   "fig-sci",
@@ -38,6 +37,11 @@ export function characterCapabilities(id: PetModelKind): Set<PetCapability> {
 
 export function characterHas(id: PetModelKind, cap: PetCapability): boolean {
   return getCharacter(id).capabilities.includes(cap);
+}
+
+/** 走 capability，别写死 model === "vrm"。 */
+export function characterSupportsVrmAssets(id: PetModelKind): boolean {
+  return characterHas(id, "vrm-upload");
 }
 
 export function isPetModelKind(value: unknown): value is PetModelKind {

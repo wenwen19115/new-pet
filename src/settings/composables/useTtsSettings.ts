@@ -2,7 +2,6 @@ import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { listPetTtsVoices } from "@/pet/bridge/tts";
 
-/** TTS enable / voice options for settings page. */
 export function useTtsSettings(options: {
   persistOnly: () => Promise<void>;
 }) {

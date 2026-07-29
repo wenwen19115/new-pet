@@ -1,6 +1,10 @@
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { mkdir, readFile, remove, size, writeFile } from "@tauri-apps/plugin-fs";
+import {
+  characterSupportsVrmAssets,
+  isPetModelKind,
+} from "../characters";
 
 const PET_VRM_MAX_BYTES = 50 * 1024 * 1024;
 
@@ -18,10 +22,10 @@ export class PetVrmImportException extends Error {
   }
 }
 
-/** Per-webview cache: avoid re-resolving the same rev into a new URL. */
+/** 每 webview 缓存：同 rev 不重复解析出新 URL。 */
 let cachedRev = Number.NaN;
 let cachedSrc: string | null = null;
-/** Legacy blob URL from older builds; revoke on upgrade path. */
+/** 旧版 blob URL；升级路径里 revoke。 */
 let legacyBlobUrl: string | null = null;
 
 async function getPetVrmStoragePath(): Promise<string> {
@@ -33,7 +37,6 @@ async function ensurePetVrmDir(): Promise<string> {
   try {
     await mkdir(dir, { recursive: true });
   } catch {
-    // already exists
   }
   return dir;
 }
@@ -76,8 +79,8 @@ function fileNameFromPath(sourcePath: string): string {
 }
 
 /**
- * Resolve VRM for GLTFLoader via asset URL (no full-file blob copy in JS heap).
- * Falls back to blob if convertFileSrc fails.
+ * 给 GLTFLoader 用 asset URL（避免整文件 blob 进 JS 堆）。
+ * convertFileSrc 失败再退回 blob。
  */
 export async function resolvePetVrmSrc(rev = 0): Promise<string | null> {
   if (cachedSrc != null && cachedRev === rev) return cachedSrc;
@@ -165,7 +168,7 @@ export async function clearPetVrmFile(): Promise<void> {
   }
 }
 
-/** Patch when local VRM file is gone but settings still keep a name. */
+/** 本地 VRM 文件没了、settings 里还留着名字时用。 */
 export function clearedPetVrmMeta(): {
   vrmModelName: "";
   vrmModelRev: 0;
@@ -173,9 +176,7 @@ export function clearedPetVrmMeta(): {
   return { vrmModelName: "", vrmModelRev: 0 };
 }
 
-/**
- * Resolve VRM src for a named model. `stale` means settings claim a file that is missing.
- */
+/** 解析具名 VRM 的 src；`stale` 表示 settings 有名但文件不在。 */
 export async function resolveNamedPetVrmSrc(
   name: string | undefined,
   rev = 0
@@ -190,6 +191,11 @@ export function isPetVrmReady(settings: {
   modelKind: string;
   vrmModelName?: string;
 }): boolean {
-  if (settings.modelKind !== "vrm") return true;
+  if (
+    !isPetModelKind(settings.modelKind) ||
+    !characterSupportsVrmAssets(settings.modelKind)
+  ) {
+    return true;
+  }
   return Boolean(settings.vrmModelName?.trim());
 }

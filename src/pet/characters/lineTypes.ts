@@ -1,27 +1,22 @@
-import type { PetPersonality } from "../content/personality";
+import type {
+  PetPersonality,
+  PersonalityPolish,
+  LineLangPack,
+  LineBilingual,
+} from "../content/dialogue/personality";
 
-export type LineLangPack = { zh: string[]; en: string[] };
-
-export type LineBilingual = { zh: string; en: string };
+export type {
+  PetPersonality,
+  PersonalityPolish,
+  LineLangPack,
+  LineBilingual,
+} from "../content/dialogue/personality";
 
 export interface CharacterPersonalityLines {
   idleCute: LineLangPack;
   idleSnarky: LineLangPack;
   tap: LineLangPack;
   flavor: LineLangPack;
-}
-
-export interface PersonalityPolish {
-  prefix: LineLangPack;
-  end: LineLangPack;
-  extraSuffix?: LineLangPack;
-  extraSuffixChance?: number;
-  truncateLong?: {
-    minLen: number;
-    keep: number;
-    chance: number;
-    ellipsis: LineBilingual;
-  };
 }
 
 export interface UsbLineTemplates {

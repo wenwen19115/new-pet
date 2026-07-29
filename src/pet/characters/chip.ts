@@ -1,10 +1,10 @@
 import type { CharacterDef } from "./types";
 import { formChip } from "../skins/forms";
 import { STANDARD_LOOK_IDS } from "../skins/looks";
-import { PET_CHIP_DEMO_MOTIONS } from "../content/motions";
+import { PET_CHIP_DEMO_MOTIONS } from "../content/motion/motions";
 import { lines } from "./lines/chip";
 import { remapChipMotion } from "./motionRemap";
-import PetChipModel from "../models/PetChipModel.vue";
+import PetChipModel from "../models/chip/PetChipModel.vue";
 
 export const characterChip: CharacterDef = {
   id: "chip",
@@ -14,6 +14,7 @@ export const characterChip: CharacterDef = {
     "motion-toggle",
     "look-swatches",
     "preview-orbit",
+    "shell-sleep-bob",
   ],
   demoMotions: PET_CHIP_DEMO_MOTIONS,
   idleMotions: [

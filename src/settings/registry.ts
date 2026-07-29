@@ -15,7 +15,6 @@ export interface SettingsModule {
   labelKey: string;
   icon: Component;
   panel: Component;
-  /** Hide tab when false */
   when?: (ctx: SettingsModuleContext) => boolean;
 }
 

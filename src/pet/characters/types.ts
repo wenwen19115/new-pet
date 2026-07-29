@@ -1,7 +1,7 @@
 import type { Component } from "vue";
 import type { PetModelKind, PetSkinVisual } from "../skins/types";
 import type { PetFormDef } from "../skins/forms";
-import type { PetIdleMotion } from "../content/motions";
+import type { PetIdleMotion } from "../content/motion/motions";
 import type { CharacterExtensions } from "../data/extensions";
 import type { CharacterLineBundle } from "./lineTypes";
 
@@ -16,7 +16,7 @@ export type {
 } from "./lineTypes";
 export { BUILTIN_LINE_CATEGORIES, isBuiltInLineCategory } from "./lineTypes";
 
-/** Declared abilities — UI/runtime gate on these, not raw `model ===` checks */
+/** 能力声明；UI/runtime 用这个，别写长驻 `model ===` */
 export type PetCapability =
   | "custom-lines"
   | "motion-toggle"
@@ -24,13 +24,13 @@ export type PetCapability =
   | "vrm-upload"
   | "vrm-bone-editor"
   | "pixel-fx"
-  /** 3D preview yaw orbit (chip / VRM); 2D fig & toon stay off */
-  | "preview-orbit";
+  /** 3D 预览 yaw 轨道（chip / VRM）；fig / toon 关掉 */
+  | "preview-orbit"
+  /** chip 睡眠呼吸 bob */
+  | "shell-sleep-bob";
 
-/** Desktop pet window mount shell */
 type CharacterShell = "bob" | "vrm";
 
-/** Settings preview stage layout */
 type CharacterPreviewPad = "orbit" | "flat" | "vrm";
 
 interface CharacterScreenMetrics {
@@ -50,7 +50,6 @@ interface CharacterSizeSpec {
 
 interface CharacterDefaults {
   demoMotion: string;
-  /** Default pet look (形象) id */
   lookId: string;
   /** Build per-character extension bag for a fresh profile */
   buildExtensions?: () => CharacterExtensions;
@@ -64,15 +63,14 @@ interface CharacterAppearancePolicy {
   attachToonDecor?: boolean;
 }
 
-/** Host reads these instead of `model ===` for interaction/flight */
+/** host 读这里的参数，别按 model id 分支 */
 export interface CharacterRuntimeSpec {
   gaze: {
     max: number;
-    /** Distance (px) at which gaze strength saturates */
+    /** 注视强度饱和距离（px） */
     range: number;
     follow: number;
   };
-  /** Chip-style LED chase on pins */
   tickLeds?: boolean;
   /** Fallback when tap-egg pool is empty */
   tapFallbackMotion: PetIdleMotion;
@@ -85,7 +83,6 @@ export interface CharacterRuntimeSpec {
   screenFlight: "fly" | "wormhole" | "none";
 }
 
-/** Host → model props for the live pet window */
 interface CharacterRuntimeBindCtx {
   visual: PetSkinVisual;
   mood: string;
@@ -102,7 +99,6 @@ interface CharacterRuntimeBindCtx {
   faceYaw: number;
 }
 
-/** Host → model props for settings preview */
 interface CharacterPreviewBindCtx {
   visual: PetSkinVisual;
   mood: string;
@@ -121,7 +117,6 @@ interface CharacterPreviewBindCtx {
 interface CharacterView {
   shell: CharacterShell;
   previewPad: CharacterPreviewPad;
-  /** Extra class on flat preview pad (e.g. toon-pad) */
   previewPadClass?: string;
   showBobShadow?: boolean;
   /** Default orbit angles for preview reset */
@@ -132,8 +127,7 @@ interface CharacterView {
 }
 
 /**
- * Per-character package.
- * Host should read this instead of branching on model id.
+ * 单个角色包。host 读这个，别按 model id 分支。
  */
 export interface CharacterDef {
   id: PetModelKind;
@@ -142,16 +136,13 @@ export interface CharacterDef {
   demoMotions: readonly PetIdleMotion[];
   idleMotions: readonly PetIdleMotion[];
   defaults: CharacterDefaults;
-  /** Allowed pet look (形象) ids from the global look registry */
   lookIds: readonly string[];
   size: CharacterSizeSpec;
-  /** i18n key for settings preview hint */
   previewHintKey: string;
   appearance: CharacterAppearancePolicy;
   lines: CharacterLineBundle;
-  /** Interaction / flight params (Host reads instead of model ===) */
   runtime: CharacterRuntimeSpec;
-  /** Map foreign / legacy motion ids onto this character */
+  /** 把外来 / 旧动作 id 映射到本角色可播 id */
   resolveMotion: (motion: PetIdleMotion) => PetIdleMotion;
   view: CharacterView;
 }

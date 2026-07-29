@@ -1,16 +1,15 @@
-/** Canonical Desktop Pet storage keys */
 export const PET_SETTINGS_KEY = "desktop-pet-settings";
 const PET_OPEN_SETTINGS_KEY = "desktop-pet-open-settings";
 export const PET_BUS_NAME = "desktop-pet";
 const PET_BUBBLE_PAYLOAD_KEY = "desktop-pet-bubble-payload";
 
-/** Legacy wheat keys — read-only migration, never write back */
+/** 旧 wheat 键 — 只读迁移，不再写回 */
 const LEGACY_PET_SETTINGS_KEY = "wheat-esp-pet-settings";
 const LEGACY_PET_OPEN_SETTINGS_KEY = "wheat-esp-pet-open-settings";
 export const LEGACY_PET_BUS_NAME = "wheat-esp-pet";
 const LEGACY_PET_BUBBLE_PAYLOAD_KEY = "wheat-esp-pet-bubble-payload";
 
-/** Read settings JSON; migrate legacy → new once if needed */
+/** 读 settings JSON；必要时把旧键迁到新键一次 */
 export function readSettingsRaw(): string | null {
   try {
     const current = localStorage.getItem(PET_SETTINGS_KEY);

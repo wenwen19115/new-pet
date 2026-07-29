@@ -66,7 +66,7 @@ import {
   PET_LINE_SCENES,
   type PetCustomLine,
   type PetLineScene,
-} from "@/pet/content/customLines";
+} from "@/pet/content/dialogue/customLines";
 
 const props = defineProps<{
   modelValue: PetCustomLine[];

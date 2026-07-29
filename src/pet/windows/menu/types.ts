@@ -8,26 +8,24 @@ export const PET_MENU_LAYOUT_EVENT = "pet://menu-layout";
 export type PetMenuAction = "open" | "pin" | "chat";
 
 export interface PetMenuPayload {
-  /** Show chat row when true */
   chatEnabled: boolean;
-  /** Whether system stats panel starts expanded */
   statsExpandDefault: boolean;
 }
 
 export interface PetMenuLayoutPayload {
   expanded: boolean;
-  /** Measured content height; preferred over preset when present */
+  /** 实测内容高度；有则优先于预设 */
   height?: number;
 }
 
-/** Idle with no pointer/keyboard feedback → auto close */
+/** 无指针/键盘活动多久后自动关 */
 export const PET_MENU_IDLE_MS = 15_000;
 
 export const PET_MENU_W = 228;
-/** toggle + divider + 3 items; keep a little headroom for DPI */
+/** 折叠高度：开关 + 分隔 + 3 项，留一点 DPI 余量 */
 export const PET_MENU_H_COLLAPSED = 176;
 export const PET_MENU_H_EXPANDED = 228;
-/** Placement uses expanded height so opening near screen edge still fits when expanded */
+/** 摆位按展开高度算，靠屏幕边也能展开 */
 export const PET_MENU_H = PET_MENU_H_EXPANDED;
 export const PET_MENU_GAP = -6;
 

@@ -3,26 +3,28 @@ import { LogicalSize } from "@tauri-apps/api/dpi";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { syncPetBubbleToPet } from "@/pet/windows/bubble";
-import { hidePetChat, PET_CHAT_OPEN_STATE_EVENT, PET_CHAT_REPLY_EVENT, type PetChatOpenStatePayload } from "@/pet/windows/chat";
-import { PET_MENU_ACTION_EVENT, type PetMenuAction } from "@/pet/windows/menu";
-import { isCustomVrmMotionId } from "@/pet/content/customVrmMotions";
-import {
-  isPetIdleMotion,
-  PET_MOTION_EVENT,
-  type PetMotionPayload,
-} from "@/pet/content/motions";
+import { hidePetChat } from "@/pet/windows/chat";
+import { isCustomVrmMotionId } from "@/pet/content/motion/customVrmMotions";
+import { isPetIdleMotion } from "@/pet/content/motion/motions";
 import { loadPetSettings } from "@/pet/data/settings";
 import { petStore } from "@/pet/data/store";
 import { cancelPetTts } from "@/pet/bridge/tts";
 import type { CharacterRuntimeSpec } from "@/pet/characters/types";
+import type { PetMood, PetSettings } from "@/pet/data/types";
+import type { ApplyPetMood } from "./petHostMood";
 import {
+  PET_CHAT_OPEN_STATE_EVENT,
+  PET_CHAT_REPLY_EVENT,
   PET_INTRO_EVENT,
+  PET_MENU_ACTION_EVENT,
+  PET_MOTION_EVENT,
   PET_RESUME_EVENT,
   PET_SETTINGS_EVENT,
   PET_SUSPEND_EVENT,
-  type PetMood,
-  type PetSettings,
-} from "@/pet/data/types";
+  type PetChatOpenStatePayload,
+  type PetMenuAction,
+  type PetMotionPayload,
+} from "@/pet/events";
 
 function clamp(n: number, min: number, max: number) {
   return Math.min(max, Math.max(min, n));
@@ -32,7 +34,6 @@ function clearTimer(id: number | null) {
   if (id != null) window.clearTimeout(id);
 }
 
-/** RAF loop, window resize, suspend/resume, and event listener lifecycle. */
 export function usePetHostLifecycle(deps: {
   hostAliveRef: { get: () => boolean; set: (v: boolean) => void };
   settings: Ref<PetSettings>;
@@ -40,16 +41,16 @@ export function usePetHostLifecycle(deps: {
   mood: Ref<PetMood>;
   lastLine: Ref<string | null>;
   speaking: Ref<boolean>;
+  applyMood: ApplyPetMood;
   isDragging: Ref<boolean>;
   activeCharacter: { value: { runtime: CharacterRuntimeSpec } };
   winSize: Ref<{ w: number; h: number }>;
   bubbleTimerRef: { get: () => number | null; set: (id: number | null) => void };
   moodResetTimerRef: { get: () => number | null; set: (id: number | null) => void };
-  getChatPausesRandomIdle: () => boolean;
-  setChatPausesRandomIdle: (open: boolean) => void;
+  onChatOpen: (open: boolean) => void;
+  onSuspendRuntime: () => void;
   clearLifeTimers: () => void;
   clearMotionTimers: () => void;
-  cancelFlight: () => void;
   resetDragState: () => void;
   syncWindowCenter: () => Promise<unknown>;
   initCursorLog: () => Promise<void>;
@@ -134,7 +135,7 @@ export function usePetHostLifecycle(deps: {
 
   function suspendHost() {
     deps.hostAliveRef.set(false);
-    deps.cancelFlight();
+    deps.onSuspendRuntime();
     deps.resetDragState();
     if (rafId) {
       window.cancelAnimationFrame(rafId);
@@ -228,22 +229,23 @@ export function usePetHostLifecycle(deps: {
     );
     unlistenChatReply = await listen(PET_CHAT_REPLY_EVENT, () => {
       if (!deps.hostAliveRef.get()) return;
-      deps.mood.value = deps.settings.value.tone === "snarky" ? "grumpy" : "happy";
-      window.setTimeout(() => {
-        if (
-          deps.mood.value !== "sleep" &&
-          !deps.isDragging.value &&
-          !deps.isMotionLocked()
-        ) {
-          deps.mood.value = "idle";
-        }
-      }, 1600);
+      deps.applyMood(
+        deps.settings.value.tone === "snarky" ? "grumpy" : "happy",
+        "chat-reply"
+      );
+      clearTimer(deps.moodResetTimerRef.get());
+      deps.moodResetTimerRef.set(
+        window.setTimeout(() => {
+          if (!deps.hostAliveRef.get()) return;
+          deps.applyMood("idle", "chat-reply-end");
+        }, 1600)
+      );
     });
     unlistenChatOpen = await listen<PetChatOpenStatePayload>(
       PET_CHAT_OPEN_STATE_EVENT,
       (event) => {
         if (!deps.hostAliveRef.get()) return;
-        deps.setChatPausesRandomIdle(Boolean(event.payload?.open));
+        deps.onChatOpen(Boolean(event.payload?.open));
       }
     );
     deps.refreshUsbWatch();

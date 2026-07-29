@@ -1,5 +1,5 @@
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
-import { PET_OPEN_SETTINGS_EVENT } from "../content/motions";
+import { PET_OPEN_SETTINGS_EVENT } from "../content/motion/motions";
 import { initPetHost } from "@/pet/windows/pet";
 import { loadPetSettings, patchPetSettings } from "../data/settings";
 import {

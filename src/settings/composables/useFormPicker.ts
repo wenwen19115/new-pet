@@ -6,7 +6,6 @@ import {
   type Ref,
 } from "vue";
 
-/** Buddy-tab character form picker thumb + ResizeObserver. */
 export function useFormPicker(options: {
   modelKind: Ref<string>;
   enabled: Ref<boolean>;

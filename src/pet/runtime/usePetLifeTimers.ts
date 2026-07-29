@@ -9,14 +9,15 @@ import {
   syncPetUsbWatch,
 } from "@/pet/bridge/usbWatch";
 import type { PetMood, PetSettings, PetUsbAnnouncePayload } from "@/pet/data/types";
+import type { ApplyPetMood } from "./petHostMood";
 
 const SLEEP_MS = 3 * 60 * 1000;
 
-/** Sleep / blink / auto-speak / USB watch timers for the pet host. */
 export function usePetLifeTimers(deps: {
   settings: Ref<PetSettings>;
   mood: Ref<PetMood>;
   speaking: Ref<boolean>;
+  applyMood: ApplyPetMood;
   isDragging: Ref<boolean>;
   idleMotion: Ref<string>;
   clearTimer: (id: number | null) => void;
@@ -30,8 +31,7 @@ export function usePetLifeTimers(deps: {
   let autoSpeakTimer: number | null = null;
 
   function wakeFromSleep() {
-    if (deps.mood.value !== "sleep") return;
-    deps.mood.value = "idle";
+    if (!deps.applyMood("idle", "wake")) return;
     setPetUsbWatchRelaxed(false);
   }
 
@@ -43,7 +43,7 @@ export function usePetLifeTimers(deps: {
       void hidePetBubble();
       void hidePetChat();
       deps.speaking.value = false;
-      deps.mood.value = "sleep";
+      deps.applyMood("sleep", "sleep");
       setPetUsbWatchRelaxed(true);
       deps.idleMotion.value = "idle-float";
       deps.onEnterSleep();

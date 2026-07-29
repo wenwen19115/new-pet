@@ -1,12 +1,13 @@
 import { type Ref } from "vue";
 import { showPetBubble, hidePetBubble } from "@/pet/windows/bubble";
-import { buildSkinIntro } from "../content/intro";
-import { pickPetLine, pickTapEggLine, pickUsbLine } from "../content/lines";
-import { applyCatchphrase } from "../content/catchphrases";
+import { buildSkinIntro } from "../content/dialogue/intro";
+import { pickPetLine, pickTapEggLine, pickUsbLine } from "../content/dialogue/lines";
+import { applyCatchphrase } from "../content/dialogue/catchphrases";
 import type { PetMood, PetSettings, PetUsbAnnouncePayload } from "../data/types";
 import type { PetModelKind } from "../skins/types";
 import { linePickOptsFromSettings } from "./usePetLines";
 import { cancelPetTts, speakPetTts } from "../bridge/tts";
+import type { ApplyPetMood } from "./petHostMood";
 
 type SpeakOptions = { keepMotion?: boolean; force?: boolean };
 
@@ -15,6 +16,7 @@ export function usePetSpeech(deps: {
   model: Ref<PetModelKind> | { value: PetModelKind };
   mood: Ref<PetMood>;
   speaking: Ref<boolean>;
+  applyMood: ApplyPetMood;
   lastLine: Ref<string | null>;
   idleMotion: Ref<string>;
   isDragging: Ref<boolean>;
@@ -85,8 +87,10 @@ export function usePetSpeech(deps: {
 
     deps.lastLine.value = text;
     deps.speaking.value = true;
-    deps.mood.value =
-      deps.settings.value.tone === "snarky" ? "grumpy" : "happy";
+    deps.applyMood(
+      deps.settings.value.tone === "snarky" ? "grumpy" : "happy",
+      "speak"
+    );
     if (!options.keepMotion && !deps.isMotionLocked()) {
       deps.idleMotion.value = "happy-bounce";
     }
@@ -137,13 +141,8 @@ export function usePetSpeech(deps: {
     deps.setMoodResetTimer(
       window.setTimeout(() => {
         if (gen !== speakGen) return;
-        if (
-          deps.mood.value !== "sleep" &&
-          !deps.isDragging.value &&
-          !deps.isMotionLocked()
-        ) {
-          deps.mood.value = "idle";
-          if (!options.keepMotion) deps.idleMotion.value = "idle-float";
+        if (deps.applyMood("idle", "speak-end") && !options.keepMotion) {
+          deps.idleMotion.value = "idle-float";
         }
       }, 1600)
     );
@@ -183,7 +182,7 @@ export function usePetSpeech(deps: {
 
   function speakUsb(payload: PetUsbAnnouncePayload) {
     if (!deps.settings.value.usbWatchEnabled) return;
-    if (deps.mood.value === "sleep") deps.mood.value = "idle";
+    deps.applyMood("idle", "usb-wake");
     const model = deps.model.value;
     const opts = linePickOptsFromSettings(deps.settings.value, model);
     const text = pickUsbLine(

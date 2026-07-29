@@ -54,7 +54,7 @@ import {
   CATCHPHRASE_MAX,
   CATCHPHRASE_TEXT_MAX,
   clampCatchphraseChance,
-} from "@/pet/content/catchphrases";
+} from "@/pet/content/dialogue/catchphrases";
 
 const props = defineProps<{
   modelValue: string[];

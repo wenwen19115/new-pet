@@ -8,7 +8,7 @@ export function notifyPetStoreFromSave(next: PetSettings): void {
   settingsRef.value = next;
 }
 
-/** Non-Vue helper for PetApp / bridges */
+/** 给 PetApp / bridge 用的非 Vue 小仓库 */
 export const petStore = {
   get settings() {
     return settingsRef.value;

@@ -1,34 +1,20 @@
 import type { PetModelKind } from "@/pet/skins/types";
-import { DEFAULT_PET_MODEL } from "../characters";
-import type { PetPersonality } from "../content/personality";
+import type { PetPersonality } from "../content/dialogue/personality";
 import type { AppUiTheme } from "@/theme/uiTheme";
-import type { CustomVrmMotion } from "../content/customVrmMotions";
-import type { PetCustomLine } from "../content/customLines";
+import type { CustomVrmMotion } from "../content/motion/customVrmMotions";
+import type { PetCustomLine } from "../content/dialogue/customLines";
 import type { CharacterExtensions } from "./extensions";
-import {
-  CATCHPHRASE_DEFAULT_CHANCE,
-  defaultCatchphrasesForModel,
-} from "../content/catchphrases";
-import {
-  getCharacter,
-  listCharacters,
-  PET_MODEL_KINDS,
-} from "../characters";
-import {
-  DEFAULT_PET_CHAT_AI,
-  type PetChatAiConfig,
-} from "../chat/providers";
+import type { PetChatAiConfig } from "../chat/providers";
 
 export type { PetChatAiConfig, PetChatProviderId } from "../chat/providers";
 
 export type PetTone = "cute" | "snarky";
 export type { AppUiTheme };
-export type { PetCustomLine, PetLineScene } from "../content/customLines";
+export type { PetCustomLine, PetLineScene } from "../content/dialogue/customLines";
 export type {
   CharacterExtensions,
   VrmCharacterExtension,
 } from "./extensions";
-export { PET_MODEL_KINDS };
 
 export type PetMood =
   | "idle"
@@ -38,7 +24,6 @@ export type PetMood =
   | "excited"
   | "sleep";
 
-/** Per-character user data (common to all characters) */
 export interface PetModelProfile {
   nickname: string;
   personality: PetPersonality;
@@ -47,11 +32,10 @@ export interface PetModelProfile {
   zoomPercent: number;
   demoMotion: string;
   muted: boolean;
-  /** Speak bubble text via Edge neural TTS */
+  /** 气泡台词走 Edge 神经网络 TTS */
   ttsEnabled: boolean;
-  /** Edge ShortName; empty = auto by character */
+  /** Edge ShortName；空则按角色自动选 */
   ttsVoiceUri: string;
-  /** Per-character AI provider / model / key */
   chatAi: PetChatAiConfig;
   opacity: number;
   usbWatchEnabled: boolean;
@@ -62,9 +46,8 @@ export interface PetModelProfile {
   customLines: PetCustomLine[];
   customLinesOnly: boolean;
   disabledMotions: string[];
-  /** Built-in dialogue categories closed like motion toggles */
+  /** 内置台词类别开关（同 motion toggle） */
   disabledBuiltInLines: string[];
-  /** Character-specific bags (vrm / future) */
   extensions: CharacterExtensions;
 }
 
@@ -75,16 +58,15 @@ export interface PetSettings {
   modelKind: PetModelKind;
   uiTheme: AppUiTheme;
   settingsAlwaysOnTop: boolean;
-  /** Right-click menu: expand system peek (CPU/RAM/…) by default */
+  /** 右键菜单：系统信息默认展开 */
   sysStatsDefaultExpanded: boolean;
-  /** App-level: show Chat in right-click menu */
+  /** 右键菜单是否显示聊天 */
   chatEnabled: boolean;
-  /** Mirrored from active profile (per-character AI chat config) */
+  /** 从当前角色档案镜像出来的陪聊配置 */
   chatAi: PetChatAiConfig;
   profiles: PetModelProfiles;
   /**
-   * Mirrored from active profile / vrm extension for convenience.
-   * Canonical VRM data lives in profiles.vrm.extensions.vrm
+   * 顶层镜像，方便读写；权威数据在 profiles.vrm.extensions.vrm
    */
   vrmModelName: string;
   vrmModelRev: number;
@@ -109,74 +91,10 @@ export interface PetSettings {
 export const PET_WINDOW_LABEL = "pet";
 export const PET_SETTINGS_EVENT = "pet://settings-changed";
 export const PET_INTRO_EVENT = "pet://intro";
-/** Host → pet: soft dismiss / hard teardown prelude — stop work & unload VRM */
+/** host → pet：软隐藏 / 硬销毁前奏 — 停活并卸 VRM */
 export const PET_SUSPEND_EVENT = "pet://suspend";
-/** Host → pet: soft dismiss ended — resume loops & reload VRM */
+/** host → pet：软隐藏结束 — 恢复循环并重载 VRM */
 export const PET_RESUME_EVENT = "pet://resume";
-
-export function defaultProfileForModel(model: PetModelKind): PetModelProfile {
-  const character = getCharacter(model);
-  return {
-    nickname: "",
-    personality: "sunny",
-    tone: "cute",
-    lookId: character.defaults.lookId,
-    zoomPercent: 0,
-    demoMotion: character.defaults.demoMotion,
-    muted: false,
-    ttsEnabled: false,
-    ttsVoiceUri: "",
-    chatAi: { ...DEFAULT_PET_CHAT_AI },
-    opacity: 1,
-    usbWatchEnabled: true,
-    randomIdleEnabled: true,
-    hitBoundsEnabled: true,
-    catchphrases: defaultCatchphrasesForModel(model),
-    catchphraseChance: CATCHPHRASE_DEFAULT_CHANCE,
-    customLines: [],
-    customLinesOnly: false,
-    disabledMotions: [],
-    disabledBuiltInLines: [],
-    extensions: character.defaults.buildExtensions?.() ?? {},
-  };
-}
-
-export function createDefaultProfiles(): PetModelProfiles {
-  const profiles = {} as PetModelProfiles;
-  for (const character of listCharacters()) {
-    profiles[character.id] = defaultProfileForModel(character.id);
-  }
-  return profiles;
-}
-
-export const DEFAULT_PET_SETTINGS: PetSettings = {
-  enabled: false,
-  muted: false,
-  ttsEnabled: false,
-  ttsVoiceUri: "",
-  chatEnabled: true,
-  opacity: 1,
-  modelKind: DEFAULT_PET_MODEL,
-  usbWatchEnabled: true,
-  randomIdleEnabled: true,
-  vrmModelName: "",
-  vrmModelRev: 0,
-  hitBoundsEnabled: true,
-  catchphrases: defaultCatchphrasesForModel(DEFAULT_PET_MODEL),
-  catchphraseChance: CATCHPHRASE_DEFAULT_CHANCE,
-  uiTheme: "night",
-  settingsAlwaysOnTop: false,
-  sysStatsDefaultExpanded: false,
-  chatAi: { ...DEFAULT_PET_CHAT_AI },
-  customVrmMotions: [],
-  profiles: createDefaultProfiles(),
-  tone: "cute",
-  demoMotion: getCharacter(DEFAULT_PET_MODEL).defaults.demoMotion,
-  lookId: getCharacter(DEFAULT_PET_MODEL).defaults.lookId,
-  nickname: "",
-  personality: "sunny",
-  zoomPercent: 0,
-};
 
 export interface PetUsbAnnouncePayload {
   ports: Array<{

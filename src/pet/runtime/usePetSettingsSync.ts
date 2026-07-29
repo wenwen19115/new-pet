@@ -2,7 +2,7 @@ import type { Ref } from "vue";
 import { hidePetChat } from "@/pet/windows/chat";
 import { petStore } from "@/pet/data/store";
 import { isSettingsStorageKey, writeSettingsRaw } from "@/pet/data/storageKeys";
-import { loadPetSettings, normalizePetSettings, publishPetSettings } from "@/pet/data/settings";
+import { normalizePetSettings, publishPetSettings } from "@/pet/data/settings";
 import { cancelPetTts } from "@/pet/bridge/tts";
 import { resolveAppearance } from "@/pet/skins";
 import {
@@ -11,18 +11,16 @@ import {
 } from "@/pet/data/vrmStorage";
 import type { PetSettings } from "@/pet/data/types";
 
-/** Settings apply, VRM refresh, and cross-webview storage sync. */
 export function usePetSettingsSync(deps: {
   settings: Ref<PetSettings>;
   vrmSrc: Ref<string | null>;
   hostAlive: () => boolean;
-  getChatPausesRandomIdle: () => boolean;
   getActiveSkinId: () => string;
   getActiveSkinModel: () => string;
   refreshUsbWatch: () => void;
   resizePetWindow: () => void | Promise<void>;
-  setIdleActionTimer: (id: number | null) => void;
-  scheduleIdleAction: () => void;
+  /** 随机 idle 门禁；由 host dispatch 维护 */
+  onRandomIdleSetting: (enabled: boolean) => void;
   speakIntro: () => void | Promise<void>;
 }) {
   async function refreshVrmSrc() {
@@ -79,12 +77,11 @@ export function usePetSettingsSync(deps: {
     if (deps.hostAlive() && deps.settings.value.usbWatchEnabled !== prevUsb) {
       deps.refreshUsbWatch();
     }
-    if (deps.hostAlive() && deps.settings.value.randomIdleEnabled !== prevRandomIdle) {
-      if (deps.settings.value.randomIdleEnabled && !deps.getChatPausesRandomIdle()) {
-        deps.scheduleIdleAction();
-      } else {
-        deps.setIdleActionTimer(null);
-      }
+    if (
+      deps.hostAlive() &&
+      deps.settings.value.randomIdleEnabled !== prevRandomIdle
+    ) {
+      deps.onRandomIdleSetting(deps.settings.value.randomIdleEnabled);
     }
     if (
       deps.hostAlive() &&

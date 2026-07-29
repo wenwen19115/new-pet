@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import type { PetPersonality } from "../content/personality";
+import type { PetPersonality } from "../content/dialogue/personality";
 import type { PetModelKind } from "@/pet/skins/types";
 import type { PetTone } from "../data/types";
 import { getPetLocale } from "./locale";
@@ -134,7 +134,7 @@ export async function listPetTtsVoices(
   }
 }
 
-/** Free Edge neural TTS (requires network). */
+/** Edge 神经网络 TTS（需联网）。 */
 export async function speakPetTts(
   text: string,
   opts: PetTtsOptions

@@ -1,11 +1,5 @@
-import { computed, reactive, ref } from "vue";
-import { getCharacter } from "@/pet/characters";
 import { syncPetBubbleToPet } from "@/pet/windows/bubble";
 import { isPetMenuOpen } from "@/pet/windows/menu";
-import { loadPetSettings } from "@/pet/data/settings";
-import { resolveAppearance } from "@/pet/skins";
-import { petBodyBox, petWindowSize } from "@/pet/bridge/sizes";
-import type { PetMood, PetSettings } from "@/pet/data/types";
 import { usePetIdleLoop } from "./usePetIdleLoop";
 import { usePetLifeTimers } from "./usePetLifeTimers";
 import { usePetMotionHost } from "./usePetMotionHost";
@@ -14,77 +8,50 @@ import { usePetSpeech } from "./usePetSpeech";
 import { usePetHostLifecycle } from "./usePetHostLifecycle";
 import { usePetSettingsSync } from "./usePetSettingsSync";
 import { usePetShellActions } from "./usePetShellActions";
+import {
+  dispatchPetHostIntent,
+  type PetHostIntent,
+  type PetHostIntentEffects,
+} from "./petHostIntents";
+import { createApplyPetMood } from "./petHostMood";
+import {
+  clearPetHostTimer,
+  createPetHostShared,
+  type PetHostShared,
+} from "./petHostShared";
 
-export type PetHostPorts = {
-  scheduleIdleAction: () => void;
-  scheduleAutoSpeak: () => void;
-  resetSleepTimer: () => void;
-  wakeFromSleep: () => void;
-  speakText: (
-    text: string,
-    fromAuto: boolean,
-    opts?: { keepMotion?: boolean }
-  ) => void | Promise<void>;
-  speak: (fromAuto?: boolean) => void | Promise<void>;
-  onBeforeDrag: () => void;
-  onTap: () => void;
-  onAfterPointerUp: (info: { wasDragging: boolean }) => void;
-};
-
-function createDefaultPorts(): PetHostPorts {
-  return {
-    scheduleIdleAction: () => {},
-    scheduleAutoSpeak: () => {},
-    resetSleepTimer: () => {},
-    wakeFromSleep: () => {},
-    speakText: () => {},
-    speak: () => {},
-    onBeforeDrag: () => {},
-    onTap: () => {},
-    onAfterPointerUp: () => {},
-  };
-}
-
-function clearTimer(id: number | null) {
-  if (id != null) window.clearTimeout(id);
-}
-
-/** Shared pet runtime: state, ports bag, and sub-host wiring. */
+/** 具体行为在 use*；这里只接线。 */
 export function createPetHost() {
-  const settings = ref<PetSettings>(loadPetSettings());
-  const vrmSrc = ref<string | null>(null);
-  const mood = ref<PetMood>("idle");
-  const lastLine = ref<string | null>(null);
-  const idleMotion = ref<string>("idle-float");
-  const speaking = ref(false);
-  const gaze = reactive({ x: 0, y: 0 });
+  const s = createPetHostShared();
+  return wirePetHost(s);
+}
 
-  const ports = createDefaultPorts();
-
-  let bubbleTimer: number | null = null;
-  let moodResetTimer: number | null = null;
-  let chatPausesRandomIdle = false;
-  let hostAlive = true;
-
-  const activeSkin = computed(() =>
-    resolveAppearance(settings.value.modelKind, settings.value.lookId)
-  );
-  const activeCharacter = computed(() => getCharacter(activeSkin.value.model));
-  const v = computed(() => activeSkin.value.visual);
-  const winSize = computed(() =>
-    petWindowSize(activeSkin.value.model, settings.value.zoomPercent)
-  );
-  const bodyBox = computed(() =>
-    petBodyBox(activeSkin.value.model, settings.value.zoomPercent)
-  );
-  const activeModel = computed(() => activeSkin.value.model);
+function wirePetHost(s: PetHostShared) {
+  const {
+    settings,
+    vrmSrc,
+    mood,
+    lastLine,
+    idleMotion,
+    speaking,
+    gaze,
+    ports,
+    bindPorts,
+    activeSkin,
+    activeCharacter,
+    v,
+    winSize,
+    bodyBox,
+    activeModel,
+    applyMood,
+  } = s;
 
   const pointerHost = usePetPointerHost({
-    hostAlive: () => hostAlive,
+    hostAlive: () => s.hostAlive,
     winSize,
     bodyBox,
     mood,
-    speaking,
+    applyMood,
     hitBoundsEnabled: () => settings.value.hitBoundsEnabled,
     isMenuOpen: () => isPetMenuOpen(),
     gaze,
@@ -97,23 +64,6 @@ export function createPetHost() {
     },
   });
 
-  const {
-    isDragging,
-    showHitBounds,
-    dragTrailAngle,
-    dragTrailSpeed,
-    physicsActive,
-    physicsStyle,
-    onPointerMove,
-    onPointerUp,
-    tickSwing,
-    sampleCursor,
-    resetDragState,
-    syncWindowCenter,
-    initCursorLog,
-    setWinCenterFromResize,
-  } = pointerHost;
-
   const motionHost = usePetMotionHost({
     settings,
     activeSkin,
@@ -121,143 +71,147 @@ export function createPetHost() {
     winSize,
     mood,
     speaking,
-    isDragging,
+    applyMood,
+    isDragging: pointerHost.isDragging,
     idleMotion,
-    clearTimer,
+    clearTimer: clearPetHostTimer,
     scheduleIdleAction: () => ports.scheduleIdleAction(),
     speakText: (text, fromAuto, opts) => ports.speakText(text, fromAuto, opts),
     wakeFromSleep: () => ports.wakeFromSleep(),
     resetSleepTimer: () => ports.resetSleepTimer(),
     clearMoodResetTimer: () => {
-      clearTimer(moodResetTimer);
-      moodResetTimer = null;
+      clearPetHostTimer(s.moodResetTimer);
+      s.moodResetTimer = null;
     },
   });
 
-  const {
-    motionPlayId,
-    flyVisualX,
-    flyVisualY,
-    vrmFaceYaw,
-    wormholePhase,
-    pinColors,
-    tickLeds,
-    isMotionLocked,
-    beginMotion,
-    playMotionOnce,
-    cancelActiveMotion,
-    cancelFlight,
-    clearMotionTimers,
-    getIdleActionTimer,
-    setIdleActionTimer,
-  } = motionHost;
+  s.setApplyMoodImpl(
+    createApplyPetMood({
+      getMood: () => mood.value,
+      setMood: (m) => {
+        mood.value = m;
+      },
+      speaking: () => speaking.value,
+      dragging: () => pointerHost.isDragging.value,
+      isMotionLocked: motionHost.isMotionLocked,
+    })
+  );
 
   const speech = usePetSpeech({
     settings,
     model: activeModel,
     mood,
     speaking,
+    applyMood,
     lastLine,
     idleMotion,
-    isDragging,
-    isMotionLocked,
+    isDragging: pointerHost.isDragging,
+    isMotionLocked: motionHost.isMotionLocked,
     resetSleepTimer: () => ports.resetSleepTimer(),
     scheduleAutoSpeak: () => ports.scheduleAutoSpeak(),
-    clearTimer,
+    clearTimer: clearPetHostTimer,
     setBubbleTimer: (id) => {
-      bubbleTimer = id;
+      s.bubbleTimer = id;
     },
     setMoodResetTimer: (id) => {
-      moodResetTimer = id;
+      s.moodResetTimer = id;
     },
-    getBubbleTimer: () => bubbleTimer,
-    getMoodResetTimer: () => moodResetTimer,
+    getBubbleTimer: () => s.bubbleTimer,
+    getMoodResetTimer: () => s.moodResetTimer,
   });
-
-  const { speakText, speak, speakIntro, speakTapEgg } = speech;
 
   const life = usePetLifeTimers({
     settings,
     mood,
     speaking,
-    isDragging,
+    applyMood,
+    isDragging: pointerHost.isDragging,
     idleMotion,
-    clearTimer,
-    speak: (fromAuto) => speak(fromAuto),
+    clearTimer: clearPetHostTimer,
+    speak: (fromAuto) => speech.speak(fromAuto),
     speakUsb: (payload) => speech.speakUsb(payload),
     onEnterSleep: () => {
-      cancelActiveMotion({ resetVisuals: false });
-      clearMotionTimers();
+      motionHost.cancelActiveMotion({ resetVisuals: false });
+      motionHost.clearMotionTimers();
     },
   });
 
-  const {
-    blinking,
-    wakeFromSleep,
-    resetSleepTimer,
-    scheduleBlink,
-    scheduleAutoSpeak,
-    refreshUsbWatch,
-    clearLifeTimers,
-  } = life;
-
-  ports.resetSleepTimer = resetSleepTimer;
-  ports.scheduleAutoSpeak = scheduleAutoSpeak;
-  ports.wakeFromSleep = wakeFromSleep;
-  ports.speakText = speakText;
-  ports.speak = speak;
+  bindPorts({
+    resetSleepTimer: life.resetSleepTimer,
+    scheduleAutoSpeak: life.scheduleAutoSpeak,
+    wakeFromSleep: life.wakeFromSleep,
+    speakText: speech.speakText,
+    speak: speech.speak,
+  });
 
   const idleLoop = usePetIdleLoop({
     settings,
     model: activeModel,
     speaking,
-    isDragging,
+    isDragging: pointerHost.isDragging,
     mood,
-    isMotionLocked,
-    isPaused: () => chatPausesRandomIdle,
-    beginMotion,
-    clearTimer,
-    getIdleActionTimer,
-    setIdleActionTimer,
+    isMotionLocked: motionHost.isMotionLocked,
+    isPaused: () => s.chatPausesRandomIdle,
+    beginMotion: motionHost.beginMotion,
+    clearTimer: clearPetHostTimer,
+    getIdleActionTimer: motionHost.getIdleActionTimer,
+    setIdleActionTimer: motionHost.setIdleActionTimer,
   });
 
-  ports.scheduleIdleAction = idleLoop.scheduleIdleAction;
+  bindPorts({ scheduleIdleAction: idleLoop.scheduleIdleAction });
+
+  const intentFx: PetHostIntentEffects = {
+    hostAlive: () => s.hostAlive,
+    randomIdleEnabled: () => settings.value.randomIdleEnabled,
+    chatPausesRandomIdle: () => s.chatPausesRandomIdle,
+    setChatPausesRandomIdle: (open) => {
+      s.chatPausesRandomIdle = open;
+    },
+    setIdleActionTimer: motionHost.setIdleActionTimer,
+    cancelFlight: motionHost.cancelFlight,
+    scheduleIdleAction: () => ports.scheduleIdleAction(),
+  };
+
+  function dispatch(intent: PetHostIntent) {
+    dispatchPetHostIntent(intent, intentFx);
+  }
 
   let resizePetWindow: () => void | Promise<void> = () => {};
 
   const settingsSync = usePetSettingsSync({
     settings,
     vrmSrc,
-    hostAlive: () => hostAlive,
-    getChatPausesRandomIdle: () => chatPausesRandomIdle,
+    hostAlive: () => s.hostAlive,
     getActiveSkinId: () => activeSkin.value.id,
     getActiveSkinModel: () => activeSkin.value.model,
-    refreshUsbWatch,
+    refreshUsbWatch: life.refreshUsbWatch,
     resizePetWindow: () => resizePetWindow(),
-    setIdleActionTimer,
-    scheduleIdleAction: () => ports.scheduleIdleAction(),
-    speakIntro,
+    onRandomIdleSetting: (enabled) => {
+      dispatch({ type: "random-idle-setting", enabled });
+    },
+    speakIntro: speech.speakIntro,
   });
 
   const shell = usePetShellActions({
     ports,
+    bindPorts,
     settings,
     speaking,
     activeSkin,
     activeCharacter,
-    cancelActiveMotion,
-    clearMotionTimers,
-    beginMotion,
-    speakTapEgg,
-    speak,
+    cancelActiveMotion: motionHost.cancelActiveMotion,
+    clearMotionTimers: motionHost.clearMotionTimers,
+    beginMotion: motionHost.beginMotion,
+    speakTapEgg: speech.speakTapEgg,
+    speak: speech.speak,
     pointerOnPointerDown: pointerHost.onPointerDown,
   });
 
   const lifecycle = usePetHostLifecycle({
     hostAliveRef: {
-      get: () => hostAlive,
+      get: () => s.hostAlive,
       set: (v) => {
-        hostAlive = v;
+        s.hostAlive = v;
       },
     },
     settings,
@@ -265,54 +219,48 @@ export function createPetHost() {
     mood,
     lastLine,
     speaking,
-    isDragging,
+    applyMood,
+    isDragging: pointerHost.isDragging,
     activeCharacter,
     winSize,
     bubbleTimerRef: {
-      get: () => bubbleTimer,
+      get: () => s.bubbleTimer,
       set: (id) => {
-        bubbleTimer = id;
+        s.bubbleTimer = id;
       },
     },
     moodResetTimerRef: {
-      get: () => moodResetTimer,
+      get: () => s.moodResetTimer,
       set: (id) => {
-        moodResetTimer = id;
+        s.moodResetTimer = id;
       },
     },
-    getChatPausesRandomIdle: () => chatPausesRandomIdle,
-    setChatPausesRandomIdle: (open) => {
-      chatPausesRandomIdle = open;
-      if (open) {
-        setIdleActionTimer(null);
-        cancelFlight();
-        return;
-      }
-      if (hostAlive && settings.value.randomIdleEnabled) {
-        ports.scheduleIdleAction();
-      }
+    onChatOpen: (open) => {
+      dispatch({ type: "chat-open", open });
     },
-    clearLifeTimers,
-    clearMotionTimers,
-    cancelFlight,
-    resetDragState,
-    syncWindowCenter,
-    initCursorLog,
-    setWinCenterFromResize,
-    tickLeds,
-    tickSwing,
-    sampleCursor,
-    resetSleepTimer,
-    scheduleBlink,
+    onSuspendRuntime: () => {
+      dispatch({ type: "suspend-runtime" });
+    },
+    clearLifeTimers: life.clearLifeTimers,
+    clearMotionTimers: motionHost.clearMotionTimers,
+    resetDragState: pointerHost.resetDragState,
+    syncWindowCenter: pointerHost.syncWindowCenter,
+    initCursorLog: pointerHost.initCursorLog,
+    setWinCenterFromResize: pointerHost.setWinCenterFromResize,
+    tickLeds: motionHost.tickLeds,
+    tickSwing: pointerHost.tickSwing,
+    sampleCursor: pointerHost.sampleCursor,
+    resetSleepTimer: life.resetSleepTimer,
+    scheduleBlink: life.scheduleBlink,
     scheduleIdleAction: () => ports.scheduleIdleAction(),
-    scheduleAutoSpeak,
+    scheduleAutoSpeak: life.scheduleAutoSpeak,
     refreshVrmSrc: settingsSync.refreshVrmSrc,
-    refreshUsbWatch,
+    refreshUsbWatch: life.refreshUsbWatch,
     applySettings: settingsSync.applySettings,
-    speakIntro,
-    isMotionLocked,
-    playMotionOnce,
-    showHitBounds,
+    speakIntro: speech.speakIntro,
+    isMotionLocked: motionHost.isMotionLocked,
+    playMotionOnce: motionHost.playMotionOnce,
+    showHitBounds: pointerHost.showHitBounds,
     onStorage: settingsSync.onStorage,
     onCtxMenuAction: shell.onCtxMenuAction,
   });
@@ -330,22 +278,22 @@ export function createPetHost() {
     activeCharacter,
     v,
     bodyBox,
-    isDragging,
-    showHitBounds,
-    dragTrailAngle,
-    dragTrailSpeed,
-    physicsActive,
-    physicsStyle,
-    motionPlayId,
-    flyVisualX,
-    flyVisualY,
-    vrmFaceYaw,
-    wormholePhase,
-    pinColors,
-    blinking,
+    isDragging: pointerHost.isDragging,
+    showHitBounds: pointerHost.showHitBounds,
+    dragTrailAngle: pointerHost.dragTrailAngle,
+    dragTrailSpeed: pointerHost.dragTrailSpeed,
+    physicsActive: pointerHost.physicsActive,
+    physicsStyle: pointerHost.physicsStyle,
+    motionPlayId: motionHost.motionPlayId,
+    flyVisualX: motionHost.flyVisualX,
+    flyVisualY: motionHost.flyVisualY,
+    vrmFaceYaw: motionHost.vrmFaceYaw,
+    wormholePhase: motionHost.wormholePhase,
+    pinColors: motionHost.pinColors,
+    blinking: life.blinking,
     onPointerDown: shell.onPointerDown,
-    onPointerMove,
-    onPointerUp,
+    onPointerMove: pointerHost.onPointerMove,
+    onPointerUp: pointerHost.onPointerUp,
     onContextMenu: shell.onContextMenu,
     mount: lifecycle.mount,
     dispose: lifecycle.dispose,

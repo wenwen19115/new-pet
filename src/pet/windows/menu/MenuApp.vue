@@ -62,10 +62,10 @@ import {
   PET_MENU_HIDE_EVENT,
   PET_MENU_LAYOUT_EVENT,
   PET_MENU_SHOW_EVENT,
-  petMenuHeight,
   type PetMenuAction,
   type PetMenuPayload,
-} from "./types";
+} from "@/pet/events";
+import { petMenuHeight } from "./types";
 import { formatStatPercent, getSystemStats } from "@/pet/bridge/systemStats";
 
 const rootEl = ref<HTMLElement | null>(null);

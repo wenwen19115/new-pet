@@ -1,0 +1,67 @@
+/**
+ * Toon layout — base structure (.pix, stage, svg layers).
+ * Unscoped; selectors use unique .pix-* prefixes.
+ */
+
+.pix {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  overflow: hidden;
+}
+
+.pix-shadow {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: 6%;
+  height: 8%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse,
+    color-mix(in srgb, var(--pix-accent) 40%, transparent),
+    rgba(0, 0, 0, 0.4) 55%,
+    transparent 72%
+  );
+  filter: blur(1px);
+  opacity: 0.9;
+  animation: shadow-breathe 1.4s ease-in-out infinite;
+}
+
+.pix-stage {
+  position: absolute;
+  inset: 10% 8% 12% 8%;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  transform-origin: 50% 88%;
+  will-change: transform;
+}
+
+.pix-portal-svg {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 92%;
+  height: 92%;
+  margin: auto;
+  pointer-events: none;
+  overflow: visible;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.pix-svg {
+  width: 92%;
+  height: 92%;
+  overflow: visible;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}

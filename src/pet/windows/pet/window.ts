@@ -18,7 +18,7 @@ import {
   PET_RESUME_EVENT,
   PET_SUSPEND_EVENT,
   PET_WINDOW_LABEL,
-} from "@/pet/data/types";
+} from "@/pet/events";
 import { isPetVrmReady } from "@/pet/data/vrmStorage";
 import { waitWebviewReady } from "@/pet/windows/shared/waitWebviewReady";
 
@@ -112,7 +112,7 @@ async function emitPet(event: string): Promise<void> {
   }
 }
 
-/** Soft dismiss: hide webviews, keep HWNDs (avoids WebView2 PostMessage after destroy). */
+/** 软隐藏：藏 webview，保留 HWND（避免销毁后 WebView2 PostMessage）。 */
 async function dismissPetWindow(): Promise<void> {
   await emitPet(PET_SUSPEND_EVENT);
   await sleep(40);
@@ -128,7 +128,7 @@ async function dismissPetWindow(): Promise<void> {
   }
 }
 
-/** App exit / forced recreate: tear down HWNDs. */
+/** 应用退出 / 强制重建：拆掉 HWND。 */
 async function destroyPetWindow(): Promise<void> {
   await emitPet(PET_SUSPEND_EVENT);
   await sleep(80);
@@ -140,7 +140,7 @@ async function destroyPetWindow(): Promise<void> {
 }
 
 async function createPetWindow(): Promise<WebviewWindow | null> {
-  // Soft-dismiss leaves the label alive — never create a second pet.
+  // 软隐藏后 label 还在，别再 new 第二个 pet
   const existing = await getPetWindow();
   if (existing) return existing;
 
@@ -148,7 +148,7 @@ async function createPetWindow(): Promise<WebviewWindow | null> {
   const size = currentPetWindowSize();
   const pet = new WebviewWindow(PET_WINDOW_LABEL, {
     url: petUrl(),
-    title: "芯宠",
+    title: "è¯å® ",
     width: size.w,
     height: size.h,
     resizable: false,
@@ -212,7 +212,7 @@ async function openPetWindow(): Promise<WebviewWindow | null> {
 let syncChain: Promise<void> = Promise.resolve();
 /**
  * Dev HMR / html path moves can leave a live HWND on a stale URL.
- * Production cold start has no stale HWND — only recreate when asked.
+ * Production cold start has no stale HWND â only recreate when asked.
  */
 let needsFreshPetWindow = import.meta.env.DEV;
 

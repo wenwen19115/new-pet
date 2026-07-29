@@ -3,3 +3,7 @@ export { useFormPicker } from "./useFormPicker";
 export { useVrmSettings } from "./useVrmSettings";
 export { useTtsSettings } from "./useTtsSettings";
 export { usePetSettingsHydrate } from "./usePetSettingsHydrate";
+export { usePetSettingsFormState } from "./usePetSettingsFormState";
+export { usePetSettingsPersist } from "./usePetSettingsPersist";
+export { usePetSettingsActions } from "./usePetSettingsActions";
+export { usePetSettingsViewModel } from "./usePetSettingsViewModel";

@@ -1,6 +1,5 @@
-import type { PetIdleMotion } from "../content/motions";
+import type { PetIdleMotion } from "../content/motion/motions";
 
-/** Cross-model motion ids → this character's playable id */
 export function remapChipMotion(motion: PetIdleMotion): PetIdleMotion {
   if (
     motion === "toon-walk" ||
@@ -91,7 +90,6 @@ export function remapVrmMotion(motion: PetIdleMotion): PetIdleMotion {
   }
 }
 
-/** fig-sci + default fallback */
 export function remapFigMotion(motion: PetIdleMotion): PetIdleMotion {
   switch (motion) {
     case "fly-orbit":

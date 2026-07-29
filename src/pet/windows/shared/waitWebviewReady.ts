@@ -2,11 +2,10 @@ import type { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 
 export type WaitWebviewReadyOptions = {
   timeoutMs?: number;
-  /** Timeout: keep HWND (pet cold-start) or destroy (bubble/menu/chat). */
+  /** 超时：保留 HWND（pet 冷启动）或销毁（bubble/menu/chat） */
   onTimeout?: "keep" | "destroy";
 };
 
-/** Shared create-wait for secondary Webviews. */
 export async function waitWebviewReady(
   win: WebviewWindow,
   options?: WaitWebviewReadyOptions

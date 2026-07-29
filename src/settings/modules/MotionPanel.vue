@@ -116,7 +116,7 @@
 import { inject } from "vue";
 import { ThunderboltOutlined } from "@ant-design/icons-vue";
 import SettingsItemRow from "@/components/SettingsItemRow.vue";
-import CustomVrmBoneEditor from "@/pet/models/CustomVrmBoneEditor.vue";
+import { CustomVrmBoneEditor } from "@/pet/models/vrm";
 import BuiltInIdToggles from "./BuiltInIdToggles.vue";
 import { PET_SETTINGS_PAGE_KEY } from "@/settings/context";
 

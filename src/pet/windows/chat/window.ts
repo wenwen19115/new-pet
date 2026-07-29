@@ -154,7 +154,7 @@ async function ensureChatListeners() {
 }
 
 function buildShowPayload(): PetChatShowPayload {
-  // Prefer in-memory store (synced via settings events across webviews)
+  // 优先内存里的 settings（跨 webview 已由事件同步）
   const s = petStore.settings ?? loadPetSettings();
   const character = getCharacter(s.modelKind);
   const petName =

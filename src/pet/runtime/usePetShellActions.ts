@@ -7,20 +7,20 @@ import {
   showPetMenu,
   type PetMenuAction,
 } from "@/pet/windows/menu";
-import { filterEnabledMotions } from "@/pet/content/customLines";
+import { filterEnabledMotions } from "@/pet/content/dialogue/customLines";
 import { resolveMotionForModel } from "@/pet/characters";
-import { isScreenFlightMotion, PET_TAP_EGG_MOTIONS } from "@/pet/content/motions";
+import { isScreenFlightMotion, PET_TAP_EGG_MOTIONS } from "@/pet/content/motion/motions";
 import type { CharacterRuntimeSpec } from "@/pet/characters/types";
 import type { PetSettings } from "@/pet/data/types";
 import type { PetModelKind, PetSkinVisual } from "@/pet/skins/types";
-import type { PetHostPorts } from "./createPetHost";
+import type { PetHostPorts } from "./petHostPorts";
 
 const TAP_WINDOW_MS = 700;
 const TAP_EGG_NEED = 3;
 
-/** Context menu, menu actions, tap-to-speak, and tap-egg easter egg. */
 export function usePetShellActions(deps: {
   ports: PetHostPorts;
+  bindPorts: (partial: Partial<PetHostPorts>) => void;
   settings: Ref<PetSettings>;
   speaking: Ref<boolean>;
   activeSkin: ComputedRef<{ model: PetModelKind; visual: PetSkinVisual }>;
@@ -70,23 +70,23 @@ export function usePetShellActions(deps: {
     return false;
   }
 
-  deps.ports.onBeforeDrag = () => {
-    deps.cancelActiveMotion();
-    deps.clearMotionTimers();
-    deps.speaking.value = false;
-    void hidePetBubble();
-    void hidePetChat();
-  };
-
-  deps.ports.onTap = () => {
-    if (registerTapForEgg()) return;
-    void deps.speak(false);
-  };
-
-  deps.ports.onAfterPointerUp = (info) => {
-    if (info.wasDragging) deps.ports.scheduleIdleAction();
-    deps.ports.resetSleepTimer();
-  };
+  deps.bindPorts({
+    onBeforeDrag: () => {
+      deps.cancelActiveMotion();
+      deps.clearMotionTimers();
+      deps.speaking.value = false;
+      void hidePetBubble();
+      void hidePetChat();
+    },
+    onTap: () => {
+      if (registerTapForEgg()) return;
+      void deps.speak(false);
+    },
+    onAfterPointerUp: (info) => {
+      if (info.wasDragging) deps.ports.scheduleIdleAction();
+      deps.ports.resetSleepTimer();
+    },
+  });
 
   function onPointerDown(e: PointerEvent) {
     void hidePetMenu();

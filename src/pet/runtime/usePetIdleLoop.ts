@@ -1,7 +1,11 @@
 import type { Ref } from "vue";
 import type { PetSettings } from "../data/types";
 import type { PetModelKind } from "../skins/types";
-import { buildIdleMotionPool, resolveMotionPlay } from "../content/motionPlayer";
+import {
+  characterSupportsVrmAssets,
+  getCharacter,
+} from "../characters";
+import { buildIdleMotionPool, resolveMotionPlay } from "../content/motion/motionPlayer";
 
 export function usePetIdleLoop(deps: {
   settings: Ref<PetSettings>;
@@ -10,7 +14,7 @@ export function usePetIdleLoop(deps: {
   isDragging: Ref<boolean>;
   mood: Ref<string>;
   isMotionLocked: () => boolean;
-  /** When true (e.g. AI chat open), do not schedule random idle motions */
+  /** true 时（如聊天开着）不排随机 idle */
   isPaused?: () => boolean;
   beginMotion: (id: string, opts?: { withSpeakChance?: number }) => void;
   clearTimer: (id: number | null) => void;
@@ -40,8 +44,10 @@ export function usePetIdleLoop(deps: {
         }
         const model = deps.model.value;
         const profile = deps.settings.value.profiles[model];
+        const character = getCharacter(model);
         const pool = buildIdleMotionPool({
-          model,
+          idleMotions: character.idleMotions,
+          allowCustomVrm: characterSupportsVrmAssets(model),
           disabledMotions: profile?.disabledMotions,
           customVrmMotions: deps.settings.value.customVrmMotions,
         });

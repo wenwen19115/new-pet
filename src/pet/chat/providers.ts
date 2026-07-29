@@ -1,5 +1,3 @@
-/** AI chat provider presets — DeepSeek (CN) + local companion only. */
-
 export type PetChatProviderId = "local" | "deepseek";
 
 export interface PetChatAiConfig {

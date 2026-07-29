@@ -1,10 +1,10 @@
 import type { CharacterDef } from "./types";
 import { formFig } from "../skins/forms";
 import { FIG_LOOK_IDS } from "../skins/looks";
-import { PET_FIG_DEMO_MOTIONS } from "../content/motions";
+import { PET_FIG_DEMO_MOTIONS } from "../content/motion/motions";
 import { lines } from "./lines/fig-sci";
 import { remapFigMotion } from "./motionRemap";
-import PetFigSciModel from "../models/PetFigSciModel.vue";
+import { PetFigSciModel } from "../models/fig-sci";
 
 export const characterFig: CharacterDef = {
   id: "fig-sci",
@@ -34,7 +34,7 @@ export const characterFig: CharacterDef = {
       const h = Math.round(
         Math.min(400, Math.max(240, screen.availH * 0.3)) * scale
       );
-      const w = Math.round(h * (288 / 473));
+      const w = Math.round(h * (2 / 3));
       return { w, h };
     },
   },

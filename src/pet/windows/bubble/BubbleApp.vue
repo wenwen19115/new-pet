@@ -22,7 +22,7 @@ import {
   PET_BUBBLE_EVENT,
   PET_BUBBLE_HIDE_EVENT,
   type PetBubblePayload,
-} from "./types";
+} from "@/pet/events";
 import type { PetTone } from "@/pet/data/types";
 import { readBubblePayloadRaw } from "@/pet/data/storageKeys";
 

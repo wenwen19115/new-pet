@@ -1,0 +1,217 @@
+.chip-slab {
+  --chip-depth: calc(var(--body) * 0.66);
+  --chip-half: calc(var(--body) * 0.33);
+  --body: calc(min(var(--pet-body-w, 112px), var(--pet-body-h, 112px)) * 0.62);
+  --body-half: calc(var(--body) * 0.5);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--body);
+  height: var(--body);
+  margin: 0;
+  transform: translate(-50%, -50%) rotateY(-32deg) rotateX(22deg);
+  transform-style: preserve-3d;
+  z-index: 1;
+}
+
+.chip-face {
+  position: absolute;
+  box-sizing: border-box;
+  transform-style: preserve-3d;
+}
+
+.chip-face--front,
+.chip-face--back {
+  width: var(--body);
+  height: var(--body);
+  left: 0;
+  top: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 8px;
+}
+
+.chip-face--front {
+  transform: translateZ(var(--chip-half));
+  background: transparent;
+  overflow: visible;
+}
+
+.chip-face--back {
+  transform: rotateY(180deg) translateZ(var(--chip-half));
+  background: linear-gradient(145deg, #243044 0%, #0c121c 55%, #05070c 100%);
+  border: 1px solid var(--pet-package-stroke, #3d4f66);
+  overflow: hidden;
+}
+
+.chip-back-inner {
+  position: absolute;
+  inset: 12%;
+  border-radius: 6px;
+  background: linear-gradient(
+    160deg,
+    var(--pet-die-from, #15303c),
+    var(--pet-die-to, #071018)
+  );
+  border: 1px solid color-mix(in srgb, var(--pet-accent, #00e5ff) 28%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chip-back-mark {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: color-mix(in srgb, var(--pet-accent, #00e5ff) 45%, transparent);
+}
+
+.chip-back-grid {
+  position: absolute;
+  inset: 6px;
+  opacity: 0.28;
+  background-image:
+    linear-gradient(var(--pet-back-grid, rgba(0, 229, 255, 0.4)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--pet-back-grid, rgba(0, 229, 255, 0.4)) 1px, transparent 1px);
+  background-size: 7px 7px;
+  pointer-events: none;
+}
+
+.chip-face--left,
+.chip-face--right {
+  width: var(--chip-depth);
+  height: var(--body);
+  top: 0;
+  left: 50%;
+  margin-left: calc(var(--chip-half) * -1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 10px 0;
+  border: 1px solid color-mix(in srgb, var(--pet-accent, #00e5ff) 35%, transparent);
+}
+
+.chip-face--right {
+  transform: rotateY(90deg) translateZ(var(--body-half));
+  background: linear-gradient(
+    180deg,
+    var(--pet-side-hi, #5a7a8c) 0%,
+    var(--pet-side-mid, #2a4050) 35%,
+    #152028 70%,
+    var(--pet-side-lo, #0a1218) 100%
+  );
+}
+
+.chip-face--left {
+  transform: rotateY(-90deg) translateZ(var(--body-half));
+  background: linear-gradient(
+    180deg,
+    var(--pet-side-mid, #3a5060) 0%,
+    #1a2834 40%,
+    var(--pet-side-lo, #0c141c) 100%
+  );
+}
+
+.chip-face--top,
+.chip-face--bottom {
+  width: var(--body);
+  height: var(--chip-depth);
+  left: 0;
+  top: 50%;
+  margin-top: calc(var(--chip-half) * -1);
+  border: 1px solid rgba(120, 160, 190, 0.35);
+}
+
+.chip-face--top {
+  transform: rotateX(90deg) translateZ(var(--body-half));
+  background: linear-gradient(
+    90deg,
+    var(--pet-side-hi, #6a8498) 0%,
+    #9eb4c4 45%,
+    var(--pet-side-mid, #3a5060) 100%
+  );
+}
+
+.chip-face--bottom {
+  transform: rotateX(-90deg) translateZ(var(--body-half));
+  background: linear-gradient(
+    90deg,
+    var(--pet-side-lo, #0a1016) 0%,
+    #1a242e 50%,
+    #05080c 100%
+  );
+}
+
+.side-led {
+  width: 7px;
+  height: 7px;
+  border-radius: 1.5px;
+  box-shadow: 0 0 6px currentColor;
+  flex-shrink: 0;
+}
+
+.chip-svg {
+  position: absolute;
+  width: 156.25%;
+  height: 156.25%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+  overflow: visible;
+}
+
+.mark {
+  fill: color-mix(in srgb, var(--pet-accent, #00e5ff) 28%, transparent);
+  font-size: 7px;
+  font-family: Consolas, "Courier New", monospace;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.sensor {
+  fill: #031820;
+  stroke: var(--pet-accent, #00e5ff);
+  stroke-width: 0.7;
+}
+
+.pupil {
+  fill: var(--pet-accent, #00e5ff);
+}
+
+.spark {
+  fill: #e8ffff;
+}
+
+.mouth,
+.brow,
+.sleep-eye {
+  fill: none;
+  stroke: var(--pet-accent-soft, #7eefff);
+  stroke-width: 2;
+  stroke-linecap: square;
+}
+
+.mouth.soft {
+  stroke-width: 1.6;
+  opacity: 0.75;
+}
+
+.mouth-box {
+  fill: none;
+  stroke: var(--pet-accent-soft, #7eefff);
+  stroke-width: 1.6;
+}
+
+.brow {
+  stroke-width: 1.8;
+}
+
+.zzz {
+  fill: color-mix(in srgb, var(--pet-accent-soft, #7eefff) 70%, transparent);
+  font-size: 10px;
+  font-family: Consolas, monospace;
+  font-weight: 700;
+}

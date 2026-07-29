@@ -15,7 +15,6 @@ import {
 } from "@/pet/data/vrmStorage";
 import { syncPetWindow } from "@/pet/windows/pet";
 
-/** VRM upload / clear / preview for settings page. */
 export function useVrmSettings(options: {
   modelKind: Ref<PetModelKind>;
   settingsBag: Ref<PetSettings>;
@@ -44,8 +43,7 @@ export function useVrmSettings(options: {
     );
     vrmSrc.value = src;
     if (!stale) return;
-    // Settings still have a name but the local file is gone — no floating pet,
-    // only the empty settings hero (looks like "the pet became this card").
+    // settings 还有名字但本地文件没了：不挂浮宠，只留设置页空态
     vrmModelName.value = "";
     vrmModelRev.value = 0;
     try {

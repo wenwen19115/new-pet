@@ -5,24 +5,33 @@ import {
   getCurrentWindow,
 } from "@tauri-apps/api/window";
 import type { PetMood } from "@/pet/data/types";
+import type { ApplyPetMood } from "./petHostMood";
+import {
+  buildPhysicsStyle,
+  computeReleaseImpulses,
+  isCursorOverPet,
+  isPhysicsActive,
+  resetPhysicsVelocities,
+  smoothCursorDelta,
+  tickDragPhysics,
+  tickReleasePhysics,
+  updateGaze,
+  winCenterFromOuter,
+  type PointerPhysicsVelocities,
+} from "./pointerPhysics";
 
-function clamp(n: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, n));
-}
-
-/** Pointer hit-test, drag/follow, gaze, and spring/tilt for the floating pet. */
 export function usePetPointerHost(deps: {
   hostAlive: () => boolean;
   winSize: Ref<{ w: number; h: number }> | { value: { w: number; h: number } };
   bodyBox: Ref<{ w: number; h: number }> | { value: { w: number; h: number } };
   mood: Ref<PetMood>;
-  speaking: Ref<boolean>;
+  applyMood: ApplyPetMood;
   hitBoundsEnabled: () => boolean;
   isMenuOpen: () => boolean;
   gaze: { x: number; y: number };
   gazeConfig: () => { max: number; range: number; follow: number };
   dragThreshold?: number;
-  /** Cancel flights, hide overlays, clear motion timers before drag locks in. */
+  /** 拖拽锁定前：停飞行、藏浮层、清动作 timer */
   onBeforeDrag: () => void;
   onTap: () => void;
   onAfterPointerUp: (info: { wasDragging: boolean }) => void;
@@ -49,34 +58,33 @@ export function usePetPointerHost(deps: {
   let grabOffsetY = 0;
   let smoothVelX = 0;
   let smoothVelY = 0;
-  let swingVel = 0;
-  let tiltYVel = 0;
-  let tiltXVel = 0;
-  let stretchVelX = 0;
-  let stretchVelY = 0;
+  let physicsVel: PointerPhysicsVelocities = resetPhysicsVelocities();
   let cachedScale = 1;
   let winCenter = { x: 0, y: 0 };
   let wantPos: { x: number; y: number } | null = null;
   let posWriting = false;
   let ignoreCursor = false;
 
-  const physicsActive = computed(
-    () =>
-      isDragging.value ||
-      Math.abs(swingAngle.value) > 0.35 ||
-      Math.abs(tiltY.value) > 0.6 ||
-      Math.abs(tiltX.value) > 0.6 ||
-      Math.abs(stretchX.value - 1) > 0.012 ||
-      Math.abs(stretchY.value - 1) > 0.012
+  const physicsSnap = () => ({
+    swingAngle: swingAngle.value,
+    tiltY: tiltY.value,
+    tiltX: tiltX.value,
+    stretchX: stretchX.value,
+    stretchY: stretchY.value,
+  });
+
+  const dragTrail = () => ({
+    dragTrailAngle: dragTrailAngle.value,
+    dragTrailSpeed: dragTrailSpeed.value,
+  });
+
+  const physicsActive = computed(() =>
+    isPhysicsActive(physicsSnap(), isDragging.value)
   );
 
   const physicsStyle = computed(() => {
     if (!physicsActive.value) return {};
-    return {
-      animation: "none",
-      transform: `rotateY(${tiltY.value}deg) rotateX(${tiltX.value}deg) rotateZ(${swingAngle.value}deg) scale(${stretchX.value}, ${stretchY.value})`,
-      transformOrigin: "50% 55%",
-    };
+    return buildPhysicsStyle(physicsSnap());
   });
 
   async function syncCursorPassThrough(overPet: boolean) {
@@ -101,10 +109,11 @@ export function usePetPointerHost(deps: {
         wantPos = null;
         try {
           await win.setPosition(new LogicalPosition(p.x, p.y));
-          winCenter = {
-            x: p.x + deps.winSize.value.w / 2,
-            y: p.y + deps.winSize.value.h / 2,
-          };
+          winCenter = winCenterFromOuter(
+            p,
+            deps.winSize.value.w,
+            deps.winSize.value.h
+          );
         } catch {
           break;
         }
@@ -139,12 +148,13 @@ export function usePetPointerHost(deps: {
 
       deps.onBeforeDrag();
 
-      winCenter = {
-        x: outer.x + deps.winSize.value.w / 2,
-        y: outer.y + deps.winSize.value.h / 2,
-      };
+      winCenter = winCenterFromOuter(
+        outer,
+        deps.winSize.value.w,
+        deps.winSize.value.h
+      );
 
-      deps.mood.value = "curious";
+      deps.applyMood("curious", "drag-start");
       isDragging.value = true;
       wantPos = { x: outer.x, y: outer.y };
     } catch {
@@ -182,19 +192,14 @@ export function usePetPointerHost(deps: {
 
     if (isDragging.value) {
       isDragging.value = false;
-      swingVel = smoothVelX * 3.2;
-      tiltYVel = smoothVelX * 0.7;
-      tiltXVel = -smoothVelY * 0.5;
-      stretchVelX = (1 - stretchX.value) * 8;
-      stretchVelY = (1 - stretchY.value) * 8;
+      physicsVel = computeReleaseImpulses(
+        smoothVelX,
+        smoothVelY,
+        stretchX.value,
+        stretchY.value
+      );
       window.setTimeout(() => {
-        if (
-          !isDragging.value &&
-          !deps.speaking.value &&
-          deps.mood.value !== "sleep"
-        ) {
-          deps.mood.value = "idle";
-        }
+        deps.applyMood("idle", "drag-end");
       }, 320);
     }
 
@@ -209,74 +214,31 @@ export function usePetPointerHost(deps: {
   }
 
   function tickSwing(dt: number) {
+    const snap = physicsSnap();
+    const trail = dragTrail();
+
     if (isDragging.value) {
-      const speed = Math.hypot(smoothVelX, smoothVelY);
-      const targetSwing = clamp(smoothVelX * 4.2, -28, 28);
-      swingAngle.value += (targetSwing - swingAngle.value) * Math.min(1, dt * 16);
-
-      const targetTiltY = clamp(smoothVelX * 2.4, -22, 22);
-      const targetTiltX = clamp(-smoothVelY * 1.8, -14, 14);
-      tiltY.value += (targetTiltY - tiltY.value) * Math.min(1, dt * 14);
-      tiltX.value += (targetTiltX - tiltX.value) * Math.min(1, dt * 14);
-
-      const pull = clamp(speed * 0.01, 0, 0.12);
-      const tx = clamp(1 - pull * 0.35, 0.9, 1.03);
-      const ty = clamp(1 + pull * 0.45, 0.97, 1.12);
-      stretchX.value += (tx - stretchX.value) * Math.min(1, dt * 14);
-      stretchY.value += (ty - stretchY.value) * Math.min(1, dt * 14);
-
-      const targetSpeed = clamp(speed / 12, 0, 1);
-      dragTrailSpeed.value +=
-        (targetSpeed - dragTrailSpeed.value) * Math.min(1, dt * 14);
-      if (speed > 0.4) {
-        const ang = (Math.atan2(smoothVelY, smoothVelX) * 180) / Math.PI + 180;
-        const prev = dragTrailAngle.value;
-        let delta = ang - prev;
-        while (delta > 180) delta -= 360;
-        while (delta < -180) delta += 360;
-        dragTrailAngle.value = prev + delta * Math.min(1, dt * 14);
-      }
+      tickDragPhysics(dt, smoothVelX, smoothVelY, snap, trail);
+      swingAngle.value = snap.swingAngle;
+      tiltY.value = snap.tiltY;
+      tiltX.value = snap.tiltX;
+      stretchX.value = snap.stretchX;
+      stretchY.value = snap.stretchY;
+      dragTrailAngle.value = trail.dragTrailAngle;
+      dragTrailSpeed.value = trail.dragTrailSpeed;
       return;
     }
 
-    dragTrailSpeed.value *= Math.max(0, 1 - dt * 11);
-    if (dragTrailSpeed.value < 0.025) dragTrailSpeed.value = 0;
-
     smoothVelX = 0;
     smoothVelY = 0;
-
-    swingVel += (-90 * swingAngle.value - 14 * swingVel) * dt;
-    swingAngle.value += swingVel * dt;
-    tiltYVel += (-85 * tiltY.value - 13 * tiltYVel) * dt;
-    tiltY.value += tiltYVel * dt;
-    tiltXVel += (-85 * tiltX.value - 13 * tiltXVel) * dt;
-    tiltX.value += tiltXVel * dt;
-    stretchVelX += (-70 * (stretchX.value - 1) - 12 * stretchVelX) * dt;
-    stretchX.value += stretchVelX * dt;
-    stretchVelY += (-70 * (stretchY.value - 1) - 12 * stretchVelY) * dt;
-    stretchY.value += stretchVelY * dt;
-
-    if (
-      Math.abs(swingAngle.value) < 0.15 &&
-      Math.abs(swingVel) < 0.15 &&
-      Math.abs(tiltY.value) < 0.2 &&
-      Math.abs(tiltX.value) < 0.2 &&
-      Math.abs(tiltYVel) < 0.15 &&
-      Math.abs(tiltXVel) < 0.15 &&
-      Math.abs(stretchX.value - 1) < 0.008 &&
-      Math.abs(stretchY.value - 1) < 0.008
-    ) {
-      swingAngle.value = 0;
-      swingVel = 0;
-      tiltY.value = 0;
-      tiltX.value = 0;
-      tiltYVel = 0;
-      tiltXVel = 0;
-      stretchX.value = 1;
-      stretchY.value = 1;
-      stretchVelX = 0;
-      stretchVelY = 0;
-    }
+    tickReleasePhysics(dt, snap, physicsVel, trail);
+    swingAngle.value = snap.swingAngle;
+    tiltY.value = snap.tiltY;
+    tiltX.value = snap.tiltX;
+    stretchX.value = snap.stretchX;
+    stretchY.value = snap.stretchY;
+    dragTrailAngle.value = trail.dragTrailAngle;
+    dragTrailSpeed.value = trail.dragTrailSpeed;
   }
 
   async function sampleCursor(frame: number) {
@@ -289,8 +251,9 @@ export function usePetPointerHost(deps: {
       if (isDragging.value) {
         const dx = cursor.x - lastCursorLog.x;
         const dy = cursor.y - lastCursorLog.y;
-        smoothVelX += (dx - smoothVelX) * 0.55;
-        smoothVelY += (dy - smoothVelY) * 0.55;
+        const vel = smoothCursorDelta(smoothVelX, smoothVelY, dx, dy);
+        smoothVelX = vel.x;
+        smoothVelY = vel.y;
         wantPos = {
           x: cursor.x - grabOffsetX,
           y: cursor.y - grabOffsetY,
@@ -305,19 +268,22 @@ export function usePetPointerHost(deps: {
         const outer = (
           await getCurrentWindow().outerPosition()
         ).toLogical(scale);
-        winCenter = {
-          x: outer.x + deps.winSize.value.w / 2,
-          y: outer.y + deps.winSize.value.h / 2,
-        };
+        winCenter = winCenterFromOuter(
+          outer,
+          deps.winSize.value.w,
+          deps.winSize.value.h
+        );
       }
 
-      const halfW = deps.bodyBox.value.w / 2 + HIT_PAD;
-      const halfH = deps.bodyBox.value.h / 2 + HIT_PAD;
-      const overPet =
-        isDragging.value ||
-        deps.isMenuOpen() ||
-        (Math.abs(cursor.x - winCenter.x) <= halfW &&
-          Math.abs(cursor.y - winCenter.y) <= halfH);
+      const overPet = isCursorOverPet(
+        cursor,
+        winCenter,
+        deps.bodyBox.value.w,
+        deps.bodyBox.value.h,
+        HIT_PAD,
+        isDragging.value,
+        deps.isMenuOpen()
+      );
       showHitBounds.value =
         deps.hitBoundsEnabled() &&
         overPet &&
@@ -325,18 +291,7 @@ export function usePetPointerHost(deps: {
         !deps.isMenuOpen();
       void syncCursorPassThrough(overPet);
 
-      if (deps.mood.value !== "sleep") {
-        const gdx = cursor.x - winCenter.x;
-        const gdy = cursor.y - winCenter.y;
-        const len = Math.hypot(gdx, gdy) || 1;
-        const { max: maxGaze, range, follow } = deps.gazeConfig();
-        const strength = clamp(len / range, 0, 1);
-        deps.gaze.x += ((gdx / len) * maxGaze * strength - deps.gaze.x) * follow;
-        deps.gaze.y += ((gdy / len) * maxGaze * strength - deps.gaze.y) * follow;
-      } else {
-        deps.gaze.x *= 0.85;
-        deps.gaze.y *= 0.85;
-      }
+      updateGaze(deps.gaze, cursor, winCenter, deps.mood.value, deps.gazeConfig());
     } catch {
       // ignore
     }
@@ -355,10 +310,11 @@ export function usePetPointerHost(deps: {
       const win = getCurrentWindow();
       cachedScale = await win.scaleFactor();
       const outer = (await win.outerPosition()).toLogical(cachedScale);
-      winCenter = {
-        x: outer.x + deps.winSize.value.w / 2,
-        y: outer.y + deps.winSize.value.h / 2,
-      };
+      winCenter = winCenterFromOuter(
+        outer,
+        deps.winSize.value.w,
+        deps.winSize.value.h
+      );
       return { cachedScale, outer, winCenter };
     } catch {
       return null;
@@ -375,10 +331,11 @@ export function usePetPointerHost(deps: {
   }
 
   function setWinCenterFromResize(outer: { x: number; y: number }) {
-    winCenter = {
-      x: outer.x + deps.winSize.value.w / 2,
-      y: outer.y + deps.winSize.value.h / 2,
-    };
+    winCenter = winCenterFromOuter(
+      outer,
+      deps.winSize.value.w,
+      deps.winSize.value.h
+    );
   }
 
   return {

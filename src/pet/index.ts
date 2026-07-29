@@ -1,4 +1,3 @@
-/** Public host API for the main settings window. */
 export {
   initPetHostBridge,
   applySettingsWindowPin,
@@ -8,8 +7,8 @@ import {
   PET_MOTION_EVENT,
   type PetIdleMotion,
   type PetMotionPayload,
-} from "./content/motions";
-import { PET_INTRO_EVENT } from "./data/types";
+} from "./content/motion/motions";
+import { PET_INTRO_EVENT } from "./events";
 
 export async function requestPetMotion(
   motion: PetIdleMotion | string

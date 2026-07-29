@@ -14,7 +14,7 @@ import AppPanel from "./modules/AppPanel.vue";
 
 let registered = false;
 
-/** Idempotent — call once from settings shell */
+/** 幂等：设置壳只调一次 */
 export function registerBuiltinSettingsModules(): void {
   if (registered) return;
   registered = true;
