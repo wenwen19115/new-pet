@@ -31,9 +31,12 @@ export function usePetShellActions(deps: {
   speakTapEgg: (model: PetModelKind) => void;
   speak: (fromAuto?: boolean) => void | Promise<void>;
   pointerOnPointerDown: (e: PointerEvent) => void;
-  /** 调皮抓到则吞掉普通点按 */
   tryPlayfulCatch?: () => boolean;
   stopPlayful?: () => void;
+  isPeeking?: () => boolean;
+  startPeek?: () => void | Promise<boolean>;
+  revealPeek?: () => void | Promise<boolean>;
+  tryRevealPeekOnTap?: () => boolean;
 }) {
   let tapTimes: number[] = [];
 
@@ -75,6 +78,7 @@ export function usePetShellActions(deps: {
 
   deps.bindPorts({
     onBeforeDrag: () => {
+      if (deps.isPeeking?.()) void deps.revealPeek?.();
       deps.stopPlayful?.();
       deps.cancelActiveMotion();
       deps.clearMotionTimers();
@@ -83,6 +87,7 @@ export function usePetShellActions(deps: {
       void hidePetChat();
     },
     onTap: () => {
+      if (deps.tryRevealPeekOnTap?.()) return;
       if (deps.tryPlayfulCatch?.()) return;
       if (registerTapForEgg()) return;
       void deps.speak(false);
@@ -103,6 +108,7 @@ export function usePetShellActions(deps: {
     await showPetMenu({
       chatEnabled: deps.settings.value.chatEnabled,
       statsExpandDefault: deps.settings.value.sysStatsDefaultExpanded,
+      peekHidden: Boolean(deps.isPeeking?.()),
     });
   }
 
@@ -120,6 +126,14 @@ export function usePetShellActions(deps: {
       void hidePetBubble();
       deps.speaking.value = false;
       void showPetChat();
+      return;
+    }
+    if (action === "hide") {
+      void deps.startPeek?.();
+      return;
+    }
+    if (action === "reveal") {
+      void deps.revealPeek?.();
     }
   }
 

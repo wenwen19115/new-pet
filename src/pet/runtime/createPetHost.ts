@@ -1,10 +1,12 @@
-import { syncPetBubbleToPet } from "@/pet/windows/bubble";
-import { isPetMenuOpen } from "@/pet/windows/menu";
+import { hidePetBubble, syncPetBubbleToPet } from "@/pet/windows/bubble";
+import { hidePetChat } from "@/pet/windows/chat";
+import { hidePetMenu, isPetMenuOpen } from "@/pet/windows/menu";
 import { usePetIdleLoop } from "./usePetIdleLoop";
 import { usePetLifeTimers } from "./usePetLifeTimers";
 import { usePetMotionHost } from "./usePetMotionHost";
 import { usePetPointerHost } from "./usePetPointerHost";
 import { usePetPlayfulHost } from "./usePetPlayfulHost";
+import { usePetPeekHost } from "./usePetPeekHost";
 import { usePetSpeech } from "./usePetSpeech";
 import { usePetHostLifecycle } from "./usePetHostLifecycle";
 import { usePetSettingsSync } from "./usePetSettingsSync";
@@ -102,6 +104,7 @@ function wirePetHost(s: PetHostShared) {
     mood: () => mood.value,
     isDragging: () => pointerHost.isDragging.value,
     isMenuOpen: () => isPetMenuOpen(),
+    isPeeking: () => s.peekPausesRandomIdle,
     chasePausesIdle: () => s.playfulPausesRandomIdle,
     setChaseIdleGate: (active, opts) => {
       dispatchIntent({
@@ -120,6 +123,36 @@ function wirePetHost(s: PetHostShared) {
   tickPlayfulProximity = (cursor, center) => {
     void playful.tickProximity(cursor, center);
   };
+
+  const peek = usePetPeekHost({
+    hostAlive: () => s.hostAlive,
+    mood: () => mood.value,
+    isPeeking: () => s.peekPausesRandomIdle,
+    setPeekIdleGate: (active, opts) => {
+      dispatchIntent({
+        type: "peek-hide",
+        active,
+        rescheduleIdle: opts?.rescheduleIdle,
+      });
+    },
+    winSize: () => winSize.value,
+    bodyBox: () => bodyBox.value,
+    applyMood,
+    cancelActiveMotion: () => motionHost.cancelActiveMotion(),
+    stopPlayful: () => playful.stop(),
+    speakText: (text, fromAuto, opts) => ports.speakText(text, fromAuto, opts),
+    tone: () => settings.value.tone,
+    hideOverlays: () => {
+      speaking.value = false;
+      void hidePetBubble();
+      void hidePetChat();
+      void hidePetMenu();
+    },
+    syncBubble: () => {
+      if (speaking.value) void syncPetBubbleToPet();
+    },
+    resetSleepTimer: () => ports.resetSleepTimer(),
+  });
 
   s.setApplyMoodImpl(
     createApplyPetMood({
@@ -187,7 +220,10 @@ function wirePetHost(s: PetHostShared) {
     isDragging: pointerHost.isDragging,
     mood,
     isMotionLocked: motionHost.isMotionLocked,
-    isPaused: () => s.chatPausesRandomIdle || s.playfulPausesRandomIdle,
+    isPaused: () =>
+      s.chatPausesRandomIdle ||
+      s.playfulPausesRandomIdle ||
+      s.peekPausesRandomIdle,
     beginMotion: motionHost.beginMotion,
     clearTimer: clearPetHostTimer,
     getIdleActionTimer: motionHost.getIdleActionTimer,
@@ -206,6 +242,10 @@ function wirePetHost(s: PetHostShared) {
     playfulPausesRandomIdle: () => s.playfulPausesRandomIdle,
     setPlayfulPausesRandomIdle: (active) => {
       s.playfulPausesRandomIdle = active;
+    },
+    peekPausesRandomIdle: () => s.peekPausesRandomIdle,
+    setPeekPausesRandomIdle: (active) => {
+      s.peekPausesRandomIdle = active;
     },
     setIdleActionTimer: motionHost.setIdleActionTimer,
     cancelFlight: motionHost.cancelFlight,
@@ -251,6 +291,10 @@ function wirePetHost(s: PetHostShared) {
     pointerOnPointerDown: pointerHost.onPointerDown,
     tryPlayfulCatch: () => playful.tryCatchOnTap(),
     stopPlayful: () => playful.stop(),
+    isPeeking: () => s.peekPausesRandomIdle,
+    startPeek: () => peek.startPeek(),
+    revealPeek: () => peek.revealPeek(),
+    tryRevealPeekOnTap: () => peek.tryRevealOnTap(),
   });
 
   const lifecycle = usePetHostLifecycle({
@@ -286,6 +330,7 @@ function wirePetHost(s: PetHostShared) {
     },
     onSuspendRuntime: () => {
       playful.stop();
+      peek.clearPeek({ rescheduleIdle: false });
       dispatch({ type: "suspend-runtime" });
     },
     clearLifeTimers: life.clearLifeTimers,

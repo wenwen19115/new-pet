@@ -1,11 +1,10 @@
-/**
- * idle / 飞行横切入口。host 调 dispatch，不要各自再实现一遍。
- */
+/** idle / 飞行横切：host 只调 dispatch。 */
 
 export type PetHostIntent =
   | { type: "chat-open"; open: boolean }
   | { type: "random-idle-setting"; enabled: boolean }
   | { type: "playful-chase"; active: boolean; rescheduleIdle?: boolean }
+  | { type: "peek-hide"; active: boolean; rescheduleIdle?: boolean }
   | { type: "suspend-runtime" };
 
 export type PetHostIntentEffects = {
@@ -15,6 +14,8 @@ export type PetHostIntentEffects = {
   setChatPausesRandomIdle: (open: boolean) => void;
   playfulPausesRandomIdle: () => boolean;
   setPlayfulPausesRandomIdle: (active: boolean) => void;
+  peekPausesRandomIdle: () => boolean;
+  setPeekPausesRandomIdle: (active: boolean) => void;
   setIdleActionTimer: (id: number | null) => void;
   cancelFlight: () => void;
   scheduleIdleAction: () => void;
@@ -25,11 +26,27 @@ function canScheduleRandomIdle(fx: PetHostIntentEffects): boolean {
     fx.hostAlive() &&
     fx.randomIdleEnabled() &&
     !fx.chatPausesRandomIdle() &&
-    !fx.playfulPausesRandomIdle()
+    !fx.playfulPausesRandomIdle() &&
+    !fx.peekPausesRandomIdle()
   );
 }
 
-/** 聊天窗开关 → 随机 idle 门禁。 */
+function applyIdlePauseFlagGate(
+  setFlag: (active: boolean) => void,
+  active: boolean,
+  fx: PetHostIntentEffects,
+  rescheduleIdle: boolean
+): void {
+  setFlag(active);
+  if (active) {
+    fx.setIdleActionTimer(null);
+    return;
+  }
+  if (rescheduleIdle && canScheduleRandomIdle(fx)) {
+    fx.scheduleIdleAction();
+  }
+}
+
 export function applyChatOpenIdleGate(
   open: boolean,
   fx: PetHostIntentEffects
@@ -55,30 +72,38 @@ export function applyRandomIdleSettingGate(
   fx.setIdleActionTimer(null);
 }
 
-/** 调皮追逐：开则停随机 idle；关则按需恢复。 */
 export function applyPlayfulChaseIdleGate(
   active: boolean,
   fx: PetHostIntentEffects,
   rescheduleIdle = true
 ): void {
-  fx.setPlayfulPausesRandomIdle(active);
-  if (active) {
-    fx.setIdleActionTimer(null);
-    return;
-  }
-  if (rescheduleIdle && canScheduleRandomIdle(fx)) {
-    fx.scheduleIdleAction();
-  }
+  applyIdlePauseFlagGate(
+    fx.setPlayfulPausesRandomIdle,
+    active,
+    fx,
+    rescheduleIdle
+  );
 }
 
-/** suspend/dispose 时清 idle/飞行（RAF/TTS 仍归 lifecycle）。 */
+export function applyPeekHideIdleGate(
+  active: boolean,
+  fx: PetHostIntentEffects,
+  rescheduleIdle = true
+): void {
+  applyIdlePauseFlagGate(fx.setPeekPausesRandomIdle, active, fx, rescheduleIdle);
+}
+
 export function applySuspendRuntimeGate(
   fx: Pick<
     PetHostIntentEffects,
-    "setIdleActionTimer" | "cancelFlight" | "setPlayfulPausesRandomIdle"
+    | "setIdleActionTimer"
+    | "cancelFlight"
+    | "setPlayfulPausesRandomIdle"
+    | "setPeekPausesRandomIdle"
   >
 ): void {
   fx.setPlayfulPausesRandomIdle(false);
+  fx.setPeekPausesRandomIdle(false);
   fx.setIdleActionTimer(null);
   fx.cancelFlight();
 }
@@ -97,6 +122,13 @@ export function dispatchPetHostIntent(
       return;
     case "playful-chase":
       applyPlayfulChaseIdleGate(
+        intent.active,
+        fx,
+        intent.rescheduleIdle !== false
+      );
+      return;
+    case "peek-hide":
+      applyPeekHideIdleGate(
         intent.active,
         fx,
         intent.rescheduleIdle !== false

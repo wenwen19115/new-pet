@@ -9,17 +9,13 @@ import {
   playfulScareRadius,
 } from "./playfulPhysics";
 
-/**
- * 调皮模式：靠近就躲开；开局起倒计时，窗内点中算抓到。
- * idle 暂停走 playful-chase intent，别自己清 timer。
- */
 export function usePetPlayfulHost(deps: {
   hostAlive: () => boolean;
   enabled: () => boolean;
   mood: () => string;
   isDragging: () => boolean;
   isMenuOpen: () => boolean;
-  /** 由 playful-chase intent 写入 */
+  isPeeking: () => boolean;
   chasePausesIdle: () => boolean;
   setChaseIdleGate: (
     active: boolean,
@@ -94,6 +90,7 @@ export function usePetPlayfulHost(deps: {
       return;
     }
     if (deps.isDragging() || deps.isMenuOpen()) return;
+    if (deps.isPeeking()) return;
     if (deps.mood() === "sleep") return;
     if (fleeBusy) return;
 
@@ -115,7 +112,6 @@ export function usePetPlayfulHost(deps: {
     }
   }
 
-  /** @returns true 表示已处理为抓到，调用方别再走普通点按 */
   function tryCatchOnTap(): boolean {
     if (!deps.enabled() || !deps.chasePausesIdle() || fleeBusy) return false;
     if (deps.mood() === "sleep") return false;

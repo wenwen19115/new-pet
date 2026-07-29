@@ -202,6 +202,7 @@ export function isPetMenuOpen(): boolean {
 export async function showPetMenu(options: {
   chatEnabled?: boolean;
   statsExpandDefault?: boolean;
+  peekHidden?: boolean;
 }): Promise<void> {
   await ensureMenuListeners();
   const win = await ensureMenuWindow();
@@ -240,6 +241,7 @@ export async function showPetMenu(options: {
   const payload: PetMenuPayload = {
     chatEnabled: Boolean(options.chatEnabled),
     statsExpandDefault: menuExpanded,
+    peekHidden: Boolean(options.peekHidden),
   };
 
   await new Promise((r) => window.setTimeout(r, 40));

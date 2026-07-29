@@ -90,6 +90,7 @@ function baseSettings(patch: Partial<PetSettings> = {}): PetSettings {
 function makeFx(patch: Partial<PetHostIntentEffects> = {}) {
   let chatPause = false;
   let playfulPause = false;
+  let peekPause = false;
   let randomIdle = true;
   let alive = true;
   const setIdleActionTimer = vi.fn();
@@ -105,6 +106,10 @@ function makeFx(patch: Partial<PetHostIntentEffects> = {}) {
     playfulPausesRandomIdle: () => playfulPause,
     setPlayfulPausesRandomIdle: (active) => {
       playfulPause = active;
+    },
+    peekPausesRandomIdle: () => peekPause,
+    setPeekPausesRandomIdle: (active) => {
+      peekPause = active;
     },
     setIdleActionTimer,
     cancelFlight,
@@ -124,6 +129,7 @@ function makeFx(patch: Partial<PetHostIntentEffects> = {}) {
     },
     getChatPause: () => chatPause,
     getPlayfulPause: () => playfulPause,
+    getPeekPause: () => peekPause,
   };
 }
 
@@ -204,6 +210,16 @@ describe("mood gate (applyPetMood)", () => {
     const sleepBag = makeMoodCtx({ mood: "sleep" });
     expect(applyPetMood("curious", "playful-flee", sleepBag.ctx)).toBe(false);
   });
+
+  it("peek mood reasons", () => {
+    const bag = makeMoodCtx();
+    expect(applyPetMood("curious", "peek-hide", bag.ctx)).toBe(true);
+    expect(bag.getMood()).toBe("curious");
+    expect(applyPetMood("happy", "peek-reveal", bag.ctx)).toBe(true);
+    expect(bag.getMood()).toBe("happy");
+    const sleepBag = makeMoodCtx({ mood: "sleep" });
+    expect(applyPetMood("curious", "peek-hide", sleepBag.ctx)).toBe(false);
+  });
 });
 
 describe("host intent dispatch", () => {
@@ -280,6 +296,24 @@ describe("host intent dispatch", () => {
     bag.scheduleIdleAction.mockClear();
     dispatchPetHostIntent({ type: "chat-open", open: false }, bag.fx);
     expect(bag.scheduleIdleAction).not.toHaveBeenCalled();
+  });
+
+  it("peek-hide pauses idle; reveal reschedules", () => {
+    const bag = makeFx();
+    dispatchPetHostIntent({ type: "peek-hide", active: true }, bag.fx);
+    expect(bag.getPeekPause()).toBe(true);
+    expect(bag.setIdleActionTimer).toHaveBeenCalledWith(null);
+    bag.scheduleIdleAction.mockClear();
+    dispatchPetHostIntent({ type: "peek-hide", active: false }, bag.fx);
+    expect(bag.getPeekPause()).toBe(false);
+    expect(bag.scheduleIdleAction).toHaveBeenCalledTimes(1);
+  });
+
+  it("suspend-runtime clears peek pause", () => {
+    const bag = makeFx();
+    dispatchPetHostIntent({ type: "peek-hide", active: true }, bag.fx);
+    dispatchPetHostIntent({ type: "suspend-runtime" }, bag.fx);
+    expect(bag.getPeekPause()).toBe(false);
   });
 });
 

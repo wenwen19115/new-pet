@@ -1,5 +1,3 @@
-/** 调皮躲鼠标：纯几何，无 Vue / Tauri。 */
-
 export function playfulScareRadius(bodyW: number, bodyH: number): number {
   return Math.max(130, Math.hypot(bodyW, bodyH) * 0.55 + 48);
 }
@@ -13,7 +11,7 @@ export function cursorNearPet(
 }
 
 export const PLAYFUL_CHASE_MS = 10_000;
-/** 落地后可点窗，这段时间不躲开 */
+/** 落地后短窗口可点，否则永远抓不到 */
 export const PLAYFUL_CATCH_WINDOW_MS = 650;
 export const PLAYFUL_POST_CATCH_COOLDOWN_MS = 4200;
 export const PLAYFUL_POST_MISS_COOLDOWN_MS = 5200;

@@ -188,6 +188,118 @@ export async function flyPetWindowRandom(
   return !signal?.cancelled;
 }
 
+export async function movePetWindowTo(
+  toX: number,
+  toY: number,
+  durationMs = 720,
+  signal?: { cancelled: boolean },
+  onFrame?: (info: FlyFrameInfo) => void
+): Promise<boolean> {
+  await animatePetWindowTo(toX, toY, durationMs, signal, onFrame);
+  return !signal?.cancelled;
+}
+
+export type PeekEdge = "left" | "right" | "top" | "bottom";
+
+/** 只露约 38% 身体：贴工作区边。 */
+export async function pickPeekOuterPosition(
+  winW: number,
+  winH: number,
+  bodyW: number,
+  bodyH: number
+): Promise<{ x: number; y: number; edge: PeekEdge } | null> {
+  try {
+    const monitor = await currentMonitor();
+    if (!monitor) return null;
+    const scale = monitor.scaleFactor || 1;
+    const wp = monitor.workArea.position;
+    const ws = monitor.workArea.size;
+    const workL = wp.x / scale;
+    const workT = wp.y / scale;
+    const workR = (wp.x + ws.width) / scale;
+    const workB = (wp.y + ws.height) / scale;
+    const visible = 0.38;
+    const edges: PeekEdge[] = ["left", "right", "top", "bottom"];
+    const edge = edges[Math.floor(Math.random() * edges.length)]!;
+    const midX = (workL + workR) / 2;
+    const midY = (workT + workB) / 2;
+    const jitterX = (Math.random() - 0.5) * Math.max(40, (workR - workL) * 0.35);
+    const jitterY = (Math.random() - 0.5) * Math.max(40, (workB - workT) * 0.35);
+
+    let cx = midX;
+    let cy = midY;
+    if (edge === "right") {
+      cx = workR - (bodyW * visible) / 2;
+      cy = clamp(midY + jitterY, workT + bodyH / 2, workB - bodyH / 2);
+    } else if (edge === "left") {
+      cx = workL + (bodyW * visible) / 2;
+      cy = clamp(midY + jitterY, workT + bodyH / 2, workB - bodyH / 2);
+    } else if (edge === "top") {
+      cy = workT + (bodyH * visible) / 2;
+      cx = clamp(midX + jitterX, workL + bodyW / 2, workR - bodyW / 2);
+    } else {
+      cy = workB - (bodyH * visible) / 2;
+      cx = clamp(midX + jitterX, workL + bodyW / 2, workR - bodyW / 2);
+    }
+
+    return {
+      x: Math.round(cx - winW / 2),
+      y: Math.round(cy - winH / 2),
+      edge,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/** 从贴边探头只往里挪一点，刚好整只露在工作区里，不飞回远处。 */
+export async function pickPeekRevealOuterPosition(
+  winW: number,
+  winH: number,
+  bodyW: number,
+  bodyH: number,
+  edge: PeekEdge,
+  fromOuter?: { x: number; y: number }
+): Promise<{ x: number; y: number } | null> {
+  try {
+    const monitor = await currentMonitor();
+    if (!monitor) return null;
+    const scale = monitor.scaleFactor || 1;
+    const wp = monitor.workArea.position;
+    const ws = monitor.workArea.size;
+    const workL = wp.x / scale;
+    const workT = wp.y / scale;
+    const workR = (wp.x + ws.width) / scale;
+    const workB = (wp.y + ws.height) / scale;
+    const pad = 10;
+    const fromCx = fromOuter ? fromOuter.x + winW / 2 : (workL + workR) / 2;
+    const fromCy = fromOuter ? fromOuter.y + winH / 2 : (workT + workB) / 2;
+
+    let cx = fromCx;
+    let cy = fromCy;
+    if (edge === "left") {
+      cx = workL + bodyW / 2 + pad;
+      cy = clamp(fromCy, workT + bodyH / 2, workB - bodyH / 2);
+    } else if (edge === "right") {
+      cx = workR - bodyW / 2 - pad;
+      cy = clamp(fromCy, workT + bodyH / 2, workB - bodyH / 2);
+    } else if (edge === "top") {
+      cy = workT + bodyH / 2 + pad;
+      cx = clamp(fromCx, workL + bodyW / 2, workR - bodyW / 2);
+    } else {
+      cy = workB - bodyH / 2 - pad;
+      cx = clamp(fromCx, workL + bodyW / 2, workR - bodyW / 2);
+    }
+
+    return {
+      x: Math.round(cx - winW / 2),
+      y: Math.round(cy - winH / 2),
+    };
+  } catch {
+    return null;
+  }
+}
+
 interface WalkFrameInfo extends FlyFrameInfo {
   dirX: number;
   progress: number;

@@ -223,7 +223,15 @@ export function usePetHostLifecycle(deps: {
       (event) => {
         if (!deps.hostAliveRef.get()) return;
         const action = event.payload?.action;
-        if (action !== "open" && action !== "pin" && action !== "chat") return;
+        if (
+          action !== "open" &&
+          action !== "pin" &&
+          action !== "chat" &&
+          action !== "hide" &&
+          action !== "reveal"
+        ) {
+          return;
+        }
         deps.onCtxMenuAction(action);
       }
     );

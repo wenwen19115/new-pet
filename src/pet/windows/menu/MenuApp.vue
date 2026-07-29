@@ -49,6 +49,13 @@
     <button type="button" class="pet-ctx-item" @click="emitAction('pin')">
       {{ pinLabel }}
     </button>
+    <button
+      type="button"
+      class="pet-ctx-item"
+      @click="emitAction(peekHidden ? 'reveal' : 'hide')"
+    >
+      {{ peekLabel }}
+    </button>
   </div>
 </template>
 
@@ -72,6 +79,7 @@ const rootEl = ref<HTMLElement | null>(null);
 const visible = ref(false);
 const statsExpanded = ref(false);
 const chatEnabled = ref(false);
+const peekHidden = ref(false);
 const cpuPct = ref(0);
 const memPct = ref(0);
 const diskPct = ref(0);
@@ -89,6 +97,10 @@ const pinLabel = computed(() =>
 const chatLabel = computed(() =>
   chatEnabled.value ? (en.value ? "Chat" : "聊天") : ""
 );
+const peekLabel = computed(() => {
+  if (peekHidden.value) return en.value ? "Come out" : "出来";
+  return en.value ? "Hide away" : "躲起来";
+});
 
 const toggleTitle = computed(() =>
   en.value ? "System peek" : "摸鱼仪表盘"
@@ -218,6 +230,7 @@ function toggleStats() {
 
 function applyPayload(payload: PetMenuPayload) {
   chatEnabled.value = Boolean(payload.chatEnabled);
+  peekHidden.value = Boolean(payload.peekHidden);
   statsExpanded.value = Boolean(payload.statsExpandDefault);
   visible.value = true;
   void pingActivity();

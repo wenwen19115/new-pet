@@ -300,7 +300,6 @@ export function usePetMotionHost(deps: {
     deps.resetSleepTimer();
   }
 
-  /** 调皮躲开：按角色 screenFlight 飞走/虫洞/短滑移，全角色可用。 */
   async function runPlayfulFlee(cursor: { x: number; y: number }): Promise<boolean> {
     if (deps.isDragging.value || deps.mood.value === "sleep") return false;
     cancelActiveMotion({ resetVisuals: true });
