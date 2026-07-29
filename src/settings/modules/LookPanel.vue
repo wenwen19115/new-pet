@@ -97,6 +97,18 @@
       />
     </SettingsItemRow>
     <SettingsItemRow
+      :title="$t('pet.playfulModeTitle')"
+      :description="$t('pet.playfulModeDesc')"
+      tone="pet"
+    >
+      <template #icon><ThunderboltOutlined /></template>
+      <a-switch
+        v-model:checked="ctx.playfulModeEnabled.value"
+        size="small"
+        @change="ctx.onPlayfulMode"
+      />
+    </SettingsItemRow>
+    <SettingsItemRow
       :title="$t('pet.hitBoundsTitle')"
       :description="$t('pet.hitBoundsDesc')"
       tone="pet"
@@ -144,6 +156,7 @@ import {
   SmileOutlined,
   SoundOutlined,
   SyncOutlined,
+  ThunderboltOutlined,
   UsbOutlined,
   ZoomInOutlined,
 } from "@ant-design/icons-vue";

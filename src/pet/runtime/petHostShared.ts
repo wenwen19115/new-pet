@@ -27,6 +27,7 @@ export function createPetHostShared() {
   let bubbleTimer: number | null = null;
   let moodResetTimer: number | null = null;
   let chatPausesRandomIdle = false;
+  let playfulPausesRandomIdle = false;
   let hostAlive = true;
 
   const activeSkin = computed(() =>
@@ -79,6 +80,12 @@ export function createPetHostShared() {
     },
     set chatPausesRandomIdle(v: boolean) {
       chatPausesRandomIdle = v;
+    },
+    get playfulPausesRandomIdle() {
+      return playfulPausesRandomIdle;
+    },
+    set playfulPausesRandomIdle(v: boolean) {
+      playfulPausesRandomIdle = v;
     },
     get hostAlive() {
       return hostAlive;

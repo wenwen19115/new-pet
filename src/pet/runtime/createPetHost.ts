@@ -4,6 +4,7 @@ import { usePetIdleLoop } from "./usePetIdleLoop";
 import { usePetLifeTimers } from "./usePetLifeTimers";
 import { usePetMotionHost } from "./usePetMotionHost";
 import { usePetPointerHost } from "./usePetPointerHost";
+import { usePetPlayfulHost } from "./usePetPlayfulHost";
 import { usePetSpeech } from "./usePetSpeech";
 import { usePetHostLifecycle } from "./usePetHostLifecycle";
 import { usePetSettingsSync } from "./usePetSettingsSync";
@@ -46,6 +47,11 @@ function wirePetHost(s: PetHostShared) {
     applyMood,
   } = s;
 
+  let tickPlayfulProximity: (
+    cursor: { x: number; y: number },
+    winCenter: { x: number; y: number }
+  ) => void = () => {};
+
   const pointerHost = usePetPointerHost({
     hostAlive: () => s.hostAlive,
     winSize,
@@ -61,6 +67,9 @@ function wirePetHost(s: PetHostShared) {
     onAfterPointerUp: (info) => ports.onAfterPointerUp(info),
     syncBubble: () => {
       if (speaking.value) void syncPetBubbleToPet();
+    },
+    onCursorSample: (cursor, center) => {
+      tickPlayfulProximity(cursor, center);
     },
   });
 
@@ -84,6 +93,33 @@ function wirePetHost(s: PetHostShared) {
       s.moodResetTimer = null;
     },
   });
+
+  let dispatchIntent: (intent: PetHostIntent) => void = () => {};
+
+  const playful = usePetPlayfulHost({
+    hostAlive: () => s.hostAlive,
+    enabled: () => settings.value.playfulModeEnabled,
+    mood: () => mood.value,
+    isDragging: () => pointerHost.isDragging.value,
+    isMenuOpen: () => isPetMenuOpen(),
+    chasePausesIdle: () => s.playfulPausesRandomIdle,
+    setChaseIdleGate: (active, opts) => {
+      dispatchIntent({
+        type: "playful-chase",
+        active,
+        rescheduleIdle: opts?.rescheduleIdle,
+      });
+    },
+    tone: () => settings.value.tone,
+    bodyBox: () => bodyBox.value,
+    applyMood,
+    runPlayfulFlee: (cursor) => motionHost.runPlayfulFlee(cursor),
+    speakText: (text, fromAuto, opts) => ports.speakText(text, fromAuto, opts),
+    resetSleepTimer: () => ports.resetSleepTimer(),
+  });
+  tickPlayfulProximity = (cursor, center) => {
+    void playful.tickProximity(cursor, center);
+  };
 
   s.setApplyMoodImpl(
     createApplyPetMood({
@@ -151,7 +187,7 @@ function wirePetHost(s: PetHostShared) {
     isDragging: pointerHost.isDragging,
     mood,
     isMotionLocked: motionHost.isMotionLocked,
-    isPaused: () => s.chatPausesRandomIdle,
+    isPaused: () => s.chatPausesRandomIdle || s.playfulPausesRandomIdle,
     beginMotion: motionHost.beginMotion,
     clearTimer: clearPetHostTimer,
     getIdleActionTimer: motionHost.getIdleActionTimer,
@@ -167,13 +203,21 @@ function wirePetHost(s: PetHostShared) {
     setChatPausesRandomIdle: (open) => {
       s.chatPausesRandomIdle = open;
     },
+    playfulPausesRandomIdle: () => s.playfulPausesRandomIdle,
+    setPlayfulPausesRandomIdle: (active) => {
+      s.playfulPausesRandomIdle = active;
+    },
     setIdleActionTimer: motionHost.setIdleActionTimer,
     cancelFlight: motionHost.cancelFlight,
     scheduleIdleAction: () => ports.scheduleIdleAction(),
   };
 
-  function dispatch(intent: PetHostIntent) {
+  dispatchIntent = (intent: PetHostIntent) => {
     dispatchPetHostIntent(intent, intentFx);
+  };
+
+  function dispatch(intent: PetHostIntent) {
+    dispatchIntent(intent);
   }
 
   let resizePetWindow: () => void | Promise<void> = () => {};
@@ -205,6 +249,8 @@ function wirePetHost(s: PetHostShared) {
     speakTapEgg: speech.speakTapEgg,
     speak: speech.speak,
     pointerOnPointerDown: pointerHost.onPointerDown,
+    tryPlayfulCatch: () => playful.tryCatchOnTap(),
+    stopPlayful: () => playful.stop(),
   });
 
   const lifecycle = usePetHostLifecycle({
@@ -239,6 +285,7 @@ function wirePetHost(s: PetHostShared) {
       dispatch({ type: "chat-open", open });
     },
     onSuspendRuntime: () => {
+      playful.stop();
       dispatch({ type: "suspend-runtime" });
     },
     clearLifeTimers: life.clearLifeTimers,

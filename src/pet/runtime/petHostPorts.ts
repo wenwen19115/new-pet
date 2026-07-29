@@ -11,7 +11,7 @@ export type PetHostPorts = {
   speakText: (
     text: string,
     fromAuto: boolean,
-    opts?: { keepMotion?: boolean }
+    opts?: { keepMotion?: boolean; force?: boolean }
   ) => void | Promise<void>;
   speak: (fromAuto?: boolean) => void | Promise<void>;
   onBeforeDrag: () => void;

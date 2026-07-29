@@ -36,6 +36,11 @@ export function usePetPointerHost(deps: {
   onTap: () => void;
   onAfterPointerUp: (info: { wasDragging: boolean }) => void;
   syncBubble?: () => void;
+  /** 每帧光标采样后（含 winCenter） */
+  onCursorSample?: (
+    cursor: { x: number; y: number },
+    winCenter: { x: number; y: number }
+  ) => void;
 }) {
   const DRAG_THRESHOLD = deps.dragThreshold ?? 14;
   const HIT_PAD = 2;
@@ -292,6 +297,7 @@ export function usePetPointerHost(deps: {
       void syncCursorPassThrough(overPet);
 
       updateGaze(deps.gaze, cursor, winCenter, deps.mood.value, deps.gazeConfig());
+      deps.onCursorSample?.(cursor, winCenter);
     } catch {
       // ignore
     }

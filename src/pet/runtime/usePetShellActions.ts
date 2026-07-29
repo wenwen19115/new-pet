@@ -31,6 +31,9 @@ export function usePetShellActions(deps: {
   speakTapEgg: (model: PetModelKind) => void;
   speak: (fromAuto?: boolean) => void | Promise<void>;
   pointerOnPointerDown: (e: PointerEvent) => void;
+  /** 调皮抓到则吞掉普通点按 */
+  tryPlayfulCatch?: () => boolean;
+  stopPlayful?: () => void;
 }) {
   let tapTimes: number[] = [];
 
@@ -72,6 +75,7 @@ export function usePetShellActions(deps: {
 
   deps.bindPorts({
     onBeforeDrag: () => {
+      deps.stopPlayful?.();
       deps.cancelActiveMotion();
       deps.clearMotionTimers();
       deps.speaking.value = false;
@@ -79,6 +83,7 @@ export function usePetShellActions(deps: {
       void hidePetChat();
     },
     onTap: () => {
+      if (deps.tryPlayfulCatch?.()) return;
       if (registerTapForEgg()) return;
       void deps.speak(false);
     },

@@ -15,8 +15,10 @@ import {
   type PetIdleMotion,
 } from "@/pet/content/motion/motions";
 import {
+  flyPetWindowAway,
   flyPetWindowRandom,
   teleportPetWindowWormhole,
+  teleportPetWindowWormholeAway,
   walkPetWindowRandom,
 } from "@/pet/bridge/screenFly";
 import type { CharacterRuntimeSpec } from "@/pet/characters/types";
@@ -49,7 +51,7 @@ export function usePetMotionHost(deps: {
   speakText: (
     text: string,
     fromAuto: boolean,
-    opts?: { keepMotion?: boolean }
+    opts?: { keepMotion?: boolean; force?: boolean }
   ) => void | Promise<void>;
   wakeFromSleep: () => void;
   resetSleepTimer: () => void;
@@ -298,6 +300,66 @@ export function usePetMotionHost(deps: {
     deps.resetSleepTimer();
   }
 
+  /** 调皮躲开：按角色 screenFlight 飞走/虫洞/短滑移，全角色可用。 */
+  async function runPlayfulFlee(cursor: { x: number; y: number }): Promise<boolean> {
+    if (deps.isDragging.value || deps.mood.value === "sleep") return false;
+    cancelActiveMotion({ resetVisuals: true });
+    flySignal = { cancelled: false };
+    const flight = flySignal;
+    const gen = ++motionGen;
+    motionLockUntil = Date.now() + 1600;
+    motionPlayId.value += 1;
+    deps.applyMood("curious", "playful-flee");
+
+    const screenFlight = deps.activeCharacter.value.runtime.screenFlight;
+    const w = deps.winSize.value.w;
+    const h = deps.winSize.value.h;
+    let ok = false;
+
+    if (screenFlight === "wormhole") {
+      deps.idleMotion.value = "screen-wormhole";
+      wormholePhase.value = "out";
+      ok = await teleportPetWindowWormholeAway(
+        cursor,
+        w,
+        h,
+        flight,
+        (phase) => {
+          if (phase === "done") wormholePhase.value = "idle";
+          else wormholePhase.value = phase;
+          if (deps.speaking.value) void syncPetBubbleToPet();
+        }
+      );
+      if (!flight.cancelled) wormholePhase.value = "idle";
+    } else {
+      deps.idleMotion.value =
+        screenFlight === "fly" ? "screen-zip" : "idle-float";
+      ok = await flyPetWindowAway(
+        cursor,
+        w,
+        h,
+        screenFlight === "fly" ? 780 : 620,
+        flight,
+        (info) => {
+          flyVisualX.value = info.visualDx;
+          flyVisualY.value = info.visualDy;
+          if (deps.speaking.value) void syncPetBubbleToPet();
+        }
+      );
+      if (!flight.cancelled) {
+        flyVisualX.value = 0;
+        flyVisualY.value = 0;
+      }
+    }
+
+    if (gen === motionGen && !deps.isDragging.value) {
+      deps.idleMotion.value = "idle-float";
+      deps.applyMood("idle", "motion-end");
+    }
+    if (gen === motionGen) motionLockUntil = 0;
+    return ok && !flight.cancelled;
+  }
+
   return {
     motionPlayId,
     flyVisualX,
@@ -309,6 +371,7 @@ export function usePetMotionHost(deps: {
     isMotionLocked,
     beginMotion,
     playMotionOnce,
+    runPlayfulFlee,
     cancelActiveMotion,
     cancelFlight,
     clearMotionTimers,

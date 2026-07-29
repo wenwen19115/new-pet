@@ -238,11 +238,14 @@ const messages = {
       randomIdleTitle: "随机动作",
       randomIdleDesc:
         "关闭后桌宠不会自行表演或飞屏乱跑；仍可用下方「做一下」手动触发",
+      playfulModeTitle: "调皮模式",
+      playfulModeDesc:
+        "鼠标靠近就躲开；开局 10 秒内点中算抓到（落地后有短窗口可点）。全角色可用",
       hitBoundsTitle: "体积边界",
       hitBoundsDesc: "鼠标移到桌宠上时显示灰色半透明方框，方便确认所占面积（按角色记忆）",
       resetProfileTitle: "重置本角色",
       resetProfileDesc:
-        "清除当前角色的昵称、性格、静音、透明度、大小、调性、口头禅、形象、提醒、随机动作等设置",
+        "清除当前角色的昵称、性格、静音、透明度、大小、调性、口头禅、形象、提醒、随机动作、调皮模式等设置",
       resetProfile: "重置",
       resetProfileOk: "已重置当前角色设置",
       motionTitle: "指定动作",
@@ -556,12 +559,15 @@ const messages = {
       randomIdleTitle: "Random motions",
       randomIdleDesc:
         "When off, the pet won't auto-perform or dash around; you can still use Play below",
+      playfulModeTitle: "Playful mode",
+      playfulModeDesc:
+        "Flees when the cursor gets close; catch it with a click within 10s (short window after each land). All characters",
       hitBoundsTitle: "Hit bounds",
       hitBoundsDesc:
         "Show a gray translucent box when the cursor is over the pet (saved per character)",
       resetProfileTitle: "Reset this character",
       resetProfileDesc:
-        "Clear nickname, personality, mute, opacity, size, tone, catchphrases, look, USB alerts, random motions, and more for the current character",
+        "Clear nickname, personality, mute, opacity, size, tone, catchphrases, look, USB alerts, random motions, playful mode, and more for the current character",
       resetProfile: "Reset",
       resetProfileOk: "Character settings reset",
       motionTitle: "Play motion",

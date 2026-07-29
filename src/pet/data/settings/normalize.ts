@@ -88,6 +88,7 @@ type ProfileFallbacks = Pick<
   | "usbWatchEnabled"
   | "randomIdleEnabled"
   | "hitBoundsEnabled"
+  | "playfulModeEnabled"
 >;
 
 export function normalizeOneProfile(
@@ -166,6 +167,10 @@ export function normalizeOneProfile(
       raw?.randomIdleEnabled === undefined
         ? Boolean(fallbacks?.randomIdleEnabled ?? base.randomIdleEnabled)
         : Boolean(raw.randomIdleEnabled),
+    playfulModeEnabled:
+      raw?.playfulModeEnabled === undefined
+        ? Boolean(fallbacks?.playfulModeEnabled ?? base.playfulModeEnabled)
+        : Boolean(raw.playfulModeEnabled),
     hitBoundsEnabled:
       raw?.hitBoundsEnabled === undefined
         ? Boolean(fallbacks?.hitBoundsEnabled ?? base.hitBoundsEnabled)
@@ -217,6 +222,10 @@ function legacySharedFallbacks(
       raw?.randomIdleEnabled === undefined
         ? DEFAULT_PET_SETTINGS.randomIdleEnabled
         : Boolean(raw.randomIdleEnabled),
+    playfulModeEnabled:
+      raw?.playfulModeEnabled === undefined
+        ? DEFAULT_PET_SETTINGS.playfulModeEnabled
+        : Boolean(raw.playfulModeEnabled),
     hitBoundsEnabled:
       raw?.hitBoundsEnabled === undefined
         ? DEFAULT_PET_SETTINGS.hitBoundsEnabled
@@ -311,6 +320,7 @@ export function applyActiveProfile(
   | "usbWatchEnabled"
   | "randomIdleEnabled"
   | "hitBoundsEnabled"
+  | "playfulModeEnabled"
   | "catchphrases"
   | "catchphraseChance"
   | "vrmModelName"
@@ -333,6 +343,7 @@ export function applyActiveProfile(
     opacity: p.opacity,
     usbWatchEnabled: p.usbWatchEnabled,
     randomIdleEnabled: p.randomIdleEnabled,
+    playfulModeEnabled: p.playfulModeEnabled,
     hitBoundsEnabled: p.hitBoundsEnabled,
     catchphrases: p.catchphrases,
     catchphraseChance: p.catchphraseChance,

@@ -16,6 +16,9 @@ export type PetMoodReason =
   | "drag-end"
   | "chat-reply"
   | "chat-reply-end"
+  | "playful-flee"
+  | "playful-catch"
+  | "playful-miss"
   | "force";
 
 export type PetMoodGateCtx = {
@@ -129,6 +132,21 @@ export function applyPetMood(
 
     case "drag-start":
       ctx.setMood("curious");
+      return true;
+
+    case "playful-flee":
+      if (ctx.dragging() || cur === "sleep") return false;
+      ctx.setMood("curious");
+      return true;
+
+    case "playful-catch":
+      if (cur === "sleep") return false;
+      ctx.setMood("happy");
+      return true;
+
+    case "playful-miss":
+      if (ctx.dragging() || cur === "sleep") return false;
+      ctx.setMood("grumpy");
       return true;
 
     case "motion":

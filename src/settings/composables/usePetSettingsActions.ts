@@ -36,6 +36,7 @@ export function usePetSettingsActions(deps: {
   personality: Ref<PetPersonality>;
   usbWatchEnabled: Ref<boolean>;
   randomIdleEnabled: Ref<boolean>;
+  playfulModeEnabled: Ref<boolean>;
   hitBoundsEnabled: Ref<boolean>;
   uiTheme: Ref<AppUiTheme>;
   sysStatsDefaultExpanded: Ref<boolean>;
@@ -173,6 +174,11 @@ export function usePetSettingsActions(deps: {
     await deps.persistOnly();
   }
 
+  async function onPlayfulMode(value: boolean) {
+    deps.playfulModeEnabled.value = value;
+    await deps.persistOnly();
+  }
+
   async function onDemoMotion(value: unknown) {
     if (typeof value !== "string") return;
     if (!isPetIdleMotion(value) && !isCustomVrmMotionId(value)) return;
@@ -273,6 +279,7 @@ export function usePetSettingsActions(deps: {
     onTone,
     onUsbWatch,
     onRandomIdle,
+    onPlayfulMode,
     onDemoMotion,
     onPlayMotion,
     onUiTheme,

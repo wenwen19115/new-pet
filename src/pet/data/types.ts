@@ -40,6 +40,8 @@ export interface PetModelProfile {
   opacity: number;
   usbWatchEnabled: boolean;
   randomIdleEnabled: boolean;
+  /** 调皮：靠近躲开，倒计时内点中算抓到 */
+  playfulModeEnabled: boolean;
   hitBoundsEnabled: boolean;
   catchphrases: string[];
   catchphraseChance: number;
@@ -77,6 +79,8 @@ export interface PetSettings {
   opacity: number;
   usbWatchEnabled: boolean;
   randomIdleEnabled: boolean;
+  /** 调皮：靠近躲开，倒计时内点中算抓到 */
+  playfulModeEnabled: boolean;
   hitBoundsEnabled: boolean;
   catchphrases: string[];
   catchphraseChance: number;

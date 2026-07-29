@@ -14,6 +14,7 @@
 | 8 | 设置立刻生效 | mute 停 TTS；关 chat 藏窗；randomIdle 即时 | settings sync |
 | 9 | 冒泡不挡拖 | 说话时仍可拖宠（产品若如此） | speak 挡 motion mood，不挡 drag |
 | 10 | dispose | 关宠/重载无泄漏监听 | lifecycle dispose |
+| 11 | 调皮模式 | 开：靠近躲开；10 秒内落地窗口点中算抓到 | playful mood + settings |
 
 ## 用法
 

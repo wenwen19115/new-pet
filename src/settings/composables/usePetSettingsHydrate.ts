@@ -28,6 +28,7 @@ export function usePetSettingsHydrate(deps: {
   personality: Ref<PetPersonality>;
   usbWatchEnabled: Ref<boolean>;
   randomIdleEnabled: Ref<boolean>;
+  playfulModeEnabled: Ref<boolean>;
   hitBoundsEnabled: Ref<boolean>;
   catchphrases: Ref<string[]>;
   catchphraseChance: Ref<number>;
@@ -68,6 +69,7 @@ export function usePetSettingsHydrate(deps: {
       : deps.personality.value;
     deps.usbWatchEnabled.value = s.usbWatchEnabled;
     deps.randomIdleEnabled.value = s.randomIdleEnabled;
+    deps.playfulModeEnabled.value = s.playfulModeEnabled;
     deps.hitBoundsEnabled.value = s.hitBoundsEnabled;
     deps.catchphrases.value = [...(s.catchphrases ?? [])];
     deps.catchphraseChance.value = clampCatchphraseChance(s.catchphraseChance);

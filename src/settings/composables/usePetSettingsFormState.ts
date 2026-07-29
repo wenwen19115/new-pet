@@ -34,6 +34,7 @@ export function usePetSettingsFormState() {
   const personality = ref<PetPersonality>("sunny");
   const usbWatchEnabled = ref(true);
   const randomIdleEnabled = ref(true);
+  const playfulModeEnabled = ref(false);
   const hitBoundsEnabled = ref(true);
   const catchphrases = ref<string[]>([]);
   const catchphraseChance = ref(CATCHPHRASE_DEFAULT_CHANCE);
@@ -85,6 +86,7 @@ export function usePetSettingsFormState() {
       zoomPercent: zoomPercent.value,
       usbWatchEnabled: usbWatchEnabled.value,
       randomIdleEnabled: randomIdleEnabled.value,
+      playfulModeEnabled: playfulModeEnabled.value,
       hitBoundsEnabled: hitBoundsEnabled.value,
       catchphrases: catchphrases.value.map((t) => t.trim()).filter(Boolean),
       catchphraseChance: clampCatchphraseChance(catchphraseChance.value),
@@ -117,6 +119,7 @@ export function usePetSettingsFormState() {
     personality,
     usbWatchEnabled,
     randomIdleEnabled,
+    playfulModeEnabled,
     hitBoundsEnabled,
     catchphrases,
     catchphraseChance,

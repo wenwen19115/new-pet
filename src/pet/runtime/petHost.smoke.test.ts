@@ -89,6 +89,7 @@ function baseSettings(patch: Partial<PetSettings> = {}): PetSettings {
 
 function makeFx(patch: Partial<PetHostIntentEffects> = {}) {
   let chatPause = false;
+  let playfulPause = false;
   let randomIdle = true;
   let alive = true;
   const setIdleActionTimer = vi.fn();
@@ -100,6 +101,10 @@ function makeFx(patch: Partial<PetHostIntentEffects> = {}) {
     chatPausesRandomIdle: () => chatPause,
     setChatPausesRandomIdle: (open) => {
       chatPause = open;
+    },
+    playfulPausesRandomIdle: () => playfulPause,
+    setPlayfulPausesRandomIdle: (active) => {
+      playfulPause = active;
     },
     setIdleActionTimer,
     cancelFlight,
@@ -118,6 +123,7 @@ function makeFx(patch: Partial<PetHostIntentEffects> = {}) {
       randomIdle = v;
     },
     getChatPause: () => chatPause,
+    getPlayfulPause: () => playfulPause,
   };
 }
 
@@ -185,6 +191,19 @@ describe("mood gate (applyPetMood)", () => {
     expect(moodForMotion("peekaboo")).toBe("curious");
     expect(moodForMotion("idle-float")).toBe("idle");
   });
+
+  it("playful mood reasons", () => {
+    const bag = makeMoodCtx();
+    expect(applyPetMood("curious", "playful-flee", bag.ctx)).toBe(true);
+    expect(bag.getMood()).toBe("curious");
+    expect(applyPetMood("happy", "playful-catch", bag.ctx)).toBe(true);
+    expect(bag.getMood()).toBe("happy");
+    expect(applyPetMood("grumpy", "playful-miss", bag.ctx)).toBe(true);
+    expect(bag.getMood()).toBe("grumpy");
+
+    const sleepBag = makeMoodCtx({ mood: "sleep" });
+    expect(applyPetMood("curious", "playful-flee", sleepBag.ctx)).toBe(false);
+  });
 });
 
 describe("host intent dispatch", () => {
@@ -219,11 +238,48 @@ describe("host intent dispatch", () => {
     expect(bag.scheduleIdleAction).toHaveBeenCalledTimes(1);
   });
 
-  it("suspend-runtime clears idle timer and flight", () => {
+  it("suspend-runtime clears idle timer, flight, and playful pause", () => {
     const bag = makeFx();
+    dispatchPetHostIntent({ type: "playful-chase", active: true }, bag.fx);
+    expect(bag.getPlayfulPause()).toBe(true);
+    bag.setIdleActionTimer.mockClear();
+    bag.cancelFlight.mockClear();
+
     dispatchPetHostIntent({ type: "suspend-runtime" }, bag.fx);
+    expect(bag.getPlayfulPause()).toBe(false);
     expect(bag.setIdleActionTimer).toHaveBeenCalledWith(null);
     expect(bag.cancelFlight).toHaveBeenCalledTimes(1);
+  });
+
+  it("playful-chase pauses idle; close reschedules unless asked not to", () => {
+    const bag = makeFx();
+    dispatchPetHostIntent({ type: "playful-chase", active: true }, bag.fx);
+    expect(bag.getPlayfulPause()).toBe(true);
+    expect(bag.setIdleActionTimer).toHaveBeenCalledWith(null);
+    expect(bag.scheduleIdleAction).not.toHaveBeenCalled();
+
+    bag.scheduleIdleAction.mockClear();
+    dispatchPetHostIntent({ type: "playful-chase", active: false }, bag.fx);
+    expect(bag.getPlayfulPause()).toBe(false);
+    expect(bag.scheduleIdleAction).toHaveBeenCalledTimes(1);
+
+    dispatchPetHostIntent({ type: "playful-chase", active: true }, bag.fx);
+    bag.scheduleIdleAction.mockClear();
+    dispatchPetHostIntent(
+      { type: "playful-chase", active: false, rescheduleIdle: false },
+      bag.fx
+    );
+    expect(bag.getPlayfulPause()).toBe(false);
+    expect(bag.scheduleIdleAction).not.toHaveBeenCalled();
+  });
+
+  it("chat-open close does not reschedule while playful chase pauses idle", () => {
+    const bag = makeFx();
+    dispatchPetHostIntent({ type: "playful-chase", active: true }, bag.fx);
+    dispatchPetHostIntent({ type: "chat-open", open: true }, bag.fx);
+    bag.scheduleIdleAction.mockClear();
+    dispatchPetHostIntent({ type: "chat-open", open: false }, bag.fx);
+    expect(bag.scheduleIdleAction).not.toHaveBeenCalled();
   });
 });
 

@@ -27,6 +27,7 @@ export type PetSettingsPageCtx = {
   personality: Ref<PetPersonality>;
   usbWatchEnabled: Ref<boolean>;
   randomIdleEnabled: Ref<boolean>;
+  playfulModeEnabled: Ref<boolean>;
   hitBoundsEnabled: Ref<boolean>;
   catchphrases: Ref<string[]>;
   catchphraseChance: Ref<number>;
@@ -90,6 +91,7 @@ export type PetSettingsPageCtx = {
   onTone: (v: string | number) => void | Promise<void>;
   onUsbWatch: (v: boolean) => void | Promise<void>;
   onRandomIdle: (v: boolean) => void | Promise<void>;
+  onPlayfulMode: (v: boolean) => void | Promise<void>;
   onHitBounds: (v: boolean) => void | Promise<void>;
   onPickVrm: () => void | Promise<void>;
   onClearVrm: () => void | Promise<void>;

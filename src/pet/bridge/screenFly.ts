@@ -10,10 +10,17 @@ function clamp(n: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, n));
 }
 
-async function pickRandomWorkPoint(
+type WorkRect = {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+};
+
+async function readWorkRect(
   winW: number,
   winH: number
-): Promise<{ x: number; y: number } | null> {
+): Promise<WorkRect | null> {
   try {
     const monitor = await currentMonitor();
     if (!monitor) return null;
@@ -25,13 +32,49 @@ async function pickRandomWorkPoint(
     const right = (wp.x + ws.width) / scale - winW;
     const bottom = (wp.y + ws.height) / scale - winH;
     if (right <= left + 8 || bottom <= top + 8) return null;
-    return {
-      x: Math.round(left + 24 + Math.random() * (right - left - 48)),
-      y: Math.round(top + 24 + Math.random() * (bottom - top - 48)),
-    };
+    return { left, top, right, bottom };
   } catch {
     return null;
   }
+}
+
+function randomPointInWork(rect: WorkRect): { x: number; y: number } {
+  return {
+    x: Math.round(rect.left + 24 + Math.random() * (rect.right - rect.left - 48)),
+    y: Math.round(rect.top + 24 + Math.random() * (rect.bottom - rect.top - 48)),
+  };
+}
+
+async function pickRandomWorkPoint(
+  winW: number,
+  winH: number
+): Promise<{ x: number; y: number } | null> {
+  const rect = await readWorkRect(winW, winH);
+  if (!rect) return null;
+  return randomPointInWork(rect);
+}
+
+/** 尽量落在远离 avoid 的工作区点（调皮躲开用）。 */
+export async function pickWorkPointAwayFrom(
+  winW: number,
+  winH: number,
+  avoid: { x: number; y: number },
+  minDist = 280
+): Promise<{ x: number; y: number } | null> {
+  const rect = await readWorkRect(winW, winH);
+  if (!rect) return null;
+  let best = randomPointInWork(rect);
+  let bestDist = Math.hypot(best.x + winW / 2 - avoid.x, best.y + winH / 2 - avoid.y);
+  for (let i = 0; i < 14; i++) {
+    const p = randomPointInWork(rect);
+    const d = Math.hypot(p.x + winW / 2 - avoid.x, p.y + winH / 2 - avoid.y);
+    if (d > bestDist) {
+      best = p;
+      bestDist = d;
+    }
+    if (d >= minDist) return p;
+  }
+  return best;
 }
 
 interface FlyFrameInfo {
@@ -215,9 +258,11 @@ export async function teleportPetWindowWormhole(
   winW: number,
   winH: number,
   signal?: { cancelled: boolean },
-  onPhase?: (phase: WormholePhase) => void
+  onPhase?: (phase: WormholePhase) => void,
+  destOverride?: { x: number; y: number } | null
 ): Promise<boolean> {
-  const dest = await pickRandomWorkPoint(winW, winH);
+  const dest =
+    destOverride ?? (await pickRandomWorkPoint(winW, winH));
   if (!dest) return false;
   const win = getCurrentWindow();
 
@@ -245,4 +290,29 @@ export async function teleportPetWindowWormhole(
   await sleep(480, signal);
   onPhase?.("done");
   return !signal?.cancelled;
+}
+
+export async function flyPetWindowAway(
+  avoid: { x: number; y: number },
+  winW: number,
+  winH: number,
+  durationMs = 900,
+  signal?: { cancelled: boolean },
+  onFrame?: (info: FlyFrameInfo) => void
+): Promise<boolean> {
+  const dest = await pickWorkPointAwayFrom(winW, winH, avoid);
+  if (!dest) return false;
+  await animatePetWindowTo(dest.x, dest.y, durationMs, signal, onFrame);
+  return !signal?.cancelled;
+}
+
+export async function teleportPetWindowWormholeAway(
+  avoid: { x: number; y: number },
+  winW: number,
+  winH: number,
+  signal?: { cancelled: boolean },
+  onPhase?: (phase: WormholePhase) => void
+): Promise<boolean> {
+  const dest = await pickWorkPointAwayFrom(winW, winH, avoid, 320);
+  return teleportPetWindowWormhole(winW, winH, signal, onPhase, dest);
 }
