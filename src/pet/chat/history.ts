@@ -1,6 +1,6 @@
 /** Per-character chat transcript (separate from settings blob). Frontend-only. */
 
-export const PET_CHAT_HISTORY_KEY = "desktop-pet-chat-history";
+const PET_CHAT_HISTORY_KEY = "desktop-pet-chat-history";
 /** Soft cap per character archive */
 export const PET_CHAT_HISTORY_MAX = 2000;
 /** Floating chat window loads at most this many messages */
@@ -133,7 +133,7 @@ function emitTruncated(
   }
 }
 
-export type SaveChatHistoryResult = {
+type SaveChatHistoryResult = {
   items: PetChatHistoryItem[];
   truncated: boolean;
 };
@@ -147,7 +147,7 @@ export function loadChatHistory(
   return list ? list.slice() : [];
 }
 
-export function saveChatHistory(
+function saveChatHistory(
   characterId: PetChatCharacterId,
   items: PetChatHistoryItem[]
 ): SaveChatHistoryResult {
@@ -206,7 +206,7 @@ export function clearChatHistory(characterId: PetChatCharacterId): void {
   saveChatHistory(characterId, []);
 }
 
-export function buildChatHistoryExport(
+function buildChatHistoryExport(
   characterId: PetChatCharacterId
 ): string {
   const id = normalizeCharacterId(characterId);
@@ -257,7 +257,7 @@ export function loadChatWindowSlice(
   return list.slice(list.length - max);
 }
 
-export function dayKey(ts: number): string {
+function dayKey(ts: number): string {
   const d = new Date(ts);
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");

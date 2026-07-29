@@ -37,7 +37,7 @@ import {
   emptyVrmExtension,
   normalizeExtensions,
   normalizeVrmExtension,
-} from "../domain/extensions";
+} from "./extensions";
 import { getCharacter } from "../characters";
 import { readSettingsRaw, writeSettingsRaw } from "./storageKeys";
 

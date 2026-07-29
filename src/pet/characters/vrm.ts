@@ -1,7 +1,7 @@
 import type { CharacterDef } from "./types";
 import { formVrm } from "../skins/forms";
 import { PET_VRM_DEMO_MOTIONS } from "../content/motions";
-import { emptyVrmExtension } from "../domain/extensions";
+import { emptyVrmExtension } from "../data/extensions";
 import { lines } from "./lines/vrm";
 import { remapVrmMotion } from "./motionRemap";
 import PetVrmModel from "../models/PetVrmModel.vue";

@@ -2,12 +2,12 @@ import { LogicalPosition, LogicalSize } from "@tauri-apps/api/dpi";
 import { emit, emitTo, listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { currentMonitor, getCurrentWindow } from "@tauri-apps/api/window";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { petBodyBox } from "../bridge/sizes";
-import { loadPetSettings } from "../data/settings";
-import { petStore } from "../data/store";
-import { resolveAppearance } from "../skins";
-import { getPetLocale } from "../bridge/locale";
-import { getCharacter } from "../characters";
+import { petBodyBox } from "@/pet/bridge/sizes";
+import { loadPetSettings } from "@/pet/data/settings";
+import { petStore } from "@/pet/data/store";
+import { resolveAppearance } from "@/pet/skins";
+import { getPetLocale } from "@/pet/bridge/locale";
+import { getCharacter } from "@/pet/characters";
 import {
   PET_CHAT_ACTIVITY_EVENT,
   PET_CHAT_CLOSE_REQ_EVENT,
@@ -21,14 +21,14 @@ import {
   PET_CHAT_W,
   type PetChatShowPayload,
 } from "./types";
-import { normalizePetChatAi } from "./providers";
+import { normalizePetChatAi } from "@/pet/chat/providers";
 import { waitWebviewReady } from "@/pet/windows/shared/waitWebviewReady";
 
 function chatUrl(): string {
   if (import.meta.env.DEV) {
-    return `${window.location.origin}/src/pet/chat/chat.html`;
+    return `${window.location.origin}/src/pet/windows/chat/chat.html`;
   }
-  return "src/pet/chat/chat.html";
+  return "src/pet/windows/chat/chat.html";
 }
 
 function clamp(n: number, min: number, max: number): number {
@@ -182,10 +182,6 @@ async function emitChatOpenState(open: boolean) {
   }
 }
 
-export function isPetChatOpen(): boolean {
-  return chatOpen;
-}
-
 export async function showPetChat(): Promise<void> {
   await ensureChatListeners();
   const win = await ensureChatWindow();
@@ -258,14 +254,6 @@ export async function hidePetChat(): Promise<void> {
     // ignore
   }
   await hideChatWindow();
-}
-
-export async function togglePetChat(): Promise<void> {
-  if (chatOpen) {
-    await hidePetChat();
-    return;
-  }
-  await showPetChat();
 }
 
 export async function destroyChatWindow(): Promise<void> {

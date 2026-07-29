@@ -200,9 +200,7 @@ export function isPetMenuOpen(): boolean {
 }
 
 export async function showPetMenu(options: {
-  openLabel: string;
-  pinLabel: string;
-  chatLabel?: string;
+  chatEnabled?: boolean;
   statsExpandDefault?: boolean;
 }): Promise<void> {
   await ensureMenuListeners();
@@ -240,9 +238,7 @@ export async function showPetMenu(options: {
   }
 
   const payload: PetMenuPayload = {
-    openLabel: options.openLabel,
-    pinLabel: options.pinLabel,
-    chatLabel: options.chatLabel?.trim() ?? "",
+    chatEnabled: Boolean(options.chatEnabled),
     statsExpandDefault: menuExpanded,
   };
 

@@ -15,7 +15,7 @@ export interface PetChatShowPayload {
   modelKind: string;
   lang: "zh" | "en";
   /** Prefer this over chat-window localStorage (settings live in another webview) */
-  chatAi?: import("./providers").PetChatAiConfig | null;
+  chatAi?: import("@/pet/chat/providers").PetChatAiConfig | null;
 }
 
 export interface PetChatReplyPayload {
@@ -33,7 +33,5 @@ export const PET_CHAT_W = 280;
 export const PET_CHAT_H = 360;
 export const PET_CHAT_GAP = 8;
 
-/** Cap messages sent to the model as context */
-export const PET_CHAT_MAX_TURNS = 8;
 /** Max characters for one user input in the chat window */
 export const PET_CHAT_INPUT_MAX = 1000;

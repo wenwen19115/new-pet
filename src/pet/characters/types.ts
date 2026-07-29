@@ -2,7 +2,7 @@ import type { Component } from "vue";
 import type { PetModelKind, PetSkinVisual } from "../skins/types";
 import type { PetFormDef } from "../skins/forms";
 import type { PetIdleMotion } from "../content/motions";
-import type { CharacterExtensions } from "../domain/extensions";
+import type { CharacterExtensions } from "../data/extensions";
 import type { CharacterLineBundle } from "./lineTypes";
 
 export type {

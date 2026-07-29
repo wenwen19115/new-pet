@@ -1,13 +1,13 @@
 import type { PetModelKind } from "../skins/types";
 import { getCharacter } from "../characters";
-import { filterEnabledMotions } from "../content/customLines";
+import { filterEnabledMotions } from "./customLines";
 import {
   findCustomVrmMotion,
   isCustomVrmMotionId,
   type CustomVrmMotion,
-} from "../content/customVrmMotions";
-import type { PetIdleMotion } from "../content/motions";
-import { motionHoldMs } from "../content/motions";
+} from "./customVrmMotions";
+import type { PetIdleMotion } from "./motions";
+import { motionHoldMs } from "./motions";
 
 interface MotionPlayRequest {
   id: string;

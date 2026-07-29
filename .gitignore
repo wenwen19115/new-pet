@@ -15,6 +15,7 @@ target
 **/mutants.out*/
 
 # Editors
+.cursor/
 .vscode/*
 !.vscode/extensions.json
 .idea/

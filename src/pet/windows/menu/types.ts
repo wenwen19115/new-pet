@@ -8,10 +8,8 @@ export const PET_MENU_LAYOUT_EVENT = "pet://menu-layout";
 export type PetMenuAction = "open" | "pin" | "chat";
 
 export interface PetMenuPayload {
-  openLabel: string;
-  pinLabel: string;
-  /** Empty → hide chat row */
-  chatLabel: string;
+  /** Show chat row when true */
+  chatEnabled: boolean;
   /** Whether system stats panel starts expanded */
   statsExpandDefault: boolean;
 }

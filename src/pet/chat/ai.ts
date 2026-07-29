@@ -6,9 +6,11 @@ import {
   resolveChatEndpoint,
   type PetChatAiConfig,
 } from "./providers";
-import { PET_CHAT_MAX_TURNS } from "./types";
 
-export type ChatRole = "system" | "user" | "assistant";
+/** Cap messages sent to the model as context */
+const PET_CHAT_MAX_TURNS = 8;
+
+type ChatRole = "system" | "user" | "assistant";
 
 export interface ChatTurn {
   id?: string;
@@ -19,7 +21,7 @@ export interface ChatTurn {
   ts?: number;
 }
 
-export type PetChatAiErrorCode =
+type PetChatAiErrorCode =
   | "missing_key"
   | "http"
   | "network"
@@ -38,7 +40,7 @@ export class PetChatAiError extends Error {
   }
 }
 
-export interface PetChatPersona {
+interface PetChatPersona {
   petName: string;
   personality: PetPersonality;
   tone: PetTone;
@@ -123,7 +125,7 @@ function buildSystemPrompt(persona: PetChatPersona): string {
 }
 
 /** Local companion reply — only used when provider is explicitly `local`. */
-export function localPetChatReply(
+function localPetChatReply(
   persona: PetChatPersona,
   userText: string
 ): string {

@@ -24,7 +24,7 @@ export default defineConfig(async () => ({
         pet: resolve(__dirname, "src/pet/windows/pet/pet.html"),
         "pet-bubble": resolve(__dirname, "src/pet/windows/bubble/bubble.html"),
         "pet-menu": resolve(__dirname, "src/pet/windows/menu/menu.html"),
-        "pet-chat": resolve(__dirname, "src/pet/chat/chat.html"),
+        "pet-chat": resolve(__dirname, "src/pet/windows/chat/chat.html"),
       },
       output: {
         manualChunks(id) {

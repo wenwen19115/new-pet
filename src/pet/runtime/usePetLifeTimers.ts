@@ -2,7 +2,7 @@ import { ref, type Ref } from "vue";
 import {
   hidePetBubble,
 } from "@/pet/windows/bubble";
-import { hidePetChat } from "@/pet/chat";
+import { hidePetChat } from "@/pet/windows/chat";
 import {
   setPetUsbWatchRelaxed,
   stopPetUsbWatch,

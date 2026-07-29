@@ -4,7 +4,7 @@ import type { PetPersonality } from "../content/personality";
 import type { AppUiTheme } from "@/theme/uiTheme";
 import type { CustomVrmMotion } from "../content/customVrmMotions";
 import type { PetCustomLine } from "../content/customLines";
-import type { CharacterExtensions } from "../domain/extensions";
+import type { CharacterExtensions } from "./extensions";
 import {
   CATCHPHRASE_DEFAULT_CHANCE,
   defaultCatchphrasesForModel,
@@ -27,7 +27,7 @@ export type { PetCustomLine, PetLineScene } from "../content/customLines";
 export type {
   CharacterExtensions,
   VrmCharacterExtension,
-} from "../domain/extensions";
+} from "./extensions";
 export { PET_MODEL_KINDS };
 
 export type PetMood =

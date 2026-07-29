@@ -1,7 +1,7 @@
 import type { Ref } from "vue";
 import type { PetSettings } from "../data/types";
 import type { PetModelKind } from "../skins/types";
-import { buildIdleMotionPool, resolveMotionPlay } from "../domain/motionPlayer";
+import { buildIdleMotionPool, resolveMotionPlay } from "../content/motionPlayer";
 
 export function usePetIdleLoop(deps: {
   settings: Ref<PetSettings>;

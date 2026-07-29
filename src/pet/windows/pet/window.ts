@@ -10,7 +10,7 @@ import {
   destroyMenuWindow,
   hidePetMenu,
 } from "@/pet/windows/menu";
-import { destroyChatWindow, hidePetChat } from "@/pet/chat";
+import { destroyChatWindow, hidePetChat } from "@/pet/windows/chat";
 import { loadPetSettings } from "@/pet/data/settings";
 import { resolveAppearance } from "@/pet/skins";
 import { petWindowSize } from "@/pet/bridge/sizes";

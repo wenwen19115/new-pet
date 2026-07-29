@@ -14,5 +14,3 @@ const PACKS: Record<string, CharacterLineBundle> = {
 export function getLinePack(model: string): CharacterLineBundle {
   return PACKS[model] ?? PACKS.chip!;
 }
-
-export type { CharacterLineBundle };

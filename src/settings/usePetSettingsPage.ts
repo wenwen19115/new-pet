@@ -38,7 +38,7 @@ import {
 import type { PetCustomLine } from "@/pet/content/customLines";
 import { isAppUiTheme, type AppUiTheme } from "@/theme/uiTheme";
 import { listCharacters, characterCapabilities, getCharacter, characterHas } from "@/pet/characters";
-import { demoMotionOptions } from "@/pet/domain/motionPlayer";
+import { demoMotionOptions } from "@/pet/content/motionPlayer";
 import {
   registerBuiltinSettingsModules,
 } from "./registerBuiltin";

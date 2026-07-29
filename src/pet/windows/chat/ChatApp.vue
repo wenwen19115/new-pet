@@ -120,7 +120,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
 import { emit, listen, type UnlistenFn } from "@tauri-apps/api/event";
-import { askPetChatAi, PetChatAiError, type ChatTurn } from "./ai";
+import { askPetChatAi, PetChatAiError, type ChatTurn } from "@/pet/chat/ai";
 import {
   appendChatMessages,
   clearChatHistory,
@@ -132,9 +132,9 @@ import {
   PET_CHAT_HISTORY_CHANGED,
   PET_CHAT_WINDOW_MAX,
   type PetChatHistoryItem,
-} from "./history";
-import { loadPetSettings } from "../data/settings";
-import { normalizePetChatAi, type PetChatAiConfig } from "./providers";
+} from "@/pet/chat/history";
+import { loadPetSettings } from "@/pet/data/settings";
+import { normalizePetChatAi, type PetChatAiConfig } from "@/pet/chat/providers";
 import {
   PET_CHAT_ACTIVITY_EVENT,
   PET_CHAT_CLOSE_REQ_EVENT,
@@ -144,10 +144,10 @@ import {
   PET_CHAT_SHOW_EVENT,
   type PetChatShowPayload,
 } from "./types";
-import { PET_SETTINGS_EVENT, type PetSettings, type PetTone } from "../data/types";
-import { isPetPersonality, type PetPersonality } from "../content/personality";
-import type { PetModelKind } from "../skins/types";
-import { speakPetTts, cancelPetTts } from "../bridge/tts";
+import { PET_SETTINGS_EVENT, type PetSettings, type PetTone } from "@/pet/data/types";
+import { isPetPersonality, type PetPersonality } from "@/pet/content/personality";
+import type { PetModelKind } from "@/pet/skins/types";
+import { speakPetTts, cancelPetTts } from "@/pet/bridge/tts";
 
 const visible = ref(false);
 const draft = ref("");

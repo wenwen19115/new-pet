@@ -71,9 +71,7 @@ import { formatStatPercent, getSystemStats } from "@/pet/bridge/systemStats";
 const rootEl = ref<HTMLElement | null>(null);
 const visible = ref(false);
 const statsExpanded = ref(false);
-const openLabel = ref("打开设置");
-const pinLabel = ref("置顶设置页");
-const chatLabel = ref("");
+const chatEnabled = ref(false);
 const cpuPct = ref(0);
 const memPct = ref(0);
 const diskPct = ref(0);
@@ -81,6 +79,16 @@ const netPct = ref(0);
 const statsReady = ref(false);
 
 const en = computed(() => getPetLocale() === "en");
+
+const openLabel = computed(() =>
+  en.value ? "Open settings" : "打开设置"
+);
+const pinLabel = computed(() =>
+  en.value ? "Pin settings on top" : "置顶设置页"
+);
+const chatLabel = computed(() =>
+  chatEnabled.value ? (en.value ? "Chat" : "聊天") : ""
+);
 
 const toggleTitle = computed(() =>
   en.value ? "System peek" : "摸鱼仪表盘"
@@ -209,10 +217,7 @@ function toggleStats() {
 }
 
 function applyPayload(payload: PetMenuPayload) {
-  openLabel.value = payload.openLabel;
-  pinLabel.value = payload.pinLabel;
-  chatLabel.value =
-    typeof payload.chatLabel === "string" ? payload.chatLabel.trim() : "";
+  chatEnabled.value = Boolean(payload.chatEnabled);
   statsExpanded.value = Boolean(payload.statsExpandDefault);
   visible.value = true;
   void pingActivity();
