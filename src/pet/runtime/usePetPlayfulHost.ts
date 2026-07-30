@@ -1,11 +1,17 @@
+import type { Ref } from "vue";
 import type { ApplyPetMood } from "./petHostMood";
+import type { PetModelKind } from "@/pet/skins/types";
+import type { PetSettings } from "../data/types";
+import { pickPlayfulLine } from "../content/dialogue/lines";
+import { linePickOptsFromSettings } from "./usePetLines";
 import {
   PLAYFUL_CATCH_WINDOW_MS,
   PLAYFUL_CHASE_MS,
   PLAYFUL_POST_CATCH_COOLDOWN_MS,
   PLAYFUL_POST_MISS_COOLDOWN_MS,
+  PLAYFUL_STREAK_PEEK_DELAY_MS,
+  advancePlayfulMissStreak,
   cursorNearPet,
-  pickPlayfulLine,
   playfulScareRadius,
 } from "./playfulPhysics";
 
@@ -22,6 +28,8 @@ export function usePetPlayfulHost(deps: {
     opts?: { rescheduleIdle?: boolean }
   ) => void;
   tone: () => "cute" | "snarky";
+  model: () => PetModelKind;
+  settings: Ref<PetSettings>;
   bodyBox: () => { w: number; h: number };
   applyMood: ApplyPetMood;
   runPlayfulFlee: (cursor: { x: number; y: number }) => Promise<boolean>;
@@ -30,18 +38,29 @@ export function usePetPlayfulHost(deps: {
     fromAuto: boolean,
     opts?: { keepMotion?: boolean; force?: boolean }
   ) => void | Promise<void>;
+  /** 连空嫌弃后偶发贴边躲；由 createPetHost 晚绑定 */
+  requestPeek: () => void;
   resetSleepTimer: () => void;
 }) {
   let fleeBusy = false;
   let cooldownUntil = 0;
   let catchUntil = 0;
   let chaseTimer: number | null = null;
+  let peekTimer: number | null = null;
   let chaseGen = 0;
+  let missStreak = 0;
 
   function clearChaseTimer() {
     if (chaseTimer != null) {
       window.clearTimeout(chaseTimer);
       chaseTimer = null;
+    }
+  }
+
+  function clearPeekTimer() {
+    if (peekTimer != null) {
+      window.clearTimeout(peekTimer);
+      peekTimer = null;
     }
   }
 
@@ -53,30 +72,59 @@ export function usePetPlayfulHost(deps: {
 
   function stop() {
     endChase({ rescheduleIdle: false });
+    clearPeekTimer();
     fleeBusy = false;
     cooldownUntil = 0;
     catchUntil = 0;
+    missStreak = 0;
+  }
+
+  function lineFor(kind: "start" | "catch" | "miss" | "sulk"): string {
+    const model = deps.model();
+    const s = deps.settings.value;
+    return pickPlayfulLine(
+      kind,
+      deps.tone(),
+      model,
+      s.personality,
+      linePickOptsFromSettings(s, model)
+    );
+  }
+
+  function onChaseMiss() {
+    deps.applyMood("grumpy", "playful-miss");
+    const outcome = advancePlayfulMissStreak(missStreak);
+    missStreak = outcome.missStreak;
+    const kind = outcome.sulk ? "sulk" : "miss";
+    void deps.speakText(lineFor(kind), true, {
+      force: true,
+      keepMotion: true,
+    });
+    cooldownUntil = Date.now() + PLAYFUL_POST_MISS_COOLDOWN_MS;
+    endChase();
+    if (outcome.maybePeek && deps.hostAlive() && !deps.isPeeking()) {
+      clearPeekTimer();
+      peekTimer = window.setTimeout(() => {
+        peekTimer = null;
+        if (!deps.hostAlive() || deps.isPeeking() || deps.isDragging()) return;
+        if (deps.mood() === "sleep") return;
+        deps.requestPeek();
+      }, PLAYFUL_STREAK_PEEK_DELAY_MS);
+    }
   }
 
   function beginChase() {
     if (deps.chasePausesIdle()) return;
     deps.setChaseIdleGate(true);
     const gen = ++chaseGen;
-    const tone = deps.tone();
-    void deps.speakText(pickPlayfulLine("start", tone), true, {
+    void deps.speakText(lineFor("start"), true, {
       force: true,
       keepMotion: true,
     });
     clearChaseTimer();
     chaseTimer = window.setTimeout(() => {
       if (gen !== chaseGen || !deps.chasePausesIdle()) return;
-      deps.applyMood("grumpy", "playful-miss");
-      void deps.speakText(pickPlayfulLine("miss", deps.tone()), true, {
-        force: true,
-        keepMotion: true,
-      });
-      cooldownUntil = Date.now() + PLAYFUL_POST_MISS_COOLDOWN_MS;
-      endChase();
+      onChaseMiss();
     }, PLAYFUL_CHASE_MS);
   }
 
@@ -117,8 +165,10 @@ export function usePetPlayfulHost(deps: {
     if (deps.mood() === "sleep") return false;
 
     clearChaseTimer();
+    clearPeekTimer();
+    missStreak = 0;
     deps.applyMood("happy", "playful-catch");
-    void deps.speakText(pickPlayfulLine("catch", deps.tone()), true, {
+    void deps.speakText(lineFor("catch"), true, {
       force: true,
       keepMotion: true,
     });

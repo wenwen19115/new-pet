@@ -10,8 +10,8 @@ import { getPetLocale } from "../../bridge/locale";
 import { buildUsbAnnounceText } from "../../bridge/usbFormat";
 import type { PetUsbAnnouncePayload } from "../../data/types";
 import { getLinePack } from "../../characters/lines";
-import { resolveCare, resolveDragEnd, resolveDragStart, resolvePolish } from "../../characters/lines/shared";
-import type { BuiltInLineCategory } from "../../characters/lineTypes";
+import { resolveCare, resolveDragEnd, resolveDragStart, resolvePlayful, resolvePolish } from "../../characters/lines/shared";
+import type { PlayfulLineKind, BuiltInLineCategory } from "../../characters/lineTypes";
 
 export interface PetLinePickOptions {
   customLines?: PetCustomLine[];
@@ -180,6 +180,19 @@ export function pickDragStartLine(
 ): string {
   if (!lineCatOn("drag-start", opts)) return "";
   const pool = packLang(resolveDragStart(packFor(model)));
+  return withFlavor(pickFromPool(pool), personality, model);
+}
+
+export function pickPlayfulLine(
+  kind: PlayfulLineKind,
+  tone: PetTone,
+  model: PetModelKind = "chip",
+  personality: PetPersonality = "sunny",
+  opts?: PetLinePickOptions
+): string {
+  if (!lineCatOn("playful", opts)) return "";
+  const pack = resolvePlayful(packFor(model))[kind];
+  const pool = packLang(tone === "snarky" ? pack.snarky : pack.cute);
   return withFlavor(pickFromPool(pool), personality, model);
 }
 

@@ -31,7 +31,7 @@
 | `wake` / `usb-wake` | life / speech | 仅从 sleep 来 |
 | `drag-start` | pointer | 置 curious；shell 同步惊讶/紧张台词 |
 | `drag-land` | shell（松手后） | 落地余韵 happy；轻动作 + 台词 |
-| `playful-flee` / `playful-catch` / `playful-miss` | playful host | 躲开 / 抓到 / 超时 |
+| `playful-flee` / `playful-catch` / `playful-miss` | playful host | 躲开 / 抓到 / 超时；连空 3 次嫌弃，偶发 `requestPeek` |
 | `peek-hide` / `peek-reveal` | peek host | 躲起来 / 现身 |
 | `speak-end` / `chat-reply-end` | speech / lifecycle | 回 idle（sleep / drag / motion-locked 除外；气泡可能还在） |
 | `motion-end` / `drag-end` | motion /（旧松手路径） | 回 idle（sleep / drag / speaking 除外） |

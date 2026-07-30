@@ -411,6 +411,112 @@
       ]
     }
   },
+  "playful": {
+    "start": {
+      "cute": {
+        "zh": [
+          "呀哈～追我呀，要轻轻的，衣角怕扯～",
+          "十秒倒计时！眨眼都不许偷看路线哦。",
+          "我先溜啦～抓住就奖励你一个笑脸。"
+        ],
+        "en": [
+          "Hiya~ Chase me gently—don't tug the hem~",
+          "Ten-second timer! No peeking at my route.",
+          "I'm off~ Catch me and you get a smile."
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "追得到再说。皱眉那个表情先收一收。",
+          "别用点设置的力气来戳我，会空的。",
+          "计时开始。抓空了可别怪立绘太滑。"
+        ],
+        "en": [
+          "Catch me first. Put that frown away.",
+          "Don't poke me like a settings button—you'll miss.",
+          "Timer on. Don't blame the art if you slip."
+        ]
+      }
+    },
+    "catch": {
+      "cute": {
+        "zh": [
+          "呀——被抱住了。心跳好吵，但好开心～",
+          "你赢啦。靠过来一点，我不会躲了。",
+          "哎嘿，抓住立绘也算抓住我哦。"
+        ],
+        "en": [
+          "Ah—held. Heart loud, but happy~",
+          "You win. Come closer; I won't dodge.",
+          "Hehe, catching the art counts as catching me."
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "……偶尔准一次。别以为每次都行。",
+          "行吧。手稳一点，我衣角谢谢你。",
+          "算你赢。日志里写：今天没被气到。"
+        ],
+        "en": [
+          "…one lucky hit. Not every time.",
+          "Fine. Steady hands—my hem thanks you.",
+          "You win. Log note: not annoyed today."
+        ]
+      }
+    },
+    "miss": {
+      "cute": {
+        "zh": [
+          "嘿嘿，只碰到空气～衣角在这边啦！",
+          "差一点摸到裙摆。再试，我等你。",
+          "溜～没抓到。喝口水再来好不好？"
+        ],
+        "en": [
+          "Hehe, only air~ Hem's over here!",
+          "Almost the skirt edge. Try again—I'll wait.",
+          "Slip~ Missed. Water, then retry?"
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "手抖成这样还想抓我？先眨眼。",
+          "空了。别瞪屏幕，瞪也没用。",
+          "就这？立绘都替你害羞。"
+        ],
+        "en": [
+          "Hands that shaky and you want me? Blink first.",
+          "Miss. Staring at the screen won't help.",
+          "That's it? Even the art is embarrassed."
+        ]
+      }
+    },
+    "sulk": {
+      "cute": {
+        "zh": [
+          "三次都落空……我去边边躲猫猫生闷气了。",
+          "连抓三次空气？哼，不理你，只露出半张脸。",
+          "好过分哦。我贴边站着，想我了再叫「出来」。"
+        ],
+        "en": [
+          "Missed thrice… peekaboo-sulking at the edge.",
+          "Three grabs of air? Hmph—half a face only.",
+          "Mean. I'm at the rim; say “come out” when you miss me."
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "三次空抓。我贴边去了，自己对着空气反省。",
+          "手这么飘还想陪聊？先学会点中立绘。",
+          "连空纪录。边线见，慢半拍的那位。"
+        ],
+        "en": [
+          "Three empty grabs. Rim time—reflect at the air.",
+          "Floaty hands want chat? Learn to click the art first.",
+          "Streak done. See you at the edge, half-beat."
+        ]
+      }
+    }
+  },
   "dragStart": {
     "zh": [
       "呀——！突然被抱起来了？！",

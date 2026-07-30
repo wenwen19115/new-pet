@@ -387,6 +387,112 @@
       ]
     }
   },
+  "playful": {
+    "start": {
+      "cute": {
+        "zh": [
+          "嗷呜比赛开场！狐火喷一口——追不上就输！",
+          "碎步蹦跳预备！十秒内抓住这团像素！",
+          "虫洞暖机中～现在摸我，我可是会闪的！"
+        ],
+        "en": [
+          "Awoo race! Foxfire puff—miss and you lose!",
+          "Pixel hop ready! Catch this spirit in ten!",
+          "Wormhole warming~ Touch me and I blink!"
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "像素残影已就绪。你的鼠标行不行啊？",
+          "狐火新闻预告：某人即将摸空三次。",
+          "别用点图标的速度追灵体，会社死的。"
+        ],
+        "en": [
+          "Pixel afterimage ready. Is your mouse OK?",
+          "Foxfire headline: someone will miss thrice.",
+          "Don't chase a spirit like an icon—cringe."
+        ]
+      }
+    },
+    "catch": {
+      "cute": {
+        "zh": [
+          "嗷呜被按住尾巴了！狐火认输！",
+          "抓住啦！小灵给你撒一把好运星～",
+          "呜——像素投降。你今天手感真好！"
+        ],
+        "en": [
+          "Awoo—tail pinned! Foxfire yields!",
+          "Caught! Spirit sprinkles luck stars~",
+          "Nngh—pixels surrender. Hot hands today!"
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "偶然！下回虫洞直接蹦出屏幕外。",
+          "……行。狐火记下这笔账了。",
+          "抓到残影算你赢。别得意太久。"
+        ],
+        "en": [
+          "Fluke! Next wormhole leaves the screen.",
+          "…fine. Foxfire keeps the receipt.",
+          "Catching the afterimage counts. Don't gloat."
+        ]
+      }
+    },
+    "miss": {
+      "cute": {
+        "zh": [
+          "残影成功！你摸到的是空气嗷呜～",
+          "嘿嘿，狐火一闪——下次咬准尾巴尖！",
+          "蹦走啦！再来，小灵还在场边加油！"
+        ],
+        "en": [
+          "Afterimage win! You poked air—awoo~",
+          "Hehe, foxfire blink—aim for the tip next!",
+          "Hopped off! Again—spirit's cheering courtside!"
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "连影子都摸不着？像素都嫌你慢。",
+          "空爪。回去练碎步再来挑战。",
+          "哈哈，新闻快讯：人类再次扑空。"
+        ],
+        "en": [
+          "Can't even touch the shadow? Pixels judge you.",
+          "Empty claws. Practice hops, then retry.",
+          "Haha, breaking: human whiffs again."
+        ]
+      }
+    },
+    "sulk": {
+      "cute": {
+        "zh": [
+          "连空三次……狐火新闻：小灵贴边生闷气中！",
+          "三次都抓空气？哼，我缩成边边一块像素～",
+          "好过分！虫洞逃到屏幕边缘，想我了再召我！"
+        ],
+        "en": [
+          "Three misses… foxfire news: spirit sulking at rim!",
+          "Three air grabs? Hmph—I'm one edge pixel now~",
+          "Mean! Wormholed to the rim—summon when you miss me!"
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "摸空×3。边线冷藏，狐火已读不回。",
+          "连空达成。虫洞撤离，菜鸡人类请反思。",
+          "手速检测：寄。我去贴边做本期结束动画。"
+        ],
+        "en": [
+          "Miss ×3. Rim cold-store. Foxfire left on read.",
+          "Streak done. Wormhole out. Reflect, human noob.",
+          "APM: L. Edge outro animation loading."
+        ]
+      }
+    }
+  },
   "dragStart": {
     "zh": [
       "嗷呜？！被拎飞了！！",

@@ -19,6 +19,64 @@
       "Drop your shoulders… yes, like that."
     ]
   },
+  "playful": {
+    "start": {
+      "cute": {
+        "zh": ["追我游戏开始～倒计时中！", "躲开咯，抓住有奖励～"],
+        "en": ["Chase game on~ Countdown!", "Dodging—catch me for a prize~"]
+      },
+      "snarky": {
+        "zh": ["抓得到再说。", "计时开始，别摸空。"],
+        "en": ["Catch me first.", "Timer on. Don't miss."]
+      }
+    },
+    "catch": {
+      "cute": {
+        "zh": ["抓住啦！你赢～", "这次算你厉害！"],
+        "en": ["Caught! You win~", "You got me this time!"]
+      },
+      "snarky": {
+        "zh": ["……行吧，手挺快。", "偶然准一次而已。"],
+        "en": ["…fine, quick hands.", "One lucky hit."]
+      }
+    },
+    "miss": {
+      "cute": {
+        "zh": ["嘿嘿没抓到～再来！", "差一点，下次更好！"],
+        "en": ["Hehe missed~ Again!", "So close—next better!"]
+      },
+      "snarky": {
+        "zh": ["慢了。", "空了，继续练。"],
+        "en": ["Slow.", "Miss. Keep practicing."]
+      }
+    },
+    "sulk": {
+      "cute": {
+        "zh": [
+          "连空三次……我先去边边躲一会儿。",
+          "三次都空？哼，不理你啦。",
+          "抓空太多次，我贴边冷静一下～"
+        ],
+        "en": [
+          "Missed thrice… hiding at the edge a bit.",
+          "Three misses? Hmph, ignoring you.",
+          "Too many misses—cooling at the rim~"
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "三次摸空？我躲了，自己反省。",
+          "手这么飘？边线见。",
+          "连空纪录。先这样。"
+        ],
+        "en": [
+          "Three misses? Hiding—reflect.",
+          "Floaty hands? See you at the edge.",
+          "Streak done. That's enough."
+        ]
+      }
+    }
+  },
   "dragStart": {
     "zh": [
       "诶？被拎起来了？",

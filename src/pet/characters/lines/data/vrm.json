@@ -273,6 +273,112 @@
       ]
     }
   },
+  "playful": {
+    "start": {
+      "cute": {
+        "zh": [
+          "……那，开始了。请轻一点追我。",
+          "嗯……我会躲的。抓住的话，就说一声好吗。",
+          "十秒……我有点紧张，但还是想陪你玩。"
+        ],
+        "en": [
+          "…okay, starting. Please chase gently.",
+          "Mm… I'll dodge. If you catch me, say so softly.",
+          "Ten seconds… nervous, but I want to play."
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "……追得到再说。别用发脾气的力气。",
+          "计时了。……摸空也请安静一点。",
+          "开始吧。我不会大声笑你，但会躲开。"
+        ],
+        "en": [
+          "…catch me first. Don't chase angry.",
+          "Timer on. …miss quietly, please.",
+          "Begin. I won't laugh loud—but I will dodge."
+        ]
+      }
+    },
+    "catch": {
+      "cute": {
+        "zh": [
+          "……被抱住了。谢谢你，手很稳。",
+          "嗯，你赢了。……靠过来也不怕。",
+          "抓住了呀。……那我就不跑了。"
+        ],
+        "en": [
+          "…held. Thank you—steady hands.",
+          "Mm, you win. …closer is okay now.",
+          "Caught. …then I won't run."
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "……算你快。别一直盯着看。",
+          "行。……偶尔准一次也可以。",
+          "……抓住了。下次轻一点，好吗。"
+        ],
+        "en": [
+          "…you're quick. Don't stare too long.",
+          "Fine. …one accurate hit is allowed.",
+          "…caught. Gentler next time, okay?"
+        ]
+      }
+    },
+    "miss": {
+      "cute": {
+        "zh": [
+          "……没碰到。没关系，再试一次。",
+          "嘿嘿……差一点。我还在这儿。",
+          "空了呀。……我等你下一次。"
+        ],
+        "en": [
+          "…no touch. It's okay—try again.",
+          "Hehe… so close. I'm still here.",
+          "Missed. …I'll wait for the next."
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "……慢了半拍。别急。",
+          "空了。……先松肩，再点。",
+          "没抓到。……我不会嘲笑很大声。"
+        ],
+        "en": [
+          "…half a beat late. No rush.",
+          "Miss. …drop shoulders, then click.",
+          "Didn't catch. …I won't laugh loudly."
+        ]
+      }
+    },
+    "sulk": {
+      "cute": {
+        "zh": [
+          "……三次都落空。我想去边边安静一下。",
+          "连着摸空……有点难过。我先躲起来。",
+          "……抓不到也没关系。我就在屏幕边缘等你叫我。"
+        ],
+        "en": [
+          "…missed thrice. I want quiet at the edge.",
+          "Empty grabs again… a bit sad. Hiding a while.",
+          "…missing is okay. I'll wait at the rim if you call."
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "……三次空。我贴边去了，请自己缓一缓。",
+          "手飘成这样……我先离开中心。别硬追。",
+          "连空了。……边线见。想说话时再出来找我。"
+        ],
+        "en": [
+          "…three misses. Edge time—please slow down.",
+          "Hands that float… leaving center. Don't force it.",
+          "Streak. …see you at the rim. Call when you want to talk."
+        ]
+      }
+    }
+  },
   "dragStart": {
     "zh": [
       "……诶？被抬起来了。",

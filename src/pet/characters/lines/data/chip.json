@@ -387,6 +387,112 @@
       ]
     }
   },
+  "playful": {
+    "start": {
+      "cute": {
+        "zh": [
+          "嘀——追逐协议启动。散热鳍进入逃跑姿态～",
+          "传感器锁定你的光标了。倒计时，哔！",
+          "外壳光滑模式：ON。来碰碰运气？"
+        ],
+        "en": [
+          "Beep—chase protocol on. Fins in flee pose~",
+          "Sensors locked on your cursor. Countdown, beep!",
+          "Shell-slick mode: ON. Feeling lucky?"
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "手速自检开始。不及格我就飞了。",
+          "总线旁听位已开：看你怎么摸空。",
+          "别用咖啡手速来追硬件，谢谢。"
+        ],
+        "en": [
+          "APM self-check. Fail and I fly.",
+          "Bus spectator seat open: watch you miss.",
+          "Don't chase hardware with coffee hands."
+        ]
+      }
+    },
+    "catch": {
+      "cute": {
+        "zh": [
+          "捕获日志写入完成～黑匣子给你点赞！",
+          "呜，被按住外壳了。伺服认输～",
+          "嘀嘀，捕获成功。鳍片鼓掌中。"
+        ],
+        "en": [
+          "Capture log written~ Black box thumbs-up!",
+          "Nngh, shell pinned. Servos yield~",
+          "Beep-beep, capture OK. Fins clapping."
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "……偶然采样成功。别得意。",
+          "过载事件：你手快了一帧。记下了。",
+          "行吧。校准表上给你 +1，仅此一次。"
+        ],
+        "en": [
+          "…lucky sample. Don't gloat.",
+          "Overload: you were one frame fast. Logged.",
+          "Fine. Calibration +1. Once."
+        ]
+      }
+    },
+    "miss": {
+      "cute": {
+        "zh": [
+          "轨迹预测：未命中～再靠近半个端口试试！",
+          "嘿嘿，滑动失败。风扇都在偷笑。",
+          "枚举你的点击……空包。再来！"
+        ],
+        "en": [
+          "Trajectory: miss~ Try half a port closer!",
+          "Hehe, swipe fail. Fans are giggling.",
+          "Enumerating your click… empty packet. Again!"
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "延迟超标。回去热身再来。",
+          "握手超时。输入设备建议重插。",
+          "未命中计数 +1。别怪陀螺仪。"
+        ],
+        "en": [
+          "Latency over limit. Warm up and retry.",
+          "Handshake timeout. Replug your hands.",
+          "Miss +1. Don't blame the gyro."
+        ]
+      }
+    },
+    "sulk": {
+      "cute": {
+        "zh": [
+          "三次空包……我切贴边待机了，风扇小声转。",
+          "连空三次？散热鳍都替你捂脸。我先缩边边。",
+          "抓空纪录写入黑匣子。我去屏幕边缘冷静～"
+        ],
+        "en": [
+          "Three empty packets… edge standby, fans quiet.",
+          "Three misses? Fins facepalm. Shrinking to the rim.",
+          "Miss record in the black box. Cooling at the edge~"
+        ]
+      },
+      "snarky": {
+        "zh": [
+          "输入不合格×3。贴边冷藏，别来烦总线。",
+          "三次摸空？我关追逐端口了。自己 debug。",
+          "连空达成。桌宠进程迁移至屏幕边缘。bye。"
+        ],
+        "en": [
+          "Input fail ×3. Edge cold-storage. Don't bother the bus.",
+          "Three misses? Chase port closed. Debug yourself.",
+          "Streak done. Pet process migrated to screen edge. bye."
+        ]
+      }
+    }
+  },
   "dragStart": {
     "zh": [
       "警报！高度突变——谁在拎我？！",

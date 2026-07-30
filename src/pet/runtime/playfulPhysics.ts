@@ -15,16 +15,28 @@ export const PLAYFUL_CHASE_MS = 10_000;
 export const PLAYFUL_CATCH_WINDOW_MS = 650;
 export const PLAYFUL_POST_CATCH_COOLDOWN_MS = 4200;
 export const PLAYFUL_POST_MISS_COOLDOWN_MS = 5200;
+export const PLAYFUL_MISS_STREAK_NEED = 3;
+export const PLAYFUL_STREAK_PEEK_CHANCE = 0.45;
+export const PLAYFUL_STREAK_PEEK_DELAY_MS = 1000;
 
-export function pickPlayfulLine(
-  kind: "start" | "catch" | "miss",
-  tone: "cute" | "snarky"
-): string {
-  if (kind === "start") {
-    return tone === "snarky" ? "来啊，抓得到再说。" : "来抓我呀～倒计时开始！";
+export type PlayfulMissStreakResult = {
+  missStreak: number;
+  sulk: boolean;
+  maybePeek: boolean;
+};
+
+/** 连空计数：满 3 次嫌弃并重置；maybePeek 由 peekRoll 决定 */
+export function advancePlayfulMissStreak(
+  prev: number,
+  peekRoll = Math.random()
+): PlayfulMissStreakResult {
+  const next = prev + 1;
+  if (next >= PLAYFUL_MISS_STREAK_NEED) {
+    return {
+      missStreak: 0,
+      sulk: true,
+      maybePeek: peekRoll < PLAYFUL_STREAK_PEEK_CHANCE,
+    };
   }
-  if (kind === "catch") {
-    return tone === "snarky" ? "……行吧，算你手快。" : "呜被抓住了！你赢啦～";
-  }
-  return tone === "snarky" ? "哈哈，慢吞吞的。" : "嘿嘿，没抓到～下次再来！";
+  return { missStreak: next, sulk: false, maybePeek: false };
 }

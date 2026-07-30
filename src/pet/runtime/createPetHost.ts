@@ -53,6 +53,7 @@ function wirePetHost(s: PetHostShared) {
     cursor: { x: number; y: number },
     winCenter: { x: number; y: number }
   ) => void = () => {};
+  let requestPlayfulPeek: () => void = () => {};
 
   const pointerHost = usePetPointerHost({
     hostAlive: () => s.hostAlive,
@@ -114,10 +115,13 @@ function wirePetHost(s: PetHostShared) {
       });
     },
     tone: () => settings.value.tone,
+    model: () => activeModel.value,
+    settings,
     bodyBox: () => bodyBox.value,
     applyMood,
     runPlayfulFlee: (cursor) => motionHost.runPlayfulFlee(cursor),
     speakText: (text, fromAuto, opts) => ports.speakText(text, fromAuto, opts),
+    requestPeek: () => requestPlayfulPeek(),
     resetSleepTimer: () => ports.resetSleepTimer(),
   });
   tickPlayfulProximity = (cursor, center) => {
@@ -153,6 +157,9 @@ function wirePetHost(s: PetHostShared) {
     },
     resetSleepTimer: () => ports.resetSleepTimer(),
   });
+  requestPlayfulPeek = () => {
+    void peek.startPeek();
+  };
 
   s.setApplyMoodImpl(
     createApplyPetMood({

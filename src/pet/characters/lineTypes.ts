@@ -33,6 +33,21 @@ export interface CharacterIntroLines {
   en: { cute: string; snarky: string };
 }
 
+/** 调皮追逐：开始 / 抓到 / 普通空 / 连空嫌弃 */
+export interface PlayfulToneLines {
+  cute: LineLangPack;
+  snarky: LineLangPack;
+}
+
+export interface PlayfulLinePack {
+  start: PlayfulToneLines;
+  catch: PlayfulToneLines;
+  miss: PlayfulToneLines;
+  sulk: PlayfulToneLines;
+}
+
+export type PlayfulLineKind = keyof PlayfulLinePack;
+
 export interface CharacterLineBundle {
   byPersonality: Record<PetPersonality, CharacterPersonalityLines>;
   byLook?: Record<string, LineLangPack>;
@@ -43,6 +58,8 @@ export interface CharacterLineBundle {
   care?: LineLangPack;
   catchphrases: LineLangPack;
   intro: CharacterIntroLines;
+  /** 调皮追逐台词；缺省走 shared */
+  playful?: PlayfulLinePack;
   /** 开始拖时的惊讶/紧张台词；缺省走 shared */
   dragStart?: LineLangPack;
   /** 拖完落地余韵台词；缺省走 shared */
@@ -58,6 +75,7 @@ export const BUILTIN_LINE_CATEGORIES = [
   "personality",
   "care",
   "motion",
+  "playful",
   "drag-start",
   "drag-end",
 ] as const;
