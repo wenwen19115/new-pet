@@ -13,6 +13,7 @@ import { getLinePack } from "../../characters/lines";
 import { resolveCare, resolveDragEnd, resolveDragStart, resolvePlayful, resolvePolish } from "../../characters/lines/shared";
 import type { PlayfulLineKind, BuiltInLineCategory } from "../../characters/lineTypes";
 
+
 export interface PetLinePickOptions {
   customLines?: PetCustomLine[];
   customLinesOnly?: boolean;
@@ -244,6 +245,18 @@ export function pickUsbLine(
   const line = pickFromPool(pool);
   if (!line) return "";
   return custom.includes(line) ? withFlavor(line, personality, model) : line;
+}
+
+/** USB 主句后的口音追句；无池或关了 usb 内建则空串 */
+export function pickUsbFollowUpLine(
+  model: PetModelKind,
+  personality: PetPersonality = "sunny",
+  opts?: PetLinePickOptions
+): string {
+  if (!lineCatOn("usb", opts) || opts?.customLinesOnly) return "";
+  const pack = packFor(model).usbFollowUp;
+  if (!pack) return "";
+  return withFlavor(pickFromPool(packLang(pack)), personality, model);
 }
 
 export function pickMotionLine(

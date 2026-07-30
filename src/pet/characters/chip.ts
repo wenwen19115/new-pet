@@ -63,6 +63,9 @@ export const characterChip: CharacterDef = {
       "barrel-roll",
       "victory-burst",
     ],
+    accents: {
+      usbFollowUpChance: 0.82,
+    },
   },
   view: {
     shell: "bob",

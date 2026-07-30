@@ -355,26 +355,26 @@
     "sulk": {
       "cute": {
         "zh": [
-          "……三次都落空。我想去边边安静一下。",
-          "连着摸空……有点难过。我先躲起来。",
-          "……抓不到也没关系。我就在屏幕边缘等你叫我。"
+          "……三次都落空。我想安静一下。",
+          "连着摸空……有点难过。先歇一歇。",
+          "……抓不到也没关系。缓一缓再陪你。"
         ],
         "en": [
-          "…missed thrice. I want quiet at the edge.",
-          "Empty grabs again… a bit sad. Hiding a while.",
-          "…missing is okay. I'll wait at the rim if you call."
+          "…missed thrice. I want quiet for a bit.",
+          "Empty grabs again… a bit sad. Resting.",
+          "…missing is okay. I'll stay after a pause."
         ]
       },
       "snarky": {
         "zh": [
-          "……三次空。我贴边去了，请自己缓一缓。",
-          "手飘成这样……我先离开中心。别硬追。",
-          "连空了。……边线见。想说话时再出来找我。"
+          "……三次空。请自己缓一缓。",
+          "手飘成这样……先别硬追。",
+          "连空了。……想说话时再来找我。"
         ],
         "en": [
-          "…three misses. Edge time—please slow down.",
-          "Hands that float… leaving center. Don't force it.",
-          "Streak. …see you at the rim. Call when you want to talk."
+          "…three misses. Please slow down.",
+          "Hands that float… don't force the chase.",
+          "Streak. …come find me when you want to talk."
         ]
       }
     }

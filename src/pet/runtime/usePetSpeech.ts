@@ -1,10 +1,11 @@
 import { type Ref } from "vue";
 import { showPetBubble, hidePetBubble } from "@/pet/windows/bubble";
 import { buildSkinIntro } from "../content/dialogue/intro";
-import { pickPetLine, pickTapEggLine, pickUsbLine, pickDragEndLine, pickDragStartLine } from "../content/dialogue/lines";
+import { pickPetLine, pickTapEggLine, pickUsbLine, pickUsbFollowUpLine, pickDragEndLine, pickDragStartLine } from "../content/dialogue/lines";
 import { applyCatchphrase } from "../content/dialogue/catchphrases";
 import type { PetMood, PetSettings, PetUsbAnnouncePayload } from "../data/types";
 import type { PetModelKind } from "../skins/types";
+import { getCharacter } from "../characters";
 import { linePickOptsFromSettings } from "./usePetLines";
 import { cancelPetTts, speakPetTts } from "../bridge/tts";
 import type { ApplyPetMood } from "./petHostMood";
@@ -32,6 +33,12 @@ export function usePetSpeech(deps: {
 }) {
   const BUBBLE_MS = deps.bubbleMs ?? 4500;
   let speakGen = 0;
+  let usbFollowUpTimer: number | null = null;
+
+  function clearUsbFollowUpTimer() {
+    deps.clearTimer(usbFollowUpTimer);
+    usbFollowUpTimer = null;
+  }
 
   function playClickSound() {
     if (deps.settings.value.muted) return;
@@ -83,6 +90,7 @@ export function usePetSpeech(deps: {
     if (!text) return;
 
     const gen = ++speakGen;
+    clearUsbFollowUpTimer();
     cancelPetTts();
 
     deps.lastLine.value = text;
@@ -204,18 +212,26 @@ export function usePetSpeech(deps: {
     void speakText(line, false, { force: true, keepMotion: true });
   }
 
-  function speakUsb(payload: PetUsbAnnouncePayload) {
+  async function speakUsb(payload: PetUsbAnnouncePayload) {
     if (!deps.settings.value.usbWatchEnabled) return;
     deps.applyMood("idle", "usb-wake");
     const model = deps.model.value;
     const opts = linePickOptsFromSettings(deps.settings.value, model);
-    const text = pickUsbLine(
-      payload,
-      deps.settings.value.personality,
-      opts,
-      model
-    );
-    void speakText(text, false, { force: true });
+    const personality = deps.settings.value.personality;
+    const text = pickUsbLine(payload, personality, opts, model);
+    await speakText(text, false, { force: true });
+
+    const chance =
+      getCharacter(model).runtime.accents?.usbFollowUpChance ?? 0;
+    if (chance <= 0 || Math.random() >= chance) return;
+    const follow = pickUsbFollowUpLine(model, personality, opts);
+    if (!follow) return;
+    const delayMs = Math.max(1600, 800 + text.length * 34);
+    clearUsbFollowUpTimer();
+    usbFollowUpTimer = window.setTimeout(() => {
+      usbFollowUpTimer = null;
+      void speakText(follow, false, { force: true, keepMotion: true });
+    }, delayMs);
   }
 
   return {
@@ -227,5 +243,6 @@ export function usePetSpeech(deps: {
     speakDragStart,
     speakDragLand,
     speakUsb,
+    clearUsbFollowUpTimer,
   };
 }

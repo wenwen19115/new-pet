@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { pickPlayfulLine } from "../content/dialogue/lines";
+import { getCharacter } from "../characters";
+import { pickPlayfulLine, pickUsbFollowUpLine } from "../content/dialogue/lines";
 import {
   advancePlayfulMissStreak,
+  canPlayfulCatch,
   cursorNearPet,
   playfulScareRadius,
   PLAYFUL_MISS_STREAK_NEED,
@@ -21,28 +23,44 @@ describe("playfulPhysics", () => {
     expect(cursorNearPet({ x: 800, y: 400 }, center, 120)).toBe(false);
   });
 
-  it("miss streak sulks at 3 and may peek", () => {
+  it("miss streak sulks at 3", () => {
     let streak = 0;
-    const first = advancePlayfulMissStreak(streak, 0);
+    const first = advancePlayfulMissStreak(streak);
     expect(first.sulk).toBe(false);
     expect(first.missStreak).toBe(1);
     streak = first.missStreak;
 
-    const second = advancePlayfulMissStreak(streak, 0);
+    const second = advancePlayfulMissStreak(streak);
     expect(second.sulk).toBe(false);
     streak = second.missStreak;
 
-    const thirdForcePeek = advancePlayfulMissStreak(streak, 0);
-    expect(thirdForcePeek.sulk).toBe(true);
-    expect(thirdForcePeek.maybePeek).toBe(true);
-    expect(thirdForcePeek.missStreak).toBe(0);
+    const third = advancePlayfulMissStreak(streak);
+    expect(third.sulk).toBe(true);
+    expect(third.missStreak).toBe(0);
 
-    const thirdNoPeek = advancePlayfulMissStreak(
-      PLAYFUL_MISS_STREAK_NEED - 1,
-      0.99
+    const again = advancePlayfulMissStreak(PLAYFUL_MISS_STREAK_NEED - 1);
+    expect(again.sulk).toBe(true);
+  });
+
+  it("canPlayfulCatch only inside catch window", () => {
+    expect(canPlayfulCatch(1000, 0)).toBe(false);
+    expect(canPlayfulCatch(1000, 1000)).toBe(false);
+    expect(canPlayfulCatch(999, 1000)).toBe(true);
+    expect(canPlayfulCatch(1001, 1000)).toBe(false);
+  });
+});
+
+describe("character accents", () => {
+  it("chip 会追 USB 八卦，fig 落地动作偏低", () => {
+    expect(getCharacter("chip").runtime.accents?.usbFollowUpChance).toBeGreaterThan(
+      0
     );
-    expect(thirdNoPeek.sulk).toBe(true);
-    expect(thirdNoPeek.maybePeek).toBe(false);
+    expect(pickUsbFollowUpLine("chip").length).toBeGreaterThan(0);
+    expect(pickUsbFollowUpLine("toon")).toBe("");
+    expect(getCharacter("toon").runtime.accents).toBeUndefined();
+    expect(
+      getCharacter("fig-sci").runtime.accents?.dragLandMotionChance
+    ).toBeLessThan(1);
   });
 });
 

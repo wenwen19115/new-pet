@@ -81,8 +81,16 @@ export interface CharacterRuntimeSpec {
    * - none: stay put (vrm walk handles itself)
    */
   screenFlight: "fly" | "wormhole" | "none";
-  /** 拖完落地余韵动作池（随机抽；别塞长飞窗/走路） */
   dragLandMotions: readonly PetIdleMotion[];
+  /**
+   * 口音小规则：玩法同一套，反应分家。缺省字段 = 跟全局默认。
+   */
+  accents?: {
+    /** USB 主句后追一句的概率；0/缺省 = 不追（chip 电压八卦） */
+    usbFollowUpChance?: number;
+    /** 拖拽落地播动作概率；缺省 1；fig 可压低「台词多、动作少」 */
+    dragLandMotionChance?: number;
+  };
 }
 
 interface CharacterRuntimeBindCtx {

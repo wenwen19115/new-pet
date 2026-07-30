@@ -65,6 +65,8 @@ export interface CharacterLineBundle {
   /** 拖完落地余韵台词；缺省走 shared */
   dragEnd?: LineLangPack;
   usb?: UsbLineTemplates;
+  /** USB 主句后的追句（口音）；仅声明了池的角色才会追 */
+  usbFollowUp?: LineLangPack;
   polish?: Partial<Record<PetPersonality, PersonalityPolish>>;
 }
 

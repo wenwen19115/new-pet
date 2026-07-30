@@ -469,26 +469,26 @@
     "sulk": {
       "cute": {
         "zh": [
-          "三次空包……我切贴边待机了，风扇小声转。",
-          "连空三次？散热鳍都替你捂脸。我先缩边边。",
-          "抓空纪录写入黑匣子。我去屏幕边缘冷静～"
+          "三次空包……风扇小声转，先不理你。",
+          "连空三次？散热鳍都替你捂脸。",
+          "抓空纪录写入黑匣子。我冷却一下～"
         ],
         "en": [
-          "Three empty packets… edge standby, fans quiet.",
-          "Three misses? Fins facepalm. Shrinking to the rim.",
-          "Miss record in the black box. Cooling at the edge~"
+          "Three empty packets… fans quiet, ignoring you.",
+          "Three misses? Fins facepalm for you.",
+          "Miss record in the black box. Cooling down~"
         ]
       },
       "snarky": {
         "zh": [
-          "输入不合格×3。贴边冷藏，别来烦总线。",
+          "输入不合格×3。别来烦总线。",
           "三次摸空？我关追逐端口了。自己 debug。",
-          "连空达成。桌宠进程迁移至屏幕边缘。bye。"
+          "连空达成。追逐进程挂起。bye。"
         ],
         "en": [
-          "Input fail ×3. Edge cold-storage. Don't bother the bus.",
+          "Input fail ×3. Don't bother the bus.",
           "Three misses? Chase port closed. Debug yourself.",
-          "Streak done. Pet process migrated to screen edge. bye."
+          "Streak done. Chase process suspended. bye."
         ]
       }
     }
@@ -582,6 +582,22 @@
       "zh": ["▸ {item}", "· {item}"],
       "en": ["▸ {item}", "· {item}"]
     }
+  },
+  "usbFollowUp": {
+    "zh": [
+      "诶，5V 好像抖了一下？也许是我听错。",
+      "对了，供电那边刚才嘀了一声，挺乖的。",
+      "Vbus 没啸叫，算今天运气好。",
+      "描述符我瞄了一眼……嗯，晚点再说。",
+      "过流保护在打瞌睡，先不管它。"
+    ],
+    "en": [
+      "Huh, 5V twitched? Maybe I misheard.",
+      "Oh—power side just beeped. Behaved.",
+      "No Vbus squeal. Lucky today.",
+      "Peeked at descriptors… tell you later.",
+      "Overcurrent's napping. Leave it."
+    ]
   },
   "catchphrases": {
     "zh": [

@@ -9,8 +9,8 @@ import {
   PLAYFUL_CHASE_MS,
   PLAYFUL_POST_CATCH_COOLDOWN_MS,
   PLAYFUL_POST_MISS_COOLDOWN_MS,
-  PLAYFUL_STREAK_PEEK_DELAY_MS,
   advancePlayfulMissStreak,
+  canPlayfulCatch,
   cursorNearPet,
   playfulScareRadius,
 } from "./playfulPhysics";
@@ -38,15 +38,12 @@ export function usePetPlayfulHost(deps: {
     fromAuto: boolean,
     opts?: { keepMotion?: boolean; force?: boolean }
   ) => void | Promise<void>;
-  /** 连空嫌弃后偶发贴边躲；由 createPetHost 晚绑定 */
-  requestPeek: () => void;
   resetSleepTimer: () => void;
 }) {
   let fleeBusy = false;
   let cooldownUntil = 0;
   let catchUntil = 0;
   let chaseTimer: number | null = null;
-  let peekTimer: number | null = null;
   let chaseGen = 0;
   let missStreak = 0;
 
@@ -54,13 +51,6 @@ export function usePetPlayfulHost(deps: {
     if (chaseTimer != null) {
       window.clearTimeout(chaseTimer);
       chaseTimer = null;
-    }
-  }
-
-  function clearPeekTimer() {
-    if (peekTimer != null) {
-      window.clearTimeout(peekTimer);
-      peekTimer = null;
     }
   }
 
@@ -72,7 +62,6 @@ export function usePetPlayfulHost(deps: {
 
   function stop() {
     endChase({ rescheduleIdle: false });
-    clearPeekTimer();
     fleeBusy = false;
     cooldownUntil = 0;
     catchUntil = 0;
@@ -101,16 +90,8 @@ export function usePetPlayfulHost(deps: {
       keepMotion: true,
     });
     cooldownUntil = Date.now() + PLAYFUL_POST_MISS_COOLDOWN_MS;
+    catchUntil = 0;
     endChase();
-    if (outcome.maybePeek && deps.hostAlive() && !deps.isPeeking()) {
-      clearPeekTimer();
-      peekTimer = window.setTimeout(() => {
-        peekTimer = null;
-        if (!deps.hostAlive() || deps.isPeeking() || deps.isDragging()) return;
-        if (deps.mood() === "sleep") return;
-        deps.requestPeek();
-      }, PLAYFUL_STREAK_PEEK_DELAY_MS);
-    }
   }
 
   function beginChase() {
@@ -163,9 +144,9 @@ export function usePetPlayfulHost(deps: {
   function tryCatchOnTap(): boolean {
     if (!deps.enabled() || !deps.chasePausesIdle() || fleeBusy) return false;
     if (deps.mood() === "sleep") return false;
+    if (!canPlayfulCatch(Date.now(), catchUntil)) return false;
 
     clearChaseTimer();
-    clearPeekTimer();
     missStreak = 0;
     deps.applyMood("happy", "playful-catch");
     void deps.speakText(lineFor("catch"), true, {

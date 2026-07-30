@@ -493,56 +493,56 @@
     "sulk": {
       "cute": {
         "zh": [
-          "三次都落空……我去边边躲猫猫生闷气了。",
-          "连抓三次空气？哼，不理你，只露出半张脸。",
-          "好过分哦。我贴边站着，想我了再叫「出来」。"
+          "三次都落空……有点闷，先不说话了。",
+          "连抓三次空气？哼，暂时不理你。",
+          "好过分哦。想陪的话，再认真追一次。"
         ],
         "en": [
-          "Missed thrice… peekaboo-sulking at the edge.",
-          "Three grabs of air? Hmph—half a face only.",
-          "Mean. I'm at the rim; say “come out” when you miss me."
+          "Missed thrice… sulking quietly for a bit.",
+          "Three grabs of air? Hmph—ignoring you.",
+          "Mean. Chase properly if you still want me around."
         ]
       },
       "snarky": {
         "zh": [
-          "三次空抓。我贴边去了，自己对着空气反省。",
+          "三次空抓。自己对着空气反省。",
           "手这么飘还想陪聊？先学会点中立绘。",
-          "连空纪录。边线见，慢半拍的那位。"
+          "连空纪录。慢半拍的那位，先歇会儿吧。"
         ],
         "en": [
-          "Three empty grabs. Rim time—reflect at the air.",
+          "Three empty grabs. Reflect at the air.",
           "Floaty hands want chat? Learn to click the art first.",
-          "Streak done. See you at the edge, half-beat."
+          "Streak done. Half-beat—take a break."
         ]
       }
     }
   },
   "dragStart": {
     "zh": [
-      "呀——！突然被抱起来了？！",
-      "等、等一下……心跳好快。",
-      "呜，有点紧张……你要带我去哪儿？",
-      "别、别晃太猛……我抓紧了。"
+      "呀——？！等下，衣角还乱着……去哪儿？",
+      "等、等等……心跳好吵。你轻一点。",
+      "呜，怎么突然这么高……别晃。",
+      "别、别飞那么急……我还没看清你呢。"
     ],
     "en": [
-      "Ah—! Suddenly scooped up?!",
-      "W-wait… heart's racing.",
-      "Nngh, nervous… where are we going?",
-      "D-don't swing too hard… I'm holding on."
+      "Ah—?! Wait, hem's messy… where to?",
+      "W-wait… heart's loud. Gentler?",
+      "Nngh, why so tall all at once… don't swing.",
+      "D-don't rush… I haven't seen your face yet."
     ]
   },
   "dragEnd": {
     "zh": [
-      "放下来啦～刚才被你抱着，有点开心。",
-      "嗯，就站这儿。谢谢你轻轻放下。",
-      "落地了。衣角都理好……你抱的时候很稳。",
-      "呼，回到桌面。还想偶尔被你拎一下。"
+      "放下来啦～刚才有点开心。我自己理衣角。",
+      "嗯，落地了。谢谢你没甩我。偶尔再拎一下也行。",
+      "站稳了……你抱得挺稳的。",
+      "呼，回来了。悬空时想说的话，全忘了。"
     ],
     "en": [
-      "Down~ Being held made me a little happy.",
-      "Mm, right here. Thanks for the soft landing.",
-      "Landed. Hem tidy… you carried me steady.",
-      "Back on the desk. Pick me up again sometime."
+      "Down~ That was kinda nice. I'll fix the hem.",
+      "Landed. Thanks for not swinging me. Lift me again sometime.",
+      "Steady… you held me okay.",
+      "Phew, back. Forgot everything I meant to say up there."
     ]
   },
   "usb": {

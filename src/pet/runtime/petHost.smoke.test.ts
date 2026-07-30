@@ -437,6 +437,7 @@ describe("host regression smokes", () => {
     const isDragging = ref(false);
     const showHitBounds = ref(true);
     const clearLifeTimers = vi.fn();
+    const clearUsbFollowUpTimer = vi.fn();
     const clearMotionTimers = vi.fn();
     const resetDragState = vi.fn();
     const onStorage = vi.fn();
@@ -482,6 +483,7 @@ describe("host regression smokes", () => {
       onChatOpen,
       onSuspendRuntime,
       clearLifeTimers,
+      clearUsbFollowUpTimer,
       clearMotionTimers,
       resetDragState,
       syncWindowCenter: vi.fn(async () => undefined),
@@ -520,6 +522,7 @@ describe("host regression smokes", () => {
     expect(lastLine.value).toBeNull();
     expect(showHitBounds.value).toBe(false);
     expect(clearLifeTimers).toHaveBeenCalled();
+    expect(clearUsbFollowUpTimer).toHaveBeenCalled();
     expect(clearMotionTimers).toHaveBeenCalled();
     expect(resetDragState).toHaveBeenCalled();
     expect(hidePetChat).toHaveBeenCalled();

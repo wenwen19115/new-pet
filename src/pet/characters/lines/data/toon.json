@@ -469,26 +469,26 @@
     "sulk": {
       "cute": {
         "zh": [
-          "连空三次……狐火新闻：小灵贴边生闷气中！",
-          "三次都抓空气？哼，我缩成边边一块像素～",
-          "好过分！虫洞逃到屏幕边缘，想我了再召我！"
+          "连空三次……狐火新闻：小灵生闷气中！",
+          "三次都抓空气？哼，残影都不想给你看～",
+          "好过分！狐火先灭一下，想陪再来追！"
         ],
         "en": [
-          "Three misses… foxfire news: spirit sulking at rim!",
-          "Three air grabs? Hmph—I'm one edge pixel now~",
-          "Mean! Wormholed to the rim—summon when you miss me!"
+          "Three misses… foxfire news: spirit sulking!",
+          "Three air grabs? Hmph—no afterimage for you~",
+          "Mean! Foxfire dimming—chase again if you miss me!"
         ]
       },
       "snarky": {
         "zh": [
-          "摸空×3。边线冷藏，狐火已读不回。",
-          "连空达成。虫洞撤离，菜鸡人类请反思。",
-          "手速检测：寄。我去贴边做本期结束动画。"
+          "摸空×3。狐火已读不回。",
+          "连空达成。虫洞休假，菜鸡人类请反思。",
+          "手速检测：寄。本期追逐先下播。"
         ],
         "en": [
-          "Miss ×3. Rim cold-store. Foxfire left on read.",
-          "Streak done. Wormhole out. Reflect, human noob.",
-          "APM: L. Edge outro animation loading."
+          "Miss ×3. Foxfire left on read.",
+          "Streak done. Wormhole off-duty. Reflect, human noob.",
+          "APM: L. Chase show canceled for today."
         ]
       }
     }

@@ -11,32 +11,29 @@ export function cursorNearPet(
 }
 
 export const PLAYFUL_CHASE_MS = 10_000;
-/** 落地后短窗口可点，否则永远抓不到 */
+/** 躲开落地后只有这段时间点中算抓到；过了窗口仍在追逐里点不算 */
 export const PLAYFUL_CATCH_WINDOW_MS = 650;
 export const PLAYFUL_POST_CATCH_COOLDOWN_MS = 4200;
 export const PLAYFUL_POST_MISS_COOLDOWN_MS = 5200;
 export const PLAYFUL_MISS_STREAK_NEED = 3;
-export const PLAYFUL_STREAK_PEEK_CHANCE = 0.45;
-export const PLAYFUL_STREAK_PEEK_DELAY_MS = 1000;
 
 export type PlayfulMissStreakResult = {
   missStreak: number;
   sulk: boolean;
-  maybePeek: boolean;
 };
 
-/** 连空计数：满 3 次嫌弃并重置；maybePeek 由 peekRoll 决定 */
+/** 是否处在可抓窗口（catchUntil 为落地截止时间戳） */
+export function canPlayfulCatch(now: number, catchUntil: number): boolean {
+  return catchUntil > 0 && now < catchUntil;
+}
+
+/** 连空计数：满 3 次嫌弃并重置 */
 export function advancePlayfulMissStreak(
-  prev: number,
-  peekRoll = Math.random()
+  prev: number
 ): PlayfulMissStreakResult {
   const next = prev + 1;
   if (next >= PLAYFUL_MISS_STREAK_NEED) {
-    return {
-      missStreak: 0,
-      sulk: true,
-      maybePeek: peekRoll < PLAYFUL_STREAK_PEEK_CHANCE,
-    };
+    return { missStreak: 0, sulk: true };
   }
-  return { missStreak: next, sulk: false, maybePeek: false };
+  return { missStreak: next, sulk: false };
 }

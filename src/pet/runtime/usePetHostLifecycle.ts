@@ -50,6 +50,7 @@ export function usePetHostLifecycle(deps: {
   onChatOpen: (open: boolean) => void;
   onSuspendRuntime: () => void;
   clearLifeTimers: () => void;
+  clearUsbFollowUpTimer: () => void;
   clearMotionTimers: () => void;
   resetDragState: () => void;
   syncWindowCenter: () => Promise<unknown>;
@@ -94,6 +95,7 @@ export function usePetHostLifecycle(deps: {
     deps.bubbleTimerRef.set(null);
     clearTimer(deps.moodResetTimerRef.get());
     deps.moodResetTimerRef.set(null);
+    deps.clearUsbFollowUpTimer();
     deps.clearMotionTimers();
   }
 

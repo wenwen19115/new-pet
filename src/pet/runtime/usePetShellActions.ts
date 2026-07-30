@@ -101,17 +101,21 @@ export function usePetShellActions(deps: {
     onAfterPointerUp: (info) => {
       if (info.wasDragging) {
         deps.applyMood("happy", "drag-land");
-        const model = deps.activeSkin.value.model;
-        const profile = deps.settings.value.profiles[model];
-        const pool = filterEnabledMotions(
-          [...deps.activeCharacter.value.runtime.dragLandMotions],
-          profile?.disabledMotions
-        );
-        const pick =
-          pool[Math.floor(Math.random() * pool.length)] ??
-          deps.activeCharacter.value.runtime.dragLandMotions[0] ??
-          deps.activeCharacter.value.runtime.tapFallbackMotion;
-        deps.beginMotion(pick, { manual: true });
+        const runtime = deps.activeCharacter.value.runtime;
+        const motionChance = runtime.accents?.dragLandMotionChance ?? 1;
+        if (Math.random() < motionChance) {
+          const model = deps.activeSkin.value.model;
+          const profile = deps.settings.value.profiles[model];
+          const pool = filterEnabledMotions(
+            [...runtime.dragLandMotions],
+            profile?.disabledMotions
+          );
+          const pick =
+            pool[Math.floor(Math.random() * pool.length)] ??
+            runtime.dragLandMotions[0] ??
+            runtime.tapFallbackMotion;
+          deps.beginMotion(pick, { manual: true });
+        }
         deps.speakDragLand();
         deps.ports.scheduleIdleAction();
       }
