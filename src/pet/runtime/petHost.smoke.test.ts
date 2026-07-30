@@ -220,6 +220,14 @@ describe("mood gate (applyPetMood)", () => {
     const sleepBag = makeMoodCtx({ mood: "sleep" });
     expect(applyPetMood("curious", "peek-hide", sleepBag.ctx)).toBe(false);
   });
+
+  it("drag-land mood reason", () => {
+    const bag = makeMoodCtx();
+    expect(applyPetMood("happy", "drag-land", bag.ctx)).toBe(true);
+    expect(bag.getMood()).toBe("happy");
+    const sleepBag = makeMoodCtx({ mood: "sleep" });
+    expect(applyPetMood("happy", "drag-land", sleepBag.ctx)).toBe(false);
+  });
 });
 
 describe("host intent dispatch", () => {
@@ -464,6 +472,7 @@ describe("host regression smokes", () => {
             gaze: { max: 1, range: 1, follow: 1 },
             tapFallbackMotion: "happy-bounce",
             screenFlight: "fly",
+            dragLandMotions: ["happy-bounce", "bow-nod"],
           },
         },
       },

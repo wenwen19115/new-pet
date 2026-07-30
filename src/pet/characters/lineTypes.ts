@@ -43,6 +43,8 @@ export interface CharacterLineBundle {
   care?: LineLangPack;
   catchphrases: LineLangPack;
   intro: CharacterIntroLines;
+  /** 拖完落地余韵台词；缺省走 shared */
+  dragEnd?: LineLangPack;
   usb?: UsbLineTemplates;
   polish?: Partial<Record<PetPersonality, PersonalityPolish>>;
 }
@@ -54,6 +56,7 @@ export const BUILTIN_LINE_CATEGORIES = [
   "personality",
   "care",
   "motion",
+  "drag-end",
 ] as const;
 
 export type BuiltInLineCategory = (typeof BUILTIN_LINE_CATEGORIES)[number];

@@ -54,6 +54,12 @@ export const characterToon: CharacterDef = {
     gaze: { max: 3.4, range: 120, follow: 0.42 },
     tapFallbackMotion: "tap-frenzy",
     screenFlight: "wormhole",
+    dragLandMotions: [
+      "toon-walk",
+      "toon-sway",
+      "happy-bounce",
+      "toon-grass",
+    ],
   },
   view: {
     shell: "bob",

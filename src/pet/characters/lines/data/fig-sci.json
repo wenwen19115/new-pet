@@ -411,6 +411,20 @@
       ]
     }
   },
+  "dragEnd": {
+    "zh": [
+      "放下来啦～刚才被你抱着，有点开心。",
+      "嗯，就站这儿。谢谢你轻轻放下。",
+      "落地了。衣角都理好……你抱的时候很稳。",
+      "呼，回到桌面。还想偶尔被你拎一下。"
+    ],
+    "en": [
+      "Down~ Being held made me a little happy.",
+      "Mm, right here. Thanks for the soft landing.",
+      "Landed. Hem tidy… you carried me steady.",
+      "Back on the desk. Pick me up again sometime."
+    ]
+  },
   "usb": {
     "addedOne": {
       "zh": [

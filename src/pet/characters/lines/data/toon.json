@@ -387,6 +387,20 @@
       ]
     }
   },
+  "dragEnd": {
+    "zh": [
+      "蹦——落地！被你拎着飞好刺激嗷呜！",
+      "放这儿！狐火再晃一下表示感谢！",
+      "传送结束（人类手臂版）！下一站还等你抱！",
+      "稳稳放下！像素四肢已归位！"
+    ],
+    "en": [
+      "Boing—landed! Arm-flight was exciting awoo!",
+      "Park here! Foxfire wiggle = thanks!",
+      "Teleport done (human-arm edition)! Next lift TBD!",
+      "Soft drop! Pixel limbs back online!"
+    ]
+  },
   "usb": {
     "addedOne": {
       "zh": [

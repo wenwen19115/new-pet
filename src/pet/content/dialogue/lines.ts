@@ -10,7 +10,7 @@ import { getPetLocale } from "../../bridge/locale";
 import { buildUsbAnnounceText } from "../../bridge/usbFormat";
 import type { PetUsbAnnouncePayload } from "../../data/types";
 import { getLinePack } from "../../characters/lines";
-import { resolveCare, resolvePolish } from "../../characters/lines/shared";
+import { resolveCare, resolveDragEnd, resolvePolish } from "../../characters/lines/shared";
 import type { BuiltInLineCategory } from "../../characters/lineTypes";
 
 export interface PetLinePickOptions {
@@ -170,6 +170,16 @@ export function pickTapEggLine(
     ? builtInTapLines(model, personality)
     : [];
   const pool = mergeScenePool(builtIn, "tap", opts);
+  return withFlavor(pickFromPool(pool), personality, model);
+}
+
+export function pickDragEndLine(
+  model: PetModelKind,
+  personality: PetPersonality = "sunny",
+  opts?: PetLinePickOptions
+): string {
+  if (!lineCatOn("drag-end", opts)) return "";
+  const pool = packLang(resolveDragEnd(packFor(model)));
   return withFlavor(pickFromPool(pool), personality, model);
 }
 

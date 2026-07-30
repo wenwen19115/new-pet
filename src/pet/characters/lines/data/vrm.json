@@ -273,6 +273,20 @@
       ]
     }
   },
+  "dragEnd": {
+    "zh": [
+      "……放下来了。刚才那段，谢谢。",
+      "嗯，落地了。……被抱着的时候有点安心。",
+      "……就这儿吧。你手很稳。",
+      "回到桌面了。……还想偶尔再靠近一点。"
+    ],
+    "en": [
+      "…down. Thanks for that bit.",
+      "Mm, landed. …felt safe being held.",
+      "…here is fine. Your hands were steady.",
+      "Back on the desk. …closer again sometime is ok."
+    ]
+  },
   "usb": {
     "addedOne": {
       "zh": [

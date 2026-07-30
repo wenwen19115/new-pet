@@ -1,7 +1,7 @@
 import { type Ref } from "vue";
 import { showPetBubble, hidePetBubble } from "@/pet/windows/bubble";
 import { buildSkinIntro } from "../content/dialogue/intro";
-import { pickPetLine, pickTapEggLine, pickUsbLine } from "../content/dialogue/lines";
+import { pickPetLine, pickTapEggLine, pickUsbLine, pickDragEndLine } from "../content/dialogue/lines";
 import { applyCatchphrase } from "../content/dialogue/catchphrases";
 import type { PetMood, PetSettings, PetUsbAnnouncePayload } from "../data/types";
 import type { PetModelKind } from "../skins/types";
@@ -180,6 +180,18 @@ export function usePetSpeech(deps: {
     void speakText(line, false, { force: true, keepMotion: true });
   }
 
+  function speakDragLand() {
+    const model = deps.model.value;
+    const opts = linePickOptsFromSettings(deps.settings.value, model);
+    const line = pickDragEndLine(
+      model,
+      deps.settings.value.personality,
+      opts
+    );
+    if (!line) return;
+    void speakText(line, false, { force: true, keepMotion: true });
+  }
+
   function speakUsb(payload: PetUsbAnnouncePayload) {
     if (!deps.settings.value.usbWatchEnabled) return;
     deps.applyMood("idle", "usb-wake");
@@ -200,6 +212,7 @@ export function usePetSpeech(deps: {
     speak,
     speakIntro,
     speakTapEgg,
+    speakDragLand,
     speakUsb,
   };
 }

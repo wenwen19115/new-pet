@@ -21,6 +21,7 @@ export type PetMoodReason =
   | "playful-miss"
   | "peek-hide"
   | "peek-reveal"
+  | "drag-land"
   | "force";
 
 export type PetMoodGateCtx = {
@@ -144,6 +145,7 @@ export function applyPetMood(
 
     case "playful-catch":
     case "peek-reveal":
+    case "drag-land":
       if (cur === "sleep") return false;
       ctx.setMood("happy");
       return true;

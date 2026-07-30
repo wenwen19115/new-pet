@@ -15,6 +15,8 @@ import type { PetSettings } from "@/pet/data/types";
 import type { PetModelKind, PetSkinVisual } from "@/pet/skins/types";
 import type { PetHostPorts } from "./petHostPorts";
 
+import type { ApplyPetMood } from "./petHostMood";
+
 const TAP_WINDOW_MS = 700;
 const TAP_EGG_NEED = 3;
 
@@ -25,10 +27,12 @@ export function usePetShellActions(deps: {
   speaking: Ref<boolean>;
   activeSkin: ComputedRef<{ model: PetModelKind; visual: PetSkinVisual }>;
   activeCharacter: ComputedRef<{ runtime: CharacterRuntimeSpec }>;
+  applyMood: ApplyPetMood;
   cancelActiveMotion: () => void;
   clearMotionTimers: () => void;
   beginMotion: (id: string, opts?: { manual?: boolean }) => void;
   speakTapEgg: (model: PetModelKind) => void;
+  speakDragLand: () => void;
   speak: (fromAuto?: boolean) => void | Promise<void>;
   pointerOnPointerDown: (e: PointerEvent) => void;
   tryPlayfulCatch?: () => boolean;
@@ -93,7 +97,22 @@ export function usePetShellActions(deps: {
       void deps.speak(false);
     },
     onAfterPointerUp: (info) => {
-      if (info.wasDragging) deps.ports.scheduleIdleAction();
+      if (info.wasDragging) {
+        deps.applyMood("happy", "drag-land");
+        const model = deps.activeSkin.value.model;
+        const profile = deps.settings.value.profiles[model];
+        const pool = filterEnabledMotions(
+          [...deps.activeCharacter.value.runtime.dragLandMotions],
+          profile?.disabledMotions
+        );
+        const pick =
+          pool[Math.floor(Math.random() * pool.length)] ??
+          deps.activeCharacter.value.runtime.dragLandMotions[0] ??
+          deps.activeCharacter.value.runtime.tapFallbackMotion;
+        deps.beginMotion(pick, { manual: true });
+        deps.speakDragLand();
+        deps.ports.scheduleIdleAction();
+      }
       deps.ports.resetSleepTimer();
     },
   });

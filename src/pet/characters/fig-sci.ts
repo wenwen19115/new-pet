@@ -49,6 +49,7 @@ export const characterFig: CharacterDef = {
     gaze: { max: 2.2, range: 160, follow: 0.32 },
     tapFallbackMotion: "tap-frenzy",
     screenFlight: "fly",
+    dragLandMotions: ["tip-toe", "happy-bounce", "sway-step"],
   },
   view: {
     shell: "bob",

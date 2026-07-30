@@ -81,6 +81,8 @@ export interface CharacterRuntimeSpec {
    * - none: stay put (vrm walk handles itself)
    */
   screenFlight: "fly" | "wormhole" | "none";
+  /** 拖完落地余韵动作池（随机抽；别塞长飞窗/走路） */
+  dragLandMotions: readonly PetIdleMotion[];
 }
 
 interface CharacterRuntimeBindCtx {

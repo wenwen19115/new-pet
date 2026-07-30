@@ -57,6 +57,12 @@ export const characterChip: CharacterDef = {
     tickLeds: true,
     tapFallbackMotion: "screen-zip",
     screenFlight: "fly",
+    dragLandMotions: [
+      "fly-orbit",
+      "figure-eight",
+      "barrel-roll",
+      "victory-burst",
+    ],
   },
   view: {
     shell: "bob",

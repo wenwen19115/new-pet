@@ -203,9 +203,6 @@ export function usePetPointerHost(deps: {
         stretchX.value,
         stretchY.value
       );
-      window.setTimeout(() => {
-        deps.applyMood("idle", "drag-end");
-      }, 320);
     }
 
     dragStarted = false;

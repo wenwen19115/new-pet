@@ -54,6 +54,13 @@ export const characterVrm: CharacterDef = {
     gaze: { max: 1.8, range: 90, follow: 0.55 },
     tapFallbackMotion: "tap-frenzy",
     screenFlight: "none",
+    dragLandMotions: [
+      "vrm-scratch",
+      "bow-nod",
+      "sway-step",
+      "happy-bounce",
+      "stretch-up",
+    ],
   },
   view: {
     shell: "vrm",

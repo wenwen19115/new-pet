@@ -11,6 +11,7 @@ import sharedData from "./data/shared.json";
 
 export const SHARED_CARE = sharedData.care as LineLangPack;
 export const SHARED_USB = sharedData.usb as UsbLineTemplates;
+export const SHARED_DRAG_END = sharedData.dragEnd as LineLangPack;
 export const SHARED_CATCHPHRASE_FALLBACK =
   sharedData.catchphraseFallback as LineLangPack;
 export const SHARED_POLISH = sharedData.polish as Record<
@@ -24,6 +25,10 @@ export function resolveCare(pack: CharacterLineBundle): LineLangPack {
 
 export function resolveUsb(pack: CharacterLineBundle): UsbLineTemplates {
   return pack.usb ?? SHARED_USB;
+}
+
+export function resolveDragEnd(pack: CharacterLineBundle): LineLangPack {
+  return pack.dragEnd ?? SHARED_DRAG_END;
 }
 
 export function resolvePolish(

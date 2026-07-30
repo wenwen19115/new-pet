@@ -387,6 +387,20 @@
       ]
     }
   },
+  "dragEnd": {
+    "zh": [
+      "落地自检通过～被你拎着飞的感觉，散热鳍都开心。",
+      "放稳了。刚才那段轨迹，我记进黑匣子了。",
+      "嘀——搬运完成。还想再抱一下也行哦。",
+      "外壳温度正常。被托举的体验：满分。"
+    ],
+    "en": [
+      "Landing check OK~ Being carried made the fins happy.",
+      "Steady. Logged that trajectory in the black box.",
+      "Beep—carry complete. Another lift is fine too.",
+      "Shell temp normal. Carry experience: perfect."
+    ]
+  },
   "usb": {
     "addedOne": {
       "zh": [
