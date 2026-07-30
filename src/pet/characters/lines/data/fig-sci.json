@@ -411,6 +411,68 @@
       ]
     }
   },
+  "usb": {
+    "addedOne": {
+      "zh": [
+        "新朋友上线：{added}。外形评分……我先偷偷记一笔～",
+        "咦，{added} 来了。线材颜色还挺好看的嘛。",
+        "欢迎 {added} 入座工位。今天桌面更完整了。",
+        "{added} 插好啦。要不要并排合个影？（开个玩笑）",
+        "新伙伴 {added}。第一印象：干净、利落。"
+      ],
+      "en": [
+        "New friend online: {added}. Looks score… jotting it down~",
+        "Oh, {added} arrived. Cable color looks nice.",
+        "Welcome {added} to the desk. Feels more complete.",
+        "{added} is in. Group photo? (kidding)",
+        "New buddy {added}. First impression: clean and neat."
+      ]
+    },
+    "addedMany": {
+      "zh": [
+        "工位一下热闹了：{added}。今天设备颜值不错嘛。",
+        "好几个新面孔：{added}。我挨个打分……开玩笑的。",
+        "桌面阵容更新：{added}。有点像小展览。",
+        "{added} 一起到齐了。今天工位好丰盛。"
+      ],
+      "en": [
+        "Desk got lively: {added}. Today's gadgets look cute.",
+        "Several new faces: {added}. Scoring… just kidding.",
+        "Desk lineup update: {added}. Mini exhibition vibes.",
+        "{added} all arrived. Desk feels plentiful."
+      ]
+    },
+    "emptyTail": {
+      "zh": [
+        "设备清单空空的，有点寂寞……要不要插点什么？",
+        "列表空了。工位忽然显得好干净。",
+        "暂时没有设备。安静也是一种美啦。"
+      ],
+      "en": [
+        "Empty device list—kinda lonely. Plug something in?",
+        "List empty. Desk looks suddenly clean.",
+        "No devices for now. Quiet can be pretty too."
+      ]
+    },
+    "listHeader": {
+      "zh": [
+        "今天工位上的设备：",
+        "我帮你数一数：",
+        "目前这些小家伙：",
+        "桌面嘉宾席："
+      ],
+      "en": [
+        "On your desk today:",
+        "Let me count:",
+        "These little ones for now:",
+        "Desk guest list:"
+      ]
+    },
+    "bullet": {
+      "zh": ["· {item}", "✦ {item}"],
+      "en": ["· {item}", "✦ {item}"]
+    }
+  },
   "catchphrases": {
     "zh": [
       "呀哈～",

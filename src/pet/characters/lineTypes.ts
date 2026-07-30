@@ -20,11 +20,12 @@ export interface CharacterPersonalityLines {
 }
 
 export interface UsbLineTemplates {
-  addedOne: LineBilingual;
-  addedMany: LineBilingual;
-  emptyTail: LineBilingual;
-  listHeader: LineBilingual;
-  bullet: LineBilingual;
+  /** 各字段均为多语数组，组装时每段随机抽一条再拼 */
+  addedOne: LineLangPack;
+  addedMany: LineLangPack;
+  emptyTail: LineLangPack;
+  listHeader: LineLangPack;
+  bullet: LineLangPack;
 }
 
 export interface CharacterIntroLines {

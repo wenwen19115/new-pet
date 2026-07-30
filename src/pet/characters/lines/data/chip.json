@@ -387,6 +387,68 @@
       ]
     }
   },
+  "usb": {
+    "addedOne": {
+      "zh": [
+        "总线来客！{added} 握手成功——电压八卦时间到。",
+        "枚举嘀了一声：{added} 上线。散热鳍准备旁听。",
+        "新设备 {added} 已接入。我把它写进端口八卦簿。",
+        "检测到 {added}。供电协商看起来……挺体面的。",
+        "叮咚，{added} 敲门。要不要我帮你读一下描述符？"
+      ],
+      "en": [
+        "Bus guest! {added} handshake OK — voltage gossip time.",
+        "Enum beep: {added} online. Fins ready to eavesdrop.",
+        "Device {added} attached. Logged in the port gossip book.",
+        "Saw {added}. Power negotiation looks… respectable.",
+        "Knock knock, {added}. Want me to peek at descriptors?"
+      ]
+    },
+    "addedMany": {
+      "zh": [
+        "枚举风暴：{added}。我的端口表要开始哔哔了。",
+        "批量握手：{added}。总线今天有点忙。",
+        "一下子来了好几位：{added}。我排队记日志。",
+        "多设备同时上线：{added}。过流保护先深呼吸。"
+      ],
+      "en": [
+        "Enumeration storm: {added}. Port table going beep-beep.",
+        "Batch handshake: {added}. Busy bus day.",
+        "Several arrivals: {added}. Queuing the log.",
+        "Multi-device online: {added}. Overcurrent protection, breathe."
+      ]
+    },
+    "emptyTail": {
+      "zh": [
+        "设备列表空了？总线有点冷清，风扇都小声了。",
+        "端口表清空。待机灯改成「等人插线」模式。",
+        "目前零设备。我的八卦雷达暂时无目标。"
+      ],
+      "en": [
+        "Empty list? Bus feels chilly. Fans went quiet.",
+        "Port table cleared. Standby light: waiting for a cable.",
+        "Zero devices. Gossip radar has no targets."
+      ]
+    },
+    "listHeader": {
+      "zh": [
+        "当前挂在总线上的：",
+        "端口实况：",
+        "我扫到的设备：",
+        "总线花名册："
+      ],
+      "en": [
+        "Currently on the bus:",
+        "Port live view:",
+        "Devices I scanned:",
+        "Bus roster:"
+      ]
+    },
+    "bullet": {
+      "zh": ["▸ {item}", "· {item}"],
+      "en": ["▸ {item}", "· {item}"]
+    }
+  },
   "catchphrases": {
     "zh": [
       "嘀嘀～",

@@ -21,24 +21,58 @@
   },
   "usb": {
     "addedOne": {
-      "zh": "发现新 USB 设备：{added}",
-      "en": "New USB device: {added}"
+      "zh": [
+        "有个新家伙插上来了：{added}",
+        "叮——检测到新设备：{added}",
+        "{added} 报到了，我先记一笔。",
+        "新接口握手：{added}。"
+      ],
+      "en": [
+        "Something new just plugged in: {added}",
+        "Ding—new device: {added}",
+        "{added} checked in. Logging it.",
+        "Handshake: {added}."
+      ]
     },
     "addedMany": {
-      "zh": "发现新 USB 设备：{added}",
-      "en": "New USB devices: {added}"
+      "zh": [
+        "一下子来了好几个：{added}",
+        "批量上线：{added}",
+        "今天总线挺热闹：{added}"
+      ],
+      "en": [
+        "A whole bunch showed up: {added}",
+        "Batch online: {added}",
+        "Busy bus today: {added}"
+      ]
     },
     "emptyTail": {
-      "zh": "目前列表是空的。",
-      "en": "No devices listed right now."
+      "zh": [
+        "列表空空的，有点冷清。",
+        "目前没有设备登记。",
+        "总线空了，安静一会儿也好。"
+      ],
+      "en": [
+        "List's empty. Kind of quiet.",
+        "Nothing registered right now.",
+        "Bus empty. Quiet is fine."
+      ]
     },
     "listHeader": {
-      "zh": "目前有：",
-      "en": "Currently:"
+      "zh": [
+        "现在挂着的：",
+        "当前列表：",
+        "我看到这些："
+      ],
+      "en": [
+        "What's on the bus:",
+        "Current list:",
+        "I see:"
+      ]
     },
     "bullet": {
-      "zh": "· {item}",
-      "en": "· {item}"
+      "zh": ["· {item}"],
+      "en": ["· {item}"]
     }
   },
   "catchphraseFallback": {

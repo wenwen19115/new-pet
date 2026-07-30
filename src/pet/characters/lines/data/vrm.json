@@ -273,6 +273,68 @@
       ]
     }
   },
+  "usb": {
+    "addedOne": {
+      "zh": [
+        "……有东西接上了：{added}。我记一下。",
+        "嗯……{added}。听见轻轻一声。",
+        "{added} 来了。……别吓我。",
+        "新设备是 {added}。……我小声说一声。",
+        "……{added} 插好了。你继续忙就好。"
+      ],
+      "en": [
+        "…something connected: {added}. I'll note it.",
+        "Mm… {added}. Heard a soft click.",
+        "{added} is here. …don't startle me.",
+        "New device: {added}. …saying it quietly.",
+        "…{added} is in. Keep working; I'm fine."
+      ]
+    },
+    "addedMany": {
+      "zh": [
+        "……一下子来了好几个：{added}。有点吵呢。",
+        "好多……{added}。我慢慢数。",
+        "{added} ……同时到。我先深呼吸。",
+        "……名单有点长：{added}。"
+      ],
+      "en": [
+        "…a few at once: {added}. A bit noisy.",
+        "Many… {added}. Counting slowly.",
+        "{added} …all together. Deep breath first.",
+        "…list got long: {added}."
+      ]
+    },
+    "emptyTail": {
+      "zh": [
+        "……列表空了。安静下来也好。",
+        "没有设备。……清爽。",
+        "……空的。我陪你发会儿呆。"
+      ],
+      "en": [
+        "…list empty. Quiet is fine too.",
+        "No devices. …refreshing.",
+        "…empty. I'll zone out with you a bit."
+      ]
+    },
+    "listHeader": {
+      "zh": [
+        "嗯，现在大概是：",
+        "我看到……",
+        "小声报一下：",
+        "目前这些："
+      ],
+      "en": [
+        "Mm, roughly now:",
+        "I see…",
+        "Quiet roll call:",
+        "These for now:"
+      ]
+    },
+    "bullet": {
+      "zh": ["… {item}", "· {item}"],
+      "en": ["… {item}", "· {item}"]
+    }
+  },
   "catchphrases": {
     "zh": [
       "嗯……",

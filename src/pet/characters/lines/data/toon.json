@@ -387,6 +387,68 @@
       ]
     }
   },
+  "usb": {
+    "addedOne": {
+      "zh": [
+        "大事件！！{added} 插进来了！！狐火新闻速报～",
+        "快看快看！{added} 登场！现场欢呼！",
+        "突发插拔！主角是 {added}！嗷呜！",
+        "{added} 传送到工位！像素记者已就位！",
+        "轰——{added} 接入成功！今晚头条预定！"
+      ],
+      "en": [
+        "BREAKING!! {added} plugged in!! Foxfire news flash~",
+        "Look look! {added} enters! Crowd cheers!",
+        "Sudden plug! Star: {added}! Awoo!",
+        "{added} teleported to the desk! Pixel reporter ready!",
+        "Boom—{added} connected! Tonight's headline!"
+      ]
+    },
+    "addedMany": {
+      "zh": [
+        "连击插入！！{added}！！现场太热闹了嗷呜！",
+        "群演到齐：{added}！这集剧情很满！",
+        "多线新闻！{added} 同时上线！我记不过来啦！",
+        "哇哇哇 {added} 一窝蜂！总线要被挤爆了！"
+      ],
+      "en": [
+        "Multi-plug combo!! {added}!! Scene is CHAOTIC awoo!",
+        "Extra cast ready: {added}! Packed episode!",
+        "Multi-thread news! {added} all online! Can't keep up!",
+        "Whoa {added} stampede! Bus might burst!"
+      ]
+    },
+    "emptyTail": {
+      "zh": [
+        "现场清空了？？总线消失术？？",
+        "设备全跑光了？？下一期预告……空白？？",
+        "空镜！空镜！记者无料可拍！"
+      ],
+      "en": [
+        "Scene cleared?? Bus vanish spell??",
+        "Everything gone?? Next episode teaser… blank??",
+        "Empty shot! Empty shot! No scoop!"
+      ]
+    },
+    "listHeader": {
+      "zh": [
+        "现场报道——在场的有：",
+        "嘉宾名单公布：",
+        "镜头扫到：",
+        "本集出场："
+      ],
+      "en": [
+        "Live report — present:",
+        "Guest list drop:",
+        "Camera catches:",
+        "This episode features:"
+      ]
+    },
+    "bullet": {
+      "zh": ["★ {item}", "◆ {item}"],
+      "en": ["★ {item}", "◆ {item}"]
+    }
+  },
   "catchphrases": {
     "zh": [
       "嗷呜～",
