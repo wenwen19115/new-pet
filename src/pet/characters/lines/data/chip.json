@@ -387,6 +387,20 @@
       ]
     }
   },
+  "dragStart": {
+    "zh": [
+      "警报！高度突变——谁在拎我？！",
+      "惯性补偿启动……有点慌。",
+      "诶诶诶？！伺服还没热身！",
+      "悬空模式？等等，我还没同意起飞！"
+    ],
+    "en": [
+      "Alert! Altitude spike—who's lifting me?!",
+      "Inertia compensation on… a bit panicked.",
+      "Wait wait?! Servos aren't warmed up!",
+      "Hover mode? I didn't approve takeoff!"
+    ]
+  },
   "dragEnd": {
     "zh": [
       "落地自检通过～被你拎着飞的感觉，散热鳍都开心。",

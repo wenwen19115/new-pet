@@ -43,6 +43,8 @@ export interface CharacterLineBundle {
   care?: LineLangPack;
   catchphrases: LineLangPack;
   intro: CharacterIntroLines;
+  /** 开始拖时的惊讶/紧张台词；缺省走 shared */
+  dragStart?: LineLangPack;
   /** 拖完落地余韵台词；缺省走 shared */
   dragEnd?: LineLangPack;
   usb?: UsbLineTemplates;
@@ -56,6 +58,7 @@ export const BUILTIN_LINE_CATEGORIES = [
   "personality",
   "care",
   "motion",
+  "drag-start",
   "drag-end",
 ] as const;
 

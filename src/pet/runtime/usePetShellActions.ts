@@ -32,6 +32,7 @@ export function usePetShellActions(deps: {
   clearMotionTimers: () => void;
   beginMotion: (id: string, opts?: { manual?: boolean }) => void;
   speakTapEgg: (model: PetModelKind) => void;
+  speakDragStart: () => void;
   speakDragLand: () => void;
   speak: (fromAuto?: boolean) => void | Promise<void>;
   pointerOnPointerDown: (e: PointerEvent) => void;
@@ -89,6 +90,7 @@ export function usePetShellActions(deps: {
       deps.speaking.value = false;
       void hidePetBubble();
       void hidePetChat();
+      deps.speakDragStart();
     },
     onTap: () => {
       if (deps.tryRevealPeekOnTap?.()) return;

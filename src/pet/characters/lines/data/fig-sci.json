@@ -411,6 +411,20 @@
       ]
     }
   },
+  "dragStart": {
+    "zh": [
+      "呀——！突然被抱起来了？！",
+      "等、等一下……心跳好快。",
+      "呜，有点紧张……你要带我去哪儿？",
+      "别、别晃太猛……我抓紧了。"
+    ],
+    "en": [
+      "Ah—! Suddenly scooped up?!",
+      "W-wait… heart's racing.",
+      "Nngh, nervous… where are we going?",
+      "D-don't swing too hard… I'm holding on."
+    ]
+  },
   "dragEnd": {
     "zh": [
       "放下来啦～刚才被你抱着，有点开心。",

@@ -387,6 +387,20 @@
       ]
     }
   },
+  "dragStart": {
+    "zh": [
+      "嗷呜？！被拎飞了！！",
+      "狐火一炸——好突然！！",
+      "等等等等我还没站稳！！",
+      "悬空大事件！！有点慌但也好刺激！！"
+    ],
+    "en": [
+      "Awoo?! Scooped into the air!!",
+      "Foxfire pop—so sudden!!",
+      "Wait wait I wasn't ready!!",
+      "Airborne event!! Nervous but exciting!!"
+    ]
+  },
   "dragEnd": {
     "zh": [
       "蹦——落地！被你拎着飞好刺激嗷呜！",

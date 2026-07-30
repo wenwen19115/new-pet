@@ -29,7 +29,7 @@
 | `motion` | motion host | speaking / dragging / sleep 时挡 |
 | `sleep` | life timers | 醒之前粘住 |
 | `wake` / `usb-wake` | life / speech | 仅从 sleep 来 |
-| `drag-start` | pointer | 置 curious |
+| `drag-start` | pointer | 置 curious；shell 同步惊讶/紧张台词 |
 | `drag-land` | shell（松手后） | 落地余韵 happy；轻动作 + 台词 |
 | `playful-flee` / `playful-catch` / `playful-miss` | playful host | 躲开 / 抓到 / 超时 |
 | `peek-hide` / `peek-reveal` | peek host | 躲起来 / 现身 |

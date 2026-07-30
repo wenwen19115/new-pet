@@ -19,6 +19,20 @@
       "Drop your shoulders… yes, like that."
     ]
   },
+  "dragStart": {
+    "zh": [
+      "诶？被拎起来了？",
+      "等、等一下……！",
+      "突然起飞，有点紧张……",
+      "哇——你要带我去哪儿？"
+    ],
+    "en": [
+      "Eh? Being lifted?",
+      "W-wait…!",
+      "Sudden takeoff—kinda nervous…",
+      "Whoa—where are we going?"
+    ]
+  },
   "dragEnd": {
     "zh": [
       "放下来啦～刚才那段路还挺稳。",

@@ -273,6 +273,20 @@
       ]
     }
   },
+  "dragStart": {
+    "zh": [
+      "……诶？被抬起来了。",
+      "等一下……有点紧张。",
+      "……突然离地，我会抓紧的。",
+      "呜……去哪儿都可以，轻一点好吗。"
+    ],
+    "en": [
+      "…eh? Being lifted.",
+      "Wait… a little nervous.",
+      "…sudden lift. I'll hold on.",
+      "Mm… anywhere is fine—please be gentle."
+    ]
+  },
   "dragEnd": {
     "zh": [
       "……放下来了。刚才那段，谢谢。",

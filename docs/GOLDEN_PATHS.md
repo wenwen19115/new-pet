@@ -5,7 +5,7 @@
 | # | 路径 | 手测要点 | 自动化对照 |
 | --- | --- | --- | --- |
 | 1 | 启动待机 | 形象出现，chip/toon 有呼吸或 idle-float | shell 表含 `idle-float`；toon palette/body 非空 |
-| 2 | 拖拽 | 按下 curious，松开落地余韵（轻动作+一句）再回 idle；无卡死 | mood `drag-start`/`drag-land` |
+| 2 | 拖拽 | 按下 curious + 惊讶台词，松开落地余韵（轻动作+一句）再回 idle；无卡死 | mood `drag-start`/`drag-land` |
 | 3 | 单击动作 | 播动作 + 可能冒泡/TTS | motion pool / shell 覆盖 chip demo |
 | 4 | 随机 idle | 开：过一会儿换动作；关：停 | `random-idle-setting` intent |
 | 5 | 聊天开/关 | 打开暂停随机 idle 与飞行；关闭恢复 | `chat-open` intent |

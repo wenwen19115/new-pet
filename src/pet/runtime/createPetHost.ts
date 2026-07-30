@@ -288,6 +288,7 @@ function wirePetHost(s: PetHostShared) {
     clearMotionTimers: motionHost.clearMotionTimers,
     beginMotion: motionHost.beginMotion,
     speakTapEgg: speech.speakTapEgg,
+    speakDragStart: speech.speakDragStart,
     speakDragLand: speech.speakDragLand,
     speak: speech.speak,
     pointerOnPointerDown: pointerHost.onPointerDown,
