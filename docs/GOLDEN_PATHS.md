@@ -1,25 +1,29 @@
 # 黄金路径（发版前手测）
 
-防社死用的，不是刷覆盖率。自动对照：`architecture.smoke.test.ts` / `petHost.smoke.test.ts` / `toonPixels.smoke.test.ts`。
+发版前回归清单，用于覆盖关键用户路径，而非追求测试覆盖率。代码改动后应先执行 `yarn test`，再按相关条目手测。
+
+自动化对照：`architecture.smoke.test.ts`、`petHost.smoke.test.ts`、`toonPixels.smoke.test.ts`、`deskWeather.smoke.test.ts`（若存在）。
 
 | # | 路径 | 手测要点 | 自动化对照 |
 | --- | --- | --- | --- |
-| 1 | 启动待机 | 形象出现，chip/toon 有呼吸或 idle-float | shell 表含 `idle-float`；toon palette/body 非空 |
-| 2 | 拖拽 | 按下 curious + 惊讶台词，松开落地余韵（fig 常只说话少动作；其他轻动作+一句）再回 idle；无卡死 | mood `drag-start`/`drag-land` + accents |
-| 3 | 单击动作 | 播动作 + 可能冒泡/TTS | motion pool / shell 覆盖 chip demo |
-| 4 | 随机 idle | 开：过一会儿换动作；关：停 | `random-idle-setting` intent |
-| 5 | 聊天开/关 | 打开暂停随机 idle 与飞行；关闭恢复 | `chat-open` intent |
-| 6 | 睡眠/唤醒 | 睡眠粘滞；点击或 USB 可醒 | mood `sleep`/`wake` |
-| 7 | 切形象 | chip / fig / toon / vrm 可切换且可动 | registry + capabilities |
-| 8 | 设置立刻生效 | mute 停 TTS；关 chat 藏窗；randomIdle 即时 | settings sync |
-| 9 | 冒泡乒乓 | 说话时点气泡轻果冻弹一下；连点三次换嫌弃句；说话时仍可拖宠 | mood `bubble-pong` + bubble 窗 |
-| 10 | dispose | 关宠/重载无泄漏监听 | lifecycle dispose |
-| 11 | 调皮模式 | 开：靠近躲开；躲开落地后短窗口点中算抓到；连空 3 次嫌弃（台词）；peek 只走菜单躲起来 | playful mood + catch window |
-| 12 | 躲起来 | 菜单躲起来贴边半截；点露头或「出来」现身；软隐藏后再召唤也清 peek | `peek-hide` intent |
-| 13 | 工位气象 | 开总开关后：窗口增减≥N / 切窗爆发 / 铺满两档会冒台词（可带轻动作）；说话中不叠；冷却期内不狂念 | mood `desk-weather` + bridge 轮询 |
+| 1 | 启动待机 | 形象正常出现；chip / toon 具备呼吸或 idle-float | shell 含 `idle-float`；toon 像素非空 |
+| 2 | 拖拽 | 按下进入 curious 并有惊讶台词；松手有落地余韵（fig 常以台词为主）；随后回到 idle，无卡死 | `drag-start` / `drag-land` |
+| 3 | 单击 | 播放动作，可能伴随冒泡 / TTS | motion / shell |
+| 4 | 随机 idle | 开启后一段时间切换动作；关闭后停止 | `random-idle-setting` |
+| 5 | 聊天开/关 | 聊天打开时暂停随机 idle 与飞行；关闭后恢复 | `chat-open` |
+| 6 | 睡眠/唤醒 | 睡眠状态粘滞；点击或 USB 可唤醒 | `sleep` / `wake` |
+| 7 | 切换形象 | chip / fig / toon / vrm 均可切换且表现正常 | registry |
+| 8 | 设置即时生效 | mute 停止 TTS；关闭 chat 隐藏窗口；randomIdle 即时响应 | settings sync |
+| 9 | 冒泡乒乓 | 说话时点击气泡有轻弹反馈；连点三次切换嫌弃句；说话期间仍可拖拽桌宠 | `bubble-pong` |
+| 10 | dispose | 关闭桌宠或重载后监听与定时器无泄漏 | lifecycle |
+| 11 | 调皮模式 | 鼠标靠近时躲开；落地后短窗口内点中视为抓到；连续未抓中 3 次仅台词嫌弃 | playful mood |
+| 12 | 躲起来 | 菜单躲起后贴边仅露半截；点击露头或「出来」现身；软隐藏后再召唤亦清除 peek | `peek-hide` |
+| 13 | 工位气象 | 开启总开关后：窗口增减达阈值 / 切窗爆发 / 铺满两档可触发台词（可带轻动作）；说话中不叠加；冷却期内不重复触发 | `desk-weather` |
 
-## 用法
+## 勾选范围
 
-- 发版或大改 runtime / 动画前：勾选 1–10；改工位气象再加 13。
-- 改 mood / intent / shell 表：先跑 `yarn test`，再抽测相关行。
-- 改 Toon 像素：跑 toon 快照烟测 + 手测 toon 待机与一两个 `toon-*` 动作。
+- 发版，或改动 runtime / 动画：至少覆盖 1–10。
+- 改动调皮模式或躲起来：追加 11–12。
+- 改动工位气象：追加 13。
+- 仅改 Toon 像素：执行 toon smoke，并手测待机与一个 `toon-*` 动作。
+- 仅改 mood / intent：执行 `yarn test` 后抽测相关条目。
