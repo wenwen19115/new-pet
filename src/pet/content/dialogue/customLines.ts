@@ -51,23 +51,16 @@ function normalizeOne(
   };
 }
 
-/** Accept legacy `string[]` as idle lines */
 export function normalizeCustomLines(raw: unknown): PetCustomLine[] {
   if (!Array.isArray(raw)) return [];
   const out: PetCustomLine[] = [];
   const seen = new Set<string>();
   for (const item of raw) {
-    if (typeof item === "string") {
-      const line = normalizeOne({ text: item, scene: "idle", enabled: true });
-      if (!line || !line.text.trim() || seen.has(line.id)) continue;
-      seen.add(line.id);
-      out.push(line);
-    } else {
-      const line = normalizeOne(item as Partial<PetCustomLine>);
-      if (!line || seen.has(line.id)) continue;
-      seen.add(line.id);
-      out.push(line);
-    }
+    if (!item || typeof item !== "object") continue;
+    const line = normalizeOne(item as Partial<PetCustomLine>);
+    if (!line || seen.has(line.id)) continue;
+    seen.add(line.id);
+    out.push(line);
     if (out.length >= 64) break;
   }
   return out;

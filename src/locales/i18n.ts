@@ -159,11 +159,6 @@ const messages = {
         "国内直连 OpenAI 兼容；填 API Key 后可用免费小模型（如 Qwen2.5-7B）",
       chatProviderDeepseek: "DeepSeek（国内）",
       chatProviderDeepseekHint: "api.deepseek.com；需 API Key（默认 deepseek-v4-flash）",
-      chatProviderPollinations: "Pollinations（海外免费）",
-      chatProviderPollinationsHint:
-        "无需 Key，但对中文经常额度不足；失败会提示错误（不会偷换成随机陪聊）",
-      chatProviderCustom: "自定义 OpenAI 兼容",
-      chatProviderCustomHint: "自填 Base URL + 模型 + API Key",
       chatProviderLocal: "仅本地陪聊",
       chatProviderLocalHint: "不请求外网，按性格关键词随机回复（仅此模式）",
       chatModelTitle: "模型",
@@ -508,11 +503,6 @@ const messages = {
         "China OpenAI-compatible API; paste a key to use free small models (e.g. Qwen2.5-7B)",
       chatProviderDeepseek: "DeepSeek (CN)",
       chatProviderDeepseekHint: "api.deepseek.com — needs API key (default deepseek-v4-flash)",
-      chatProviderPollinations: "Pollinations (overseas free)",
-      chatProviderPollinationsHint:
-        "No key, but Chinese prompts often fail; errors are shown (no silent local fallback)",
-      chatProviderCustom: "Custom OpenAI-compatible",
-      chatProviderCustomHint: "Your Base URL + model + API key",
       chatProviderLocal: "Local companion only",
       chatProviderLocalHint:
         "No network — keyword/random replies by personality (this mode only)",

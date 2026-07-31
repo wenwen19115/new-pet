@@ -125,13 +125,9 @@ export function removeCustomChatModel(
 export function normalizePetChatAi(
   raw: Partial<PetChatAiConfig> | null | undefined
 ): PetChatAiConfig {
-  let provider: PetChatProviderId = DEFAULT_PET_CHAT_AI.provider;
-  if (isPetChatProviderId(raw?.provider)) {
-    provider = raw.provider;
-  } else if (typeof raw?.provider === "string") {
-    // migrate removed providers → deepseek
-    provider = "deepseek";
-  }
+  const provider: PetChatProviderId = isPetChatProviderId(raw?.provider)
+    ? raw.provider
+    : DEFAULT_PET_CHAT_AI.provider;
   const model = typeof raw?.model === "string" ? raw.model.trim() : "";
   let customModels = normalizeCustomModels(raw?.customModels);
   // Keep the currently selected non-builtin model in the dropdown list

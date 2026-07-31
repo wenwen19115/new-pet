@@ -157,40 +157,10 @@ export function createEmptyCustomVrmMotion(name: string): CustomVrmMotion {
   };
 }
 
-/** Migrate legacy template-based motions into bone keyframes */
-function migrateLegacyMotion(raw: Record<string, unknown>): CustomVrmMotion | null {
-  const name =
-    typeof raw.name === "string" ? raw.name.trim().slice(0, 24) : "";
-  if (!name) return null;
-  const id =
-    typeof raw.id === "string" && isCustomVrmMotionId(raw.id)
-      ? raw.id
-      : createCustomVrmMotionId();
-  const durationMs = Math.round(
-    clamp(Number(raw.durationMs ?? 2800), 800, 12000)
-  );
-  // Start from editable defaults; user can refine bones
-  return {
-    id,
-    name,
-    durationMs,
-    includeInRandom: raw.includeInRandom !== false,
-    keyframes: createDefaultKeyframes(),
-  };
-}
-
 function normalizeCustomVrmMotion(
   raw: Partial<CustomVrmMotion> | null | undefined
 ): CustomVrmMotion | null {
   if (!raw || typeof raw !== "object") return null;
-
-  // Legacy: { base, intensity, speed } without keyframes
-  if (
-    !Array.isArray((raw as { keyframes?: unknown }).keyframes) &&
-    typeof (raw as { base?: unknown }).base === "string"
-  ) {
-    return migrateLegacyMotion(raw as Record<string, unknown>);
-  }
 
   const id =
     typeof raw.id === "string" && isCustomVrmMotionId(raw.id)

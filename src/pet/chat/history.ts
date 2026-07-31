@@ -64,26 +64,14 @@ function emptyStore(): HistoryStoreV2 {
   return { version: 2, byCharacter: {} };
 }
 
-/**
- * Read store; migrate legacy flat array → current character bucket once.
- * `migrateTo` only used when legacy array is present.
- */
-function readStore(migrateTo?: PetChatCharacterId): HistoryStoreV2 {
+function readStore(): HistoryStoreV2 {
   try {
     const raw = localStorage.getItem(PET_CHAT_HISTORY_KEY);
     if (!raw) return emptyStore();
     const parsed = JSON.parse(raw) as unknown;
-    if (Array.isArray(parsed)) {
-      const list = normalizeList(parsed);
-      const store = emptyStore();
-      if (list.length) {
-        store.byCharacter[normalizeCharacterId(migrateTo)] = list;
-        // Persist migration immediately so other windows see v2
-        writeStore(store);
-      }
-      return store;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return emptyStore();
     }
-    if (!parsed || typeof parsed !== "object") return emptyStore();
     const o = parsed as Record<string, unknown>;
     if (o.version === 2 && o.byCharacter && typeof o.byCharacter === "object") {
       const byCharacter: Record<string, PetChatHistoryItem[]> = {};
@@ -142,7 +130,7 @@ export function loadChatHistory(
   characterId: PetChatCharacterId
 ): PetChatHistoryItem[] {
   const id = normalizeCharacterId(characterId);
-  const store = readStore(id);
+  const store = readStore();
   const list = store.byCharacter[id];
   return list ? list.slice() : [];
 }
@@ -152,7 +140,7 @@ function saveChatHistory(
   items: PetChatHistoryItem[]
 ): SaveChatHistoryResult {
   const id = normalizeCharacterId(characterId);
-  const store = readStore(id);
+  const store = readStore();
   const truncated = items.length > PET_CHAT_HISTORY_MAX;
   const capped = truncated
     ? items.slice(items.length - PET_CHAT_HISTORY_MAX)

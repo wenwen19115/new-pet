@@ -79,24 +79,9 @@ function normalizePersonality(value: unknown): PetPersonality {
     : DEFAULT_PET_SETTINGS.personality;
 }
 
-type ProfileFallbacks = Pick<
-  PetModelProfile,
-  | "muted"
-  | "ttsEnabled"
-  | "ttsVoiceUri"
-  | "chatAi"
-  | "opacity"
-  | "usbWatchEnabled"
-  | "randomIdleEnabled"
-  | "hitBoundsEnabled"
-  | "playfulModeEnabled"
->;
-
 export function normalizeOneProfile(
   model: PetModelKind,
-  raw: Partial<PetModelProfile> | null | undefined,
-  fallbacks?: Partial<ProfileFallbacks>,
-  legacyVrm?: { motions?: unknown; name?: string; rev?: number }
+  raw: Partial<PetModelProfile> | null | undefined
 ): PetModelProfile {
   const base = defaultProfileForModel(model);
   const lookRaw =
@@ -106,19 +91,10 @@ export function normalizeOneProfile(
 
   let extensions = normalizeExtensions(raw?.extensions);
   if (characterSupportsVrmAssets(model)) {
-    const fromProfile = extensions.vrm;
-    const legacyMotions = Array.isArray(legacyVrm?.motions)
-      ? (legacyVrm!.motions as import("../../content/motion/customVrmMotions").CustomVrmMotion[])
-      : undefined;
-    const merged = normalizeVrmExtension({
-      customMotions:
-        fromProfile?.customMotions?.length
-          ? fromProfile.customMotions
-          : legacyMotions,
-      modelName: fromProfile?.modelName || legacyVrm?.name || "",
-      modelRev: fromProfile?.modelRev || legacyVrm?.rev || 0,
-    });
-    extensions = { ...extensions, vrm: merged };
+    extensions = {
+      ...extensions,
+      vrm: normalizeVrmExtension(extensions.vrm),
+    };
   }
 
   const customVrmIds = new Set(
@@ -138,43 +114,30 @@ export function normalizeOneProfile(
       model,
       customVrmIds
     ),
-    muted:
-      raw?.muted === undefined
-        ? Boolean(fallbacks?.muted ?? base.muted)
-        : Boolean(raw.muted),
+    muted: raw?.muted === undefined ? base.muted : Boolean(raw.muted),
     ttsEnabled:
-      raw?.ttsEnabled === undefined
-        ? Boolean(fallbacks?.ttsEnabled ?? base.ttsEnabled)
-        : Boolean(raw.ttsEnabled),
+      raw?.ttsEnabled === undefined ? base.ttsEnabled : Boolean(raw.ttsEnabled),
     ttsVoiceUri:
       typeof raw?.ttsVoiceUri === "string"
         ? raw.ttsVoiceUri
-        : (fallbacks?.ttsVoiceUri ?? base.ttsVoiceUri),
-    chatAi: normalizePetChatAi(
-      raw?.chatAi !== undefined ? raw.chatAi : fallbacks?.chatAi ?? base.chatAi
-    ),
-    opacity: clampOpacity(
-      Number(
-        raw?.opacity === undefined
-          ? (fallbacks?.opacity ?? base.opacity)
-          : raw.opacity
-      )
-    ),
+        : base.ttsVoiceUri,
+    chatAi: normalizePetChatAi(raw?.chatAi ?? base.chatAi),
+    opacity: clampOpacity(Number(raw?.opacity ?? base.opacity)),
     usbWatchEnabled:
       raw?.usbWatchEnabled === undefined
-        ? Boolean(fallbacks?.usbWatchEnabled ?? base.usbWatchEnabled)
+        ? base.usbWatchEnabled
         : Boolean(raw.usbWatchEnabled),
     randomIdleEnabled:
       raw?.randomIdleEnabled === undefined
-        ? Boolean(fallbacks?.randomIdleEnabled ?? base.randomIdleEnabled)
+        ? base.randomIdleEnabled
         : Boolean(raw.randomIdleEnabled),
     playfulModeEnabled:
       raw?.playfulModeEnabled === undefined
-        ? Boolean(fallbacks?.playfulModeEnabled ?? base.playfulModeEnabled)
+        ? base.playfulModeEnabled
         : Boolean(raw.playfulModeEnabled),
     hitBoundsEnabled:
       raw?.hitBoundsEnabled === undefined
-        ? Boolean(fallbacks?.hitBoundsEnabled ?? base.hitBoundsEnabled)
+        ? base.hitBoundsEnabled
         : Boolean(raw.hitBoundsEnabled),
     catchphrases: normalizeCatchphrases(
       raw?.catchphrases ?? base.catchphrases,
@@ -195,110 +158,18 @@ export function normalizeOneProfile(
   };
 }
 
-function legacySharedFallbacks(
-  raw: Partial<PetSettings> | null | undefined
-): ProfileFallbacks {
-  return {
-    muted:
-      raw?.muted === undefined
-        ? DEFAULT_PET_SETTINGS.muted
-        : Boolean(raw.muted),
-    ttsEnabled:
-      raw?.ttsEnabled === undefined
-        ? DEFAULT_PET_SETTINGS.ttsEnabled
-        : Boolean(raw.ttsEnabled),
-    ttsVoiceUri:
-      typeof raw?.ttsVoiceUri === "string"
-        ? raw.ttsVoiceUri
-        : DEFAULT_PET_SETTINGS.ttsVoiceUri,
-    chatAi: normalizePetChatAi(raw?.chatAi),
-    opacity: clampOpacity(
-      Number(raw?.opacity ?? DEFAULT_PET_SETTINGS.opacity)
-    ),
-    usbWatchEnabled:
-      raw?.usbWatchEnabled === undefined
-        ? DEFAULT_PET_SETTINGS.usbWatchEnabled
-        : Boolean(raw.usbWatchEnabled),
-    randomIdleEnabled:
-      raw?.randomIdleEnabled === undefined
-        ? DEFAULT_PET_SETTINGS.randomIdleEnabled
-        : Boolean(raw.randomIdleEnabled),
-    playfulModeEnabled:
-      raw?.playfulModeEnabled === undefined
-        ? DEFAULT_PET_SETTINGS.playfulModeEnabled
-        : Boolean(raw.playfulModeEnabled),
-    hitBoundsEnabled:
-      raw?.hitBoundsEnabled === undefined
-        ? DEFAULT_PET_SETTINGS.hitBoundsEnabled
-        : Boolean(raw.hitBoundsEnabled),
-  };
-}
-
 function normalizeProfiles(
-  raw: Partial<PetSettings> | null | undefined,
-  modelKind: PetModelKind
+  raw: Partial<PetSettings> | null | undefined
 ): PetModelProfiles {
   const defaults = createDefaultProfiles();
   const incoming = (raw?.profiles ?? {}) as Partial<
     Record<PetModelKind, Partial<PetModelProfile>>
   >;
-  const hasProfiles =
-    raw?.profiles &&
-    typeof raw.profiles === "object" &&
-    Object.keys(raw.profiles as object).length > 0;
-
-  const legacyVrm = {
-    motions: raw?.customVrmMotions,
-    name: raw?.vrmModelName,
-    rev: raw?.vrmModelRev,
-  };
 
   const next = { ...defaults };
   for (const kind of PET_MODEL_KINDS) {
-    const profileRaw = incoming[kind];
-    const chatAiFallback =
-      profileRaw &&
-      profileRaw.chatAi === undefined &&
-      raw?.chatAi !== undefined
-        ? { chatAi: normalizePetChatAi(raw.chatAi) }
-        : undefined;
-    next[kind] = normalizeOneProfile(
-      kind,
-      profileRaw,
-      chatAiFallback,
-      characterSupportsVrmAssets(kind) ? legacyVrm : undefined
-    );
+    next[kind] = normalizeOneProfile(kind, incoming[kind]);
   }
-
-  if (!hasProfiles) {
-    const shared = legacySharedFallbacks(raw);
-    next[modelKind] = normalizeOneProfile(
-      modelKind,
-      {
-        nickname: typeof raw?.nickname === "string" ? raw.nickname : "",
-        personality: isPetPersonality(raw?.personality)
-          ? raw.personality
-          : undefined,
-        tone:
-          raw?.tone === "snarky" || raw?.tone === "cute" ? raw.tone : undefined,
-        lookId: typeof raw?.lookId === "string" ? raw.lookId : undefined,
-        zoomPercent:
-          raw?.zoomPercent === undefined ? undefined : Number(raw.zoomPercent),
-        demoMotion:
-          typeof raw?.demoMotion === "string" ? raw.demoMotion : undefined,
-        muted: raw?.muted,
-        ttsEnabled: raw?.ttsEnabled,
-        ttsVoiceUri:
-          typeof raw?.ttsVoiceUri === "string" ? raw.ttsVoiceUri : undefined,
-        opacity: raw?.opacity,
-        usbWatchEnabled: raw?.usbWatchEnabled,
-        randomIdleEnabled: raw?.randomIdleEnabled,
-      },
-      shared,
-      characterSupportsVrmAssets(modelKind) ? legacyVrm : undefined
-    );
-  }
-
   return next;
 }
 
@@ -354,27 +225,13 @@ export function applyActiveProfile(
   };
 }
 
-function resolveGlobalChatEnabled(
-  raw: Partial<PetSettings> | null | undefined,
-  modelKind: PetModelKind
-): boolean {
-  if (raw?.chatEnabled !== undefined) return Boolean(raw.chatEnabled);
-  const profile = (
-    raw?.profiles as Partial<Record<PetModelKind, Record<string, unknown>>> | undefined
-  )?.[modelKind];
-  if (profile && typeof profile.chatEnabled === "boolean") {
-    return profile.chatEnabled;
-  }
-  return DEFAULT_PET_SETTINGS.chatEnabled;
-}
-
 export function normalizePetSettings(
   raw: Partial<PetSettings> | null | undefined
 ): PetSettings {
   const modelKind = isPetModelKind(raw?.modelKind)
     ? raw.modelKind
     : DEFAULT_PET_MODEL;
-  const profiles = normalizeProfiles(raw, modelKind);
+  const profiles = normalizeProfiles(raw);
   const active = applyActiveProfile(modelKind, profiles);
 
   return {
@@ -390,7 +247,10 @@ export function normalizePetSettings(
       raw?.sysStatsDefaultExpanded ??
         DEFAULT_PET_SETTINGS.sysStatsDefaultExpanded
     ),
-    chatEnabled: resolveGlobalChatEnabled(raw, modelKind),
+    chatEnabled:
+      raw?.chatEnabled === undefined
+        ? DEFAULT_PET_SETTINGS.chatEnabled
+        : Boolean(raw.chatEnabled),
     deskWeather: normalizeDeskWeather(raw?.deskWeather),
     profiles,
     ...active,
