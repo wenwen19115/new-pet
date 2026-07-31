@@ -142,7 +142,6 @@ mood、idle、暂停位等写入约定见 [`STATE.md`](./STATE.md)。跨 host �
 
 - 键：`desktop-pet-settings`
 - 形象字段：`lookId`
-- 旧键 `wheat-esp-pet-*` 仅做一次只读迁移，不再写回
 
 ## 验证
 

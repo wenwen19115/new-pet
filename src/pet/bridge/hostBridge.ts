@@ -4,7 +4,6 @@ import { initPetHost } from "@/pet/windows/pet";
 import { loadPetSettings, patchPetSettings } from "../data/settings";
 import {
   PET_BUS_NAME,
-  LEGACY_PET_BUS_NAME,
   isOpenSettingsStorageKey,
   writeOpenSettingsSignal,
 } from "../data/storageKeys";
@@ -121,30 +120,26 @@ export function initPetHostBridge(onOpenSettings: () => void): () => void {
   };
   window.addEventListener("storage", onStorage);
 
-  // Listen new + legacy bus (migration); only publish on new bus
-  const buses: BroadcastChannel[] = [];
-  for (const name of [PET_BUS_NAME, LEGACY_PET_BUS_NAME]) {
-    try {
-      const bus = new BroadcastChannel(name);
-      bus.onmessage = (ev) => {
-        if (
-          ev.data?.type === "open-settings" ||
-          ev.data?.type === "pin-settings"
-        ) {
-          onOpenSettings();
-          void applySettingsWindowPin(loadPetSettings().settingsAlwaysOnTop);
-        }
-      };
-      buses.push(bus);
-    } catch {
-      // ignore
-    }
+  let settingsBus: BroadcastChannel | null = null;
+  try {
+    settingsBus = new BroadcastChannel(PET_BUS_NAME);
+    settingsBus.onmessage = (ev) => {
+      if (
+        ev.data?.type === "open-settings" ||
+        ev.data?.type === "pin-settings"
+      ) {
+        onOpenSettings();
+        void applySettingsWindowPin(loadPetSettings().settingsAlwaysOnTop);
+      }
+    };
+  } catch {
+    // ignore
   }
 
   return () => {
     unlisten?.();
     unlisten = null;
     window.removeEventListener("storage", onStorage);
-    for (const bus of buses) bus.close();
+    settingsBus?.close();
   };
 }
