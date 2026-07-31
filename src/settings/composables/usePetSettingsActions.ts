@@ -1,9 +1,12 @@
-import { message } from "ant-design-vue";
+import { message, Modal } from "ant-design-vue";
 import { useI18n } from "vue-i18n";
 import type { ComputedRef, Ref } from "vue";
 import { isPetIdleMotion } from "@/pet/content/motion/motions";
 import {
+  applySettingsWindowPin,
   cancelPetIntroRequest,
+  factoryResetPet,
+  requestClearPetCache,
   requestPetIntro,
   requestPetMotion,
 } from "@/pet";
@@ -23,6 +26,7 @@ import type { PetSettings, PetTone } from "@/pet/data/types";
 import { isAppUiTheme, type AppUiTheme } from "@/theme/uiTheme";
 import { characterHas, getCharacter } from "@/pet/characters";
 import { syncPetWindow } from "@/pet/windows/pet";
+import { createMaintenanceLog } from "./createMaintenanceLog";
 
 export function usePetSettingsActions(deps: {
   enabled: Ref<boolean>;
@@ -49,6 +53,9 @@ export function usePetSettingsActions(deps: {
   persistOnly: () => Promise<void>;
   persistAndSync: () => Promise<void>;
   refreshVrmPreview: () => void | Promise<void>;
+  refreshTtsVoiceOptions: () => void | Promise<void>;
+  /** 出厂时清未持久化的设置页 UI 态 */
+  resetEphemeralUi: () => void;
   isVrmPending: ComputedRef<boolean>;
   onUiThemeChange?: (theme: AppUiTheme) => void;
 }) {
@@ -105,6 +112,97 @@ export function usePetSettingsActions(deps: {
     deps.applyLocalFromSettings(next);
     await deps.persistAndSync();
     message.success(t("pet.resetProfileOk"));
+  }
+
+  function onFactoryReset() {
+    Modal.confirm({
+      title: t("pet.factoryResetTitle"),
+      content: t("pet.factoryResetConfirm"),
+      okText: t("pet.factoryReset"),
+      okType: "danger",
+      cancelText: t("pet.factoryResetCancel"),
+      centered: true,
+      width: 416,
+      // 不 return Promise，确认框立刻关掉，只留进度日志窗
+      onOk() {
+        void (async () => {
+          const log = createMaintenanceLog({
+            title: t("pet.factoryResetWorking"),
+            paceMs: 200,
+          });
+          log.open();
+          try {
+            cancelPetIntroRequest();
+            const next = await factoryResetPet(async (step, run) => {
+              await log.step(
+                t(`pet.factoryResetStep.${step}`),
+                t(`pet.factoryResetStepDone.${step}`),
+                run
+              );
+            });
+            await log.step(
+              t("pet.factoryResetStep.ui"),
+              t("pet.factoryResetStepDone.ui"),
+              () => {
+                deps.applyLocalFromSettings(next);
+                deps.resetEphemeralUi();
+                deps.onUiThemeChange?.(next.uiTheme);
+              }
+            );
+            await log.step(
+              t("pet.factoryResetStep.window"),
+              t("pet.factoryResetStepDone.window"),
+              async () => {
+                await applySettingsWindowPin(next.settingsAlwaysOnTop);
+                await syncPetWindow();
+                await deps.refreshVrmPreview();
+              }
+            );
+            log.done(t("pet.factoryResetOk"));
+          } catch (err) {
+            console.warn("[settings] factory reset failed", err);
+            log.fail(t("pet.factoryResetFail"));
+          }
+        })();
+      },
+    });
+  }
+
+  function onClearCache() {
+    void (async () => {
+      const log = createMaintenanceLog({
+        title: t("pet.clearCacheWorking"),
+        paceMs: 200,
+      });
+      log.open();
+      try {
+        const report = await requestClearPetCache(async (id, run) => {
+          const name = t(`pet.clearCachePart.${id}`);
+          let hit = false;
+          await log.step(
+            t("pet.clearCacheStepRun", { name }),
+            () =>
+              hit
+                ? t("pet.clearCacheStepHitDone", { name })
+                : t("pet.clearCacheStepSkip", { name }),
+            async () => {
+              hit = await run();
+            }
+          );
+        });
+        await deps.refreshTtsVoiceOptions();
+
+        if (report.parts <= 0) {
+          log.done(t("pet.clearCacheOkEmpty"));
+          return;
+        }
+
+        log.done(t("pet.clearCacheDoneTitle"));
+      } catch (err) {
+        console.warn("[settings] clear cache failed", err);
+        log.fail(t("pet.clearCacheFail"));
+      }
+    })();
   }
 
   async function onHitBounds(value: boolean) {
@@ -270,6 +368,8 @@ export function usePetSettingsActions(deps: {
     onModel,
     onLook,
     onResetProfile,
+    onFactoryReset,
+    onClearCache,
     onHitBounds,
     onSaveNickname,
     onPersonality,

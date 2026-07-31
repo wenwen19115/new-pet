@@ -172,6 +172,11 @@ function onHistoryChanged(ev: Event) {
     "detail" in ev ? (ev as CustomEvent).detail : null
   );
   if (cid && cid !== props.characterId) return;
+  // 全量清空（出厂等）顺手清筛选
+  if (!cid) {
+    historyQuery.value = "";
+    historyDay.value = null;
+  }
   refreshHistory();
 }
 

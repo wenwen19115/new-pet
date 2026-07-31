@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <SettingsItemRow
     class="span-2"
     :title="$t('pet.chatTitle')"
@@ -69,13 +69,37 @@
       :disabled="!ctx.canPreviewOrbit.value"
     />
   </SettingsItemRow>
+  <SettingsItemRow
+    class="span-2"
+    :title="$t('pet.clearCacheTitle')"
+    :description="$t('pet.clearCacheDesc')"
+    tone="pet"
+  >
+    <template #icon><ClearOutlined /></template>
+    <a-button size="small" @click="ctx.onClearCache">
+      {{ $t("pet.clearCache") }}
+    </a-button>
+  </SettingsItemRow>
+  <SettingsItemRow
+    class="span-2"
+    :title="$t('pet.factoryResetTitle')"
+    :description="$t('pet.factoryResetDesc')"
+    tone="pet"
+  >
+    <template #icon><DeleteOutlined /></template>
+    <a-button size="small" danger @click="ctx.onFactoryReset">
+      {{ $t("pet.factoryReset") }}
+    </a-button>
+  </SettingsItemRow>
 </template>
 
 <script setup lang="ts">
 import { inject } from "vue";
 import {
   BulbOutlined,
+  ClearOutlined,
   DashboardOutlined,
+  DeleteOutlined,
   MessageOutlined,
   PushpinOutlined,
   SyncOutlined,

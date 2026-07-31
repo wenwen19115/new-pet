@@ -177,6 +177,16 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
   refreshVrmPreviewImpl = refreshVrmPreview;
   persist.wirePersistHandlers();
 
+  function resetEphemeralUi() {
+    previewAutoOrbit.value = false;
+    editingCustomId.value = null;
+    settingsTab.value = "buddy";
+    vrmSrc.value = null;
+    void nextTick(() => {
+      formPicker.syncFormThumb(false);
+    });
+  }
+
   const actions = usePetSettingsActions({
     enabled,
     muted,
@@ -202,6 +212,8 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     persistOnly: persist.persistOnly,
     persistAndSync: persist.persistAndSync,
     refreshVrmPreview,
+    refreshTtsVoiceOptions,
+    resetEphemeralUi,
     isVrmPending,
     onUiThemeChange: opts.onUiThemeChange,
   });
@@ -295,6 +307,8 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     onSaveNickname: actions.onSaveNickname,
     onPersonality: actions.onPersonality,
     onResetProfile: actions.onResetProfile,
+    onFactoryReset: actions.onFactoryReset,
+    onClearCache: actions.onClearCache,
     onMuted: actions.onMuted,
     onTtsEnabled,
     onTtsVoice,
