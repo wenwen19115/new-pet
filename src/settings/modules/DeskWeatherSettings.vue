@@ -180,11 +180,12 @@ import SettingsItemRow from "@/components/SettingsItemRow.vue";
 import type { DeskWeatherConfig } from "@/pet/data/deskWeather";
 import { normalizeDeskWeather } from "@/pet/data/deskWeather";
 import {
+  acquireDeskWeatherWatch,
   fetchDeskWeatherSnapshot,
-  isPetDeskWeatherPolling,
-  stopDeskWeatherFocusWatch,
+  releaseDeskWeatherWatch,
   type DeskWeatherSnapshot,
 } from "@/pet/bridge/deskWeather";
+import "./deskWeatherSettings.css";
 
 const PROBE_MS = 1000;
 
@@ -208,6 +209,7 @@ const probeError = ref("");
 let probeTimer: ReturnType<typeof setInterval> | null = null;
 let probing = false;
 let probeGen = 0;
+let probeLeased = false;
 
 const burstWindowSec = computed(() =>
   Math.max(1, Math.round(cfg.value.switchBurst.windowMs / 1000))
@@ -262,13 +264,16 @@ function clearProbeTimer() {
   }
 }
 
+async function releaseProbeLease() {
+  if (!probeLeased) return;
+  probeLeased = false;
+  await releaseDeskWeatherWatch();
+}
+
 async function stopProbe() {
   probeGen += 1;
   clearProbeTimer();
-  // 桌宠还在轮询时别停焦点线程，否则切窗传感会空一截
-  if (!isPetDeskWeatherPolling()) {
-    await stopDeskWeatherFocusWatch();
-  }
+  await releaseProbeLease();
 }
 
 function startProbe() {
@@ -277,16 +282,33 @@ function startProbe() {
   if (!cfg.value.enabled) {
     void (async () => {
       if (gen !== probeGen) return;
-      if (!isPetDeskWeatherPolling()) {
-        await stopDeskWeatherFocusWatch();
-      }
+      await releaseProbeLease();
     })();
     return;
   }
-  void probeOnce();
-  probeTimer = setInterval(() => {
+  void (async () => {
+    if (gen !== probeGen) return;
+    if (!probeLeased) {
+      const ok = await acquireDeskWeatherWatch();
+      if (gen !== probeGen) {
+        if (ok) await releaseDeskWeatherWatch();
+        return;
+      }
+      if (!ok) {
+        probeError.value = t("pet.deskWeatherProbeFail");
+        return;
+      }
+      probeLeased = true;
+    }
+    if (gen !== probeGen) {
+      await releaseProbeLease();
+      return;
+    }
     void probeOnce();
-  }, PROBE_MS);
+    probeTimer = setInterval(() => {
+      void probeOnce();
+    }, PROBE_MS);
+  })();
 }
 
 function commit(next: DeskWeatherConfig) {
@@ -347,152 +369,3 @@ watch(
   }
 );
 </script>
-
-<style scoped>
-.desk-weather {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  width: 100%;
-}
-
-.desk-weather :deep(.settings-item) {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.desk-weather-body {
-  margin-top: -1px;
-  padding: 0 0 4px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-top: 0;
-  border-radius: 0 0 12px 12px;
-  background: rgba(0, 0, 0, 0.16);
-  border-left: 2px solid rgba(64, 196, 255, 0.35);
-}
-
-.desk-weather-probe {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin: 10px 12px 6px 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: rgba(64, 196, 255, 0.06);
-  border: 1px solid rgba(64, 196, 255, 0.12);
-}
-
-.desk-weather-probe-ico {
-  margin-top: 1px;
-  color: var(--ui-primary, #40c4ff);
-  opacity: 0.85;
-  flex-shrink: 0;
-}
-
-.desk-weather-probe-text {
-  font-size: 12px;
-  line-height: 1.45;
-  color: var(--ui-text-muted, rgba(255, 255, 255, 0.7));
-  word-break: break-word;
-}
-
-.desk-weather-sub {
-  /* 主题青的邻近/互补：薄荷 · 珊瑚 · 嫩绿；边条略压暗，不抢主色 */
-  --dw-accent: #5eead4;
-  margin: 6px 10px;
-  padding: 10px 12px 12px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-left: 3px solid color-mix(in srgb, var(--dw-accent) 62%, transparent);
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.desk-weather-sub--apps {
-  --dw-accent: #5eead4;
-}
-
-.desk-weather-sub--burst {
-  --dw-accent: #ff8f7a;
-}
-
-.desk-weather-sub--dwell {
-  --dw-accent: #8be08b;
-}
-
-.desk-weather-sub-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.desk-weather-sub-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ui-text, rgba(255, 255, 255, 0.88));
-}
-
-.desk-weather-sub-label :deep(.anticon) {
-  color: color-mix(in srgb, var(--dw-accent) 82%, #fff);
-  opacity: 0.88;
-}
-
-.desk-weather-sub .desk-weather-tier {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.desk-weather-hint {
-  margin-top: 4px;
-  margin-bottom: 8px;
-  font-size: 11px;
-  line-height: 1.4;
-  color: var(--ui-text-faint, rgba(255, 255, 255, 0.42));
-}
-
-.desk-weather-param-hint {
-  margin-top: 6px;
-  font-size: 11px;
-  line-height: 1.4;
-  color: var(--ui-text-faint, rgba(255, 255, 255, 0.38));
-}
-
-.desk-weather-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.desk-weather-row--start {
-  justify-content: flex-start;
-}
-
-.desk-weather-chip {
-  font-size: 11px;
-  opacity: 0.7;
-  white-space: nowrap;
-}
-
-.desk-weather-tiers {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 10px;
-}
-
-.desk-weather-tier {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  opacity: 0.9;
-  padding: 2px 6px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.04);
-}
-</style>
