@@ -105,6 +105,10 @@ bridge → data 类型 + Tauri
 - 接线：`createPetSettingsPageRuntime.ts`；`usePetSettingsPage` 仅负责挂载并返回 view。
 - 新增 tab：`registerSettingsModule`，并补充所需 composable / `modules/*.vue`。
 - 传感类设置（如工位气象）：配置位于 `data/<名>.ts` 并挂入 `PetSettings`；阈值与轮询位于 `runtime/`；`bridge` 仅负责 invoke（含跨窗共享的焦点线程租约 acquire / release）。
+- 维护类操作：
+  - 出厂数据：`data/maintenance.ts`（默认快照来自 `settings/defaults.createFactoryResetSettings`）；设置页负责确认框、进度 Modal、表单 hydrate、窗同步。
+  - 清缓存：`runtime/clearRuntimeCaches.ts`（本窗清 + `requestClearPetCache` 广播）；pet host 监听同事件再清一次。
+  - 进度口统一为 `onStep(id, run)`：先亮「正在」，再执行 `run`，完成后改文案（设置页 `createMaintenanceLog`）。
 
 ## 运行时状态
 
@@ -118,6 +122,7 @@ mood、idle、暂停位等写入约定见 [`STATE.md`](./STATE.md)。跨 host �
 | 新 look | `skins/looks.json` + 角色 `lookIds` |
 | 新子窗 | `windows/<name>/`，并接入 destroy 链 |
 | 新系统能力 | Rust + 薄 `bridge` |
+| 出厂 / 清缓存 | `data/maintenance` + `runtime/clearRuntimeCaches`；设置页只接 UI 与窗 |
 | 跨 idle / speech 玩法 | `use*` + ports，于 `createPetHost` 接线 |
 
 角色 capability 对照：
