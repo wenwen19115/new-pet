@@ -90,6 +90,15 @@ export interface CharacterRuntimeSpec {
     usbFollowUpChance?: number;
     /** 拖拽落地播动作概率；缺省 1；fig 可压低「台词多、动作少」 */
     dragLandMotionChance?: number;
+    /** 工位气象演出动作；缺省 = 该 kind 只台词 */
+    deskWeather?: {
+      appsUp?: PetIdleMotion | null;
+      appsDown?: PetIdleMotion | null;
+      switchBurst?: PetIdleMotion | null;
+      maxDwell?: Partial<
+        Record<"30s" | "3m", PetIdleMotion | null>
+      >;
+    };
   };
 }
 

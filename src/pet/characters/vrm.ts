@@ -61,6 +61,18 @@ export const characterVrm: CharacterDef = {
       "happy-bounce",
       "stretch-up",
     ],
+    accents: {
+      deskWeather: {
+        // 涨→伸一下；落→点头；切窗→晃步跟焦点
+        appsUp: "stretch-up",
+        appsDown: "bow-nod",
+        switchBurst: "sway-step",
+        maxDwell: {
+          "30s": null,
+          "3m": "vrm-walk",
+        },
+      },
+    },
   },
   view: {
     shell: "vrm",

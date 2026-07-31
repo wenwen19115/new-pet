@@ -18,6 +18,7 @@ export function usePetSettingsSync(deps: {
   getActiveSkinId: () => string;
   getActiveSkinModel: () => string;
   refreshUsbWatch: () => void;
+  refreshDeskWeather: () => void;
   resizePetWindow: () => void | Promise<void>;
   /** 随机 idle 门禁；由 host dispatch 维护 */
   onRandomIdleSetting: (enabled: boolean) => void;
@@ -51,6 +52,7 @@ export function usePetSettingsSync(deps: {
     const prevModel = deps.getActiveSkinModel();
     const prevZoom = deps.settings.value.zoomPercent;
     const prevUsb = deps.settings.value.usbWatchEnabled;
+    const prevDesk = JSON.stringify(deps.settings.value.deskWeather);
     const prevRandomIdle = deps.settings.value.randomIdleEnabled;
     const prevVrmName = deps.settings.value.vrmModelName;
     const prevVrmRev = deps.settings.value.vrmModelRev;
@@ -76,6 +78,9 @@ export function usePetSettingsSync(deps: {
     }
     if (deps.hostAlive() && deps.settings.value.usbWatchEnabled !== prevUsb) {
       deps.refreshUsbWatch();
+    }
+    if (deps.hostAlive() && JSON.stringify(deps.settings.value.deskWeather) !== prevDesk) {
+      deps.refreshDeskWeather();
     }
     if (
       deps.hostAlive() &&

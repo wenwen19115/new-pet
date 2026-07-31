@@ -65,6 +65,16 @@ export const characterChip: CharacterDef = {
     ],
     accents: {
       usbFollowUpChance: 0.82,
+      deskWeather: {
+        // 涨→冲一下；落→滑稳；切窗→连跳
+        appsUp: "screen-zip",
+        appsDown: "screen-glide",
+        switchBurst: "screen-hop",
+        maxDwell: {
+          "30s": null,
+          "3m": "screen-glide",
+        },
+      },
     },
   },
   view: {

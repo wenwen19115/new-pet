@@ -23,6 +23,7 @@ export type PetMoodReason =
   | "peek-reveal"
   | "drag-land"
   | "bubble-pong"
+  | "desk-weather"
   | "force";
 
 export type PetMoodGateCtx = {
@@ -155,6 +156,11 @@ export function applyPetMood(
     case "bubble-pong":
       if (ctx.dragging() || cur === "sleep") return false;
       ctx.setMood("grumpy");
+      return true;
+
+    case "desk-weather":
+      if (ctx.dragging() || cur === "sleep" || ctx.speaking()) return false;
+      ctx.setMood(next);
       return true;
 
     case "motion":

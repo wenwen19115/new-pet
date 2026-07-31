@@ -52,6 +52,7 @@ export function usePetHostLifecycle(deps: {
   onSuspendRuntime: () => void;
   clearLifeTimers: () => void;
   clearUsbFollowUpTimer: () => void;
+  clearDeskWeather: () => void;
   clearMotionTimers: () => void;
   resetDragState: () => void;
   syncWindowCenter: () => Promise<unknown>;
@@ -66,6 +67,7 @@ export function usePetHostLifecycle(deps: {
   scheduleAutoSpeak: () => void;
   refreshVrmSrc: () => void | Promise<void>;
   refreshUsbWatch: () => void;
+  refreshDeskWeather: () => void;
   applySettings: (
     next: PetSettings | Partial<PetSettings>,
     options?: { introIfSkinChanged?: boolean }
@@ -99,6 +101,7 @@ export function usePetHostLifecycle(deps: {
     clearTimer(deps.moodResetTimerRef.get());
     deps.moodResetTimerRef.set(null);
     deps.clearUsbFollowUpTimer();
+    deps.clearDeskWeather();
     deps.clearMotionTimers();
   }
 
@@ -174,6 +177,7 @@ export function usePetHostLifecycle(deps: {
     deps.scheduleAutoSpeak();
     await deps.refreshVrmSrc();
     deps.refreshUsbWatch();
+    deps.refreshDeskWeather();
   }
 
   async function mount() {
@@ -266,6 +270,7 @@ export function usePetHostLifecycle(deps: {
       deps.speakBubblePong();
     });
     deps.refreshUsbWatch();
+    deps.refreshDeskWeather();
     window.addEventListener("storage", deps.onStorage);
   }
 

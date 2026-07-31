@@ -12,6 +12,7 @@ import { coerceLookIdForModel } from "@/pet/skins";
 import { isAppUiTheme } from "@/theme/uiTheme";
 import { clampCatchphraseChance } from "@/pet/content/dialogue/catchphrases";
 import { isPetPersonality } from "@/pet/content/dialogue/personality";
+import { normalizeDeskWeather } from "@/pet/data/deskWeather";
 
 export function usePetSettingsHydrate(deps: {
   settingsBag: Ref<PetSettings>;
@@ -30,6 +31,7 @@ export function usePetSettingsHydrate(deps: {
   randomIdleEnabled: Ref<boolean>;
   playfulModeEnabled: Ref<boolean>;
   hitBoundsEnabled: Ref<boolean>;
+  deskWeather: Ref<import("@/pet/data/deskWeather").DeskWeatherConfig>;
   catchphrases: Ref<string[]>;
   catchphraseChance: Ref<number>;
   uiTheme: Ref<AppUiTheme>;
@@ -71,6 +73,7 @@ export function usePetSettingsHydrate(deps: {
     deps.randomIdleEnabled.value = s.randomIdleEnabled;
     deps.playfulModeEnabled.value = s.playfulModeEnabled;
     deps.hitBoundsEnabled.value = s.hitBoundsEnabled;
+    deps.deskWeather.value = normalizeDeskWeather(s.deskWeather);
     deps.catchphrases.value = [...(s.catchphrases ?? [])];
     deps.catchphraseChance.value = clampCatchphraseChance(s.catchphraseChance);
     deps.uiTheme.value = isAppUiTheme(s.uiTheme) ? s.uiTheme : "night";

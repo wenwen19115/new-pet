@@ -43,6 +43,7 @@ import {
   normalizeExtensions,
   normalizeVrmExtension,
 } from "../extensions";
+import { normalizeDeskWeather } from "../deskWeather";
 
 function clampOpacity(value: number): number {
   if (Number.isNaN(value)) return DEFAULT_PET_SETTINGS.opacity;
@@ -390,6 +391,7 @@ export function normalizePetSettings(
         DEFAULT_PET_SETTINGS.sysStatsDefaultExpanded
     ),
     chatEnabled: resolveGlobalChatEnabled(raw, modelKind),
+    deskWeather: normalizeDeskWeather(raw?.deskWeather),
     profiles,
     ...active,
   };

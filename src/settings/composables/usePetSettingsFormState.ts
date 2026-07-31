@@ -19,6 +19,11 @@ import {
   clampCatchphraseChance,
 } from "@/pet/content/dialogue/catchphrases";
 import type { PetChatAiConfig } from "@/pet/chat/providers";
+import {
+  DEFAULT_DESK_WEATHER,
+  normalizeDeskWeather,
+  type DeskWeatherConfig,
+} from "@/pet/data/deskWeather";
 
 export function usePetSettingsFormState() {
   const enabled = ref(false);
@@ -36,6 +41,9 @@ export function usePetSettingsFormState() {
   const randomIdleEnabled = ref(true);
   const playfulModeEnabled = ref(false);
   const hitBoundsEnabled = ref(true);
+  const deskWeather = ref<DeskWeatherConfig>(
+    normalizeDeskWeather(DEFAULT_DESK_WEATHER)
+  );
   const catchphrases = ref<string[]>([]);
   const catchphraseChance = ref(CATCHPHRASE_DEFAULT_CHANCE);
   const uiTheme = ref<AppUiTheme>("night");
@@ -88,6 +96,7 @@ export function usePetSettingsFormState() {
       randomIdleEnabled: randomIdleEnabled.value,
       playfulModeEnabled: playfulModeEnabled.value,
       hitBoundsEnabled: hitBoundsEnabled.value,
+      deskWeather: normalizeDeskWeather(deskWeather.value),
       catchphrases: catchphrases.value.map((t) => t.trim()).filter(Boolean),
       catchphraseChance: clampCatchphraseChance(catchphraseChance.value),
       uiTheme: uiTheme.value,
@@ -121,6 +130,7 @@ export function usePetSettingsFormState() {
     randomIdleEnabled,
     playfulModeEnabled,
     hitBoundsEnabled,
+    deskWeather,
     catchphrases,
     catchphraseChance,
     uiTheme,

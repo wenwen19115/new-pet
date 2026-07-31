@@ -14,6 +14,7 @@ import type {
   PetModelProfiles,
   PetSettings,
 } from "../types";
+import { DEFAULT_DESK_WEATHER, normalizeDeskWeather } from "../deskWeather";
 
 /** 默认档案工厂：可依赖 characters / content / chat（不放在 data/types）。 */
 export function defaultProfileForModel(model: PetModelKind): PetModelProfile {
@@ -66,6 +67,7 @@ export const DEFAULT_PET_SETTINGS: PetSettings = {
   vrmModelName: "",
   vrmModelRev: 0,
   hitBoundsEnabled: true,
+  deskWeather: normalizeDeskWeather(DEFAULT_DESK_WEATHER),
   catchphrases: defaultCatchphrasesForModel(DEFAULT_PET_MODEL),
   catchphraseChance: CATCHPHRASE_DEFAULT_CHANCE,
   uiTheme: "night",

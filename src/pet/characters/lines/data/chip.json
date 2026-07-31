@@ -579,8 +579,14 @@
       ]
     },
     "bullet": {
-      "zh": ["▸ {item}", "· {item}"],
-      "en": ["▸ {item}", "· {item}"]
+      "zh": [
+        "▸ {item}",
+        "· {item}"
+      ],
+      "en": [
+        "▸ {item}",
+        "· {item}"
+      ]
     }
   },
   "usbFollowUp": {
@@ -610,6 +616,60 @@
       "Beep. Enough pokes.",
       "Bubble's overloaded…"
     ]
+  },
+  "deskWeather": {
+    "switchBurst": {
+      "zh": [
+        "窗口闪太快——光电传感器要过曝了。",
+        "窗口连切风暴……我的眼睛缓存刷爆了。"
+      ],
+      "en": [
+        "Windows flashing too fast—sensors overexposing.",
+        "Window switch storm… eye-cache thrashing."
+      ]
+    },
+    "maxDwell": {
+      "30s": {
+        "zh": [
+          "屏幕被铺满了，图层好挤……我退到边上。",
+          "全屏压下来了，散热鳍想靠边站。"
+        ],
+        "en": [
+          "Screen filled—layers cramped. Retreating to the edge.",
+          "Fullscreen pressed down. Fins want the sideline."
+        ]
+      },
+      "3m": {
+        "zh": [
+          "铺满好久了，总线还是好挤……我再往角上挪。",
+          "三分钟全屏，我蹲边上看调度。"
+        ],
+        "en": [
+          "Filled a while—bus still cramped. Sliding further into the corner.",
+          "Three minutes fullscreen. Squatting at the edge, watching the scheduler."
+        ]
+      }
+    },
+    "appsUp": {
+      "zh": [
+        "窗口又涨了一截……有点喘不过气。",
+        "好多窗口压着总线，鳍片发紧。"
+      ],
+      "en": [
+        "Windows climbed again… hard to breathe.",
+        "So many windows on the bus—fins tense."
+      ]
+    },
+    "appsDown": {
+      "zh": [
+        "呼——窗口少了好多，散热鳍长舒一口气。",
+        "窗口清掉一截，调度器终于松了。"
+      ],
+      "en": [
+        "Phew—lots of windows gone. Fins exhale.",
+        "Windows cleared—scheduler finally relaxes."
+      ]
+    }
   },
   "catchphrases": {
     "zh": [

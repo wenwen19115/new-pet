@@ -108,6 +108,13 @@
         @change="ctx.onPlayfulMode"
       />
     </SettingsItemRow>
+
+    <DeskWeatherSettings
+      :model-value="deskWeatherModel"
+      @update:model-value="onDeskWeatherModel"
+      @change="ctx.onDeskWeatherChange"
+    />
+
     <SettingsItemRow
       :title="$t('pet.hitBoundsTitle')"
       :description="$t('pet.hitBoundsDesc')"
@@ -147,7 +154,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject } from "vue";
+import { computed, inject } from "vue";
 import {
   AudioMutedOutlined,
   BorderOutlined,
@@ -164,11 +171,25 @@ import SettingsItemRow from "@/components/SettingsItemRow.vue";
 import CustomLinesEditor from "./CustomLinesEditor.vue";
 import CatchphraseEditor from "./CatchphraseEditor.vue";
 import BuiltInIdToggles from "./BuiltInIdToggles.vue";
+import DeskWeatherSettings from "./DeskWeatherSettings.vue";
 import { BUILTIN_LINE_CATEGORIES } from "@/pet/characters/lineTypes";
+import {
+  DEFAULT_DESK_WEATHER,
+  type DeskWeatherConfig,
+} from "@/pet/data/deskWeather";
 import { PET_SETTINGS_PAGE_KEY } from "@/settings/context";
 
 const ctx = inject(PET_SETTINGS_PAGE_KEY)!;
 const lineCategoryIds = [...BUILTIN_LINE_CATEGORIES];
+
+const deskWeatherModel = computed(
+  () => ctx.deskWeather?.value ?? DEFAULT_DESK_WEATHER
+);
+
+function onDeskWeatherModel(next: DeskWeatherConfig) {
+  if (!ctx.deskWeather) return;
+  ctx.deskWeather.value = next;
+}
 </script>
 
 <style scoped>

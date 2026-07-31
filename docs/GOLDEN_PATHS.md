@@ -16,9 +16,10 @@
 | 10 | dispose | 关宠/重载无泄漏监听 | lifecycle dispose |
 | 11 | 调皮模式 | 开：靠近躲开；躲开落地后短窗口点中算抓到；连空 3 次嫌弃（台词）；peek 只走菜单躲起来 | playful mood + catch window |
 | 12 | 躲起来 | 菜单躲起来贴边半截；点露头或「出来」现身；软隐藏后再召唤也清 peek | `peek-hide` intent |
+| 13 | 工位气象 | 开总开关后：窗口增减≥N / 切窗爆发 / 铺满两档会冒台词（可带轻动作）；说话中不叠；冷却期内不狂念 | mood `desk-weather` + bridge 轮询 |
 
 ## 用法
 
-- 发版或大改 runtime / 动画前：勾选 1–10。
+- 发版或大改 runtime / 动画前：勾选 1–10；改工位气象再加 13。
 - 改 mood / intent / shell 表：先跑 `yarn test`，再抽测相关行。
 - 改 Toon 像素：跑 toon 快照烟测 + 手测 toon 待机与一两个 `toon-*` 动作。

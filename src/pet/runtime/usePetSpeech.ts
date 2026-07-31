@@ -1,11 +1,13 @@
 import { type Ref } from "vue";
 import { showPetBubble, hidePetBubble } from "@/pet/windows/bubble";
 import { buildSkinIntro } from "../content/dialogue/intro";
-import { pickPetLine, pickTapEggLine, pickUsbLine, pickUsbFollowUpLine, pickDragEndLine, pickDragStartLine, pickBubblePongLine } from "../content/dialogue/lines";
+import { pickPetLine, pickTapEggLine, pickUsbLine, pickUsbFollowUpLine, pickDragEndLine, pickDragStartLine, pickBubblePongLine, pickDeskWeatherLine } from "../content/dialogue/lines";
 import { applyCatchphrase } from "../content/dialogue/catchphrases";
 import type { PetMood, PetSettings, PetUsbAnnouncePayload } from "../data/types";
+import type { DeskWeatherKind } from "../data/deskWeather";
 import type { PetModelKind } from "../skins/types";
 import { getCharacter } from "../characters";
+import type { PetIdleMotion } from "../content/motion/motions";
 import { linePickOptsFromSettings } from "./usePetLines";
 import { cancelPetTts, speakPetTts } from "../bridge/tts";
 import type { ApplyPetMood } from "./petHostMood";
@@ -13,7 +15,6 @@ import type { ApplyPetMood } from "./petHostMood";
 type SpeakOptions = {
   keepMotion?: boolean;
   force?: boolean;
-  /** 已由调用方设好 mood，别再被 speak 盖掉 */
   keepMood?: boolean;
 };
 
@@ -258,6 +259,50 @@ export function usePetSpeech(deps: {
     }, delayMs);
   }
 
+  function resolveDeskWeatherMotion(
+    kind: DeskWeatherKind,
+    model: PetModelKind
+  ): PetIdleMotion | null {
+    const table = getCharacter(model).runtime.accents?.deskWeather;
+    if (!table) return null;
+    if (kind.type === "apps-up") return table.appsUp ?? null;
+    if (kind.type === "apps-down") return table.appsDown ?? null;
+    if (kind.type === "switch-burst") return table.switchBurst ?? null;
+    return table.maxDwell?.[kind.tier] ?? null;
+  }
+
+  function speakDeskWeather(kind: DeskWeatherKind): {
+    spoke: boolean;
+    motion: PetIdleMotion | null;
+  } {
+    if (!deps.settings.value.deskWeather.enabled) {
+      return { spoke: false, motion: null };
+    }
+    if (deps.mood.value === "sleep") {
+      deps.applyMood("idle", "wake");
+    }
+    const model = deps.model.value;
+    const opts = linePickOptsFromSettings(deps.settings.value, model);
+    const line = pickDeskWeatherLine(
+      kind,
+      model,
+      deps.settings.value.personality,
+      opts
+    );
+    if (!line) {
+      console.warn("[pet] desk weather skipped: empty line", kind.type);
+      return { spoke: false, motion: null };
+    }
+    deps.applyMood("curious", "desk-weather");
+    const motion = resolveDeskWeatherMotion(kind, model);
+    void speakText(line, false, {
+      force: true,
+      keepMotion: true,
+      keepMood: true,
+    });
+    return { spoke: true, motion };
+  }
+
   return {
     playClickSound,
     speakText,
@@ -268,6 +313,7 @@ export function usePetSpeech(deps: {
     speakDragLand,
     speakBubblePong,
     speakUsb,
+    speakDeskWeather,
     clearUsbFollowUpTimer,
   };
 }

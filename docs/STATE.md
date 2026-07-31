@@ -19,7 +19,8 @@
 | `playfulPausesRandomIdle` | ← `playful-chase` intent | 调皮追逐中停随机 idle |
 | `peekPausesRandomIdle` | ← `peek-hide` intent | 躲起来探头中停随机 idle |
 | `hostAlive` | `usePetHostLifecycle` | |
-| settings 镜像 | `usePetSettingsSync` | 可能再发 `random-idle-setting` |
+| settings 镜像 | `usePetSettingsSync` | 可能再发 `random-idle-setting`；deskWeather 变更会 `refreshDeskWeather` |
+| 工位气象轮询 | `usePetDeskWeather` ← `bridge/deskWeather` | Rust 快照；前端判阈值/冷却；触发进 `speakDeskWeather` |
 
 ## mood reason 与互斥
 
@@ -33,6 +34,7 @@
 | `drag-land` | shell（松手后） | 落地余韵 happy；台词必有；动作概率读 `accents.dragLandMotionChance`（fig 偏低） |
 | `playful-flee` / `playful-catch` / `playful-miss` | playful host | 躲开 / 抓到 / 超时；连空 3 次嫌弃（只台词，不自动 peek） |
 | `bubble-pong` | speech ← bubble 窗 | 冒泡连点三次嫌烦；grumpy + 嫌弃句 |
+| `desk-weather` | speech ← desk weather 传感 | 工位气象（应用多 / 切窗爆发 / 最大化久待）；curious + 角色台词/动作 |
 | `peek-hide` / `peek-reveal` | peek host | 躲起来 / 现身 |
 | `speak-end` / `chat-reply-end` | speech / lifecycle | 回 idle（sleep / drag / motion-locked 除外；气泡可能还在） |
 | `motion-end` / `drag-end` | motion /（旧松手路径） | 回 idle（sleep / drag / speaking 除外） |

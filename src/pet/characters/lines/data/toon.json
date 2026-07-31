@@ -533,6 +533,60 @@
       "Thrice. No more."
     ]
   },
+  "deskWeather": {
+    "switchBurst": {
+      "zh": [
+        "窗口闪得好快……我的眼睛——嗷。",
+        "窗口左闪右闪，狐火眼都花了……"
+      ],
+      "en": [
+        "Windows flashing so fast… my eyes—awoo.",
+        "Windows flashing left-right—foxfire eyes blur…"
+      ]
+    },
+    "maxDwell": {
+      "30s": {
+        "zh": [
+          "屏幕被铺满了，好挤……狐火想靠边。",
+          "全屏好大一块，我躲边上——嗷。"
+        ],
+        "en": [
+          "Screen filled—so crowded… foxfire edges aside.",
+          "Huge fullscreen. Hiding at the side—awoo."
+        ]
+      },
+      "3m": {
+        "zh": [
+          "铺满好久了，还是好挤……我再往边上钻。",
+          "三分钟全屏，狐火蹲边上看你。"
+        ],
+        "en": [
+          "Filled a while—still cramped… slipping further aside.",
+          "Three minutes fullscreen. Foxfire watches from the edge."
+        ]
+      }
+    },
+    "appsUp": {
+      "zh": [
+        "好多窗口……狐火有点喘不过气……",
+        "窗口又堆上来了，胸口闷闷的——嗷。"
+      ],
+      "en": [
+        "So many windows… foxfire can hardly breathe…",
+        "Windows piling up—chest feels tight—awoo."
+      ]
+    },
+    "appsDown": {
+      "zh": [
+        "呼——窗口少了好多，狐火长舒一口气！",
+        "窗口清掉一截……终于能伸个懒腰了。"
+      ],
+      "en": [
+        "Phew—lots of windows gone! Foxfire exhales!",
+        "Windows cleared… finally room to stretch."
+      ]
+    }
+  },
   "usb": {
     "addedOne": {
       "zh": [
@@ -591,8 +645,14 @@
       ]
     },
     "bullet": {
-      "zh": ["★ {item}", "◆ {item}"],
-      "en": ["★ {item}", "◆ {item}"]
+      "zh": [
+        "★ {item}",
+        "◆ {item}"
+      ],
+      "en": [
+        "★ {item}",
+        "◆ {item}"
+      ]
     }
   },
   "catchphrases": {

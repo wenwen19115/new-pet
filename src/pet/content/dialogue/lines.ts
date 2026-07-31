@@ -10,8 +10,9 @@ import { getPetLocale } from "../../bridge/locale";
 import { buildUsbAnnounceText } from "../../bridge/usbFormat";
 import type { PetUsbAnnouncePayload } from "../../data/types";
 import { getLinePack } from "../../characters/lines";
-import { resolveCare, resolveDragEnd, resolveDragStart, resolveBubblePong, resolvePlayful, resolvePolish } from "../../characters/lines/shared";
+import { resolveCare, resolveDragEnd, resolveDragStart, resolveBubblePong, resolveDeskWeather, resolvePlayful, resolvePolish } from "../../characters/lines/shared";
 import type { PlayfulLineKind, BuiltInLineCategory } from "../../characters/lineTypes";
+import type { DeskWeatherKind } from "../../data/deskWeather";
 
 
 export interface PetLinePickOptions {
@@ -207,7 +208,6 @@ export function pickDragEndLine(
   return withFlavor(pickFromPool(pool), personality, model);
 }
 
-/** 冒泡连点三次嫌烦 */
 export function pickBubblePongLine(
   model: PetModelKind,
   personality: PetPersonality = "sunny",
@@ -216,6 +216,32 @@ export function pickBubblePongLine(
   if (!lineCatOn("bubble-pong", opts)) return "";
   const pool = packLang(resolveBubblePong(packFor(model)));
   return withFlavor(pickFromPool(pool), personality, model);
+}
+
+export function pickDeskWeatherLine(
+  kind: DeskWeatherKind,
+  model: PetModelKind,
+  _personality: PetPersonality = "sunny",
+  opts?: PetLinePickOptions
+): string {
+  if (!lineCatOn("desk-weather", opts)) return "";
+  const pack = resolveDeskWeather(packFor(model));
+  let pool: string[];
+  if (kind.type === "apps-up") {
+    pool = packLang(pack.appsUp);
+  } else if (kind.type === "apps-down") {
+    pool = packLang(pack.appsDown);
+  } else if (kind.type === "switch-burst") {
+    pool = packLang(pack.switchBurst);
+  } else {
+    const packTier =
+      pack.maxDwell[kind.tier] ??
+      pack.maxDwell["30s"] ??
+      pack.maxDwell["3m"];
+    pool = packLang(packTier);
+  }
+  // 情境台词不走性格润色/截断，避免「嘿嘿，窗口有点……」被砍半再被动作台词抢走
+  return pickFromPool(pool);
 }
 
 function fillUsbTemplate(

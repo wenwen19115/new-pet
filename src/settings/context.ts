@@ -29,6 +29,7 @@ export type PetSettingsPageCtx = {
   randomIdleEnabled: Ref<boolean>;
   playfulModeEnabled: Ref<boolean>;
   hitBoundsEnabled: Ref<boolean>;
+  deskWeather: Ref<import("@/pet/data/deskWeather").DeskWeatherConfig>;
   catchphrases: Ref<string[]>;
   catchphraseChance: Ref<number>;
   uiTheme: Ref<AppUiTheme>;
@@ -93,6 +94,7 @@ export type PetSettingsPageCtx = {
   onRandomIdle: (v: boolean) => void | Promise<void>;
   onPlayfulMode: (v: boolean) => void | Promise<void>;
   onHitBounds: (v: boolean) => void | Promise<void>;
+  onDeskWeatherChange: () => void | Promise<void>;
   onPickVrm: () => void | Promise<void>;
   onClearVrm: () => void | Promise<void>;
   onDemoMotion: (v: unknown) => void | Promise<void>;

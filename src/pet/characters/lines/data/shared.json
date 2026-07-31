@@ -22,32 +22,68 @@
   "playful": {
     "start": {
       "cute": {
-        "zh": ["追我游戏开始～倒计时中！", "躲开咯，抓住有奖励～"],
-        "en": ["Chase game on~ Countdown!", "Dodging—catch me for a prize~"]
+        "zh": [
+          "追我游戏开始～倒计时中！",
+          "躲开咯，抓住有奖励～"
+        ],
+        "en": [
+          "Chase game on~ Countdown!",
+          "Dodging—catch me for a prize~"
+        ]
       },
       "snarky": {
-        "zh": ["抓得到再说。", "计时开始，别摸空。"],
-        "en": ["Catch me first.", "Timer on. Don't miss."]
+        "zh": [
+          "抓得到再说。",
+          "计时开始，别摸空。"
+        ],
+        "en": [
+          "Catch me first.",
+          "Timer on. Don't miss."
+        ]
       }
     },
     "catch": {
       "cute": {
-        "zh": ["抓住啦！你赢～", "这次算你厉害！"],
-        "en": ["Caught! You win~", "You got me this time!"]
+        "zh": [
+          "抓住啦！你赢～",
+          "这次算你厉害！"
+        ],
+        "en": [
+          "Caught! You win~",
+          "You got me this time!"
+        ]
       },
       "snarky": {
-        "zh": ["……行吧，手挺快。", "偶然准一次而已。"],
-        "en": ["…fine, quick hands.", "One lucky hit."]
+        "zh": [
+          "……行吧，手挺快。",
+          "偶然准一次而已。"
+        ],
+        "en": [
+          "…fine, quick hands.",
+          "One lucky hit."
+        ]
       }
     },
     "miss": {
       "cute": {
-        "zh": ["嘿嘿没抓到～再来！", "差一点，下次更好！"],
-        "en": ["Hehe missed~ Again!", "So close—next better!"]
+        "zh": [
+          "嘿嘿没抓到～再来！",
+          "差一点，下次更好！"
+        ],
+        "en": [
+          "Hehe missed~ Again!",
+          "So close—next better!"
+        ]
       },
       "snarky": {
-        "zh": ["慢了。", "空了，继续练。"],
-        "en": ["Slow.", "Miss. Keep practicing."]
+        "zh": [
+          "慢了。",
+          "空了，继续练。"
+        ],
+        "en": [
+          "Slow.",
+          "Miss. Keep practicing."
+        ]
       }
     },
     "sulk": {
@@ -115,6 +151,60 @@
       "That's enough."
     ]
   },
+  "deskWeather": {
+    "appsUp": {
+      "zh": [
+        "窗口又堆起来了……有点喘不过气。",
+        "好多窗口压着，胸口紧一下。"
+      ],
+      "en": [
+        "Windows piling up… hard to breathe.",
+        "So many windows—chest feels tight."
+      ]
+    },
+    "appsDown": {
+      "zh": [
+        "呼——窗口少了好多，长舒一口气。",
+        "窗口清掉一截，松了。"
+      ],
+      "en": [
+        "Phew—lots of windows gone. Long breath out.",
+        "Windows cleared a bit. Relieved."
+      ]
+    },
+    "switchBurst": {
+      "zh": [
+        "窗口闪得好快……我的眼睛。",
+        "窗口来回蹦，眼都跟糊了。"
+      ],
+      "en": [
+        "Windows flashing so fast… my eyes.",
+        "Windows hopping—eyes can't keep up."
+      ]
+    },
+    "maxDwell": {
+      "30s": {
+        "zh": [
+          "屏幕被铺满了，好挤……我想靠边。",
+          "全屏压过来了，我挪到边上喘口气。"
+        ],
+        "en": [
+          "Screen's filled—so crowded. I'll edge aside.",
+          "Fullscreen pressed in. Stepping to the side."
+        ]
+      },
+      "3m": {
+        "zh": [
+          "铺满好久了，还是好挤……我再往边上靠靠。",
+          "三分钟全屏，我躲边上看着你忙。"
+        ],
+        "en": [
+          "Filled a while—still crowded. Hugging the edge more.",
+          "Three minutes fullscreen. Watching from the side."
+        ]
+      }
+    }
+  },
   "usb": {
     "addedOne": {
       "zh": [
@@ -167,8 +257,12 @@
       ]
     },
     "bullet": {
-      "zh": ["· {item}"],
-      "en": ["· {item}"]
+      "zh": [
+        "· {item}"
+      ],
+      "en": [
+        "· {item}"
+      ]
     }
   },
   "catchphraseFallback": {

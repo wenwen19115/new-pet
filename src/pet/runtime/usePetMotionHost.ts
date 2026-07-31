@@ -290,13 +290,24 @@ export function usePetMotionHost(deps: {
     }, hold);
   }
 
-  function playMotionOnce(motion: PetIdleMotion | string) {
+  function playMotionOnce(
+    motion: PetIdleMotion | string,
+    options: { keepSpeech?: boolean; withSpeakChance?: number } = {}
+  ) {
     if (deps.isDragging.value) return;
     deps.wakeFromSleep();
-    deps.speaking.value = false;
-    void hidePetBubble();
-    deps.clearMoodResetTimer();
-    beginMotion(motion, { manual: true, withSpeakChance: 0.85 });
+    if (!options.keepSpeech) {
+      deps.speaking.value = false;
+      void hidePetBubble();
+      deps.clearMoodResetTimer();
+    }
+    beginMotion(motion, {
+      manual: true,
+      // 跟台词同播时别再抢一句动作台词
+      withSpeakChance: options.keepSpeech
+        ? (options.withSpeakChance ?? 0)
+        : (options.withSpeakChance ?? 0.85),
+    });
     deps.resetSleepTimer();
   }
 

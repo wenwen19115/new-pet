@@ -57,7 +57,9 @@ describe("character accents", () => {
     );
     expect(pickUsbFollowUpLine("chip").length).toBeGreaterThan(0);
     expect(pickUsbFollowUpLine("toon")).toBe("");
-    expect(getCharacter("toon").runtime.accents).toBeUndefined();
+    // toon 可有 deskWeather 动作口音，但不追 USB 八卦
+    expect(getCharacter("toon").runtime.accents?.usbFollowUpChance).toBeUndefined();
+    expect(getCharacter("toon").runtime.accents?.deskWeather).toBeTruthy();
     expect(
       getCharacter("fig-sci").runtime.accents?.dragLandMotionChance
     ).toBeLessThan(1);

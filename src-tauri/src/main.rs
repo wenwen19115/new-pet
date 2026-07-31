@@ -2,6 +2,7 @@
 
 mod serial;
 mod system_stats;
+mod desk_weather;
 mod tts;
 
 use tauri::Manager;
@@ -26,6 +27,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_serial_port_details,
             system_stats::get_system_stats,
+            desk_weather::get_desk_weather_snapshot,
+            desk_weather::stop_desk_weather_watch,
             tts::list_edge_tts_voices,
             tts::synthesize_edge_tts,
         ])

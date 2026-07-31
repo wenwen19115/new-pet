@@ -60,6 +60,18 @@ export const characterToon: CharacterDef = {
       "happy-bounce",
       "toon-grass",
     ],
+    accents: {
+      deskWeather: {
+        // 涨→蹦高；落→晃松；切窗→歪头跟不上
+        appsUp: "happy-bounce",
+        appsDown: "toon-sway",
+        switchBurst: "toon-tilt",
+        maxDwell: {
+          "30s": "toon-sway",
+          "3m": "toon-walk",
+        },
+      },
+    },
   },
   view: {
     shell: "bob",

@@ -8,6 +8,7 @@ import { usePetPointerHost } from "./usePetPointerHost";
 import { usePetPlayfulHost } from "./usePetPlayfulHost";
 import { usePetPeekHost } from "./usePetPeekHost";
 import { usePetSpeech } from "./usePetSpeech";
+import { usePetDeskWeather } from "./usePetDeskWeather";
 import { usePetHostLifecycle } from "./usePetHostLifecycle";
 import { usePetSettingsSync } from "./usePetSettingsSync";
 import { usePetShellActions } from "./usePetShellActions";
@@ -207,6 +208,19 @@ function wirePetHost(s: PetHostShared) {
     },
   });
 
+  const deskWeather = usePetDeskWeather({
+    settings,
+    speaking,
+    isDragging: pointerHost.isDragging,
+    onWeather: (kind) => {
+      const { spoke, motion } = speech.speakDeskWeather(kind);
+      if (spoke && motion) {
+        motionHost.playMotionOnce(motion, { keepSpeech: true });
+      }
+      return spoke;
+    },
+  });
+
   bindPorts({
     resetSleepTimer: life.resetSleepTimer,
     scheduleAutoSpeak: life.scheduleAutoSpeak,
@@ -271,6 +285,7 @@ function wirePetHost(s: PetHostShared) {
     getActiveSkinId: () => activeSkin.value.id,
     getActiveSkinModel: () => activeSkin.value.model,
     refreshUsbWatch: life.refreshUsbWatch,
+    refreshDeskWeather: deskWeather.refreshDeskWeather,
     resizePetWindow: () => resizePetWindow(),
     onRandomIdleSetting: (enabled) => {
       dispatch({ type: "random-idle-setting", enabled });
@@ -340,6 +355,7 @@ function wirePetHost(s: PetHostShared) {
     },
     clearLifeTimers: life.clearLifeTimers,
     clearUsbFollowUpTimer: speech.clearUsbFollowUpTimer,
+    clearDeskWeather: deskWeather.clearDeskWeather,
     clearMotionTimers: motionHost.clearMotionTimers,
     resetDragState: pointerHost.resetDragState,
     syncWindowCenter: pointerHost.syncWindowCenter,
@@ -354,6 +370,7 @@ function wirePetHost(s: PetHostShared) {
     scheduleAutoSpeak: life.scheduleAutoSpeak,
     refreshVrmSrc: settingsSync.refreshVrmSrc,
     refreshUsbWatch: life.refreshUsbWatch,
+    refreshDeskWeather: deskWeather.refreshDeskWeather,
     applySettings: settingsSync.applySettings,
     speakIntro: speech.speakIntro,
     speakBubblePong: speech.speakBubblePong,

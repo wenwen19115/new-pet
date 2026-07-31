@@ -24,6 +24,7 @@
     "core:window:allow-cursor-position",
     "allow-get-serial-port-details",
     "allow-get-system-stats",
+    "allow-get-desk-weather-snapshot",
     "allow-edge-tts",
     "fs:allow-exists",
     "fs:allow-read-file",

@@ -25,6 +25,7 @@
     "core:window:allow-cursor-position",
     "dialog:default",
     "allow-get-serial-port-details",
+    "allow-get-desk-weather-snapshot",
     "allow-edge-tts",
     "fs:allow-exists",
     "fs:allow-read-file",

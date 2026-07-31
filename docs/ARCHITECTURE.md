@@ -14,15 +14,15 @@ src/pet/
     dialogue/          # 台词、性格、口头禅、自定义台词、intro
   data/
     settings/          # normalize / profiles / io / defaults
-    …                  # store / types / extensions / vrm
+    …                  # store / types / 设置子域（deskWeather）/ extensions（角色）/ vrm
   chat/
     ai/                # askPetChatAi + localReply + remote
     providers / history
-  bridge/              # Tauri/系统薄封装（tts、usb、sizes、host…）
+  bridge/              # Tauri/系统薄封装（tts、usb、deskWeather、sizes、host…）
   events/              # 跨窗事件名索引（定义仍在各自 types / motions）
   models/              # toon/ chip/ fig-sci/ preview/ trail/ vrm/
   skins/               # look 注册表 + 表单文案
-src-tauri/             # 窗口/托盘、串口/USB、TTS、FS、进程生命周期
+src-tauri/             # 窗口/托盘、串口/USB、工位气象传感、TTS、FS、进程生命周期
 ```
 
 ## 依赖方向（只向下）
@@ -116,6 +116,7 @@ VRM 文件 / 自定义动作走 `characterHas(id, "vrm-upload")`，别写死 `"v
 | 聊天窗会话 | `windows/chat/useChatWindowSession.ts`（壳留在 ChatApp） |
 | 新子窗 | `windows/<name>/{App,window,types,main,html}` + destroy 链 |
 | 新系统能力 | `src-tauri` + `bridge` 薄封装 |
+| 设置子域（传感/阈值类） | `data/<名>.ts`（类型+默认+normalize）→ `PetSettings` 挂字段 → settings UI；别塞进 `extensions`（那是角色扩展） |
 | 跨 idle/speech | 对应 `use*` + ports；在 `createPetHost` 接线 |
 
 ## 跨窗事件

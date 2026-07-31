@@ -419,6 +419,60 @@
       "…enough."
     ]
   },
+  "deskWeather": {
+    "switchBurst": {
+      "zh": [
+        "窗口闪得好快。……我的眼睛。",
+        "……窗口跳太勤。眼花。"
+      ],
+      "en": [
+        "Windows flashing so fast. …my eyes.",
+        "…windows hopping too much. Eyes blur."
+      ]
+    },
+    "maxDwell": {
+      "30s": {
+        "zh": [
+          "……屏幕被铺满了。好挤。我想靠边。",
+          "……全屏。我挪到边上。"
+        ],
+        "en": [
+          "…screen filled. Crowded. I'll edge aside.",
+          "…fullscreen. Moving to the side."
+        ]
+      },
+      "3m": {
+        "zh": [
+          "……铺满好久了。还是挤。我再靠边。",
+          "三分钟。……你忙，我在边上等。"
+        ],
+        "en": [
+          "…filled a while. Still crowded. Further aside.",
+          "Three minutes. …you work; I'll wait at the edge."
+        ]
+      }
+    },
+    "appsUp": {
+      "zh": [
+        "……好多窗口。有点喘不过气。",
+        "窗口又堆了。……紧。"
+      ],
+      "en": [
+        "…so many windows. Hard to breathe.",
+        "Windows piled up again. …tight."
+      ]
+    },
+    "appsDown": {
+      "zh": [
+        "呼……窗口少了好多。松了。",
+        "……窗口清了一截。长舒一口气。"
+      ],
+      "en": [
+        "Phew… lots of windows gone. Relieved.",
+        "…windows cleared. Long breath out."
+      ]
+    }
+  },
   "usb": {
     "addedOne": {
       "zh": [
@@ -477,8 +531,14 @@
       ]
     },
     "bullet": {
-      "zh": ["… {item}", "· {item}"],
-      "en": ["… {item}", "· {item}"]
+      "zh": [
+        "… {item}",
+        "· {item}"
+      ],
+      "en": [
+        "… {item}",
+        "· {item}"
+      ]
     }
   },
   "catchphrases": {
