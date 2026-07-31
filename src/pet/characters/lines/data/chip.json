@@ -599,6 +599,18 @@
       "Overcurrent's napping. Leave it."
     ]
   },
+  "bubblePong": {
+    "zh": [
+      "别戳了，那不是按钮。",
+      "嘀，戳够了。",
+      "气泡要过载了……"
+    ],
+    "en": [
+      "Stop. Not a button.",
+      "Beep. Enough pokes.",
+      "Bubble's overloaded…"
+    ]
+  },
   "catchphrases": {
     "zh": [
       "嘀嘀～",

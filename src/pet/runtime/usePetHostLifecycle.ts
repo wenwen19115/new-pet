@@ -21,6 +21,7 @@ import {
   PET_RESUME_EVENT,
   PET_SETTINGS_EVENT,
   PET_SUSPEND_EVENT,
+  PET_BUBBLE_PONG_EVENT,
   type PetChatOpenStatePayload,
   type PetMenuAction,
   type PetMotionPayload,
@@ -70,6 +71,7 @@ export function usePetHostLifecycle(deps: {
     options?: { introIfSkinChanged?: boolean }
   ) => void;
   speakIntro: () => void | Promise<void>;
+  speakBubblePong: () => void;
   isMotionLocked: () => boolean;
   playMotionOnce: (motion: string) => void;
   showHitBounds: Ref<boolean>;
@@ -86,6 +88,7 @@ export function usePetHostLifecycle(deps: {
   let unlistenMenuAction: UnlistenFn | null = null;
   let unlistenChatReply: UnlistenFn | null = null;
   let unlistenChatOpen: UnlistenFn | null = null;
+  let unlistenBubblePong: UnlistenFn | null = null;
   let unlistenSuspend: UnlistenFn | null = null;
   let unlistenResume: UnlistenFn | null = null;
 
@@ -258,6 +261,10 @@ export function usePetHostLifecycle(deps: {
         deps.onChatOpen(Boolean(event.payload?.open));
       }
     );
+    unlistenBubblePong = await listen(PET_BUBBLE_PONG_EVENT, () => {
+      if (!deps.hostAliveRef.get()) return;
+      deps.speakBubblePong();
+    });
     deps.refreshUsbWatch();
     window.addEventListener("storage", deps.onStorage);
   }
@@ -272,6 +279,7 @@ export function usePetHostLifecycle(deps: {
     unlistenMenuAction?.();
     unlistenChatReply?.();
     unlistenChatOpen?.();
+    unlistenBubblePong?.();
     window.removeEventListener("storage", deps.onStorage);
     deps.showHitBounds.value = false;
   }

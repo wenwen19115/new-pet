@@ -22,6 +22,7 @@ export type PetMoodReason =
   | "peek-hide"
   | "peek-reveal"
   | "drag-land"
+  | "bubble-pong"
   | "force";
 
 export type PetMoodGateCtx = {
@@ -151,6 +152,7 @@ export function applyPetMood(
       return true;
 
     case "playful-miss":
+    case "bubble-pong":
       if (ctx.dragging() || cur === "sleep") return false;
       ctx.setMood("grumpy");
       return true;

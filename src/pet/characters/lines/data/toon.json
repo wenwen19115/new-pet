@@ -521,6 +521,18 @@
       "Soft drop! Pixel limbs back online!"
     ]
   },
+  "bubblePong": {
+    "zh": [
+      "嗷，别戳啦！",
+      "烦了！哼。",
+      "三次了，不许再戳。"
+    ],
+    "en": [
+      "Awoo, stop poking!",
+      "Annoyed! Hmph.",
+      "Thrice. No more."
+    ]
+  },
   "usb": {
     "addedOne": {
       "zh": [

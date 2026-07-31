@@ -15,6 +15,7 @@ export const SHARED_USB = sharedData.usb as UsbLineTemplates;
 export const SHARED_PLAYFUL = sharedData.playful as PlayfulLinePack;
 export const SHARED_DRAG_START = sharedData.dragStart as LineLangPack;
 export const SHARED_DRAG_END = sharedData.dragEnd as LineLangPack;
+export const SHARED_BUBBLE_PONG = sharedData.bubblePong as LineLangPack;
 export const SHARED_CATCHPHRASE_FALLBACK =
   sharedData.catchphraseFallback as LineLangPack;
 export const SHARED_POLISH = sharedData.polish as Record<
@@ -40,6 +41,10 @@ export function resolveDragStart(pack: CharacterLineBundle): LineLangPack {
 
 export function resolveDragEnd(pack: CharacterLineBundle): LineLangPack {
   return pack.dragEnd ?? SHARED_DRAG_END;
+}
+
+export function resolveBubblePong(pack: CharacterLineBundle): LineLangPack {
+  return pack.bubblePong ?? SHARED_BUBBLE_PONG;
 }
 
 export function resolvePolish(

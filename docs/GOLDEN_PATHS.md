@@ -12,7 +12,7 @@
 | 6 | 睡眠/唤醒 | 睡眠粘滞；点击或 USB 可醒 | mood `sleep`/`wake` |
 | 7 | 切形象 | chip / fig / toon / vrm 可切换且可动 | registry + capabilities |
 | 8 | 设置立刻生效 | mute 停 TTS；关 chat 藏窗；randomIdle 即时 | settings sync |
-| 9 | 冒泡不挡拖 | 说话时仍可拖宠（产品若如此） | speak 挡 motion mood，不挡 drag |
+| 9 | 冒泡乒乓 | 说话时点气泡轻果冻弹一下；连点三次换嫌弃句；说话时仍可拖宠 | mood `bubble-pong` + bubble 窗 |
 | 10 | dispose | 关宠/重载无泄漏监听 | lifecycle dispose |
 | 11 | 调皮模式 | 开：靠近躲开；躲开落地后短窗口点中算抓到；连空 3 次嫌弃（台词）；peek 只走菜单躲起来 | playful mood + catch window |
 | 12 | 躲起来 | 菜单躲起来贴边半截；点露头或「出来」现身；软隐藏后再召唤也清 peek | `peek-hide` intent |

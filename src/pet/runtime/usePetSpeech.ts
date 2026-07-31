@@ -1,7 +1,7 @@
 import { type Ref } from "vue";
 import { showPetBubble, hidePetBubble } from "@/pet/windows/bubble";
 import { buildSkinIntro } from "../content/dialogue/intro";
-import { pickPetLine, pickTapEggLine, pickUsbLine, pickUsbFollowUpLine, pickDragEndLine, pickDragStartLine } from "../content/dialogue/lines";
+import { pickPetLine, pickTapEggLine, pickUsbLine, pickUsbFollowUpLine, pickDragEndLine, pickDragStartLine, pickBubblePongLine } from "../content/dialogue/lines";
 import { applyCatchphrase } from "../content/dialogue/catchphrases";
 import type { PetMood, PetSettings, PetUsbAnnouncePayload } from "../data/types";
 import type { PetModelKind } from "../skins/types";
@@ -10,7 +10,12 @@ import { linePickOptsFromSettings } from "./usePetLines";
 import { cancelPetTts, speakPetTts } from "../bridge/tts";
 import type { ApplyPetMood } from "./petHostMood";
 
-type SpeakOptions = { keepMotion?: boolean; force?: boolean };
+type SpeakOptions = {
+  keepMotion?: boolean;
+  force?: boolean;
+  /** 已由调用方设好 mood，别再被 speak 盖掉 */
+  keepMood?: boolean;
+};
 
 export function usePetSpeech(deps: {
   settings: Ref<PetSettings>;
@@ -95,10 +100,12 @@ export function usePetSpeech(deps: {
 
     deps.lastLine.value = text;
     deps.speaking.value = true;
-    deps.applyMood(
-      deps.settings.value.tone === "snarky" ? "grumpy" : "happy",
-      "speak"
-    );
+    if (!options.keepMood) {
+      deps.applyMood(
+        deps.settings.value.tone === "snarky" ? "grumpy" : "happy",
+        "speak"
+      );
+    }
     if (!options.keepMotion && !deps.isMotionLocked()) {
       deps.idleMotion.value = "happy-bounce";
     }
@@ -212,6 +219,23 @@ export function usePetSpeech(deps: {
     void speakText(line, false, { force: true, keepMotion: true });
   }
 
+  function speakBubblePong() {
+    const model = deps.model.value;
+    const opts = linePickOptsFromSettings(deps.settings.value, model);
+    const line = pickBubblePongLine(
+      model,
+      deps.settings.value.personality,
+      opts
+    );
+    if (!line) return;
+    deps.applyMood("grumpy", "bubble-pong");
+    void speakText(line, false, {
+      force: true,
+      keepMotion: true,
+      keepMood: true,
+    });
+  }
+
   async function speakUsb(payload: PetUsbAnnouncePayload) {
     if (!deps.settings.value.usbWatchEnabled) return;
     deps.applyMood("idle", "usb-wake");
@@ -242,6 +266,7 @@ export function usePetSpeech(deps: {
     speakTapEgg,
     speakDragStart,
     speakDragLand,
+    speakBubblePong,
     speakUsb,
     clearUsbFollowUpTimer,
   };

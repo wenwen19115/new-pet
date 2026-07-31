@@ -205,10 +205,12 @@ describe("mood gate (applyPetMood)", () => {
     expect(applyPetMood("happy", "playful-catch", bag.ctx)).toBe(true);
     expect(bag.getMood()).toBe("happy");
     expect(applyPetMood("grumpy", "playful-miss", bag.ctx)).toBe(true);
+    expect(applyPetMood("grumpy", "bubble-pong", bag.ctx)).toBe(true);
     expect(bag.getMood()).toBe("grumpy");
 
     const sleepBag = makeMoodCtx({ mood: "sleep" });
     expect(applyPetMood("curious", "playful-flee", sleepBag.ctx)).toBe(false);
+    expect(applyPetMood("grumpy", "bubble-pong", sleepBag.ctx)).toBe(false);
   });
 
   it("peek mood reasons", () => {
@@ -500,6 +502,7 @@ describe("host regression smokes", () => {
       refreshUsbWatch: vi.fn(),
       applySettings: vi.fn(),
       speakIntro: vi.fn(),
+      speakBubblePong: vi.fn(),
       isMotionLocked: () => false,
       playMotionOnce: vi.fn(),
       showHitBounds,

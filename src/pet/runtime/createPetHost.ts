@@ -356,6 +356,7 @@ function wirePetHost(s: PetHostShared) {
     refreshUsbWatch: life.refreshUsbWatch,
     applySettings: settingsSync.applySettings,
     speakIntro: speech.speakIntro,
+    speakBubblePong: speech.speakBubblePong,
     isMotionLocked: motionHost.isMotionLocked,
     playMotionOnce: motionHost.playMotionOnce,
     showHitBounds: pointerHost.showHitBounds,

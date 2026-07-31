@@ -103,6 +103,18 @@
       "Mm, right here is fine."
     ]
   },
+  "bubblePong": {
+    "zh": [
+      "别戳了。",
+      "烦了烦了。",
+      "戳够了。"
+    ],
+    "en": [
+      "Stop poking.",
+      "Enough already.",
+      "That's enough."
+    ]
+  },
   "usb": {
     "addedOne": {
       "zh": [

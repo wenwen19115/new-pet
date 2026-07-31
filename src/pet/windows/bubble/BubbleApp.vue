@@ -2,8 +2,10 @@
   <div
     v-if="visible"
     class="bubble"
+    :class="{ 'is-squish': squishOn }"
     :data-tone="tone"
     :data-side="side"
+    @pointerdown.prevent="onPong"
   >
     <div class="bubble-inner">
       <p class="text">
@@ -16,26 +18,33 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
-import { listen, type UnlistenFn } from "@tauri-apps/api/event";
+import { emit, listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   PET_BUBBLE_EVENT,
   PET_BUBBLE_HIDE_EVENT,
+  PET_BUBBLE_PONG_EVENT,
   type PetBubblePayload,
 } from "@/pet/events";
 import type { PetTone } from "@/pet/data/types";
 import { readBubblePayloadRaw } from "@/pet/data/storageKeys";
+import {
+  advanceBubblePongTap,
+  BUBBLE_PONG_HOLD_MS,
+} from "./bubblePong";
 
 const visible = ref(false);
 const displayText = ref("");
 const tone = ref<PetTone>("cute");
 const side = ref<"left" | "right">("right");
 const typing = ref(false);
+const squishOn = ref(false);
 
 let hideTimer: number | null = null;
 let typeTimer: number | null = null;
 let pollTimer: number | null = null;
 let lastAppliedAt = 0;
+let pongTaps = 0;
 let unlistenShow: UnlistenFn | null = null;
 let unlistenHide: UnlistenFn | null = null;
 
@@ -47,6 +56,20 @@ function clearHideTimer() {
 function clearTypeTimer() {
   if (typeTimer != null) window.clearTimeout(typeTimer);
   typeTimer = null;
+}
+
+function scheduleHide(holdMs: number) {
+  clearHideTimer();
+  hideTimer = window.setTimeout(async () => {
+    visible.value = false;
+    squishOn.value = false;
+    pongTaps = 0;
+    try {
+      await getCurrentWindow().hide();
+    } catch {
+      // ignore
+    }
+  }, holdMs);
 }
 
 function charDelay(ch: string): number {
@@ -66,15 +89,7 @@ function typeOut(full: string, holdMs: number) {
   const step = () => {
     if (i >= full.length) {
       typing.value = false;
-      clearHideTimer();
-      hideTimer = window.setTimeout(async () => {
-        visible.value = false;
-        try {
-          await getCurrentWindow().hide();
-        } catch {
-          // ignore
-        }
-      }, holdMs);
+      scheduleHide(holdMs);
       return;
     }
     const ch = full[i++];
@@ -93,6 +108,8 @@ async function applyPayload(payload: PetBubblePayload & { at?: number }) {
   tone.value = payload.tone;
   side.value = payload.side;
   visible.value = true;
+  squishOn.value = false;
+  pongTaps = 0;
   clearHideTimer();
 
   const hold = Math.max(900, payload.durationMs - payload.text.length * 30);
@@ -132,6 +149,23 @@ function onVisibilityChange() {
   }
 }
 
+function playSquish() {
+  squishOn.value = false;
+  requestAnimationFrame(() => {
+    squishOn.value = true;
+  });
+}
+
+function onPong() {
+  if (!visible.value) return;
+  playSquish();
+  scheduleHide(BUBBLE_PONG_HOLD_MS);
+
+  const outcome = advanceBubblePongTap(pongTaps);
+  pongTaps = outcome.taps;
+  if (outcome.annoyed) void emit(PET_BUBBLE_PONG_EVENT);
+}
+
 onMounted(async () => {
   document.documentElement.style.background = "transparent";
   document.body.style.background = "transparent";
@@ -153,6 +187,8 @@ onMounted(async () => {
   unlistenHide = await listen(PET_BUBBLE_HIDE_EVENT, async () => {
     visible.value = false;
     typing.value = false;
+    squishOn.value = false;
+    pongTaps = 0;
     clearHideTimer();
     clearTypeTimer();
     stopPoll();
@@ -177,7 +213,6 @@ onUnmounted(() => {
 </script>
 
 <style>
-/* 非 scoped：彻底清掉 webview 默认底色，避免透出灰块 */
 html,
 body,
 #bubble-app {
@@ -193,10 +228,13 @@ body,
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  padding: 6px; /* 给尖角留位，避免裁切，但不投影 */
+  padding: 8px;
   position: relative;
   background: transparent;
-  animation: pop 0.18s cubic-bezier(0.22, 1.15, 0.36, 1);
+  animation: pop 0.2s cubic-bezier(0.22, 1.2, 0.36, 1);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .bubble-inner {
@@ -205,14 +243,18 @@ body,
   width: 100%;
   height: 100%;
   padding: 9px 11px;
-  border-radius: 10px;
+  border-radius: 12px;
   background: rgba(8, 14, 22, 0.94);
   border: 1px solid rgba(0, 229, 255, 0.4);
-  /* Windows 透明窗上 box-shadow 常变成灰矩形，禁止外阴影 */
   box-shadow: none;
   overflow: hidden;
   display: flex;
   align-items: center;
+  transform-origin: center center;
+}
+
+.bubble.is-squish .bubble-inner {
+  animation: jelly-squish 0.42s cubic-bezier(0.33, 1.35, 0.48, 1) both;
 }
 
 .bubble[data-tone="snarky"] .bubble-inner {
@@ -255,6 +297,7 @@ body,
   white-space: pre-wrap;
   font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   letter-spacing: 0.02em;
+  pointer-events: none;
 }
 
 .caret {
@@ -265,14 +308,32 @@ body,
   font-size: 11px;
 }
 
+@keyframes jelly-squish {
+  0% {
+    transform: scale(1, 1);
+  }
+  22% {
+    transform: scale(1.06, 0.9);
+  }
+  48% {
+    transform: scale(0.96, 1.05);
+  }
+  72% {
+    transform: scale(1.02, 0.98);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
 @keyframes pop {
   from {
     opacity: 0;
-    transform: translateX(-4px) scale(0.98);
+    transform: scale(0.97);
   }
   to {
     opacity: 1;
-    transform: translateX(0) scale(1);
+    transform: scale(1);
   }
 }
 

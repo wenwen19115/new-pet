@@ -32,6 +32,7 @@
 | `drag-start` | pointer | 置 curious；shell 同步惊讶/紧张台词 |
 | `drag-land` | shell（松手后） | 落地余韵 happy；台词必有；动作概率读 `accents.dragLandMotionChance`（fig 偏低） |
 | `playful-flee` / `playful-catch` / `playful-miss` | playful host | 躲开 / 抓到 / 超时；连空 3 次嫌弃（只台词，不自动 peek） |
+| `bubble-pong` | speech ← bubble 窗 | 冒泡连点三次嫌烦；grumpy + 嫌弃句 |
 | `peek-hide` / `peek-reveal` | peek host | 躲起来 / 现身 |
 | `speak-end` / `chat-reply-end` | speech / lifecycle | 回 idle（sleep / drag / motion-locked 除外；气泡可能还在） |
 | `motion-end` / `drag-end` | motion /（旧松手路径） | 回 idle（sleep / drag / speaking 除外） |

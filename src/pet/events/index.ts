@@ -17,6 +17,7 @@ export type { PetMotionPayload } from "../content/motion/motions";
 export {
   PET_BUBBLE_EVENT,
   PET_BUBBLE_HIDE_EVENT,
+  PET_BUBBLE_PONG_EVENT,
 } from "../windows/bubble/types";
 export type { PetBubblePayload } from "../windows/bubble/types";
 
@@ -52,6 +53,7 @@ export const PET_EVENT_CATALOG = [
   "pet://open-settings",
   "pet://bubble-show",
   "pet://bubble-hide",
+  "pet://bubble-pong",
   "pet://menu-show",
   "pet://menu-hide",
   "pet://menu-action",

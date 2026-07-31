@@ -10,7 +10,7 @@ import { getPetLocale } from "../../bridge/locale";
 import { buildUsbAnnounceText } from "../../bridge/usbFormat";
 import type { PetUsbAnnouncePayload } from "../../data/types";
 import { getLinePack } from "../../characters/lines";
-import { resolveCare, resolveDragEnd, resolveDragStart, resolvePlayful, resolvePolish } from "../../characters/lines/shared";
+import { resolveCare, resolveDragEnd, resolveDragStart, resolveBubblePong, resolvePlayful, resolvePolish } from "../../characters/lines/shared";
 import type { PlayfulLineKind, BuiltInLineCategory } from "../../characters/lineTypes";
 
 
@@ -204,6 +204,17 @@ export function pickDragEndLine(
 ): string {
   if (!lineCatOn("drag-end", opts)) return "";
   const pool = packLang(resolveDragEnd(packFor(model)));
+  return withFlavor(pickFromPool(pool), personality, model);
+}
+
+/** 冒泡连点三次嫌烦 */
+export function pickBubblePongLine(
+  model: PetModelKind,
+  personality: PetPersonality = "sunny",
+  opts?: PetLinePickOptions
+): string {
+  if (!lineCatOn("bubble-pong", opts)) return "";
+  const pool = packLang(resolveBubblePong(packFor(model)));
   return withFlavor(pickFromPool(pool), personality, model);
 }
 

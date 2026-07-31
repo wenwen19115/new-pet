@@ -67,6 +67,8 @@ export interface CharacterLineBundle {
   usb?: UsbLineTemplates;
   /** USB 主句后的追句（口音）；仅声明了池的角色才会追 */
   usbFollowUp?: LineLangPack;
+  /** 冒泡连点三次嫌烦；缺省走 shared */
+  bubblePong?: LineLangPack;
   polish?: Partial<Record<PetPersonality, PersonalityPolish>>;
 }
 
@@ -80,6 +82,7 @@ export const BUILTIN_LINE_CATEGORIES = [
   "playful",
   "drag-start",
   "drag-end",
+  "bubble-pong",
 ] as const;
 
 export type BuiltInLineCategory = (typeof BUILTIN_LINE_CATEGORIES)[number];

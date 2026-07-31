@@ -273,6 +273,11 @@ export async function showPetBubble(options: {
     await applyBubbleGeometry(win, box.w, box.h, place.x, place.y);
     await win.setAlwaysOnTop(true);
     try {
+      await win.setIgnoreCursorEvents(false);
+    } catch {
+      // ignore
+    }
+    try {
       await win.setShadow(false);
     } catch {
       // ignore

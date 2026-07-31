@@ -407,6 +407,18 @@
       "Back on the desk. …closer again sometime is ok."
     ]
   },
+  "bubblePong": {
+    "zh": [
+      "……别戳了。",
+      "……有点烦。",
+      "……够了。"
+    ],
+    "en": [
+      "…stop poking.",
+      "…a bit annoyed.",
+      "…enough."
+    ]
+  },
   "usb": {
     "addedOne": {
       "zh": [
