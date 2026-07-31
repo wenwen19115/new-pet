@@ -1,12 +1,11 @@
 import { type Ref } from "vue";
+import type { DeskWeatherKind } from "@/pet/data/deskWeather";
+import type { PetSettings } from "@/pet/data/types";
 import {
   stopPetDeskWeather,
   syncPetDeskWeather,
-} from "@/pet/bridge/deskWeather";
-import type { DeskWeatherKind } from "@/pet/data/deskWeather";
-import type { PetSettings } from "@/pet/data/types";
+} from "./deskWeatherPoll";
 
-/** 传感轮询接线；睡醒 / 台词在 speakDeskWeather（对齐 USB）。 */
 export function usePetDeskWeather(deps: {
   settings: Ref<PetSettings>;
   speaking: Ref<boolean>;
@@ -22,7 +21,7 @@ export function usePetDeskWeather(deps: {
   function refreshDeskWeather() {
     const cfg = deps.settings.value.deskWeather;
     syncPetDeskWeather({
-      enabled: Boolean(cfg.enabled),
+      enabled: cfg.enabled,
       getConfig: () => deps.settings.value.deskWeather,
       canFire,
       onWeather: deps.onWeather,

@@ -5,6 +5,11 @@ import {
 } from "@/pet/data/deskWeather";
 import { pickDeskWeatherLine } from "@/pet/content/dialogue/lines";
 import { applyPetMood } from "@/pet/runtime/petHostMood";
+import {
+  commitDeskWeatherFire,
+  createDeskWeatherEngineState,
+  observeDeskWeather,
+} from "@/pet/runtime/deskWeatherEngine";
 
 describe("desk weather", () => {
   it("normalize fills defaults and clamps changeStep", () => {
@@ -76,5 +81,59 @@ describe("desk weather", () => {
     });
     expect(ok).toBe(true);
     expect(mood).toBe("curious");
+  });
+
+  it("engine：增减达阈后 observe 出 kind，commit 才钉基线", () => {
+    const cfg = normalizeDeskWeather({
+      appsMany: { enabled: true, changeStep: 3 },
+      switchBurst: { enabled: false },
+      maxDwell: { enabled: false },
+      cooldown: { appsChangeSec: 10, switchBurstSec: 10 },
+    });
+    const state = createDeskWeatherEngineState();
+    const t0 = 1_000_000;
+    expect(
+      observeDeskWeather(
+        state,
+        cfg,
+        {
+          appCount: 5,
+          foregroundKey: "",
+          foregroundImmersive: false,
+          recentSwitchTimesMs: [],
+        },
+        t0
+      )
+    ).toBeNull();
+    expect(state.appsBaseline).toBe(5);
+
+    const kind = observeDeskWeather(
+      state,
+      cfg,
+      {
+        appCount: 8,
+        foregroundKey: "",
+        foregroundImmersive: false,
+        recentSwitchTimesMs: [],
+      },
+      t0 + 100
+    );
+    expect(kind).toEqual({ type: "apps-up", appCount: 8, delta: 3 });
+    expect(state.appsBaseline).toBe(5);
+
+    commitDeskWeatherFire(
+      state,
+      cfg,
+      kind!,
+      {
+        appCount: 8,
+        foregroundKey: "",
+        foregroundImmersive: false,
+        recentSwitchTimesMs: [],
+      },
+      t0 + 100
+    );
+    expect(state.appsBaseline).toBe(8);
+    expect(state.appsChangeCooldownUntil).toBe(t0 + 100 + 10_000);
   });
 });

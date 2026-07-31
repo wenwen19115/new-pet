@@ -1,4 +1,8 @@
 [[permission]]
 identifier = "allow-get-desk-weather-snapshot"
-description = "Allows sampling / stopping desk weather focus watch"
-commands.allow = ["get_desk_weather_snapshot", "stop_desk_weather_watch"]
+description = "Allows sampling desk weather and leasing the focus watcher"
+commands.allow = [
+  "get_desk_weather_snapshot",
+  "acquire_desk_weather_watch",
+  "release_desk_weather_watch",
+]

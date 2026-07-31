@@ -28,7 +28,8 @@ fn main() {
             get_serial_port_details,
             system_stats::get_system_stats,
             desk_weather::get_desk_weather_snapshot,
-            desk_weather::stop_desk_weather_watch,
+            desk_weather::acquire_desk_weather_watch,
+            desk_weather::release_desk_weather_watch,
             tts::list_edge_tts_voices,
             tts::synthesize_edge_tts,
         ])

@@ -1,9 +1,7 @@
-//! Windows desk weather: EnumWindows + background focus watcher.
-
 use super::DeskWeatherSnapshot;
 use std::collections::{HashSet, VecDeque};
 use std::ptr;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::{AtomicU32, AtomicU64, Ordering};
 use std::sync::{Mutex, OnceLock};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use windows::Win32::Foundation::{HWND, LPARAM, RECT};
@@ -16,7 +14,7 @@ use windows::Win32::UI::WindowsAndMessaging::{
     GW_OWNER, WINDOW_EX_STYLE, WS_EX_TOOLWINDOW,
 };
 
-/// 切窗历史保留上限（设置里最长 10s，多留一点给探测）
+// 设置窗最长 10s，多留一点
 const SWITCH_KEEP_MS: u64 = 30_000;
 const WATCH_INTERVAL_MS: u64 = 50;
 
@@ -24,16 +22,17 @@ struct FocusWatch {
     self_pid: u32,
     last_key: String,
     primed: bool,
-    /// 焦点刚从本进程离开过；下一次外部焦点要算切窗
+    /// 刚从本进程离开；下一次外部焦点算切窗
     saw_self: bool,
-    /// unix ms of external focus changes
     switches_ms: VecDeque<u64>,
 }
 
 static FOCUS_WATCH: OnceLock<Mutex<FocusWatch>> = OnceLock::new();
-/// 停表时 +1；线程只跑自己那一代数
+/// stop 时 +1，旧线程退出
 static WATCH_EPOCH: AtomicU64 = AtomicU64::new(0);
 static SPAWNED_FOR: AtomicU64 = AtomicU64::new(u64::MAX);
+/// 跨 WebView 租约：设置页与桌宠各持一份；归零才停线程
+static WATCH_LEASES: AtomicU32 = AtomicU32::new(0);
 
 fn now_ms() -> u64 {
     SystemTime::now()
@@ -100,7 +99,6 @@ fn focus_watch_loop(epoch: u64) {
             continue;
         };
         let (key, _) = foreground_info(state.self_pid);
-        // 本进程（设置/桌宠）：记一下，别清 last_key
         if key.is_empty() {
             state.saw_self = true;
             continue;
@@ -111,7 +109,6 @@ fn focus_watch_loop(epoch: u64) {
             state.saw_self = false;
             continue;
         }
-        // 外部窗换了，或从本程序切回某个外部窗，都算一次切窗
         let changed = key != state.last_key || state.saw_self;
         if !changed {
             continue;
@@ -132,8 +129,7 @@ fn focus_watch_loop(epoch: u64) {
     }
 }
 
-/// 停焦点线程并清空切窗历史（关工位气象 / 卸 host 时调）
-pub fn stop_focus_watcher() {
+fn stop_focus_watcher_inner() {
     WATCH_EPOCH.fetch_add(1, Ordering::SeqCst);
     if let Some(lock) = FOCUS_WATCH.get() {
         if let Ok(mut state) = lock.lock() {
@@ -141,6 +137,29 @@ pub fn stop_focus_watcher() {
             state.primed = false;
             state.saw_self = false;
             state.switches_ms.clear();
+        }
+    }
+}
+
+pub fn acquire_focus_watch() {
+    WATCH_LEASES.fetch_add(1, Ordering::SeqCst);
+    ensure_focus_watcher(std::process::id());
+}
+
+pub fn release_focus_watch() {
+    loop {
+        let cur = WATCH_LEASES.load(Ordering::SeqCst);
+        if cur == 0 {
+            return;
+        }
+        if WATCH_LEASES
+            .compare_exchange(cur, cur - 1, Ordering::SeqCst, Ordering::SeqCst)
+            .is_ok()
+        {
+            if cur == 1 {
+                stop_focus_watcher_inner();
+            }
+            return;
         }
     }
 }
@@ -156,7 +175,7 @@ unsafe extern "system" fn enum_proc(hwnd: HWND, lparam: LPARAM) -> windows::core
     if !IsWindowVisible(hwnd).as_bool() {
         return windows::core::BOOL(1);
     }
-    // 任务栏里挂着、已最小化的不算「桌面打开」
+    // 任务栏最小化不算
     if IsIconic(hwnd).as_bool() {
         return windows::core::BOOL(1);
     }
@@ -209,7 +228,10 @@ fn is_roughly_fullscreen(hwnd: HWND) -> bool {
 
 pub fn sample() -> Result<DeskWeatherSnapshot, String> {
     let self_pid = std::process::id();
-    ensure_focus_watcher(self_pid);
+    // 无租约不拉线程，避免设置页误采后线程常驻
+    if WATCH_LEASES.load(Ordering::SeqCst) > 0 {
+        ensure_focus_watcher(self_pid);
+    }
 
     let mut state = EnumState {
         self_pid,

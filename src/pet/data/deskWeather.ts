@@ -1,41 +1,28 @@
-/**
- * 工位气象：设置子域（类型 / 默认 / normalize）。
- * 演出台词与动作在角色包，不进这里。
- * 同类「传感+阈值+冷却」能力可照抄：data/<名>.ts → settings 挂字段 → bridge 轮询 → use* 接线。
- * 别和 characters 的 extensions（VRM 等角色扩展）混。
- */
-
 export type DeskWeatherMaxDwellTierId = "30s" | "3m";
 
 export interface DeskWeatherAppsManyConfig {
   enabled: boolean;
-  /**
-   * 相对上次提示的基线，应用数每增减这么多就提示一次。
-   * 启动时只记基线，不因「已经很多」立刻念。
-   */
+  /** 相对基线增减 ≥N 才提示；启动只记基线 */
   changeStep: number;
 }
 
 export interface DeskWeatherSwitchBurstConfig {
   enabled: boolean;
-  /** 时间窗 ms */
   windowMs: number;
-  /** 窗内前台切换次数阈值 */
   switchCount: number;
 }
 
 export interface DeskWeatherMaxDwellConfig {
   enabled: boolean;
-  /** 两档秒数，默认 30 / 180 */
   tiersSec: number[];
 }
 
 export interface DeskWeatherCooldownConfig {
-  /** 应用增减提示最小间隔（秒）；0 = 不休眠 */
+  /** 秒；0 = 不休眠 */
   appsChangeSec: number;
-  /** 切窗爆发冷却（秒）；0 = 不休眠 */
+  /** 秒；0 = 不休眠 */
   switchBurstSec: number;
-  /** 打完最高档后再压多久（分钟） */
+  /** 分钟 */
   maxDwellAfterTopMin: number;
 }
 

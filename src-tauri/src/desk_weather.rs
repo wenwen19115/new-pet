@@ -1,17 +1,12 @@
-//! Desktop weather sensors: app count / foreground / maximized|fullscreen.
-
 use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DeskWeatherSnapshot {
-    /// 桌面非最小化顶层窗对应的进程数（不含本进程；任务栏最小化的不算）。
+    /// 非最小化顶层窗按 PID 去重（不含本进程）
     pub app_count: u32,
-    /// Stable-ish key for the foreground window (empty if none / self).
     pub foreground_key: String,
-    /// Foreground is maximized or roughly fullscreen.
     pub foreground_immersive: bool,
-    /// 近期外部切窗时间戳（unix ms），前端再按设置窗口截断。
     pub recent_switch_times_ms: Vec<u64>,
 }
 
@@ -33,10 +28,19 @@ pub fn get_desk_weather_snapshot() -> Result<DeskWeatherSnapshot, String> {
 }
 
 #[tauri::command]
-pub fn stop_desk_weather_watch() -> Result<(), String> {
+pub fn acquire_desk_weather_watch() -> Result<(), String> {
     #[cfg(windows)]
     {
-        desk_weather_win::stop_focus_watcher();
+        desk_weather_win::acquire_focus_watch();
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub fn release_desk_weather_watch() -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        desk_weather_win::release_focus_watch();
     }
     Ok(())
 }
