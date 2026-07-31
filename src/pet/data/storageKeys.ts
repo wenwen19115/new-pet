@@ -2,22 +2,12 @@ export const PET_SETTINGS_KEY = "desktop-pet-settings";
 const PET_OPEN_SETTINGS_KEY = "desktop-pet-open-settings";
 export const PET_BUS_NAME = "desktop-pet";
 const PET_BUBBLE_PAYLOAD_KEY = "desktop-pet-bubble-payload";
+/** requestPetIntro 挂起标；窗未起来时 pet mount/resume 再取 */
+const PET_PENDING_INTRO_KEY = "desktop-pet-pending-intro";
 
-/** 旧 wheat 键 — 只读迁移，不再写回 */
-const LEGACY_PET_SETTINGS_KEY = "wheat-esp-pet-settings";
-const LEGACY_PET_OPEN_SETTINGS_KEY = "wheat-esp-pet-open-settings";
-export const LEGACY_PET_BUS_NAME = "wheat-esp-pet";
-const LEGACY_PET_BUBBLE_PAYLOAD_KEY = "wheat-esp-pet-bubble-payload";
-
-/** 读 settings JSON；必要时把旧键迁到新键一次 */
 export function readSettingsRaw(): string | null {
   try {
-    const current = localStorage.getItem(PET_SETTINGS_KEY);
-    if (current) return current;
-    const legacy = localStorage.getItem(LEGACY_PET_SETTINGS_KEY);
-    if (!legacy) return null;
-    localStorage.setItem(PET_SETTINGS_KEY, legacy);
-    return legacy;
+    return localStorage.getItem(PET_SETTINGS_KEY);
   } catch {
     return null;
   }
@@ -29,10 +19,7 @@ export function writeSettingsRaw(json: string): void {
 
 export function readBubblePayloadRaw(): string | null {
   try {
-    return (
-      localStorage.getItem(PET_BUBBLE_PAYLOAD_KEY) ??
-      localStorage.getItem(LEGACY_PET_BUBBLE_PAYLOAD_KEY)
-    );
+    return localStorage.getItem(PET_BUBBLE_PAYLOAD_KEY);
   } catch {
     return null;
   }
@@ -47,11 +34,36 @@ export function writeOpenSettingsSignal(payload: string): void {
 }
 
 export function isOpenSettingsStorageKey(key: string | null): boolean {
-  return (
-    key === PET_OPEN_SETTINGS_KEY || key === LEGACY_PET_OPEN_SETTINGS_KEY
-  );
+  return key === PET_OPEN_SETTINGS_KEY;
 }
 
 export function isSettingsStorageKey(key: string | null): boolean {
-  return key === PET_SETTINGS_KEY || key === LEGACY_PET_SETTINGS_KEY;
+  return key === PET_SETTINGS_KEY;
+}
+
+export function markPetIntroPending(): void {
+  try {
+    localStorage.setItem(PET_PENDING_INTRO_KEY, "1");
+  } catch {
+    // ignore
+  }
+}
+
+export function clearPetIntroPending(): void {
+  try {
+    localStorage.removeItem(PET_PENDING_INTRO_KEY);
+  } catch {
+    // ignore
+  }
+}
+
+/** 取出并清除；同一请求只播一次 */
+export function takePetIntroPending(): boolean {
+  try {
+    if (localStorage.getItem(PET_PENDING_INTRO_KEY) !== "1") return false;
+    localStorage.removeItem(PET_PENDING_INTRO_KEY);
+    return true;
+  } catch {
+    return false;
+  }
 }

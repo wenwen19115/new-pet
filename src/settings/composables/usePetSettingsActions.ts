@@ -3,6 +3,7 @@ import { useI18n } from "vue-i18n";
 import type { ComputedRef, Ref } from "vue";
 import { isPetIdleMotion } from "@/pet/content/motion/motions";
 import {
+  cancelPetIntroRequest,
   requestPetIntro,
   requestPetMotion,
 } from "@/pet";
@@ -61,7 +62,9 @@ export function usePetSettingsActions(deps: {
       message.info(t("pet.vrmNeedUploadFirst"));
       return;
     }
+    if (!value) cancelPetIntroRequest();
     await deps.persistAndSync();
+    if (value) await requestPetIntro();
   }
 
   async function onModel(value: string | number) {

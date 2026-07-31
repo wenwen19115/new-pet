@@ -7,6 +7,7 @@ import { hidePetChat } from "@/pet/windows/chat";
 import { isCustomVrmMotionId } from "@/pet/content/motion/customVrmMotions";
 import { isPetIdleMotion } from "@/pet/content/motion/motions";
 import { loadPetSettings } from "@/pet/data/settings";
+import { takePetIntroPending } from "@/pet/data/storageKeys";
 import { petStore } from "@/pet/data/store";
 import { cancelPetTts } from "@/pet/bridge/tts";
 import type { CharacterRuntimeSpec } from "@/pet/characters/types";
@@ -157,6 +158,12 @@ export function usePetHostLifecycle(deps: {
     deps.speaking.value = false;
   }
 
+  function flushPendingIntro() {
+    if (!deps.hostAliveRef.get()) return;
+    if (!takePetIntroPending()) return;
+    void deps.speakIntro();
+  }
+
   async function resumeHost() {
     if (deps.hostAliveRef.get()) return;
     deps.hostAliveRef.set(true);
@@ -178,6 +185,7 @@ export function usePetHostLifecycle(deps: {
     await deps.refreshVrmSrc();
     deps.refreshUsbWatch();
     deps.refreshDeskWeather();
+    flushPendingIntro();
   }
 
   async function mount() {
@@ -223,7 +231,9 @@ export function usePetHostLifecycle(deps: {
       deps.playMotionOnce(motion);
     });
     unlistenIntro = await listen(PET_INTRO_EVENT, () => {
+      // 未 alive 时保留 pending，交给 mount/resume flush
       if (!deps.hostAliveRef.get()) return;
+      if (!takePetIntroPending()) return;
       deps.applySettings(loadPetSettings(), { introIfSkinChanged: false });
       void deps.speakIntro();
     });
@@ -272,6 +282,7 @@ export function usePetHostLifecycle(deps: {
     deps.refreshUsbWatch();
     deps.refreshDeskWeather();
     window.addEventListener("storage", deps.onStorage);
+    flushPendingIntro();
   }
 
   function dispose() {

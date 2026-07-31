@@ -333,10 +333,15 @@ describe("host regression smokes", () => {
     unlistenFns.length = 0;
     hidePetChat.mockClear();
     cancelPetTts.mockClear();
+    const store = new Map<string, string>();
     vi.stubGlobal("localStorage", {
-      getItem: vi.fn(() => null),
-      setItem: vi.fn(),
-      removeItem: vi.fn(),
+      getItem: vi.fn((key: string) => store.get(key) ?? null),
+      setItem: vi.fn((key: string, value: string) => {
+        store.set(key, value);
+      }),
+      removeItem: vi.fn((key: string) => {
+        store.delete(key);
+      }),
     });
   });
 
@@ -536,5 +541,104 @@ describe("host regression smokes", () => {
     for (const un of unlistenFns) {
       expect(un).toHaveBeenCalled();
     }
+  });
+
+  it("mount flushes pending summon intro", async () => {
+    const { markPetIntroPending } = await import("@/pet/data/storageKeys");
+    markPetIntroPending();
+
+    let hostAlive = false;
+    const speakIntro = vi.fn();
+    const applySettings = vi.fn();
+    const settings = ref(baseSettings());
+    const vrmSrc = ref<string | null>(null);
+    const mood = ref<PetMood>("idle");
+    const lastLine = ref<string | null>(null);
+    const speaking = ref(false);
+    const isDragging = ref(false);
+    const showHitBounds = ref(false);
+    const applyMood = createApplyPetMood({
+      getMood: () => mood.value,
+      setMood: (m) => {
+        mood.value = m;
+      },
+      speaking: () => speaking.value,
+      dragging: () => isDragging.value,
+      isMotionLocked: () => false,
+    });
+
+    const life = usePetHostLifecycle({
+      hostAliveRef: {
+        get: () => hostAlive,
+        set: (v) => {
+          hostAlive = v;
+        },
+      },
+      settings,
+      vrmSrc,
+      mood,
+      applyMood,
+      lastLine,
+      speaking,
+      isDragging,
+      activeCharacter: {
+        value: {
+          runtime: {
+            gaze: { max: 1, range: 1, follow: 1 },
+            tapFallbackMotion: "happy-bounce",
+            screenFlight: "fly",
+            dragLandMotions: ["happy-bounce"],
+          },
+        },
+      },
+      winSize: ref({ w: 200, h: 200 }),
+      bubbleTimerRef: { get: () => null, set: () => {} },
+      moodResetTimerRef: { get: () => null, set: () => {} },
+      onChatOpen: vi.fn(),
+      onSuspendRuntime: vi.fn(),
+      clearLifeTimers: vi.fn(),
+      clearUsbFollowUpTimer: vi.fn(),
+      clearDeskWeather: vi.fn(),
+      clearMotionTimers: vi.fn(),
+      resetDragState: vi.fn(),
+      syncWindowCenter: vi.fn(async () => undefined),
+      initCursorLog: vi.fn(async () => undefined),
+      setWinCenterFromResize: vi.fn(),
+      tickLeds: vi.fn(),
+      tickSwing: vi.fn(),
+      sampleCursor: vi.fn(),
+      resetSleepTimer: vi.fn(),
+      scheduleBlink: vi.fn(),
+      scheduleIdleAction: vi.fn(),
+      scheduleAutoSpeak: vi.fn(),
+      refreshVrmSrc: vi.fn(),
+      refreshUsbWatch: vi.fn(),
+      refreshDeskWeather: vi.fn(),
+      applySettings,
+      speakIntro,
+      speakBubblePong: vi.fn(),
+      isMotionLocked: () => false,
+      playMotionOnce: vi.fn(),
+      showHitBounds,
+      onStorage: vi.fn(),
+      onCtxMenuAction: vi.fn(),
+    });
+
+    await life.mount();
+    expect(speakIntro).toHaveBeenCalledTimes(1);
+
+    const { markPetIntroPending: markAgain } = await import(
+      "@/pet/data/storageKeys"
+    );
+    markAgain();
+    listenHandlers.get("pet://intro")?.({});
+    expect(speakIntro).toHaveBeenCalledTimes(2);
+    expect(applySettings).toHaveBeenCalled();
+
+    speakIntro.mockClear();
+    listenHandlers.get("pet://intro")?.({});
+    expect(speakIntro).not.toHaveBeenCalled();
+
+    life.dispose();
   });
 });
