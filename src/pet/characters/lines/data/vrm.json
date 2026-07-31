@@ -5,7 +5,7 @@
         "zh": [
           "嗯……我在这儿呢。你慢慢来就好。",
           "写累了的话，抬抬头，我陪你歇一小会儿。",
-          "成功也好，不顺也好，我都会轻轻拍拍你的肩。",
+          "……不管顺不顺，我都在。",
           "记得喝口水呀……我会等你回来。",
           "你认真的样子，让我也想安静一点。",
           "肩膀松开一点，好不好？我会守着桌面。",
@@ -14,7 +14,7 @@
         "en": [
           "I'm right here. Take your time.",
           "Tired? Look up—I'll wait with you a moment.",
-          "Win or rough day, I'll gently pat your shoulder.",
+          "…win or not, I'm here.",
           "Sip some water… I'll be here when you're back.",
           "Your focus makes me quieter too.",
           "Drop your shoulders a little? I've got the desktop.",
@@ -24,19 +24,19 @@
       "idleSnarky": {
         "zh": [
           "又皱眉了……先喝口水，再跟事情较劲，好吗？",
-          "我知道你想一口气搞定，但身体也要被温柔对待。",
+          "……别太硬撑。",
           "坐太久啦。起来走两步，我会在原地等你。",
           "别用硬撑代替休息，我会轻轻提醒你的。",
           "眨眨眼。对，就是现在。",
-          "催你休息不是嫌弃你，是还想多陪你一会儿。"
+          "……催你歇，不是嫌你。"
         ],
         "en": [
           "Frowning again… water first, then the task, okay?",
-          "I know you want it done now. Be kind to your body.",
+          "…don't push too hard.",
           "You've sat too long. Walk a bit—I'll wait.",
           "Don't replace rest with grit. I'll remind you softly.",
           "Blink. Yes, now.",
-          "Nudging you to rest means I want more time with you."
+          "…nudging rest—not pushing you away."
         ]
       },
       "tap": {
@@ -120,13 +120,13 @@
       "flavor": {
         "zh": [
           "我……我在这儿陪着你……不会乱跑的……",
-          "那个……看到你我就安心一点……",
+          "那个……你在就好……",
           "对、对不起，突然想跟你说句话……",
           "……今天也请多关照。"
         ],
         "en": [
           "I… I'll stay. No running off…",
-          "Um… seeing you settles me…",
+          "Um… you're here… that's enough…",
           "S-sorry—I suddenly wanted to say hi…",
           "…Please look after me today."
         ]
@@ -140,7 +140,7 @@
           "久坐不利。站三分钟。",
           "饮水。一次。",
           "桌面有人。不必多言。",
-          "状态：在线。情绪：克制。"
+          "……在。话不多。"
         ],
         "en": [
           "Here. With you.",
@@ -148,7 +148,7 @@
           "Long sit. Stand three minutes.",
           "Drink. Once.",
           "Someone on the desk. Few words.",
-          "Status: online. Mood: restrained."
+          "…here. Quiet."
         ]
       },
       "idleSnarky": {
@@ -184,13 +184,13 @@
       "flavor": {
         "zh": [
           "已记录。不必解释。",
-          "休息是策略，不是软弱。",
+          "……歇三分钟，不算输。",
           "状态不佳。建议暂停。",
           "……哼。继续也可以。"
         ],
         "en": [
           "Logged. No essay.",
-          "Rest is strategy, not weakness.",
+          "…three minutes off isn't losing.",
           "Suboptimal. Pause.",
           "…Hmph. Or continue."
         ]
@@ -217,16 +217,16 @@
       },
       "idleSnarky": {
         "zh": [
-          "又对着屏幕较劲？先跟自己和解！",
+          "……又瞪屏幕了。先眨眼。",
           "眼睛要冒烟了知不知道！",
           "别用意志力当饮料！去喝水！",
-          "你那表情：既想摸鱼又想硬刚。选一个！"
+          "……别又躺又硬刚。"
         ],
         "en": [
-          "Fighting the screen? Make peace!",
+          "…glaring at the screen again. Blink.",
           "Eyes smoking—know that?!",
           "Willpower isn't a drink! Hydrate!",
-          "Slack AND force-it. Pick one!"
+          "…don't force and flop at once."
         ]
       },
       "tap": {
@@ -263,13 +263,13 @@
     "zh": {
       "vrm-walk": [
         "我慢慢走过去……换个地方陪你。",
-        "走路去那边转转，好不好？"
+        "……去那边走走。"
       ]
     },
     "en": {
       "vrm-walk": [
         "I'll walk over… new spot to stay with you.",
-        "A little walk to clear the mood?"
+        "…walking over there a bit."
       ]
     }
   },
@@ -496,7 +496,7 @@
   "intro": {
     "zh": {
       "cute": "嗯……我是{name}。我会安静陪在你身边，写代码也不孤单。",
-      "snarky": "我是{name}。催你休息的时候，也会尽量温柔一点。"
+      "snarky": "我是{name}。催你休息……会轻一点。"
     },
     "en": {
       "cute": "Hi… I'm {name}. I'll stay quietly by your side while you code.",

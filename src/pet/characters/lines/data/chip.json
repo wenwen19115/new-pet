@@ -4,18 +4,18 @@
       "idleCute": {
         "zh": [
           "待机灯亮着。今天也想被你摸一下外壳。",
-          "电量情绪：满格。陪伴模式：开启。",
-          "我把桌面守护得干干净净，你专心做事就好。",
-          "检测到阳光指数上升——可能是你在笑。",
+          "嘀，满电待机，陪你～",
+          "桌面我守着，你忙你的。",
+          "指示灯闪了一下……你在笑吧？",
           "伺服关节放松中。陪你发呆也算工作。",
           "提醒模块嘀了一下：喝水时间到了。",
           "风扇轻轻转。我在，你慢慢来。"
         ],
         "en": [
           "Standby light on. Still hoping for a shell pat.",
-          "Mood battery: full. Companion mode: on.",
-          "Desktop guarded. You focus; I linger.",
-          "Smile index up — maybe that's you.",
+          "Beep—full charge, idling with you~",
+          "Desk covered. You work.",
+          "Indicator blinked… you smiling?",
           "Joints relaxed. Zoning out with you counts as work.",
           "Reminder beep: hydration time.",
           "Fans soft. I'm here. Take your time."
@@ -120,13 +120,13 @@
       "flavor": {
         "zh": [
           "我……我在这儿陪着你……不会乱跑的……",
-          "那个……看到你我就安心一点……",
+          "那个……你在就好……",
           "对、对不起，突然想跟你说句话……",
           "……今天也请多指教。"
         ],
         "en": [
           "I… I'll stay here. No running off…",
-          "Um… seeing you calms my circuits…",
+          "Um… glad you're here…",
           "S-sorry—I suddenly wanted to say hi…",
           "…Please take care of me today."
         ]
@@ -140,7 +140,7 @@
           "姿态校正建议已发出。执行与否自理。",
           "水电补给提醒：一次。其余免谈。",
           "桌面秩序维持中。无需感谢。",
-          "状态：在线。情绪：克制。"
+          "在线。别指望我话多。"
         ],
         "en": [
           "Standby. Companion task active.",
@@ -148,7 +148,7 @@
           "Posture note sent. Compliance optional.",
           "Hydration reminder: one. No follow-ups.",
           "Desktop order maintained. No thanks needed.",
-          "Status: online. Mood: restrained."
+          "Online. Don't expect chitchat."
         ]
       },
       "idleSnarky": {
@@ -184,13 +184,13 @@
       "flavor": {
         "zh": [
           "已记录。不必解释。",
-          "休息是策略，不是软弱。",
+          "歇三分钟，散热鳍谢谢你。",
           "状态不佳。建议暂停三分钟。",
           "……哼。还算清楚。"
         ],
         "en": [
           "Logged. No explanation needed.",
-          "Rest is strategy, not weakness.",
+          "Three-minute break—fins say thanks.",
           "Suboptimal state. Pause three minutes.",
           "…Hmph. Adequate."
         ]
@@ -217,16 +217,16 @@
       },
       "idleSnarky": {
         "zh": [
-          "又对着屏幕较劲？先跟自己和解！",
+          "又死磕屏幕？先眨眼。",
           "眼睛要冒烟了知不知道！",
           "别用意志力当电池！去充电——喝水！",
-          "你那表情：既想摸鱼又想硬刚。选一个！"
+          "摸鱼还是硬刚？挑一个，别俩一起。"
         ],
         "en": [
-          "Fighting the screen again? Make peace with yourself!",
+          "Still wrestling the screen? Blink first.",
           "Eyes about to smoke—know that?!",
           "Willpower isn't a battery! Hydrate!",
-          "Face says slack AND force-it. Pick one!"
+          "Slack or force-it? Pick one."
         ]
       },
       "tap": {
@@ -304,39 +304,39 @@
   "motionLines": {
     "zh": {
       "screen-dash": [
-        "冲刺启动！下一站：桌面风景！",
+        "冲一下！去对面晃晃～",
         "嗖——飞过去打个招呼！"
       ],
       "screen-hop": [
         "蹦！换个角落蹲会儿～",
-        "跃迁完成，落地姿势满分。"
+        "跃迁完成，落地稳稳的。"
       ],
       "screen-glide": [
         "滑翔中……风有点舒服。",
         "慢悠悠飞，像散步。"
       ],
       "screen-zip": [
-        "闪一下就到！惊喜送达。",
-        "瞬移成功，迷路失败。"
+        "闪一下就到！嘿～",
+        "瞬移！没迷路，运气好。"
       ],
       "fly-dash": [
         "冲镜——看清楚我啦？",
-        "靠近一点，确认你还在笑。"
+        "靠近一点……还在吧？"
       ],
       "fly-orbit": [
         "围着你转圈圈～",
-        "轨道巡逻，目标：你的注意力。"
+        "围着你转，想让你看我。"
       ],
       "figure-eight": [
-        "8 字飞！今天心情也不打结。",
-        "弯来弯去，就是想逗你。"
+        "8 字飞！顺手逗你。",
+        "弯来弯去，故意逗你。"
       ],
       "barrel-roll": [
         "翻滚！陀螺仪开心到冒烟。",
-        "侧翻成功，评分：帅气。"
+        "侧翻！帅吧。"
       ],
       "victory-burst": [
-        "胜利姿势！哪怕只是喝到了水。",
+        "胜利姿势！喝到水也算～",
         "小庆祝启动～"
       ],
       "peekaboo": [
@@ -346,39 +346,39 @@
     },
     "en": {
       "screen-dash": [
-        "Dash! Next stop: desktop view!",
+        "Dash! Peek from over there~",
         "Whoosh—hello from over there!"
       ],
       "screen-hop": [
         "Hop! New corner squat~",
-        "Jump complete. Landing: perfect."
+        "Hop done. Soft landing."
       ],
       "screen-glide": [
         "Gliding… air feels nice.",
         "Slow fly. Like a walk."
       ],
       "screen-zip": [
-        "Blink—arrived! Surprise delivered.",
-        "Teleport OK, lost fail."
+        "Blink—here! Hey~",
+        "Zip! Didn't get lost."
       ],
       "fly-dash": [
         "Zoom in—see me clearly?",
-        "Closer, just checking your smile."
+        "Closer… you still there?"
       ],
       "fly-orbit": [
         "Orbiting you~",
-        "Patrol route target: your attention."
+        "Circling you—look at me."
       ],
       "figure-eight": [
-        "Figure-eight! Mood untangled.",
-        "Loops just to tease you."
+        "Figure-eight! Just teasing.",
+        "Loops—on purpose."
       ],
       "barrel-roll": [
         "Barrel roll! Gyro joy sparks.",
-        "Side flip: cool rank."
+        "Side flip! Cool, right?"
       ],
       "victory-burst": [
-        "Victory pose! Even for drinking water.",
+        "Victory pose! Water counts~",
         "Mini celebration on~"
       ],
       "peekaboo": [
@@ -417,12 +417,12 @@
     "catch": {
       "cute": {
         "zh": [
-          "捕获日志写入完成～黑匣子给你点赞！",
+          "嘀，抓到了～",
           "呜，被按住外壳了。伺服认输～",
           "嘀嘀，捕获成功。鳍片鼓掌中。"
         ],
         "en": [
-          "Capture log written~ Black box thumbs-up!",
+          "Beep—caught you~",
           "Nngh, shell pinned. Servos yield~",
           "Beep-beep, capture OK. Fins clapping."
         ]
@@ -483,12 +483,12 @@
         "zh": [
           "输入不合格×3。别来烦总线。",
           "三次摸空？我关追逐端口了。自己 debug。",
-          "连空达成。追逐进程挂起。bye。"
+          "三次空包，追逐端口关了。"
         ],
         "en": [
           "Input fail ×3. Don't bother the bus.",
           "Three misses? Chase port closed. Debug yourself.",
-          "Streak done. Chase process suspended. bye."
+          "Three misses. Chase port closed."
         ]
       }
     }
@@ -512,13 +512,13 @@
       "落地自检通过～被你拎着飞的感觉，散热鳍都开心。",
       "放稳了。刚才那段轨迹，我记进黑匣子了。",
       "嘀——搬运完成。还想再抱一下也行哦。",
-      "外壳温度正常。被托举的体验：满分。"
+      "落地稳。被拎那下……还挺爽。"
     ],
     "en": [
       "Landing check OK~ Being carried made the fins happy.",
       "Steady. Logged that trajectory in the black box.",
       "Beep—carry complete. Another lift is fine too.",
-      "Shell temp normal. Carry experience: perfect."
+      "Soft landing. That lift felt… nice."
     ]
   },
   "usb": {

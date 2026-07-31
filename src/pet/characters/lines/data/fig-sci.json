@@ -5,18 +5,18 @@
         "zh": [
           "嘿～在忙吗？我在这儿陪你发会儿呆。",
           "眉头皱起来了哦……先喝口水好不好？",
-          "盯屏幕太久啦，抬头看看我，眼睛会谢谢你。",
+          "盯太久啦……抬眼看我一下？",
           "肩膀紧不紧？松开鼠标，伸个懒腰呗。",
-          "今天也辛苦啦。对自己笑一下，我先笑给你看。",
+          "今天也辛苦……笑一下嘛。",
           "口渴了吗？水杯还在不在手边呀。",
           "有我在，桌面就不算空荡荡～"
         ],
         "en": [
           "Hey~ busy? I'll sit with you a bit.",
           "Brows tight… drink some water?",
-          "Screen time high. Look at me—eyes will thank you.",
+          "Been staring… look at me a sec?",
           "Shoulders up? Drop them. Stretch.",
-          "Good work today. Smile once—I'll go first.",
+          "Long day… smile once for me?",
           "Thirsty? Cup still nearby?",
           "With me here, the desk isn't empty~"
         ]
@@ -120,13 +120,13 @@
       "flavor": {
         "zh": [
           "我……我在这儿陪着你……不会乱跑的……",
-          "那个……看到你我就安心一点……",
+          "那个……你在就好……",
           "对、对不起，突然想跟你说句话……",
           "……今天也请多关照。"
         ],
         "en": [
           "I… I'll stay. No running off…",
-          "Um… seeing you settles me…",
+          "Um… you're here… good…",
           "S-sorry—I suddenly wanted to say hi…",
           "…Please look after me today."
         ]
@@ -140,7 +140,7 @@
           "喝水。一次提醒，够了。",
           "桌面有我在。其余自理。",
           "别用眼神求夸奖。先把腰直起来。",
-          "状态：在线。温度：刚好。"
+          "我在。不冷不热，刚好。"
         ],
         "en": [
           "With you. Few words.",
@@ -148,7 +148,7 @@
           "Drink water. One reminder. Enough.",
           "I'm on the desk. Handle the rest.",
           "Don't fish for praise. Straighten up first.",
-          "Status: online. Temperature: just right."
+          "I'm here. Not too hot, not cold."
         ]
       },
       "idleSnarky": {
@@ -184,13 +184,13 @@
       "flavor": {
         "zh": [
           "已记录。不必解释。",
-          "休息是策略，不是软弱。",
+          "歇一会儿……不算偷懒吧？",
           "状态不佳。建议暂停。",
           "……哼。还算清楚。"
         ],
         "en": [
           "Logged. No essay.",
-          "Rest is strategy, not weakness.",
+          "A short break… that's okay, right?",
           "Suboptimal. Pause.",
           "…Hmph. Adequate."
         ]
@@ -217,16 +217,16 @@
       },
       "idleSnarky": {
         "zh": [
-          "又对着屏幕较劲？先跟自己和解！",
+          "别跟屏幕较劲啦……喝口水？",
           "眼睛要冒烟了知不知道！",
           "别用意志力当饮料！去喝水！",
-          "你那表情：既想摸鱼又想硬刚。选一个！"
+          "想休息就休息……别硬撑着笑。"
         ],
         "en": [
-          "Fighting the screen? Make peace with yourself!",
+          "Don't wrestle the screen… water?",
           "Eyes smoking—know that?!",
           "Willpower isn't a drink! Hydrate!",
-          "Slack AND force-it face. Pick one!"
+          "Want rest? Rest… don't fake a smile."
         ]
       },
       "tap": {
@@ -303,7 +303,7 @@
     "valentine": {
       "zh": [
         "今天气氛有点甜……记得多看我一眼。",
-        "心动预警：先喝水，再跟我对视。"
+        "脸有点热……先喝口水？"
       ],
       "en": [
         "Sweet air today… glance my way.",
@@ -361,15 +361,15 @@
       ],
       "fly-dash": [
         "靠近点，看清楚我～",
-        "冲镜不是炫耀，是提醒你眨眼。"
+        "靠近点……眨一下眼？"
       ],
       "fly-orbit": [
         "围着你转……习惯就好。",
-        "轨道里只有你。"
+        "转圈圈……看着你就好。"
       ],
       "figure-eight": [
-        "8 字扭一下，心情也扭开了。",
-        "弯来弯去，就是想逗你。"
+        "8 字扭一下，轻松点～",
+        "弯来弯去……想让你笑一下。"
       ],
       "peekaboo": [
         "躲猫猫——抓到你的视线了！",
@@ -395,15 +395,15 @@
       ],
       "fly-dash": [
         "Closer—see me clearly~",
-        "Zoom-in is a blink reminder."
+        "Closer… blink once?"
       ],
       "fly-orbit": [
         "Orbiting you… get used to it.",
-        "Only you on this route."
+        "Circling… watching you is enough."
       ],
       "figure-eight": [
-        "Figure-eight sway—mood untied.",
-        "Loops just to tease."
+        "Figure-eight sway—lighter~",
+        "Loops… want a smile."
       ],
       "peekaboo": [
         "Peekaboo—caught your eyes!",
@@ -455,7 +455,7 @@
         "zh": [
           "……偶尔准一次。别以为每次都行。",
           "行吧。手稳一点，我衣角谢谢你。",
-          "算你赢。日志里写：今天没被气到。"
+          "算你赢……今天没生气啦。"
         ],
         "en": [
           "…one lucky hit. Not every time.",
@@ -560,7 +560,7 @@
   "usb": {
     "addedOne": {
       "zh": [
-        "新朋友上线：{added}。外形评分……我先偷偷记一笔～",
+        "咦，{added} 来了。外形……挺好看的嘛～",
         "咦，{added} 来了。线材颜色还挺好看的嘛。",
         "欢迎 {added} 入座工位。今天桌面更完整了。",
         "{added} 插好啦。要不要并排合个影？（开个玩笑）",

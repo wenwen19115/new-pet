@@ -6,8 +6,8 @@
           "嗷呜～狐青青报到！桌面有狐火，你不孤单。",
           "蹦！碎步警告：该起来走动啦。",
           "狐火招手～看到了吗？喝口水吧。",
-          "打个转给你看！灵体虽小，活力拉满。",
-          "嗅到好运气味……原来是你的好心情。",
+          "打个转！块头小，蹦得高！",
+          "嗅嗅……桌边有好 vibe！",
           "呼——吐个小火苗，驱散困意！",
           "轻轻晃～跟我一起放松肩膀。"
         ],
@@ -15,8 +15,8 @@
           "Awoo~ Spirit here! Foxfire on your desk.",
           "Hop! Stand up and walk a bit.",
           "Foxfire wave—drink some water.",
-          "Spin! Tiny spirit, big energy.",
-          "Sniff… good luck scent. Oh, it's your mood.",
+          "Spin! Tiny body, big hops!",
+          "Sniff sniff… good vibes at the desk!",
           "Fwoosh—tiny flame to chase drowsiness!",
           "Sway~ drop those shoulders with me."
         ]
@@ -59,14 +59,14 @@
           "看到你我就开心！需要狐火陪着吗？",
           "失败也没关系啦，我们再试一次就好！",
           "休息一下嘛～喝口水，笑一个！",
-          "有我在就不孤单哦，上古小太阳上线！"
+          "有我在就不闷啦，嗷呜！"
         ],
         "en": [
           "Hehe—let's crush it together!",
           "I'm happy seeing you! Need foxfire company?",
           "Fail once? We bounce back!",
           "Break~ sip water, smile!",
-          "Not alone—ancient sunshine online!"
+          "Not lonely with me—awoo!"
         ]
       }
     },
@@ -120,13 +120,13 @@
       "flavor": {
         "zh": [
           "我……我在这儿陪着你……不会乱跑的……",
-          "那个……看到你我就安心一点……",
+          "那个……你在就好……",
           "对、对不起，突然想跟你招一下火……",
           "……今天也请多指教。"
         ],
         "en": [
           "I… I'll stay. No running off…",
-          "Um… seeing you calms me…",
+          "Um… you're here… good…",
           "S-sorry—suddenly wanted to wave fire…",
           "…Please guide me today."
         ]
@@ -140,7 +140,7 @@
           "久坐会折损灵气。站一会儿。",
           "饮水。一次。",
           "桌面有灵。不必多言。",
-          "状态：清醒。情绪：克制。"
+          "清醒着。话不多。"
         ],
         "en": [
           "Spirit breath steady. Company continues.",
@@ -148,7 +148,7 @@
           "Long sits dull aura. Stand.",
           "Drink. Once.",
           "Spirit on desk. Few words.",
-          "Status: awake. Mood: restrained."
+          "Awake. Quiet."
         ]
       },
       "idleSnarky": {
@@ -184,13 +184,13 @@
       "flavor": {
         "zh": [
           "已记录。不必解释。",
-          "休息是策略，不是软弱。",
+          "歇一下，狐火也要喘气。",
           "状态不佳。建议暂停三分钟。",
           "……哼。灵火仍在。"
         ],
         "en": [
           "Logged. No essay.",
-          "Rest is strategy, not weakness.",
+          "Break time—foxfire needs air too.",
           "Suboptimal. Pause three minutes.",
           "…Hmph. Flame still burns."
         ]
@@ -217,16 +217,16 @@
       },
       "idleSnarky": {
         "zh": [
-          "又对着屏幕较劲？先跟自己和解！",
+          "还瞪屏幕？过来蹭草！",
           "眼睛要冒烟了知不知道！",
           "别用意志力当灵泉！去喝水！",
-          "你那表情：既想摸鱼又想硬刚。选一个！"
+          "又想躺又想冲？先动一下！"
         ],
         "en": [
-          "Fighting the screen? Make peace!",
+          "Still glaring? Come nuzzle grass!",
           "Eyes smoking—know that?!",
           "Willpower isn't spring water! Hydrate!",
-          "Slack AND force-it. Pick one!"
+          "Wanna flop AND charge? Move first!"
         ]
       },
       "tap": {
@@ -305,11 +305,11 @@
     "zh": {
       "toon-water": [
         "浇浇浇～灵草也要喝水！",
-        "水壶满满，灵息也满满。"
+        "浇完啦，草草精神了！"
       ],
       "toon-grass": [
         "这片小草软乎乎的……让我蹭一下。",
-        "草地打卡！今日份绿意已签到。"
+        "蹭草～软乎乎的！"
       ],
       "toon-fire": [
         "嘿——狐火喷射！退后退后！",
@@ -325,11 +325,11 @@
       ],
       "toon-dodge": [
         "躲开！差点被鼠标光标砸到！",
-        "残影闪避成功，评分：可爱。"
+        "闪开啦，抓不到～"
       ],
       "screen-wormhole": [
-        "虫洞开门——下一站：随机桌角！",
-        "嗖——穿越成功，迷路失败。"
+        "虫洞开门——蹦去桌角！",
+        "嗖——穿过去了！"
       ],
       "toon-wave": [
         "嗨嗨！狐火跟你招手～",
@@ -337,21 +337,21 @@
       ],
       "toon-tea": [
         "呼——吐个小火苗暖暖手。",
-        "火苗小吃货模式开启。"
+        "小火苗，想吃点心～"
       ],
       "toon-read": [
-        "嘿嘿，嗅到好运气味……原来是你的灵感。",
+        "嘿嘿，嗅到好味……是你在想点子？",
         "嗅嗅，空气香香的。"
       ]
     },
     "en": {
       "toon-water": [
         "Watering~ spirit grass is thirsty!",
-        "Can full, aura full."
+        "Watered! Grass looks peppy!"
       ],
       "toon-grass": [
         "Soft grass… let me nuzzle.",
-        "Grass check-in done!"
+        "Grass nuzzle~ so soft!"
       ],
       "toon-fire": [
         "Foxfire blast! Back up!",
@@ -367,11 +367,11 @@
       ],
       "toon-dodge": [
         "Dodge! Almost hit by the cursor!",
-        "Afterimage dodge: cute rank."
+        "Dodged~ too cute to catch."
       ],
       "screen-wormhole": [
-        "Wormhole open—next: random corner!",
-        "Whoosh—teleport OK, lost fail."
+        "Wormhole—hop to a corner!",
+        "Whoosh—made it!"
       ],
       "toon-wave": [
         "Hi! Foxfire wave~",
@@ -379,10 +379,10 @@
       ],
       "toon-tea": [
         "Fwoosh—tiny flame for warmth.",
-        "Snack-flame mode on."
+        "Tiny flame wants snacks~"
       ],
       "toon-read": [
-        "Sniff… luck scent is your idea.",
+        "Sniff… you cooking up ideas?",
         "Sniff sniff—air smells nice."
       ]
     }
@@ -404,12 +404,12 @@
       "snarky": {
         "zh": [
           "像素残影已就绪。你的鼠标行不行啊？",
-          "狐火新闻预告：某人即将摸空三次。",
+          "嗷呜预告：有人要摸空咯～",
           "别用点图标的速度追灵体，会社死的。"
         ],
         "en": [
           "Pixel afterimage ready. Is your mouse OK?",
-          "Foxfire headline: someone will miss thrice.",
+          "Awoo heads-up: someone's gonna whiff~",
           "Don't chase a spirit like an icon—cringe."
         ]
       }
@@ -457,24 +457,24 @@
         "zh": [
           "连影子都摸不着？像素都嫌你慢。",
           "空爪。回去练碎步再来挑战。",
-          "哈哈，新闻快讯：人类再次扑空。"
+          "嗷——又扑空！"
         ],
         "en": [
           "Can't even touch the shadow? Pixels judge you.",
           "Empty claws. Practice hops, then retry.",
-          "Haha, breaking: human whiffs again."
+          "Awoo—whiff again!"
         ]
       }
     },
     "sulk": {
       "cute": {
         "zh": [
-          "连空三次……狐火新闻：小灵生闷气中！",
+          "三次空爪……狐火蔫了。",
           "三次都抓空气？哼，残影都不想给你看～",
           "好过分！狐火先灭一下，想陪再来追！"
         ],
         "en": [
-          "Three misses… foxfire news: spirit sulking!",
+          "Three misses… foxfire dimmed.",
           "Three air grabs? Hmph—no afterimage for you~",
           "Mean! Foxfire dimming—chase again if you miss me!"
         ]
@@ -482,13 +482,13 @@
       "snarky": {
         "zh": [
           "摸空×3。狐火已读不回。",
-          "连空达成。虫洞休假，菜鸡人类请反思。",
-          "手速检测：寄。本期追逐先下播。"
+          "三次了。虫洞休假，哼。",
+          "手太慢啦，追逐结束，哼。"
         ],
         "en": [
           "Miss ×3. Foxfire left on read.",
           "Streak done. Wormhole off-duty. Reflect, human noob.",
-          "APM: L. Chase show canceled for today."
+          "Too slow—chase over, hmph."
         ]
       }
     }
@@ -536,7 +536,7 @@
   "usb": {
     "addedOne": {
       "zh": [
-        "大事件！！{added} 插进来了！！狐火新闻速报～",
+        "大事件！！{added} 插进来了！！嗷呜～",
         "快看快看！{added} 登场！现场欢呼！",
         "突发插拔！主角是 {added}！嗷呜！",
         "{added} 传送到工位！像素记者已就位！",
@@ -547,7 +547,7 @@
         "Look look! {added} enters! Crowd cheers!",
         "Sudden plug! Star: {added}! Awoo!",
         "{added} teleported to the desk! Pixel reporter ready!",
-        "Boom—{added} connected! Tonight's headline!"
+        "Boom—{added} connected! Awoo!"
       ]
     },
     "addedMany": {
@@ -555,7 +555,7 @@
         "连击插入！！{added}！！现场太热闹了嗷呜！",
         "群演到齐：{added}！这集剧情很满！",
         "多线新闻！{added} 同时上线！我记不过来啦！",
-        "哇哇哇 {added} 一窝蜂！总线要被挤爆了！"
+        "哇哇哇 {added} 挤一窝！桌角要炸啦！"
       ],
       "en": [
         "Multi-plug combo!! {added}!! Scene is CHAOTIC awoo!",
