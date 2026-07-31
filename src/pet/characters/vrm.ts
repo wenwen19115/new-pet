@@ -63,7 +63,6 @@ export const characterVrm: CharacterDef = {
     ],
     accents: {
       deskWeather: {
-        // 涨→伸一下；落→点头；切窗→晃步跟焦点
         appsUp: "stretch-up",
         appsDown: "bow-nod",
         switchBurst: "sway-step",

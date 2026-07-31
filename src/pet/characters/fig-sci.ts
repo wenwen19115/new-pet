@@ -53,7 +53,6 @@ export const characterFig: CharacterDef = {
     accents: {
       dragLandMotionChance: 0.38,
       deskWeather: {
-        // 涨→伸懒腰抬高；落→点头；切窗→左右小跳
         appsUp: "stretch-up",
         appsDown: "bow-nod",
         switchBurst: "side-hop",

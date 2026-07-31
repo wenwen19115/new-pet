@@ -88,7 +88,6 @@ export interface PetSettings {
   /** 调皮：靠近躲开，倒计时内点中算抓到 */
   playfulModeEnabled: boolean;
   hitBoundsEnabled: boolean;
-  /** 工位气象：应用多 / 切窗爆发 / 最大化久待 */
   deskWeather: DeskWeatherConfig;
   catchphrases: string[];
   catchphraseChance: number;

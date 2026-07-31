@@ -62,7 +62,6 @@ export const characterToon: CharacterDef = {
     ],
     accents: {
       deskWeather: {
-        // 涨→蹦高；落→晃松；切窗→歪头跟不上
         appsUp: "happy-bounce",
         appsDown: "toon-sway",
         switchBurst: "toon-tilt",

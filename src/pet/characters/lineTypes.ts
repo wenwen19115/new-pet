@@ -69,17 +69,15 @@ export interface CharacterLineBundle {
   usbFollowUp?: LineLangPack;
   /** 冒泡连点三次嫌烦；缺省走 shared */
   bubblePong?: LineLangPack;
-  /** 工位气象；缺省走 shared */
+  /** 工位气象；缺省 shared */
   deskWeather?: DeskWeatherLinePack;
   polish?: Partial<Record<PetPersonality, PersonalityPolish>>;
 }
 
 export interface DeskWeatherLinePack {
-  /** 窗口增多：略紧张压抑，须带「窗口」等硬联系词 */
+  /** 须带「窗口」等词 */
   appsUp: LineLangPack;
-  /** 窗口减少：放松舒气，须带「窗口」等硬联系词 */
   appsDown: LineLangPack;
-  /** 切窗太勤：闪太快伤眼感，须带「窗口」等硬联系词 */
   switchBurst: LineLangPack;
   maxDwell: {
     "30s": LineLangPack;
