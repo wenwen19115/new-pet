@@ -106,3 +106,10 @@ export function syncPetDeskWeather(deps: {
     void pollOnce();
   });
 }
+
+/** 冷却 / 基线重算；租约与轮询保留 */
+export function resetPetDeskWeatherEngine(): boolean {
+  const hit = handler != null;
+  engine = createDeskWeatherEngineState();
+  return hit;
+}

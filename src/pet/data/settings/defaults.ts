@@ -83,3 +83,18 @@ export const DEFAULT_PET_SETTINGS: PetSettings = {
   personality: "sunny",
   zoomPercent: 0,
 };
+
+/** 出厂重置用的全新默认快照（可写，勿与 DEFAULT_PET_SETTINGS 共享嵌套引用） */
+export function createFactoryResetSettings(): PetSettings {
+  return {
+    ...DEFAULT_PET_SETTINGS,
+    profiles: createDefaultProfiles(),
+    chatAi: { ...DEFAULT_PET_CHAT_AI, customModels: [] },
+    deskWeather: normalizeDeskWeather(DEFAULT_DESK_WEATHER),
+    catchphrases: defaultCatchphrasesForModel(DEFAULT_PET_MODEL),
+    customVrmMotions: [],
+    vrmModelName: "",
+    vrmModelRev: 0,
+    enabled: false,
+  };
+}

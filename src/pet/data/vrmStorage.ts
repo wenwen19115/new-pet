@@ -57,6 +57,13 @@ function clearSrcCache() {
   cachedSrc = null;
 }
 
+/** 仅清内存 src；不动磁盘文件 */
+export function clearPetVrmSrcCache(): boolean {
+  const hit = cachedSrc != null || legacyBlobUrl != null;
+  clearSrcCache();
+  return hit;
+}
+
 function fileSrcFromPath(path: string): string {
   revokeLegacyBlobUrl();
   return convertFileSrc(path);
@@ -151,10 +158,16 @@ export async function importPetVrmFromPath(
   clearSrcCache();
   const name = fileNameFromPath(sourcePath);
   try {
-    return { name, src: fileSrcFromPath(dest) };
+    const src = fileSrcFromPath(dest);
+    cachedSrc = src;
+    cachedRev = 0;
+    return { name, src };
   } catch (err) {
     console.warn("[pet] convertFileSrc after import failed, blob fallback", err);
-    return { name, src: blobSrcFromBytes(data) };
+    const src = blobSrcFromBytes(data);
+    cachedSrc = src;
+    cachedRev = 0;
+    return { name, src };
   }
 }
 

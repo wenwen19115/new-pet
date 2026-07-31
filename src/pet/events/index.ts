@@ -4,6 +4,7 @@ export {
   PET_WINDOW_LABEL,
   PET_SETTINGS_EVENT,
   PET_INTRO_EVENT,
+  PET_CLEAR_CACHE_EVENT,
   PET_SUSPEND_EVENT,
   PET_RESUME_EVENT,
 } from "../data/types";
@@ -47,6 +48,7 @@ export type {
 export const PET_EVENT_CATALOG = [
   "pet://settings-changed",
   "pet://intro",
+  "pet://clear-cache",
   "pet://suspend",
   "pet://resume",
   "pet://play-motion",

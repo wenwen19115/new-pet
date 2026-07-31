@@ -194,6 +194,18 @@ export function clearChatHistory(characterId: PetChatCharacterId): void {
   saveChatHistory(characterId, []);
 }
 
+/** 清空全部角色聊天记录 */
+export function clearAllChatHistory(): void {
+  writeStore(emptyStore());
+  try {
+    window.dispatchEvent(
+      new CustomEvent(PET_CHAT_HISTORY_CHANGED, { detail: {} })
+    );
+  } catch {
+    // ignore
+  }
+}
+
 function buildChatHistoryExport(
   characterId: PetChatCharacterId
 ): string {

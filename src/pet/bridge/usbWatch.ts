@@ -111,3 +111,17 @@ export function syncPetUsbWatch(
     stopPetUsbWatch();
   }
 }
+
+/** 重扫基线；已插设备不再当「新插入」 */
+export function resetPetUsbWatchBootstrap(): boolean {
+  const hit = bootstrapped || knownPorts.size > 0;
+  if (!handler) {
+    bootstrapped = false;
+    knownPorts = new Set();
+    return hit;
+  }
+  bootstrapped = false;
+  knownPorts = new Set();
+  void pollOnce();
+  return hit;
+}

@@ -102,6 +102,8 @@ export interface PetSettings {
 export const PET_WINDOW_LABEL = "pet";
 export const PET_SETTINGS_EVENT = "pet://settings-changed";
 export const PET_INTRO_EVENT = "pet://intro";
+/** 清可重建缓存（各 WebView 各自执行） */
+export const PET_CLEAR_CACHE_EVENT = "pet://clear-cache";
 /** host → pet：软隐藏 / 硬销毁前奏 — 停活并卸 VRM */
 export const PET_SUSPEND_EVENT = "pet://suspend";
 /** host → pet：软隐藏结束 — 恢复循环并重载 VRM */

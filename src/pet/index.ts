@@ -3,6 +3,14 @@ export {
   applySettingsWindowPin,
 } from "./bridge/hostBridge";
 
+export {
+  requestClearPetCache,
+  type PetCacheClearReport,
+  type PetCachePartId,
+} from "./runtime/clearRuntimeCaches";
+
+export { factoryResetPet } from "./data/maintenance";
+
 import {
   PET_MOTION_EVENT,
   type PetIdleMotion,

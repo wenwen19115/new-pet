@@ -106,6 +106,18 @@ export function cancelPetTts(): void {
   stopAudioElement();
 }
 
+/** 停播并丢掉音色列表缓存（下次 list 再拉） */
+export function clearPetTtsCache(): {
+  voices: number;
+  stopped: boolean;
+} {
+  const stopped = activeAudio != null;
+  const voices = edgeVoiceCache?.length ?? 0;
+  cancelPetTts();
+  edgeVoiceCache = null;
+  return { voices, stopped };
+}
+
 export async function listPetTtsVoices(
   lang?: "zh" | "en"
 ): Promise<PetTtsVoiceOption[]> {

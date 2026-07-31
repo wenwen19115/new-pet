@@ -67,3 +67,22 @@ export function takePetIntroPending(): boolean {
     return false;
   }
 }
+
+/** 气泡 / 打开设置 / intro 挂起等握手键；返回清掉的键数 */
+export function clearPetHandshakeKeys(): number {
+  let keys = 0;
+  for (const key of [
+    PET_BUBBLE_PAYLOAD_KEY,
+    PET_OPEN_SETTINGS_KEY,
+    PET_PENDING_INTRO_KEY,
+  ]) {
+    try {
+      if (localStorage.getItem(key) == null) continue;
+      keys += 1;
+      localStorage.removeItem(key);
+    } catch {
+      // ignore
+    }
+  }
+  return keys;
+}

@@ -13,9 +13,11 @@ import { cancelPetTts } from "@/pet/bridge/tts";
 import type { CharacterRuntimeSpec } from "@/pet/characters/types";
 import type { PetMood, PetSettings } from "@/pet/data/types";
 import type { ApplyPetMood } from "./petHostMood";
+import { clearPetRuntimeCachesLocal } from "./clearRuntimeCaches";
 import {
   PET_CHAT_OPEN_STATE_EVENT,
   PET_CHAT_REPLY_EVENT,
+  PET_CLEAR_CACHE_EVENT,
   PET_INTRO_EVENT,
   PET_MENU_ACTION_EVENT,
   PET_MOTION_EVENT,
@@ -94,6 +96,7 @@ export function usePetHostLifecycle(deps: {
   let unlistenBubblePong: UnlistenFn | null = null;
   let unlistenSuspend: UnlistenFn | null = null;
   let unlistenResume: UnlistenFn | null = null;
+  let unlistenClearCache: UnlistenFn | null = null;
 
   function clearHostTimers() {
     deps.clearLifeTimers();
@@ -237,6 +240,11 @@ export function usePetHostLifecycle(deps: {
       deps.applySettings(loadPetSettings(), { introIfSkinChanged: false });
       void deps.speakIntro();
     });
+    unlistenClearCache = await listen(PET_CLEAR_CACHE_EVENT, () => {
+      void clearPetRuntimeCachesLocal().then(() => {
+        if (deps.hostAliveRef.get()) void deps.refreshVrmSrc();
+      });
+    });
     unlistenMenuAction = await listen<{ action?: PetMenuAction }>(
       PET_MENU_ACTION_EVENT,
       (event) => {
@@ -292,6 +300,7 @@ export function usePetHostLifecycle(deps: {
     unlistenSettings?.();
     unlistenMotion?.();
     unlistenIntro?.();
+    unlistenClearCache?.();
     unlistenMenuAction?.();
     unlistenChatReply?.();
     unlistenChatOpen?.();

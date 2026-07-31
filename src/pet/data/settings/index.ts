@@ -8,5 +8,6 @@ export { loadPetSettings, publishPetSettings, patchPetSettings } from "./io";
 export {
   defaultProfileForModel,
   createDefaultProfiles,
+  createFactoryResetSettings,
   DEFAULT_PET_SETTINGS,
 } from "./defaults";
