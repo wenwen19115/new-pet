@@ -9,6 +9,7 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "check:pre-commit": "node scripts/check-pre-commit.mjs",
     "tauri": "tauri"
   },
   "dependencies": {
