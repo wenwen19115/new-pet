@@ -5,11 +5,13 @@ import type { PetTone } from "@/pet/data/types";
 import type { PetModelKind } from "@/pet/skins/types";
 import type { CustomVrmMotion } from "@/pet/content/motion/customVrmMotions";
 import type { PetCustomLine } from "@/pet/content/dialogue/customLines";
-import type { AppUiTheme } from "@/theme/uiTheme";
+import {
+  clonePetThemeSettings,
+  type PetThemeSettings,
+} from "@/theme/types";
 import { isPetIdleMotion } from "@/pet/content/motion/motions";
 import { isCustomVrmMotionId } from "@/pet/content/motion/customVrmMotions";
 import { coerceLookIdForModel } from "@/pet/skins";
-import { isAppUiTheme } from "@/theme/uiTheme";
 import { clampCatchphraseChance } from "@/pet/content/dialogue/catchphrases";
 import { isPetPersonality } from "@/pet/content/dialogue/personality";
 import { normalizeDeskWeather } from "@/pet/data/deskWeather";
@@ -34,7 +36,7 @@ export function usePetSettingsHydrate(deps: {
   deskWeather: Ref<import("@/pet/data/deskWeather").DeskWeatherConfig>;
   catchphrases: Ref<string[]>;
   catchphraseChance: Ref<number>;
-  uiTheme: Ref<AppUiTheme>;
+  theme: Ref<PetThemeSettings>;
   settingsAlwaysOnTop: Ref<boolean>;
   sysStatsDefaultExpanded: Ref<boolean>;
   customVrmMotions: Ref<CustomVrmMotion[]>;
@@ -46,7 +48,7 @@ export function usePetSettingsHydrate(deps: {
   applyChatAiDraft: (raw: unknown) => void;
   applyVrmFromSettings: (s: PetSettings) => void;
   refreshTtsVoiceOptions: () => void | Promise<void>;
-  onUiThemeChange?: (theme: AppUiTheme) => void;
+  onThemeChange?: (theme: PetThemeSettings) => void;
 }) {
   function applyLocalFromSettings(s: PetSettings) {
     deps.settingsBag.value = s;
@@ -76,7 +78,7 @@ export function usePetSettingsHydrate(deps: {
     deps.deskWeather.value = normalizeDeskWeather(s.deskWeather);
     deps.catchphrases.value = [...(s.catchphrases ?? [])];
     deps.catchphraseChance.value = clampCatchphraseChance(s.catchphraseChance);
-    deps.uiTheme.value = isAppUiTheme(s.uiTheme) ? s.uiTheme : "night";
+    deps.theme.value = clonePetThemeSettings(s.theme);
     deps.settingsAlwaysOnTop.value = Boolean(s.settingsAlwaysOnTop);
     deps.sysStatsDefaultExpanded.value = Boolean(s.sysStatsDefaultExpanded);
     deps.customVrmMotions.value = s.customVrmMotions.map((m) => ({ ...m }));
@@ -90,7 +92,7 @@ export function usePetSettingsHydrate(deps: {
       ...(profile?.disabledBuiltInLines ?? []),
     ];
     deps.applyVrmFromSettings(s);
-    deps.onUiThemeChange?.(deps.uiTheme.value);
+    deps.onThemeChange?.(deps.theme.value);
   }
 
   return { applyLocalFromSettings };

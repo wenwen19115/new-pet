@@ -1,0 +1,209 @@
+.boot-anim {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+
+.boot-anim .settings-item {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.boot-anim-body {
+  margin-top: -1px;
+  padding: 0 0 4px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  background: rgba(0, 0, 0, 0.16);
+  border-left: 2px solid rgba(64, 196, 255, 0.35);
+}
+
+.boot-anim-sub {
+  --ba-accent: #5eead4;
+  margin: 6px 10px;
+  padding: 10px 12px 12px 12px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--ui-border, rgba(0, 0, 0, 0.12)) 80%, transparent);
+  border-left: 3px solid color-mix(in srgb, var(--ba-accent) 62%, transparent);
+  /* 20% 透明，压住壳底花纹 */
+  background: color-mix(
+    in srgb,
+    var(--ui-surface-strong, #fff) 80%,
+    transparent
+  );
+}
+
+.boot-anim-sub--preview {
+  --ba-accent: #7ec8ff;
+}
+
+.boot-anim-sub--media {
+  --ba-accent: #5eead4;
+}
+
+.boot-anim-sub--duration {
+  --ba-accent: #ff8f7a;
+}
+
+.boot-anim-sub--display {
+  --ba-accent: #8be08b;
+}
+
+.boot-anim-preview {
+  margin-top: 2px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0a0a0a;
+}
+
+.boot-anim-preview-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 148px;
+  padding: 16px;
+  font-size: 12px;
+  color: var(--ui-text-faint, rgba(255, 255, 255, 0.42));
+  text-align: center;
+}
+
+.boot-anim-preview-stage {
+  display: flex;
+  flex-direction: column;
+  min-height: 168px;
+  cursor: default;
+}
+
+.boot-anim-preview[data-playing="1"] .boot-anim-preview-stage {
+  cursor: pointer;
+}
+
+.boot-anim-preview-media {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 120px;
+  background: #000;
+}
+
+.boot-anim-preview-media::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ui-primary, #7ec8ff) 70%, #fff) 0%,
+    color-mix(in srgb, var(--ui-primary, #7ec8ff) 35%, #000) 100%
+  );
+}
+
+.boot-anim-preview-media :deep(.theme-media-layer) {
+  z-index: 0;
+}
+
+.boot-anim-preview-done {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 10, 14, 0.72);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  backdrop-filter: blur(2px);
+}
+
+.boot-anim-preview :deep(.boot-splash-bar) {
+  transform: scale(0.92);
+  transform-origin: bottom center;
+}
+
+.boot-anim-preview :deep(.boot-splash-bar__face) {
+  min-height: 40px;
+  padding: 8px 12px 10px;
+}
+
+.boot-anim-preview :deep(.boot-splash-bar__text) {
+  font-size: 11px;
+}
+
+.boot-anim-sub-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.boot-anim-sub-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ui-text, rgba(255, 255, 255, 0.88));
+}
+
+.boot-anim-sub-label .anticon {
+  color: color-mix(in srgb, var(--ba-accent) 82%, #fff);
+  opacity: 0.88;
+}
+
+.boot-anim-hint {
+  margin-top: 4px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ui-text-faint, rgba(255, 255, 255, 0.42));
+}
+
+.boot-anim-param-hint {
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ui-text-faint, rgba(255, 255, 255, 0.38));
+  word-break: break-all;
+}
+
+.boot-anim-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.boot-anim-row--between {
+  justify-content: space-between;
+}
+
+.boot-anim-row--spaced {
+  margin-top: 8px;
+}
+
+.boot-anim-row--spaced-lg {
+  margin-top: 10px;
+}
+
+.boot-anim-sub-label--sm {
+  font-size: 12px;
+}
+
+.boot-anim-param-hint--tight {
+  margin-top: 2px;
+}
+
+.boot-anim-meter {
+  flex: 1 1 180px;
+  min-width: 120px;
+  width: 100%;
+}

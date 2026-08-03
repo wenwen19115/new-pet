@@ -9,7 +9,8 @@ import {
 import type { PetModelKind } from "@/pet/skins/types";
 import type { PetPersonality } from "@/pet/content/dialogue/personality";
 import type { CustomVrmMotion } from "@/pet/content/motion/customVrmMotions";
-import type { AppUiTheme } from "@/theme/uiTheme";
+import { getThemePack } from "@/theme/registry";
+import type { PetThemeSettings } from "@/theme/types";
 import { listCharacters, characterCapabilities, getCharacter, characterHas, characterSupportsVrmAssets } from "@/pet/characters";
 import { demoMotionOptions } from "@/pet/content/motion/motionPlayer";
 import { listSettingsModules } from "../registry";
@@ -23,7 +24,7 @@ export function usePetSettingsViewModel(deps: {
   lookId: Ref<string>;
   nickname: Ref<string>;
   personality: Ref<PetPersonality>;
-  uiTheme: Ref<AppUiTheme>;
+  theme: Ref<PetThemeSettings>;
   settingsTab: Ref<string>;
   editingCustomId: Ref<string | null>;
   customVrmMotions: Ref<CustomVrmMotion[]>;
@@ -33,9 +34,24 @@ export function usePetSettingsViewModel(deps: {
 }) {
   const { t } = useI18n();
 
-  const uiThemeOptions = computed(() => [
-    { label: t("pet.uiThemeNight"), value: "night" },
-    { label: t("pet.uiThemeDay"), value: "day" },
+  const themeBanner = computed(
+    () => getThemePack(deps.theme.value.style).meta.banner
+  );
+
+  const themeStageModeOptions = computed(() => [
+    { label: t("pet.themeStagePack"), value: "pack" },
+    { label: t("pet.themeStageWallpaper"), value: "wallpaper" },
+  ]);
+
+  const themeWallpaperFitOptions = computed(() => [
+    { label: t("pet.themeWallpaperCover"), value: "cover" },
+    { label: t("pet.themeWallpaperContain"), value: "contain" },
+  ]);
+
+  const bootDurationModeOptions = computed(() => [
+    { label: t("pet.bootAnimDurationAuto"), value: "auto" },
+    { label: t("pet.bootAnimDurationMedia"), value: "media" },
+    { label: t("pet.bootAnimDurationManual"), value: "manual" },
   ]);
 
   const moduleCtx = computed(() => ({
@@ -89,12 +105,12 @@ export function usePetSettingsViewModel(deps: {
 
   const looks = computed(() => listPetLooksForModel(deps.modelKind.value));
 
-  function lookLabel(theme: { nameKey: string; toonNameKey?: string }) {
+  function lookLabel(look: { nameKey: string; toonNameKey?: string }) {
     const policy = getCharacter(deps.modelKind.value).appearance;
-    if (policy.nameFrom === "look-toon" && theme.toonNameKey) {
-      return t(theme.toonNameKey);
+    if (policy.nameFrom === "look-toon" && look.toonNameKey) {
+      return t(look.toonNameKey);
     }
-    return t(theme.nameKey);
+    return t(look.nameKey);
   }
 
   const toneOptions = computed(() => [
@@ -154,18 +170,10 @@ export function usePetSettingsViewModel(deps: {
 
   const heroPanelStyle = computed(() => {
     const vis = v.value;
-    const day = deps.uiTheme.value === "day";
-    const base = day
-      ? `linear-gradient(165deg, rgba(255, 252, 248, 0.92), rgba(244, 241, 234, 0.96))`
-      : `linear-gradient(165deg, rgba(16, 18, 28, 0.94), rgba(6, 8, 14, 0.98))`;
+    // 只传角色色；底/边由 Theme Pack 画，别用内联背景盖掉
     return {
       "--hero-accent": vis.accent,
       "--hero-accent-soft": vis.accentSoft,
-      background: `
-      radial-gradient(ellipse at 30% 18%, color-mix(in srgb, ${vis.accent} 22%, transparent), transparent 52%),
-      radial-gradient(ellipse at 82% 90%, color-mix(in srgb, ${vis.accentSoft} 14%, transparent), transparent 48%),
-      ${base}
-    `,
     } as Record<string, string>;
   });
 
@@ -177,7 +185,10 @@ export function usePetSettingsViewModel(deps: {
   });
 
   return {
-    uiThemeOptions,
+    themeBanner,
+    themeStageModeOptions,
+    themeWallpaperFitOptions,
+    bootDurationModeOptions,
     moduleCtx,
     settingsModules,
     settingsTabs,

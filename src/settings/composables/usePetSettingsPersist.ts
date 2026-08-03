@@ -5,7 +5,10 @@ import { publishPetSettings } from "@/pet/data/settings";
 import { PET_SETTINGS_EVENT } from "@/pet/events";
 import type { PetSettings } from "@/pet/data/types";
 import type { PetModelKind } from "@/pet/skins";
-import { isAppUiTheme, type AppUiTheme } from "@/theme/uiTheme";
+import {
+  clonePetThemeSettings,
+  type PetThemeSettings,
+} from "@/theme/types";
 import { syncPetWindow } from "@/pet/windows/pet";
 import { isSettingsStorageKey } from "@/pet/data/storageKeys";
 
@@ -15,7 +18,7 @@ export function usePetSettingsPersist(deps: {
   modelKind: Ref<PetModelKind>;
   settingsAlwaysOnTop: Ref<boolean>;
   sysStatsDefaultExpanded: Ref<boolean>;
-  uiTheme: Ref<AppUiTheme>;
+  theme: Ref<PetThemeSettings>;
   applyLocalFromSettings: (s: PetSettings) => void;
   refreshVrmPreview: () => void | Promise<void>;
 }) {
@@ -48,9 +51,9 @@ export function usePetSettingsPersist(deps: {
   function applyPartialIncoming(incoming: PetSettings) {
     deps.settingsAlwaysOnTop.value = Boolean(incoming.settingsAlwaysOnTop);
     deps.sysStatsDefaultExpanded.value = Boolean(incoming.sysStatsDefaultExpanded);
-    deps.uiTheme.value = isAppUiTheme(incoming.uiTheme)
-      ? incoming.uiTheme
-      : deps.uiTheme.value;
+    if (incoming.theme) {
+      deps.theme.value = clonePetThemeSettings(incoming.theme);
+    }
     deps.settingsBag.value = incoming;
   }
 
@@ -67,14 +70,7 @@ export function usePetSettingsPersist(deps: {
     if (!isSettingsStorageKey(ev.key) || !ev.newValue) return;
     try {
       const incoming = JSON.parse(ev.newValue) as PetSettings;
-      if (incoming.modelKind !== deps.modelKind.value) {
-        deps.applyLocalFromSettings(incoming);
-        void deps.refreshVrmPreview();
-        return;
-      }
-      deps.settingsAlwaysOnTop.value = Boolean(incoming.settingsAlwaysOnTop);
-      deps.sysStatsDefaultExpanded.value = Boolean(incoming.sysStatsDefaultExpanded);
-      deps.settingsBag.value = incoming;
+      onIncomingSettings(incoming);
     } catch {
       // ignore
     }

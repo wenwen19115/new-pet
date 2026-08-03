@@ -1,49 +1,49 @@
-﻿<template>
+<template>
   <div v-if="!ctx.enabled.value || ctx.isVrmPending.value" class="tab-empty">
     {{ !ctx.enabled.value ? $t("pet.tabNeedEnable") : $t("pet.vrmNeedUploadFirst") }}
   </div>
-  <template v-else>
-    <SettingsItemRow
-      class="span-2"
-      :title="$t('pet.motionTitle')"
-      :description="$t('pet.motionDesc')"
-      tone="pet"
-    >
-      <template #icon><ThunderboltOutlined /></template>
-      <div class="motion-row">
-        <a-select
-          v-model:value="ctx.demoMotion.value"
-          size="small"
-          class="ctrl-select"
-          :options="ctx.motionOptions.value"
-          :list-height="360"
-          @change="ctx.onDemoMotion"
-        />
-        <a-button size="small" type="primary" @click="ctx.onPlayMotion">
-          {{ $t("pet.motionPlay") }}
-        </a-button>
-      </div>
-    </SettingsItemRow>
+  <div v-else class="motion-panel">
+    <ThemeSection :label="$t('pet.secMotion')">
+      <SettingsItemRow
+        :title="$t('pet.motionTitle')"
+        :description="$t('pet.motionDesc')"
+        tone="pet"
+      >
+        <div class="motion-row">
+          <a-select
+            v-model:value="ctx.demoMotion.value"
+            size="small"
+            class="ctrl-select"
+            :options="ctx.motionOptions.value"
+            :list-height="360"
+            @change="ctx.onDemoMotion"
+          />
+          <button type="button" class="theme-btn pri" @click="ctx.onPlayMotion">
+            {{ $t("pet.motionPlay") }}
+          </button>
+        </div>
+      </SettingsItemRow>
 
-    <BuiltInIdToggles
-      v-if="ctx.capabilities.value.has('motion-toggle')"
-      :ids="ctx.motionPoolIds.value"
-      v-model:disabled-ids="ctx.disabledMotions.value"
-      title-key="pet.motionPoolTitle"
-      desc-key="pet.motionPoolDesc"
-      label-key-prefix="pet.motion."
-      @change="ctx.persistOnly"
-    />
+      <BuiltInIdToggles
+        v-if="ctx.capabilities.value.has('motion-toggle')"
+        :ids="ctx.motionPoolIds.value"
+        v-model:disabled-ids="ctx.disabledMotions.value"
+        title-key="pet.motionPoolTitle"
+        desc-key="pet.motionPoolDesc"
+        label-key-prefix="pet.motion."
+        @change="ctx.persistOnly"
+      />
+    </ThemeSection>
 
-    <div v-if="ctx.capabilities.value.has('vrm-bone-editor')" class="custom-motion-panel span-2">
+    <div v-if="ctx.capabilities.value.has('vrm-bone-editor')" class="custom-motion-panel">
       <header class="custom-motion-head">
         <div>
           <div class="custom-motion-title">{{ $t("pet.customMotionTitle") }}</div>
           <div class="custom-motion-desc">{{ $t("pet.customMotionDesc") }}</div>
         </div>
-        <a-button size="small" type="primary" ghost @click="ctx.onAddCustomMotion">
+        <button type="button" class="theme-btn pri" @click="ctx.onAddCustomMotion">
           {{ $t("pet.customMotionAdd") }}
-        </a-button>
+        </button>
       </header>
       <div v-if="!ctx.customVrmMotions.value.length" class="custom-motion-empty">
         {{ $t("pet.customMotionEmpty") }}
@@ -91,31 +91,36 @@
         />
         <div class="custom-motion-actions">
           <label class="custom-motion-random">
-            <a-switch
-              v-model:checked="item.includeInRandom"
-              size="small"
-              @change="ctx.persistCustomMotions"
+            <ThemeSwitch
+              :checked="item.includeInRandom"
+              @update:checked="
+                (v) => {
+                  item.includeInRandom = v;
+                  void ctx.persistCustomMotions();
+                }
+              "
             />
             <span>{{ $t("pet.customMotionEnabled") }}</span>
           </label>
           <div class="custom-motion-btns">
-            <a-button size="small" @click="ctx.onPlayCustomMotion(item.id)">
+            <button type="button" class="theme-btn" @click="ctx.onPlayCustomMotion(item.id)">
               {{ $t("pet.motionPlay") }}
-            </a-button>
-            <a-button size="small" danger @click="ctx.onRemoveCustomMotion(item.id)">
+            </button>
+            <button type="button" class="theme-btn" @click="ctx.onRemoveCustomMotion(item.id)">
               {{ $t("pet.customMotionRemove") }}
-            </a-button>
+            </button>
           </div>
         </div>
       </div>
     </div>
-  </template>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { inject } from "vue";
-import { ThunderboltOutlined } from "@ant-design/icons-vue";
 import SettingsItemRow from "@/components/SettingsItemRow.vue";
+import ThemeSection from "@/settings/components/ThemeSection.vue";
+import ThemeSwitch from "@/settings/components/ThemeSwitch.vue";
 import { CustomVrmBoneEditor } from "@/pet/models/vrm";
 import BuiltInIdToggles from "./BuiltInIdToggles.vue";
 import { PET_SETTINGS_PAGE_KEY } from "@/settings/context";
@@ -124,8 +129,11 @@ const ctx = inject(PET_SETTINGS_PAGE_KEY)!;
 </script>
 
 <style scoped>
+.motion-panel {
+  display: contents;
+}
+
 .tab-empty {
-  grid-column: 1 / -1;
   padding: 18px 8px;
   text-align: center;
   font-size: 13px;

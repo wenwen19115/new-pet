@@ -50,9 +50,14 @@
   margin: 6px 10px;
   padding: 10px 12px 12px 12px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid color-mix(in srgb, var(--ui-border, rgba(0, 0, 0, 0.12)) 80%, transparent);
   border-left: 3px solid color-mix(in srgb, var(--dw-accent) 62%, transparent);
-  background: rgba(255, 255, 255, 0.03);
+  /* 20% 透明，压住壳底花纹 */
+  background: color-mix(
+    in srgb,
+    var(--ui-surface-strong, #fff) 80%,
+    transparent
+  );
 }
 
 .desk-weather-sub--apps {

@@ -1,15 +1,23 @@
 <template>
-  <div class="settings-item" :data-stack="stack ? '1' : '0'">
+  <div
+    class="settings-item"
+    :data-stack="stack ? '1' : '0'"
+    :data-plain="plain ? '1' : '0'"
+    :data-tone="tone"
+  >
     <div class="item-main">
-      <div class="item-icon" :data-tone="tone">
+      <div v-if="!plain && $slots.icon" class="item-icon" :data-tone="tone">
         <slot name="icon" />
       </div>
       <div class="item-text">
         <div class="item-title">{{ title }}</div>
-        <div v-if="description" class="item-desc">{{ description }}</div>
+        <div v-if="description" class="item-desc theme-d">{{ description }}</div>
+        <div v-if="$slots.body" class="item-body">
+          <slot name="body" />
+        </div>
       </div>
     </div>
-    <div class="item-actions">
+    <div v-if="$slots.default" class="item-actions">
       <slot />
     </div>
   </div>
@@ -21,40 +29,44 @@ withDefaults(
     title: string;
     description?: string;
     tone?: "default" | "pet";
-    /** Put controls on the next line (wide inputs / avoid crushing description) */
+    /** 控件另起一行 */
     stack?: boolean;
+    /** 对齐 mockup .item：无左侧图标 */
+    plain?: boolean;
   }>(),
   {
     description: "",
     tone: "default",
     stack: false,
+    plain: true,
   }
 );
 </script>
 
 <style scoped>
 .settings-item {
-  display: flex;
-  flex-wrap: nowrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
+  padding: 14px;
   border-radius: 10px;
   border: 1px solid var(--ui-border, rgba(255, 255, 255, 0.08));
   background: var(--ui-surface, rgba(0, 0, 0, 0.22));
+  box-sizing: border-box;
+  width: 100%;
 }
 
-.settings-item[data-stack="1"] {
-  flex-direction: column;
-  align-items: stretch;
+.settings-item[data-stack="1"],
+.settings-item:not(:has(.item-actions)) {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .item-main {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
-  min-width: 160px;
-  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .item-icon {
@@ -82,38 +94,33 @@ withDefaults(
 }
 
 .item-title {
+  margin: 0 0 4px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--ui-text, rgba(255, 255, 255, 0.9));
   line-height: 1.35;
 }
 
 .item-desc {
-  margin-top: 3px;
+  margin: 0;
   font-size: 12px;
-  color: var(--ui-text-faint, rgba(255, 255, 255, 0.45));
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  overflow-wrap: anywhere;
-  word-break: normal;
+  color: var(--ui-text-muted, rgba(255, 255, 255, 0.45));
+  line-height: 1.45;
+}
+
+.item-body {
+  min-width: 0;
 }
 
 .item-actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 0 0 auto;
   flex-shrink: 0;
-  margin-left: auto;
 }
 
 .settings-item[data-stack="1"] .item-actions {
-  margin-left: 0;
   width: 100%;
-  padding-left: 48px;
-  box-sizing: border-box;
+  justify-content: flex-start;
 }
 </style>

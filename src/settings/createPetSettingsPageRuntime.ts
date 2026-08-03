@@ -3,7 +3,7 @@ import { characterCapabilities } from "@/pet/characters";
 import { loadPetSettings } from "@/pet/data/settings";
 import { syncPetWindow } from "@/pet/windows/pet";
 import type { PetSettings } from "@/pet/data/types";
-import type { AppUiTheme } from "@/theme/uiTheme";
+import type { PetThemeSettings } from "@/theme/types";
 import { registerBuiltinSettingsModules } from "./registerBuiltin";
 import { PET_SETTINGS_PAGE_KEY } from "./context";
 import {
@@ -19,7 +19,7 @@ import {
 } from "./composables";
 
 type Options = {
-  onUiThemeChange?: (theme: AppUiTheme) => void;
+  onThemeChange?: (theme: PetThemeSettings) => void;
 };
 
 export function createPetSettingsPageRuntime(opts: Options = {}) {
@@ -45,7 +45,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     deskWeather,
     catchphrases,
     catchphraseChance,
-    uiTheme,
+    theme,
     settingsAlwaysOnTop,
     sysStatsDefaultExpanded,
     customVrmMotions,
@@ -82,7 +82,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     modelKind,
     settingsAlwaysOnTop,
     sysStatsDefaultExpanded,
-    uiTheme,
+    theme,
     applyLocalFromSettings: (s) => applyLocalFromSettingsImpl(s),
     refreshVrmPreview: () => refreshVrmPreviewImpl(),
   });
@@ -158,7 +158,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     deskWeather,
     catchphrases,
     catchphraseChance,
-    uiTheme,
+    theme,
     settingsAlwaysOnTop,
     sysStatsDefaultExpanded,
     customVrmMotions,
@@ -170,7 +170,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     applyChatAiDraft,
     applyVrmFromSettings,
     refreshTtsVoiceOptions,
-    onUiThemeChange: opts.onUiThemeChange,
+    onThemeChange: opts.onThemeChange,
   });
 
   applyLocalFromSettingsImpl = applyLocalFromSettings;
@@ -202,7 +202,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     randomIdleEnabled,
     playfulModeEnabled,
     hitBoundsEnabled,
-    uiTheme,
+    theme,
     sysStatsDefaultExpanded,
     customVrmMotions,
     editingCustomId,
@@ -215,7 +215,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     refreshTtsVoiceOptions,
     resetEphemeralUi,
     isVrmPending,
-    onUiThemeChange: opts.onUiThemeChange,
+    onThemeChange: opts.onThemeChange,
   });
 
   const vm = usePetSettingsViewModel({
@@ -224,7 +224,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     lookId,
     nickname,
     personality,
-    uiTheme,
+    theme,
     settingsTab,
     editingCustomId,
     customVrmMotions,
@@ -274,7 +274,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     deskWeather,
     catchphrases,
     catchphraseChance,
-    uiTheme,
+    theme,
     settingsAlwaysOnTop,
     sysStatsDefaultExpanded,
     customVrmMotions,
@@ -295,7 +295,9 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     toneOptions: vm.toneOptions,
     ttsVoiceOptions,
     personalityOptions: vm.personalityOptions,
-    uiThemeOptions: vm.uiThemeOptions,
+    themeStageModeOptions: vm.themeStageModeOptions,
+    themeWallpaperFitOptions: vm.themeWallpaperFitOptions,
+    bootDurationModeOptions: vm.bootDurationModeOptions,
     motionOptions: vm.motionOptions,
     motionPoolIds: vm.motionPoolIds,
     skinDefaultNickname: vm.skinDefaultNickname,
@@ -335,7 +337,21 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     onClearVrm,
     onDemoMotion: actions.onDemoMotion,
     onPlayMotion: actions.onPlayMotion,
-    onUiTheme: actions.onUiTheme,
+    onThemeStyle: actions.onThemeStyle,
+    onThemeStageMode: actions.onThemeStageMode,
+    onThemeWallpaperDim: actions.onThemeWallpaperDim,
+    onBubbleOpacity: actions.onBubbleOpacity,
+    onThemeWallpaperFit: actions.onThemeWallpaperFit,
+    onPickThemeWallpaper: actions.onPickThemeWallpaper,
+    onClearThemeWallpaper: actions.onClearThemeWallpaper,
+    onThemeWallpaperMuted: actions.onThemeWallpaperMuted,
+    onBootAnimationEnabled: actions.onBootAnimationEnabled,
+    onBootAnimationMuted: actions.onBootAnimationMuted,
+    onBootAnimationFit: actions.onBootAnimationFit,
+    onPickBootAnimation: actions.onPickBootAnimation,
+    onClearBootAnimation: actions.onClearBootAnimation,
+    onBootAnimationDurationMode: actions.onBootAnimationDurationMode,
+    onBootAnimationDurationSec: actions.onBootAnimationDurationSec,
     onSettingsPin: persist.onSettingsPin,
     onSysStatsDefaultExpanded: actions.onSysStatsDefaultExpanded,
     persistOnly: persist.persistOnly,
@@ -371,6 +387,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
       displayName: vm.displayName,
       heroPanelStyle: vm.heroPanelStyle,
       personalityLabel: vm.personalityLabel,
+      themeBanner: vm.themeBanner,
     },
   };
 }

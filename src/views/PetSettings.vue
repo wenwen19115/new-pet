@@ -36,50 +36,53 @@
           :class="{ 'is-disabled': !canPreviewOrbit }"
           :title="canPreviewOrbit ? undefined : $t('pet.previewAutoOrbit2dHint')"
         >
-          <a-switch
-            v-model:checked="previewAutoOrbit"
-            size="small"
-            :disabled="!canPreviewOrbit"
-          />
+          <ThemeSwitch v-model:checked="previewAutoOrbit" :disabled="!canPreviewOrbit" />
           <span>{{ $t("pet.previewAutoOrbit") }}</span>
         </label>
       </div>
     </aside>
 
-    <div class="pet-body">
-      <nav class="pet-nav" :aria-label="$t('pet.settingsNav')">
-        <button
-          v-for="tab in settingsTabs"
-          :key="tab.id"
-          type="button"
-          class="pet-nav-item"
-          :data-active="settingsTab === tab.id ? '1' : '0'"
-          @click="onSettingsTab(tab.id)"
-        >
-          <component :is="tab.icon" class="pet-nav-icon" />
-          <span>{{ tab.label }}</span>
-        </button>
-      </nav>
+    <div class="pet-settings-col">
+      <div class="theme-shell pet-body">
+        <div class="theme-banner">{{ themeBanner }}</div>
+        <nav class="pet-nav" :aria-label="$t('pet.settingsNav')">
+          <button
+            v-for="tab in settingsTabs"
+            :key="tab.id"
+            type="button"
+            class="pet-nav-item"
+            :data-active="settingsTab === tab.id ? '1' : '0'"
+            @click="onSettingsTab(tab.id)"
+          >
+            <component :is="tab.icon" class="pet-nav-icon" />
+            <span>{{ tab.label }}</span>
+          </button>
+        </nav>
 
-      <section class="pet-list">
-        <header class="panel-head">
-          <span class="panel-title">{{ activeTabTitle }}</span>
-        </header>
-        <div class="item-stack" :data-expanded="enabled ? '1' : '0'">
-          <component :is="activeModule?.panel" v-if="activeModule" />
-        </div>
-      </section>
+        <section class="pet-main">
+          <header class="panel-head">
+            <span class="panel-title">{{ activeTabTitle }}</span>
+            <div class="theme-chip">
+              {{ $t("pet.themeChipCurrent") }}<em>{{ displayName || $t(activeLook.modelNameKey) }}</em>
+            </div>
+          </header>
+          <div class="item-stack" :data-expanded="enabled ? '1' : '0'">
+            <component :is="activeModule?.panel" v-if="activeModule" />
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import PetPreviewOrbit from "@/pet/models/preview/PetPreviewOrbit.vue";
+import ThemeSwitch from "@/settings/components/ThemeSwitch.vue";
 import { usePetSettingsPage } from "@/settings/usePetSettingsPage";
-import type { AppUiTheme } from "@/theme/uiTheme";
+import type { PetThemeSettings } from "@/theme/types";
 
 const emit = defineEmits<{
-  "ui-theme-change": [theme: AppUiTheme];
+  "theme-change": [theme: PetThemeSettings];
 }>();
 
 const {
@@ -104,8 +107,9 @@ const {
   displayName,
   heroPanelStyle,
   personalityLabel,
+  themeBanner,
 } = usePetSettingsPage({
-  onUiThemeChange: (theme) => emit("ui-theme-change", theme),
+  onThemeChange: (theme) => emit("theme-change", theme),
 });
 </script>
 

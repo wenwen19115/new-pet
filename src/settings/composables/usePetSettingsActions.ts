@@ -23,7 +23,21 @@ import {
   type CustomVrmMotion,
 } from "@/pet/content/motion/customVrmMotions";
 import type { PetSettings, PetTone } from "@/pet/data/types";
-import { isAppUiTheme, type AppUiTheme } from "@/theme/uiTheme";
+import { open } from "@tauri-apps/plugin-dialog";
+import { THEME_MEDIA_EXTENSIONS } from "@/theme/media";
+import { resolveThemePackId } from "@/theme/registry";
+import {
+  clampBootDurationSec,
+  clampBubbleOpacity,
+  isThemeBootDurationMode,
+  isThemeStageBackdropMode,
+  isThemeWallpaperFit,
+  type PetThemeSettings,
+} from "@/theme/types";
+import {
+  validateThemeMediaPath,
+  type ThemeMediaFailReason,
+} from "@/theme/validateMedia";
 import { characterHas, getCharacter } from "@/pet/characters";
 import { syncPetWindow } from "@/pet/windows/pet";
 import { createMaintenanceLog } from "./createMaintenanceLog";
@@ -43,7 +57,7 @@ export function usePetSettingsActions(deps: {
   randomIdleEnabled: Ref<boolean>;
   playfulModeEnabled: Ref<boolean>;
   hitBoundsEnabled: Ref<boolean>;
-  uiTheme: Ref<AppUiTheme>;
+  theme: Ref<PetThemeSettings>;
   sysStatsDefaultExpanded: Ref<boolean>;
   customVrmMotions: Ref<CustomVrmMotion[]>;
   editingCustomId: Ref<string | null>;
@@ -57,7 +71,7 @@ export function usePetSettingsActions(deps: {
   /** 出厂时清未持久化的设置页 UI 态 */
   resetEphemeralUi: () => void;
   isVrmPending: ComputedRef<boolean>;
-  onUiThemeChange?: (theme: AppUiTheme) => void;
+  onThemeChange?: (theme: PetThemeSettings) => void;
 }) {
   const { t } = useI18n();
 
@@ -146,7 +160,7 @@ export function usePetSettingsActions(deps: {
               () => {
                 deps.applyLocalFromSettings(next);
                 deps.resetEphemeralUi();
-                deps.onUiThemeChange?.(next.uiTheme);
+                deps.onThemeChange?.(next.theme);
               }
             );
             await log.step(
@@ -299,10 +313,209 @@ export function usePetSettingsActions(deps: {
     }
   }
 
-  async function onUiTheme(value: unknown) {
-    if (!isAppUiTheme(value)) return;
-    deps.uiTheme.value = value;
-    deps.onUiThemeChange?.(value);
+  async function onThemeStyle(value: unknown) {
+    const style = resolveThemePackId(value);
+    deps.theme.value = {
+      ...deps.theme.value,
+      style,
+    };
+    deps.onThemeChange?.(deps.theme.value);
+    await deps.persistOnly();
+  }
+
+  async function onThemeStageMode(value: unknown) {
+    if (!isThemeStageBackdropMode(value)) return;
+    deps.theme.value = {
+      ...deps.theme.value,
+      stageBackdrop: { ...deps.theme.value.stageBackdrop, mode: value },
+    };
+    deps.onThemeChange?.(deps.theme.value);
+    await deps.persistOnly();
+  }
+
+  async function onThemeWallpaperDim(value: unknown) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return;
+    deps.theme.value = {
+      ...deps.theme.value,
+      stageBackdrop: {
+        ...deps.theme.value.stageBackdrop,
+        dim: Math.min(1, Math.max(0, n)),
+      },
+    };
+    deps.onThemeChange?.(deps.theme.value);
+    await deps.persistOnly();
+  }
+
+  async function onBubbleOpacity(value: unknown) {
+    deps.theme.value = {
+      ...deps.theme.value,
+      bubbleOpacity: clampBubbleOpacity(value),
+    };
+    deps.onThemeChange?.(deps.theme.value);
+    await deps.persistOnly();
+  }
+
+  async function onThemeWallpaperFit(value: unknown) {
+    if (!isThemeWallpaperFit(value)) return;
+    deps.theme.value = {
+      ...deps.theme.value,
+      stageBackdrop: { ...deps.theme.value.stageBackdrop, fit: value },
+    };
+    deps.onThemeChange?.(deps.theme.value);
+    await deps.persistOnly();
+  }
+
+  function mediaFailText(reason: ThemeMediaFailReason) {
+    return t(`pet.themeMediaFail.${reason}`);
+  }
+
+  async function pickValidMediaPath(): Promise<string | null> {
+    const selected = await open({
+      multiple: false,
+      filters: [
+        {
+          name: "Media",
+          extensions: [...THEME_MEDIA_EXTENSIONS],
+        },
+      ],
+    });
+    if (typeof selected !== "string" || !selected) return null;
+    const result = await validateThemeMediaPath(selected);
+    if (!result.ok) {
+      message.warning(mediaFailText(result.reason));
+      return null;
+    }
+    return selected;
+  }
+
+  async function onPickThemeWallpaper() {
+    const selected = await pickValidMediaPath();
+    if (!selected) return;
+    deps.theme.value = {
+      ...deps.theme.value,
+      stageBackdrop: {
+        ...deps.theme.value.stageBackdrop,
+        mode: "wallpaper",
+        imagePath: selected,
+      },
+    };
+    deps.onThemeChange?.(deps.theme.value);
+    await deps.persistOnly();
+  }
+
+  async function onClearThemeWallpaper() {
+    deps.theme.value = {
+      ...deps.theme.value,
+      stageBackdrop: {
+        ...deps.theme.value.stageBackdrop,
+        mode: "pack",
+        imagePath: "",
+      },
+    };
+    deps.onThemeChange?.(deps.theme.value);
+    await deps.persistOnly();
+  }
+
+  async function onThemeWallpaperMuted(value: unknown) {
+    deps.theme.value = {
+      ...deps.theme.value,
+      stageBackdrop: {
+        ...deps.theme.value.stageBackdrop,
+        muted: Boolean(value),
+      },
+    };
+    deps.onThemeChange?.(deps.theme.value);
+    await deps.persistOnly();
+  }
+
+  async function onBootAnimationEnabled(value: unknown) {
+    deps.theme.value = {
+      ...deps.theme.value,
+      bootAnimation: {
+        ...deps.theme.value.bootAnimation,
+        enabled: Boolean(value),
+      },
+    };
+    deps.onThemeChange?.(deps.theme.value);
+    await deps.persistOnly();
+  }
+
+  async function onBootAnimationMuted(value: unknown) {
+    deps.theme.value = {
+      ...deps.theme.value,
+      bootAnimation: {
+        ...deps.theme.value.bootAnimation,
+        muted: Boolean(value),
+      },
+    };
+    deps.onThemeChange?.(deps.theme.value);
+    await deps.persistOnly();
+  }
+
+  async function onBootAnimationFit(value: unknown) {
+    if (!isThemeWallpaperFit(value)) return;
+    deps.theme.value = {
+      ...deps.theme.value,
+      bootAnimation: {
+        ...deps.theme.value.bootAnimation,
+        fit: value,
+      },
+    };
+    deps.onThemeChange?.(deps.theme.value);
+    await deps.persistOnly();
+  }
+
+  async function onPickBootAnimation() {
+    const selected = await pickValidMediaPath();
+    if (!selected) return;
+    deps.theme.value = {
+      ...deps.theme.value,
+      bootAnimation: {
+        ...deps.theme.value.bootAnimation,
+        enabled: true,
+        mediaPath: selected,
+      },
+    };
+    deps.onThemeChange?.(deps.theme.value);
+    await deps.persistOnly();
+  }
+
+  async function onClearBootAnimation() {
+    deps.theme.value = {
+      ...deps.theme.value,
+      bootAnimation: {
+        ...deps.theme.value.bootAnimation,
+        enabled: false,
+        mediaPath: "",
+      },
+    };
+    deps.onThemeChange?.(deps.theme.value);
+    await deps.persistOnly();
+  }
+
+  async function onBootAnimationDurationMode(value: unknown) {
+    if (!isThemeBootDurationMode(value)) return;
+    deps.theme.value = {
+      ...deps.theme.value,
+      bootAnimation: {
+        ...deps.theme.value.bootAnimation,
+        durationMode: value,
+      },
+    };
+    deps.onThemeChange?.(deps.theme.value);
+    await deps.persistOnly();
+  }
+
+  async function onBootAnimationDurationSec(value: unknown) {
+    deps.theme.value = {
+      ...deps.theme.value,
+      bootAnimation: {
+        ...deps.theme.value.bootAnimation,
+        durationSec: clampBootDurationSec(value),
+      },
+    };
+    deps.onThemeChange?.(deps.theme.value);
     await deps.persistOnly();
   }
 
@@ -385,7 +598,21 @@ export function usePetSettingsActions(deps: {
     onPlayfulMode,
     onDemoMotion,
     onPlayMotion,
-    onUiTheme,
+    onThemeStyle,
+    onThemeStageMode,
+    onThemeWallpaperDim,
+    onBubbleOpacity,
+    onThemeWallpaperFit,
+    onPickThemeWallpaper,
+    onClearThemeWallpaper,
+    onThemeWallpaperMuted,
+    onBootAnimationEnabled,
+    onBootAnimationMuted,
+    onBootAnimationFit,
+    onPickBootAnimation,
+    onClearBootAnimation,
+    onBootAnimationDurationMode,
+    onBootAnimationDurationSec,
     onSysStatsDefaultExpanded,
     persistCustomMotions,
     onAddCustomMotion,

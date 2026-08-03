@@ -2,17 +2,14 @@ import { computed, ref, watch, type Ref } from "vue";
 import { loadPetSettings, patchActiveProfile } from "@/pet/data/settings";
 import type { PetSettings, PetTone } from "@/pet/data/types";
 import type { PetModelKind } from "@/pet/skins";
-import {
-  isPetPersonality,
-  type PetPersonality,
-} from "@/pet/content/dialogue/personality";
-import {
-  createEmptyCustomVrmMotion,
-  isCustomVrmMotionId,
-  type CustomVrmMotion,
-} from "@/pet/content/motion/customVrmMotions";
+import type { PetPersonality } from "@/pet/content/dialogue/personality";
+import type { CustomVrmMotion } from "@/pet/content/motion/customVrmMotions";
 import type { PetCustomLine } from "@/pet/content/dialogue/customLines";
-import { isAppUiTheme, type AppUiTheme } from "@/theme/uiTheme";
+import {
+  DEFAULT_PET_THEME_SETTINGS,
+  clonePetThemeSettings,
+  type PetThemeSettings,
+} from "@/theme/types";
 import { characterCapabilities } from "@/pet/characters";
 import {
   CATCHPHRASE_DEFAULT_CHANCE,
@@ -46,7 +43,9 @@ export function usePetSettingsFormState() {
   );
   const catchphrases = ref<string[]>([]);
   const catchphraseChance = ref(CATCHPHRASE_DEFAULT_CHANCE);
-  const uiTheme = ref<AppUiTheme>("night");
+  const theme = ref<PetThemeSettings>(
+    clonePetThemeSettings(DEFAULT_PET_THEME_SETTINGS)
+  );
   const settingsAlwaysOnTop = ref(false);
   const sysStatsDefaultExpanded = ref(false);
   const customVrmMotions = ref<CustomVrmMotion[]>([]);
@@ -99,7 +98,7 @@ export function usePetSettingsFormState() {
       deskWeather: normalizeDeskWeather(deskWeather.value),
       catchphrases: catchphrases.value.map((t) => t.trim()).filter(Boolean),
       catchphraseChance: clampCatchphraseChance(catchphraseChance.value),
-      uiTheme: uiTheme.value,
+      theme: clonePetThemeSettings(theme.value),
       settingsAlwaysOnTop: settingsAlwaysOnTop.value,
       sysStatsDefaultExpanded: sysStatsDefaultExpanded.value,
       customVrmMotions: customVrmMotions.value.map((m) => ({ ...m })),
@@ -133,7 +132,7 @@ export function usePetSettingsFormState() {
     deskWeather,
     catchphrases,
     catchphraseChance,
-    uiTheme,
+    theme,
     settingsAlwaysOnTop,
     sysStatsDefaultExpanded,
     customVrmMotions,

@@ -2,123 +2,120 @@
   <div v-if="!ctx.enabled.value" class="tab-empty">
     {{ $t("pet.tabNeedEnable") }}
   </div>
-  <template v-else>
-    <SettingsItemRow
-      :title="$t('pet.chatProviderTitle')"
-      :description="providerHint"
-      tone="pet"
-    >
-      <template #icon><ApiOutlined /></template>
-      <a-select
-        :value="ctx.chatAiProvider.value"
-        size="small"
-        class="chat-select"
-        :options="providerOptions"
-        @change="ctx.onChatAiProvider"
-      />
-    </SettingsItemRow>
-
-    <SettingsItemRow
-      v-if="showModel"
-      :title="$t('pet.chatModelTitle')"
-      :description="$t('pet.chatModelDesc')"
-      tone="pet"
-    >
-      <template #icon><RobotOutlined /></template>
-      <div class="chat-model-wrap">
-        <div class="chat-model-row">
-          <a-auto-complete
-            :value="ctx.chatAiModel.value"
-            size="small"
-            class="chat-select"
-            :options="modelSelectOptions"
-            :placeholder="modelPlaceholder"
-            allow-clear
-            @update:value="onModelUpdate"
+  <div v-else class="chat-panel">
+    <ThemeSection :label="$t('pet.tabChat')">
+      <SettingsItemRow
+        :title="$t('pet.chatProviderTitle')"
+        :description="providerHint"
+        tone="pet"
+      >
+        <template #body>
+          <ThemeChoices
+            :model-value="ctx.chatAiProvider.value"
+            :options="providerOptions"
+            :aria-label="$t('pet.chatProviderTitle')"
+            @update:model-value="(v) => ctx.onChatAiProvider(v)"
           />
-          <a-button
-            size="small"
-            :disabled="!ctx.canAddChatAiModel.value"
-            @click="ctx.onChatAiAddModel"
-          >
-            {{ $t("pet.chatModelAdd") }}
-          </a-button>
-        </div>
-        <div v-if="customModelTags.length" class="chat-model-tags">
-          <span
-            v-for="id in customModelTags"
-            :key="id"
-            class="chat-model-tag"
-          >
-            {{ id }}
+        </template>
+      </SettingsItemRow>
+
+      <SettingsItemRow
+        v-if="showModel"
+        :title="$t('pet.chatModelTitle')"
+        :description="$t('pet.chatModelDesc')"
+        tone="pet"
+      >
+        <div class="chat-model-wrap">
+          <div class="chat-model-row">
+            <a-auto-complete
+              :value="ctx.chatAiModel.value"
+              size="small"
+              class="chat-select"
+              :options="modelSelectOptions"
+              :placeholder="modelPlaceholder"
+              allow-clear
+              @update:value="onModelUpdate"
+            />
             <button
               type="button"
-              class="chat-model-tag-x"
-              :title="$t('pet.chatModelRemove')"
-              @click="ctx.onChatAiRemoveModel(id)"
+              class="theme-btn"
+              :disabled="!ctx.canAddChatAiModel.value"
+              @click="ctx.onChatAiAddModel"
             >
-              ×
+              {{ $t("pet.chatModelAdd") }}
             </button>
-          </span>
+          </div>
+          <div v-if="customModelTags.length" class="chat-model-tags">
+            <span
+              v-for="id in customModelTags"
+              :key="id"
+              class="chat-model-tag"
+            >
+              {{ id }}
+              <button
+                type="button"
+                class="chat-model-tag-x"
+                :title="$t('pet.chatModelRemove')"
+                @click="ctx.onChatAiRemoveModel(id)"
+              >
+                ×
+              </button>
+            </span>
+          </div>
         </div>
-      </div>
-    </SettingsItemRow>
+      </SettingsItemRow>
 
-    <SettingsItemRow
-      v-if="showApiKey"
-      :title="$t('pet.chatApiKeyTitle')"
-      :description="$t('pet.chatApiKeyDesc')"
-      tone="pet"
-    >
-      <template #icon><KeyOutlined /></template>
-      <a-input-password
-        :value="ctx.chatAiApiKey.value"
-        size="small"
-        class="chat-select"
-        :placeholder="$t('pet.chatApiKeyPh')"
-        autocomplete="off"
-        @update:value="(v: string) => (ctx.chatAiApiKey.value = v)"
-      />
-    </SettingsItemRow>
-
-    <SettingsItemRow
-      :title="$t('pet.chatAiApplyTitle')"
-      :description="$t('pet.chatAiApplyDesc')"
-      tone="pet"
-    >
-      <template #icon><SaveOutlined /></template>
-      <div class="chat-actions">
-        <a-button size="small" :loading="testing" @click="onTestConnection">
-          {{ $t("pet.chatAiTest") }}
-        </a-button>
-        <a-button
+      <SettingsItemRow
+        v-if="showApiKey"
+        :title="$t('pet.chatApiKeyTitle')"
+        :description="$t('pet.chatApiKeyDesc')"
+        tone="pet"
+      >
+        <a-input-password
+          :value="ctx.chatAiApiKey.value"
           size="small"
-          :disabled="isLocalProvider"
-          @click="ctx.onChatAiReset"
-        >
-          {{ $t("pet.chatAiReset") }}
-        </a-button>
-        <a-button type="primary" size="small" @click="ctx.onChatAiSave">
-          {{ $t("pet.chatAiSave") }}
-        </a-button>
-      </div>
-    </SettingsItemRow>
+          class="chat-select"
+          :placeholder="$t('pet.chatApiKeyPh')"
+          autocomplete="off"
+          @update:value="(v: string) => (ctx.chatAiApiKey.value = v)"
+        />
+      </SettingsItemRow>
+
+      <SettingsItemRow
+        :title="$t('pet.chatAiApplyTitle')"
+        :description="$t('pet.chatAiApplyDesc')"
+        tone="pet"
+      >
+        <div class="chat-actions">
+          <button type="button" class="theme-btn" :disabled="testing" @click="onTestConnection">
+            {{ $t("pet.chatAiTest") }}
+          </button>
+          <button
+            type="button"
+            class="theme-btn"
+            :disabled="isLocalProvider"
+            @click="ctx.onChatAiReset"
+          >
+            {{ $t("pet.chatAiReset") }}
+          </button>
+          <button type="button" class="theme-btn pri" @click="ctx.onChatAiSave">
+            {{ $t("pet.chatAiSave") }}
+          </button>
+        </div>
+      </SettingsItemRow>
+    </ThemeSection>
 
     <ChatHistorySection :character-id="historyCharacterId" />
-  </template>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { message } from "ant-design-vue";
-import {
-  ApiOutlined,
-  KeyOutlined,
-  RobotOutlined,
-  SaveOutlined,
-} from "@ant-design/icons-vue";
 import SettingsItemRow from "@/components/SettingsItemRow.vue";
+import ThemeChoices from "@/settings/components/ThemeChoices.vue";
+import ThemeSection from "@/settings/components/ThemeSection.vue";
 import ChatHistorySection from "@/settings/modules/ChatHistorySection.vue";
 import { PET_SETTINGS_PAGE_KEY } from "@/settings/context";
 import {
@@ -217,8 +214,11 @@ const modelPlaceholder = computed(() => {
 </script>
 
 <style scoped>
+.chat-panel {
+  display: contents;
+}
+
 .tab-empty {
-  grid-column: 1 / -1;
   padding: 24px 8px;
   text-align: center;
   color: var(--text-muted, rgba(255, 255, 255, 0.45));

@@ -76,8 +76,6 @@ export function usePreviewOrbit(props: PreviewOrbitProps) {
   const stageStyle = computed(
     () =>
       ({
-        "--orbit-accent": props.visual.accent,
-        "--orbit-accent-soft": props.visual.accentSoft,
         "--pet-accent": props.visual.accent,
         "--pet-accent-soft": props.visual.accentSoft,
         "--pet-side-hi": props.visual.sideHi,

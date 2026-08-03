@@ -1,9 +1,9 @@
 import { onMounted } from "vue";
-import type { AppUiTheme } from "@/theme/uiTheme";
+import type { PetThemeSettings } from "@/theme/types";
 import { createPetSettingsPageRuntime } from "./createPetSettingsPageRuntime";
 
 type UsePetSettingsPageOptions = {
-  onUiThemeChange?: (theme: AppUiTheme) => void;
+  onThemeChange?: (theme: PetThemeSettings) => void;
 };
 
 export function usePetSettingsPage(opts: UsePetSettingsPageOptions = {}) {

@@ -4,7 +4,7 @@ import type { PetPersonality } from "@/pet/content/dialogue/personality";
 import type { PetTone } from "@/pet/data/types";
 import type { CustomVrmMotion } from "@/pet/content/motion/customVrmMotions";
 import type { PetCustomLine } from "@/pet/content/dialogue/customLines";
-import type { AppUiTheme } from "@/theme/uiTheme";
+import type { PetThemeSettings } from "@/theme/types";
 
 export type PetSettingsPageCtx = {
   enabled: Ref<boolean>;
@@ -32,7 +32,7 @@ export type PetSettingsPageCtx = {
   deskWeather: Ref<import("@/pet/data/deskWeather").DeskWeatherConfig>;
   catchphrases: Ref<string[]>;
   catchphraseChance: Ref<number>;
-  uiTheme: Ref<AppUiTheme>;
+  theme: Ref<PetThemeSettings>;
   settingsAlwaysOnTop: Ref<boolean>;
   sysStatsDefaultExpanded: Ref<boolean>;
   customVrmMotions: Ref<CustomVrmMotion[]>;
@@ -61,12 +61,14 @@ export type PetSettingsPageCtx = {
   toneOptions: ComputedRef<Array<{ label: string; value: string }>>;
   ttsVoiceOptions: Ref<Array<{ label: string; value: string }>>;
   personalityOptions: ComputedRef<Array<{ label: string; value: string }>>;
-  uiThemeOptions: ComputedRef<Array<{ label: string; value: string }>>;
+  themeStageModeOptions: ComputedRef<Array<{ label: string; value: string }>>;
+  themeWallpaperFitOptions: ComputedRef<Array<{ label: string; value: string }>>;
+  bootDurationModeOptions: ComputedRef<Array<{ label: string; value: string }>>;
   motionOptions: ComputedRef<Array<{ label: string; value: string }>>;
   motionPoolIds: ComputedRef<string[]>;
   skinDefaultNickname: ComputedRef<string>;
   capabilities: ComputedRef<Set<import("@/pet/characters").PetCapability>>;
-  lookLabel: (theme: { nameKey: string; toonNameKey?: string }) => string;
+  lookLabel: (look: { nameKey: string; toonNameKey?: string }) => string;
   onEnabled: (v: boolean) => void | Promise<void>;
   onModel: (v: string | number) => void | Promise<void>;
   onLook: (id: string) => void | Promise<void>;
@@ -101,7 +103,21 @@ export type PetSettingsPageCtx = {
   onClearVrm: () => void | Promise<void>;
   onDemoMotion: (v: unknown) => void | Promise<void>;
   onPlayMotion: () => void | Promise<void>;
-  onUiTheme: (v: unknown) => void | Promise<void>;
+  onThemeStyle: (v: unknown) => void | Promise<void>;
+  onThemeStageMode: (v: unknown) => void | Promise<void>;
+  onThemeWallpaperDim: (v: unknown) => void | Promise<void>;
+  onBubbleOpacity: (v: unknown) => void | Promise<void>;
+  onThemeWallpaperFit: (v: unknown) => void | Promise<void>;
+  onPickThemeWallpaper: () => void | Promise<void>;
+  onClearThemeWallpaper: () => void | Promise<void>;
+  onThemeWallpaperMuted: (v: unknown) => void | Promise<void>;
+  onBootAnimationEnabled: (v: unknown) => void | Promise<void>;
+  onBootAnimationMuted: (v: unknown) => void | Promise<void>;
+  onBootAnimationFit: (v: unknown) => void | Promise<void>;
+  onPickBootAnimation: () => void | Promise<void>;
+  onClearBootAnimation: () => void | Promise<void>;
+  onBootAnimationDurationMode: (v: unknown) => void | Promise<void>;
+  onBootAnimationDurationSec: (v: unknown) => void | Promise<void>;
   onSettingsPin: (v: unknown) => void | Promise<void>;
   onSysStatsDefaultExpanded: (v: unknown) => void | Promise<void>;
   persistOnly: () => void | Promise<void>;

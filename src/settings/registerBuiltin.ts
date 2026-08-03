@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons-vue";
 import { registerSettingsModule } from "./registry";
 import CompanionPanel from "./modules/CompanionPanel.vue";
-import LookPanel from "./modules/LookPanel.vue";
+import BehaviorPanel from "./modules/BehaviorPanel.vue";
 import MotionPanel from "./modules/MotionPanel.vue";
 import ChatPanel from "./modules/ChatPanel.vue";
 import AppPanel from "./modules/AppPanel.vue";
@@ -28,11 +28,11 @@ export function registerBuiltinSettingsModules(): void {
   });
 
   registerSettingsModule({
-    id: "look",
+    id: "behavior",
     order: 20,
     labelKey: "pet.tabBehavior",
     icon: EyeOutlined,
-    panel: LookPanel,
+    panel: BehaviorPanel,
   });
 
   registerSettingsModule({
