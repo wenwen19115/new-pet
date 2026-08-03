@@ -7,7 +7,6 @@ import { loadPetSettings } from "@/pet/data/settings";
 import { petStore } from "@/pet/data/store";
 import { resolveAppearance } from "@/pet/skins";
 import { getPetLocale } from "@/pet/bridge/locale";
-import { getCharacter } from "@/pet/characters";
 import {
   PET_CHAT_ACTIVITY_EVENT,
   PET_CHAT_CLOSE_REQ_EVENT,
@@ -156,11 +155,9 @@ async function ensureChatListeners() {
 function buildShowPayload(): PetChatShowPayload {
   // 优先内存里的 settings（跨 webview 已由事件同步）
   const s = petStore.settings ?? loadPetSettings();
-  const character = getCharacter(s.modelKind);
   const petName =
     s.nickname.trim() ||
-    character.form.defaultNickname ||
-    character.id;
+    resolveAppearance(s.modelKind, s.lookId).defaultNickname;
   return {
     petName,
     personality: s.personality,

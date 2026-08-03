@@ -1,7 +1,4 @@
-/**
- * Character id. Known ids live in `characters` registry;
- * validate with `isPetModelKind` — do not hardcode a closed union here.
- */
+/** 角色 id。已知 id 在 characters registry；用 isPetModelKind 校验，别在这里写死闭集。 */
 export type PetModelKind = string;
 
 /** 外观配色（芯片整套色 / 人形强调色共用） */

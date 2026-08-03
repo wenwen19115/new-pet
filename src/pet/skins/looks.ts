@@ -2,35 +2,7 @@ import type { PetSkinVisual, PetModelKind } from "./types";
 import { getCharacter } from "../characters";
 import looksData from "./looks.json";
 
-export type PetFigArtId =
-  | "sunny"
-  | "shy"
-  | "cool"
-  | "fiery"
-  | "valentine"
-  | "spring"
-  | "midautumn"
-  | "labor";
-
-export type PetToonDecorId = "crystal" | "lantern" | "blossom" | "star";
-
-export interface PetLookDef {
-  id: string;
-  nameKey: string;
-  toonNameKey?: string;
-  chipNickname: string;
-  figArtId?: PetFigArtId;
-  toonDecor?: PetToonDecorId;
-  visual: PetSkinVisual;
-}
-
-const PET_LOOK_REGISTRY = looksData as PetLookDef[];
-
-const DEFAULT_PET_LOOK_ID = "cyan";
-
-const lookById = new Map(PET_LOOK_REGISTRY.map((t) => [t.id, t]));
-
-export const STANDARD_LOOK_IDS = ["cyan", "amber", "rose", "violet"] as const;
+/** fig 形象 look id 单表；PetFigArtId 由此推导 */
 export const FIG_LOOK_IDS = [
   "sunny",
   "shy",
@@ -41,6 +13,32 @@ export const FIG_LOOK_IDS = [
   "midautumn",
   "labor",
 ] as const;
+
+export type PetFigArtId = (typeof FIG_LOOK_IDS)[number];
+
+export type PetToonDecorId = "crystal" | "lantern" | "blossom" | "star";
+
+export interface PetLookDef {
+  id: string;
+  nameKey: string;
+  toonNameKey?: string;
+  toonDecor?: PetToonDecorId;
+  visual: PetSkinVisual;
+}
+
+const PET_LOOK_REGISTRY = looksData as PetLookDef[];
+
+const DEFAULT_PET_LOOK_ID = "cyan";
+
+const lookById = new Map(PET_LOOK_REGISTRY.map((t) => [t.id, t]));
+
+const FIG_LOOK_ID_SET = new Set<string>(FIG_LOOK_IDS);
+
+export const STANDARD_LOOK_IDS = ["cyan", "amber", "rose", "violet"] as const;
+
+export function isPetFigArtId(value: unknown): value is PetFigArtId {
+  return typeof value === "string" && FIG_LOOK_ID_SET.has(value);
+}
 
 export function listPetLooksForModel(model: PetModelKind): PetLookDef[] {
   const ids = getCharacter(model).lookIds;

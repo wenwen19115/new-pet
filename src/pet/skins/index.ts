@@ -1,10 +1,13 @@
 import {
   coerceLookIdForModel,
   getPetLook,
+  isPetFigArtId,
   type PetFigArtId,
   type PetToonDecorId,
 } from "./looks";
 import type { PetModelKind, PetSkinVisual } from "./types";
+import { pickLocaleName, FALLBACK_DEFAULT_NICKNAME } from "./localeName";
+import { getPetLocale, type PetLocale } from "../bridge/locale";
 import {
   DEFAULT_PET_MODEL,
   getCharacter,
@@ -15,9 +18,9 @@ interface PetAppearance {
   id: string;
   model: PetModelKind;
   lookId: string;
-  /** Look / decor display name */
+  /** look / 装饰显示名 key */
   nameKey: string;
-  /** Character form label (天问7号 / 梨宝 / …) */
+  /** 角色形态显示名 key（天问7号 / 梨宝…） */
   modelNameKey: string;
   defaultNickname: string;
   visual: PetSkinVisual;
@@ -27,7 +30,8 @@ interface PetAppearance {
 
 export function resolveAppearance(
   model: PetModelKind | null | undefined,
-  lookId: string | null | undefined
+  lookId: string | null | undefined,
+  lang: PetLocale = getPetLocale()
 ): PetAppearance {
   const kind = isPetModelKind(model) ? model : DEFAULT_PET_MODEL;
   const character = getCharacter(kind);
@@ -36,10 +40,10 @@ export function resolveAppearance(
   const look = getPetLook(coercedLookId);
   const policy = character.appearance;
 
-  const defaultNickname =
-    policy.nicknameFrom === "look-chip"
-      ? look.chipNickname
-      : form.defaultNickname ?? "桌宠";
+  const defaultNickname = pickLocaleName(
+    form.defaultNickname ?? FALLBACK_DEFAULT_NICKNAME,
+    lang
+  );
 
   const nameKey =
     policy.nameFrom === "look-toon" && look.toonNameKey
@@ -54,7 +58,7 @@ export function resolveAppearance(
     modelNameKey: form.nameKey,
     defaultNickname,
     visual: look.visual,
-    figArtId: look.figArtId,
+    figArtId: isPetFigArtId(look.id) ? look.id : undefined,
     toonDecor: policy.attachToonDecor ? look.toonDecor : undefined,
   };
 }
@@ -65,8 +69,6 @@ export {
   listPetLooksForModel,
   coerceLookIdForModel,
   isPetLookId,
-  STANDARD_LOOK_IDS,
-  FIG_LOOK_IDS,
 } from "./looks";
 export { isPetModelKind, DEFAULT_PET_MODEL };
 export { resolveNickname } from "./types";

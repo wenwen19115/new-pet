@@ -3,7 +3,6 @@
     "id": "cyan",
     "nameKey": "pet.look.cyan",
     "toonNameKey": "pet.look.cyanToon",
-    "chipNickname": "青芯",
     "toonDecor": "crystal",
     "visual": {
       "bodyFrom": "#2a3344",
@@ -31,7 +30,6 @@
     "id": "amber",
     "nameKey": "pet.look.amber",
     "toonNameKey": "pet.look.amberToon",
-    "chipNickname": "焊点",
     "toonDecor": "lantern",
     "visual": {
       "bodyFrom": "#3a2e24",
@@ -59,7 +57,6 @@
     "id": "rose",
     "nameKey": "pet.look.rose",
     "toonNameKey": "pet.look.roseToon",
-    "chipNickname": "硅糖",
     "toonDecor": "blossom",
     "visual": {
       "bodyFrom": "#3a2434",
@@ -87,7 +84,6 @@
     "id": "violet",
     "nameKey": "pet.look.violet",
     "toonNameKey": "pet.look.violetToon",
-    "chipNickname": "紫晶",
     "toonDecor": "star",
     "visual": {
       "bodyFrom": "#6b4fa0",
@@ -114,8 +110,6 @@
   {
     "id": "sunny",
     "nameKey": "pet.look.sunny",
-    "chipNickname": "晴芯",
-    "figArtId": "sunny",
     "visual": {
       "bodyFrom": "#3a3420",
       "bodyMid": "#1c1810",
@@ -141,8 +135,6 @@
   {
     "id": "shy",
     "nameKey": "pet.look.shy",
-    "chipNickname": "羞芯",
-    "figArtId": "shy",
     "visual": {
       "bodyFrom": "#3a2834",
       "bodyMid": "#1c141a",
@@ -168,8 +160,6 @@
   {
     "id": "cool",
     "nameKey": "pet.look.cool",
-    "chipNickname": "冷芯",
-    "figArtId": "cool",
     "visual": {
       "bodyFrom": "#243038",
       "bodyMid": "#12181c",
@@ -195,8 +185,6 @@
   {
     "id": "fiery",
     "nameKey": "pet.look.fiery",
-    "chipNickname": "焰芯",
-    "figArtId": "fiery",
     "visual": {
       "bodyFrom": "#3a2218",
       "bodyMid": "#1c100c",
@@ -222,8 +210,6 @@
   {
     "id": "valentine",
     "nameKey": "pet.look.valentine",
-    "chipNickname": "心芯",
-    "figArtId": "valentine",
     "visual": {
       "bodyFrom": "#3a1828",
       "bodyMid": "#1c0c14",
@@ -249,8 +235,6 @@
   {
     "id": "spring",
     "nameKey": "pet.look.spring",
-    "chipNickname": "年芯",
-    "figArtId": "spring",
     "visual": {
       "bodyFrom": "#4a1818",
       "bodyMid": "#2a0c0c",
@@ -276,8 +260,6 @@
   {
     "id": "midautumn",
     "nameKey": "pet.look.midautumn",
-    "chipNickname": "月芯",
-    "figArtId": "midautumn",
     "visual": {
       "bodyFrom": "#2a2838",
       "bodyMid": "#14121c",
@@ -303,8 +285,6 @@
   {
     "id": "labor",
     "nameKey": "pet.look.labor",
-    "chipNickname": "工芯",
-    "figArtId": "labor",
     "visual": {
       "bodyFrom": "#2a3228",
       "bodyMid": "#141810",

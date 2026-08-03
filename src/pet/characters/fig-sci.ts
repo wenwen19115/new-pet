@@ -40,7 +40,6 @@ export const characterFig: CharacterDef = {
   },
   previewHintKey: "pet.previewFigHint",
   appearance: {
-    nicknameFrom: "form",
     nameFrom: "look",
   },
   lines,

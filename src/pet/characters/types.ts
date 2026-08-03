@@ -56,9 +56,7 @@ interface CharacterDefaults {
 }
 
 interface CharacterAppearancePolicy {
-  /** chip uses look.chipNickname; others use form.defaultNickname */
-  nicknameFrom: "form" | "look-chip";
-  /** toon may prefer look.toonNameKey */
+  /** toon 可优先 look.toonNameKey */
   nameFrom: "look" | "look-toon";
   attachToonDecor?: boolean;
 }

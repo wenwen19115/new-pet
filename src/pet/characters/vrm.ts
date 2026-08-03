@@ -45,7 +45,6 @@ export const characterVrm: CharacterDef = {
   },
   previewHintKey: "pet.previewVrmHint",
   appearance: {
-    nicknameFrom: "form",
     nameFrom: "look",
   },
   lines,

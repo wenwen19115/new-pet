@@ -44,7 +44,6 @@ export const characterToon: CharacterDef = {
   },
   previewHintKey: "pet.previewToonHint",
   appearance: {
-    nicknameFrom: "form",
     nameFrom: "look-toon",
     attachToonDecor: true,
   },
