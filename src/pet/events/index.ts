@@ -9,6 +9,8 @@ export {
   PET_RESUME_EVENT,
 } from "../data/types";
 
+export { PET_LOCALE_EVENT } from "../bridge/locale";
+
 export {
   PET_MOTION_EVENT,
   PET_OPEN_SETTINGS_EVENT,
@@ -47,6 +49,7 @@ export type {
 /** 事件名清单（审计 / 文档用）。 */
 export const PET_EVENT_CATALOG = [
   "pet://settings-changed",
+  "pet://locale-changed",
   "pet://intro",
   "pet://clear-cache",
   "pet://suspend",
