@@ -70,6 +70,7 @@ export function applyRandomIdleSettingGate(
     return;
   }
   fx.setIdleActionTimer(null);
+  fx.cancelFlight();
 }
 
 export function applyPlayfulChaseIdleGate(

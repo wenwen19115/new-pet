@@ -248,6 +248,16 @@ describe("host intent dispatch", () => {
     expect(bag.scheduleIdleAction).toHaveBeenCalledTimes(1);
   });
 
+  it("random-idle-setting off clears idle timer and cancels flight", () => {
+    const bag = makeFx();
+    bag.setIdleActionTimer.mockClear();
+    bag.cancelFlight.mockClear();
+    dispatchPetHostIntent({ type: "random-idle-setting", enabled: false }, bag.fx);
+    expect(bag.setIdleActionTimer).toHaveBeenCalledWith(null);
+    expect(bag.cancelFlight).toHaveBeenCalledTimes(1);
+    expect(bag.scheduleIdleAction).not.toHaveBeenCalled();
+  });
+
   it("random-idle-setting respects chat pause", () => {
     const bag = makeFx();
     dispatchPetHostIntent({ type: "chat-open", open: true }, bag.fx);
