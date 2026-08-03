@@ -1,0 +1,109 @@
+/* ========== 5 杂志海报 ========== */
+    [data-style="poster"].theme-stage {
+      background: #efe8dc;
+    }
+    [data-style="poster"] .theme-shell {
+      font-family: "Noto Sans SC", sans-serif;
+      background: #f4eee4;
+      border: 0;
+      border-radius: 0;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.18);
+      
+      outline: 8px solid #111;
+    }
+    [data-style="poster"] .theme-banner {
+      display: block;
+      background: #ff4d2e;
+      color: #fff;
+      border-radius:0;
+      font-family: "Bebas Neue", "Noto Sans SC", sans-serif;
+      font-size: 18px;
+      letter-spacing: 0.08em;
+    margin:0;}
+    [data-style="poster"] .pet-nav {
+      background: #111;
+      color: #f4eee4;
+      border-right: 0;
+      padding: 18px 12px;
+      gap: 4px;
+    }
+    [data-style="poster"] .pet-nav-item {
+      color: rgba(244,238,228,0.45);
+      border-radius: 0;
+      align-items: flex-start;
+      text-align: left;
+      padding: 12px 8px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    [data-style="poster"] .pet-nav-item svg { display: none; }
+    [data-style="poster"] .pet-nav-item[data-active="1"] {
+      color: #ff4d2e;
+      background: transparent;
+      box-shadow: inset 4px 0 0 #ff4d2e;
+    }
+    [data-style="poster"] .main { background: #f4eee4; color: #111; }
+    [data-style="poster"] .panel-head {
+      border-bottom: 4px solid #111;
+      padding-bottom: 14px;
+    }
+    [data-style="poster"] .panel-title {
+      font-family: "Bebas Neue", "Noto Sans SC", sans-serif;
+      font-size: 42px;
+      font-weight: 400;
+      line-height: 0.9;
+      letter-spacing: 0.02em;
+      color: #111;
+    }
+    [data-style="poster"] .theme-chip {
+      background: #111; color: #f4eee4; border-radius: 0; font-weight: 700;
+    }
+    [data-style="poster"] .theme-chip em { font-style: normal; color: #ff4d2e; }
+    [data-style="poster"] .theme-lab {
+      color: #ff4d2e;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+    }
+    [data-style="poster"] .theme-list { gap: 0; border-top: 2px solid #111; }
+    [data-style="poster"] .settings-item {
+      background: transparent;
+      border-bottom: 2px solid #111;
+      border-radius: 0;
+      padding: 16px 4px;
+    }
+    [data-style="poster"] .settings-item[data-tone="pet"] {
+      background: #111;
+      color: #f4eee4;
+      margin: 0 -4px;
+      padding: 18px 14px;
+    }
+    [data-style="poster"] .settings-item[data-tone="pet"] .theme-d { color: rgba(244,238,228,0.65); }
+    [data-style="poster"] .theme-d { color: #5a5348; }
+    [data-style="poster"] .theme-choice {
+      border-radius: 0; border: 2px solid #111; background: transparent; color: #111;
+    }
+    [data-style="poster"] .theme-choice.on { background: #ff4d2e; color: #fff; border-color: #ff4d2e; }
+    [data-style="poster"] .settings-item[data-tone="pet"] .theme-choice { border-color: #f4eee4; color: #f4eee4; }
+    [data-style="poster"] .settings-item[data-tone="pet"] .theme-choice.on { background: #ff4d2e; border-color: #ff4d2e; color: #fff; }
+    [data-style="poster"] .theme-sw {--sw-radius:0;--sw-knob-radius:0; background: #d8d0c4;  border: 2px solid #111; }
+    [data-style="poster"] .theme-sw.on { background: #ff4d2e; }
+    [data-style="poster"] .theme-sw::after {  background: #111; }
+    [data-style="poster"] .settings-item[data-tone="pet"] .theme-sw { border-color: #f4eee4; }
+    [data-style="poster"] .settings-item[data-tone="pet"] .theme-sw::after { background: #f4eee4; }
+    [data-style="poster"] .theme-seg { background: transparent; border: 2px solid #111; border-radius: 0; }
+    [data-style="poster"] .theme-seg-opt { color: #5a5348; border-radius: 0; }
+    [data-style="poster"] .theme-seg-opt.on { background: #111; color: #f4eee4; }
+    [data-style="poster"] .theme-btn {
+      border-radius: 0; background: transparent; color: #111; border: 2px solid #111;
+    }
+    [data-style="poster"] .theme-btn.pri { background: #ff4d2e; color: #fff; border-color: #ff4d2e; }
+    [data-style="poster"] .theme-bar { background: #d8d0c4; border: 2px solid #111; border-radius: 0; height: 10px; }
+    [data-style="poster"] .theme-bar i { background: #111; }
+    [data-style="poster"] .theme-num { color: #111; }
+
+    
+    [data-style="poster"] .pet-hero {
+      background: #f4eee4;
+      border: 0;
+      border-radius: 0;
+    }

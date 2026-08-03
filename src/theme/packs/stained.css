@@ -1,0 +1,37 @@
+/* ========== 24 彩窗玻璃 ========== */
+    [data-style="stained"].theme-stage { background: #1a1028; }
+    [data-style="stained"] .theme-shell { font-family: "Noto Sans SC", "Outfit", sans-serif; background:linear-gradient(160deg,#2a1840,#1a1028);border:4px solid #3a2a18;border-radius:8px;color:#f4e8c8;box-shadow:0 0 0 2px #6a5040,inset 0 0 60px rgba(120,60,180,0.15); }
+    [data-style="stained"] .theme-banner { display: block; background:linear-gradient(90deg,#6a2a8a,#2a6a8a,#8a4a20);color:#fff8e0;border:2px solid #3a2a18;border-radius:0;font-weight:800;letter-spacing:0.16em; margin:0;}
+    [data-style="stained"] .pet-nav { background:#140c20;border-right:3px solid #3a2a18;gap:6px; }
+    [data-style="stained"] .pet-nav-item { color:#8a7a98;border-radius:6px;border:2px solid #3a2a18;background:#1a1028; }
+    [data-style="stained"] .pet-nav-item[data-active="1"] { color:#fff8e0;background:linear-gradient(160deg,#6a2a8a,#2a6a8a);border-color:#c8a060; }
+    [data-style="stained"] .panel-head { border-bottom:3px solid #3a2a18;background:linear-gradient(90deg,rgba(106,42,138,0.3),rgba(42,106,138,0.2)); }
+    [data-style="stained"] .panel-title { color:#f4e8c8;font-weight:800;letter-spacing:0.12em; }
+    [data-style="stained"] .theme-chip { background:#140c20;color:#d8c8a0;border:2px solid #6a5040;border-radius:6px; }
+    [data-style="stained"] .theme-chip em { font-style: normal; font-weight: 800; }
+    [data-style="stained"] .theme-lab { color:#c8a060;letter-spacing:0.18em;font-weight:800; }
+    [data-style="stained"] .theme-list { gap: 9px; }
+    [data-style="stained"] .settings-item { background:rgba(20,12,32,0.8);border:2px solid #3a2a18;border-radius:8px; }
+    [data-style="stained"] .settings-item[data-tone="pet"] { background:linear-gradient(135deg,rgba(106,42,138,0.4),rgba(42,106,138,0.3) 50%,rgba(138,74,32,0.3));border-color:#c8a060; }
+    [data-style="stained"] .item-title { color:#f4e8c8;font-weight:800; }
+    [data-style="stained"] .theme-d { color:#a89878; }
+    [data-style="stained"] .theme-choice { border-radius:6px;border:2px solid #3a2a18;background:#140c20;color:#d8c8a0; }
+    [data-style="stained"] .theme-choice.on { background:#c8a060;color:#1a1028;border-color:#e8c880;font-weight:800; }
+    [data-style="stained"] .theme-sw {--sw-radius:6px;--sw-knob-radius:3px; background:#2a1840;border:2px solid #3a2a18; }
+    [data-style="stained"] .theme-sw.on { background:linear-gradient(90deg,#6a2a8a,#2a6a8a);border-color:#c8a060; }
+    [data-style="stained"] .theme-seg { background:#140c20;border:2px solid #3a2a18;border-radius:6px; }
+    [data-style="stained"] .theme-seg-opt.on { background:#6a2a8a;color:#fff8e0; }
+    [data-style="stained"] .theme-btn { border-radius:6px;background:#140c20;color:#f4e8c8;border:2px solid #6a5040;font-weight:800; }
+    [data-style="stained"] .theme-btn.pri { background:linear-gradient(135deg,#c8a060,#8a4a20);color:#1a1028;border-color:#e8c880; }
+    [data-style="stained"] .theme-bar { background:#140c20;border:2px solid #3a2a18;border-radius:4px; }
+    [data-style="stained"] .theme-bar i { background:linear-gradient(90deg,#6a2a8a,#2a6a8a,#c8a060); }
+    [data-style="stained"] .theme-num { color:#c8a060;font-weight:800; }
+    
+
+
+    
+    [data-style="stained"] .pet-hero {
+      background: linear-gradient(160deg,#2a1840,#1a1028);
+      border: 4px solid #3a2a18;
+      border-radius: 8px;
+    }

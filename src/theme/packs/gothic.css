@@ -1,0 +1,119 @@
+/* ========== 44 哥特尖拱 · 尖顶石堂 ========== */
+    [data-style="gothic"].theme-stage{
+      background:
+        linear-gradient(180deg,transparent 55%,rgba(10,8,14,0.85) 100%),
+        repeating-linear-gradient(90deg,#1a1820 0 18px,#121018 18px 20px),
+        radial-gradient(ellipse 40% 30% at 50% 0%,#3a2858,transparent 70%),
+        #0a0810;
+    }
+    /* 尖拱只做装饰，不裁切可用区 */
+    [data-style="gothic"] .theme-banner{
+      display:block;width:68%;margin:0;padding:16px 12px 18px;text-align:center;
+      position:relative;z-index:3;
+      background:linear-gradient(180deg,#2a2430,#16121c);
+      color:#e8c878;border:2px solid #c9a227;border-radius:0;
+      font-weight:800;letter-spacing:0.28em;font-size:11px;
+      clip-path:polygon(50% 0,100% 48%,100% 100%,0 100%,0 48%);
+      box-shadow:0 0 24px rgba(201,162,39,0.25);
+    }
+    [data-style="gothic"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",serif;position:relative;
+      
+      background:
+        radial-gradient(ellipse 70% 36% at 50% 0%,rgba(80,40,140,0.35),transparent 55%),
+        linear-gradient(180deg,#1c1824,#100e16);
+      border:3px solid #c9a227;border-radius:0;color:#e8dcc8;
+      box-shadow:0 0 0 1px #6a6250,0 18px 48px rgba(0,0,0,0.55),inset 0 0 50px rgba(0,0,0,0.4);
+      overflow:hidden;min-height:640px;
+    }
+    [data-style="gothic"] .theme-shell::before{
+      content:"";position:absolute;left:50%;top:0;width:min(220px,40%);height:56px;transform:translateX(-50%);
+      pointer-events:none;z-index:2;
+      background:linear-gradient(180deg,rgba(201,162,39,0.35),transparent);
+      clip-path:polygon(50% 0,100% 100%,0 100%);
+      border-bottom:1px solid rgba(201,162,39,0.4);
+    }
+    [data-style="gothic"] .pet-nav{
+      position:relative;z-index:1;
+      background:
+        linear-gradient(90deg,rgba(0,0,0,0.35),transparent 40%),
+        repeating-linear-gradient(0deg,#2a2630 0 22px,#1e1a24 22px 24px);
+      border-right:2px solid #c9a227;border-radius:0;
+      gap:10px;padding:14px 8px 16px;
+    }
+    [data-style="gothic"] .main{
+      position:relative;z-index:1;min-width:0;background:transparent;border:0;border-radius:0;color:#e8dcc8;
+      overflow:hidden;
+    }
+    [data-style="gothic"] .main::before{
+      content:"";position:absolute;right:16px;top:12px;width:56px;height:56px;
+      pointer-events:none;z-index:0;border-radius:50%;
+      background:conic-gradient(from 0deg,#6a2a8a,#2a6a8a,#8a4a20,#c9a227,#6a2a8a);
+      mask-image:radial-gradient(circle,transparent 28%,black 30% 46%,transparent 48%);
+      opacity:0.75;
+    }
+    [data-style="gothic"] .main::after{
+      content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+      background:
+        linear-gradient(90deg,transparent 0 12%,rgba(201,162,39,0.12) 12% 12.5%,transparent 12.5% 87.5%,rgba(201,162,39,0.12) 87.5% 88%,transparent 88%),
+        repeating-linear-gradient(180deg,transparent 0 48px,rgba(255,255,255,0.03) 48px 49px);
+    }
+    [data-style="gothic"] .pet-nav-item{
+      color:#8a8070;border:2px solid #4a4438;background:#16131a;border-radius:0;font-weight:700;
+      clip-path:polygon(50% 0,100% 22%,100% 100%,0 100%,0 22%);
+      padding-top:18px;min-height:72px;
+    }
+    [data-style="gothic"] .pet-nav-item[data-active="1"]{
+      color:#1a1208;background:linear-gradient(180deg,#e8c878,#c9a227 55%,#8a7020);
+      border-color:#e8c878;box-shadow:0 0 18px rgba(201,162,39,0.35);
+    }
+    [data-style="gothic"] .panel-head{
+      position:relative;z-index:1;border-bottom:2px solid #c9a227;
+      background:linear-gradient(180deg,rgba(60,40,90,0.35),transparent);
+    }
+    [data-style="gothic"] .panel-title{color:#e8c878;font-weight:800;letter-spacing:0.22em;font-size:15px;}
+    [data-style="gothic"] .theme-chip{
+      background:#120e18;color:#e8c878;border:1px solid #c9a227;border-radius:0;font-size:10px;
+      clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%);
+    }
+    [data-style="gothic"] .theme-chip em{font-style:normal;font-weight:800;}
+    [data-style="gothic"] .body{position:relative;z-index:1;}
+    [data-style="gothic"] .theme-lab{color:#c9a227;letter-spacing:0.22em;font-weight:800;}
+    [data-style="gothic"] .theme-list{gap:10px;}
+    [data-style="gothic"] .settings-item{
+      background:rgba(16,12,22,0.88);border:1px solid #4a4438;border-radius:0;
+      clip-path:polygon(0 8px,8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px));
+    }
+    [data-style="gothic"] .settings-item[data-tone="pet"]{
+      background:linear-gradient(135deg,rgba(106,42,138,0.4),rgba(20,14,28,0.95) 40%,rgba(138,74,32,0.25));
+      border-color:#c9a227;box-shadow:inset 0 0 0 1px rgba(201,162,39,0.25);
+    }
+    [data-style="gothic"] .item-title{color:#f0e8d8;font-weight:800;}
+    [data-style="gothic"] .theme-d{color:#9a8e78;}
+    [data-style="gothic"] .theme-choice{
+      border-radius:0;border:1px solid #6a6250;background:#120e18;color:#e8dcc8;font-weight:700;
+      clip-path:polygon(50% 0,100% 28%,100% 100%,0 100%,0 28%);
+      padding-top:10px;
+    }
+    [data-style="gothic"] .theme-choice.on{background:#6a2038;color:#f0e8d8;border-color:#c9a227;}
+    [data-style="gothic"] .theme-sw {--sw-radius:0;--sw-knob-radius:0;
+      background:#2a2430;border:1px solid #6a6250;
+      clip-path:polygon(50% 0,100% 25%,100% 100%,0 100%,0 25%);
+    }
+    [data-style="gothic"] .theme-sw.on{background:#6a2038;border-color:#c9a227;}
+    [data-style="gothic"] .theme-sw::after{background:#e8c878;}
+    [data-style="gothic"] .theme-seg{background:#120e18;border:1px solid #4a4438;border-radius:0;}
+    [data-style="gothic"] .theme-seg-opt.on{background:#3a2858;color:#f0e8d8;}
+    [data-style="gothic"] .theme-btn{
+      border-radius:0;background:#120e18;color:#e8c878;border:1px solid #c9a227;font-weight:800;
+      clip-path:polygon(10% 0,90% 0,100% 50%,90% 100%,10% 100%,0 50%);
+    }
+    [data-style="gothic"] .theme-btn.pri{background:#6a2038;color:#f0e8d8;border-color:#e8c878;}
+    [data-style="gothic"] .theme-bar{background:#120e18;border:1px solid #4a4438;border-radius:0;height:8px;}
+    [data-style="gothic"] .theme-bar i{background:linear-gradient(90deg,#3a2858,#c9a227,#6a2038);}
+    [data-style="gothic"] .theme-num{color:#c9a227;font-weight:800;}
+
+
+    
+    [data-style="gothic"] .theme-banner,[data-style="gothic"] .theme-shell,[data-style="gothic"] .pet-hero{position:relative;z-index:1;}
+    [data-style="gothic"] .pet-nav,[data-style="gothic"] .pet-main{position:relative;z-index:1;}

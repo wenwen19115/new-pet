@@ -1,4 +1,5 @@
 <template>
+  <div class="theme-root" :data-style="theme.style" :style="themeVars">
   <div
     v-if="visible"
     ref="rootEl"
@@ -57,6 +58,7 @@
       {{ peekLabel }}
     </button>
   </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -74,6 +76,10 @@ import {
 } from "@/pet/events";
 import { petMenuHeight } from "./types";
 import { formatStatPercent, getSystemStats } from "@/pet/bridge/systemStats";
+import "@/theme";
+import { usePetWindowTheme } from "@/theme";
+
+const { theme, themeVars } = usePetWindowTheme();
 
 const rootEl = ref<HTMLElement | null>(null);
 const visible = ref(false);
@@ -266,22 +272,43 @@ onUnmounted(() => {
 });
 </script>
 
+<style>
+html,
+body,
+#menu-app {
+  background: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+</style>
+
 <style scoped>
+.theme-root {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
 .pet-ctx-menu {
   width: 100%;
   height: auto;
   padding: 5px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--ui-border, rgba(255, 255, 255, 0.14));
   background:
-    radial-gradient(120% 80% at 10% 0%, rgba(64, 196, 255, 0.14), transparent 55%),
-    rgba(12, 16, 22, 0.94);
+    radial-gradient(
+      120% 80% at 10% 0%,
+      color-mix(in srgb, var(--ui-primary, #40c4ff) 18%, transparent),
+      transparent 55%
+    ),
+    color-mix(in srgb, var(--ui-surface-strong, #0c1016) 94%, transparent);
   backdrop-filter: blur(12px);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.38);
   display: flex;
   flex-direction: column;
   gap: 2px;
   box-sizing: border-box;
+  color: var(--ui-text, rgba(255, 255, 255, 0.92));
 }
 
 .pet-ctx-stats-toggle {
@@ -295,13 +322,13 @@ onUnmounted(() => {
   padding: 8px 10px;
   border-radius: 8px;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.92);
+  background: var(--ui-accent-soft, rgba(255, 255, 255, 0.04));
+  color: var(--ui-text, rgba(255, 255, 255, 0.92));
   transition: background 0.18s ease;
 }
 
 .pet-ctx-stats-toggle:hover {
-  background: rgba(64, 196, 255, 0.16);
+  background: color-mix(in srgb, var(--ui-primary, #40c4ff) 22%, transparent);
 }
 
 .pet-ctx-stats-emoji {
@@ -326,18 +353,18 @@ onUnmounted(() => {
 
 .pet-ctx-stats-hint {
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.48);
+  color: var(--ui-text-faint, rgba(255, 255, 255, 0.48));
 }
 
 .pet-ctx-stats-chevron {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--ui-text-faint, rgba(255, 255, 255, 0.45));
   transition: transform 0.2s ease;
 }
 
 .pet-ctx-stats-toggle.open .pet-ctx-stats-chevron {
   transform: rotate(180deg);
-  color: #9fe4ff;
+  color: var(--ui-primary, #9fe4ff);
 }
 
 .pet-ctx-stats-panel {
@@ -348,7 +375,7 @@ onUnmounted(() => {
   padding: 8px 2px 8px;
   min-height: 52px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--ui-accent-soft, rgba(255, 255, 255, 0.04));
   animation: pet-stats-pop 0.22s ease-out;
 }
 
@@ -377,7 +404,7 @@ onUnmounted(() => {
   font-size: 15px;
   font-weight: 700;
   line-height: 1.15;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--ui-text, rgba(255, 255, 255, 0.95));
   font-variant-numeric: tabular-nums;
 }
 
@@ -385,7 +412,7 @@ onUnmounted(() => {
   font-size: 11px;
   font-weight: 560;
   line-height: 1.1;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--ui-text-muted, rgba(255, 255, 255, 0.72));
   letter-spacing: 0.02em;
 }
 
@@ -396,10 +423,10 @@ onUnmounted(() => {
   color: rgba(255, 211, 154, 0.78);
 }
 .pet-ctx-meter.tone-mem .pet-ctx-meter-value {
-  color: #9fe4ff;
+  color: var(--ui-primary, #9fe4ff);
 }
 .pet-ctx-meter.tone-mem .pet-ctx-meter-label {
-  color: rgba(159, 228, 255, 0.78);
+  color: color-mix(in srgb, var(--ui-primary, #9fe4ff) 78%, transparent);
 }
 .pet-ctx-meter.tone-disk .pet-ctx-meter-value {
   color: #b8f0c0;
@@ -421,14 +448,14 @@ onUnmounted(() => {
 .pet-ctx-divider {
   height: 1px;
   margin: 2px 6px 4px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--ui-border, rgba(255, 255, 255, 0.1));
 }
 
 .pet-ctx-item {
   appearance: none;
   border: 0;
   background: transparent;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--ui-text, rgba(255, 255, 255, 0.9));
   font-size: 12px;
   text-align: left;
   padding: 8px 10px;
@@ -437,8 +464,8 @@ onUnmounted(() => {
 }
 
 .pet-ctx-item:hover {
-  background: rgba(64, 196, 255, 0.18);
-  color: #9fe4ff;
+  background: color-mix(in srgb, var(--ui-primary, #40c4ff) 22%, transparent);
+  color: var(--ui-primary, #9fe4ff);
 }
 
 @keyframes pet-stats-pop {

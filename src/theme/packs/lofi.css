@@ -1,0 +1,59 @@
+/* ========== 60 Lo-fi 卧室 · 雨窗夜灯 ========== */
+    [data-style="lofi"].theme-stage{
+      background:
+        radial-gradient(ellipse 30% 20% at 75% 25%,rgba(255,200,140,0.35),transparent 60%),
+        linear-gradient(180deg,#1a1428 0%,#3a2850 40%,#2a2038 70%,#1a1428),
+        repeating-linear-gradient(180deg,transparent 0 3px,rgba(255,255,255,0.03) 3px 4px);
+    }
+    [data-style="lofi"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",sans-serif;position:relative;overflow:hidden;
+      background:linear-gradient(160deg,rgba(56,44,76,0.88),rgba(28,22,44,0.94));
+      border:1px solid #7a68a0;border-radius:20px;color:#eee4f8;
+      box-shadow:0 20px 48px rgba(0,0,0,0.5),inset 0 0 40px rgba(180,120,200,0.08);
+      backdrop-filter:blur(10px);
+    }
+    [data-style="lofi"] .theme-shell::before{
+      content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.02) 2px,rgba(255,255,255,0.02) 4px);
+    }
+    [data-style="lofi"] .theme-shell::after{
+      content:"";position:absolute;right:8%;top:10%;width:70px;height:90px;pointer-events:none;z-index:0;
+      background:linear-gradient(180deg,rgba(140,180,220,0.15),transparent);
+      border:1px solid rgba(180,200,230,0.2);border-radius:4px;
+      box-shadow:inset 0 0 20px rgba(100,140,200,0.15);
+    }
+    [data-style="lofi"] .theme-banner{
+      display:block;position:relative;z-index:1;
+      background:rgba(36,28,56,0.85);color:#d0b8e8;border:1px solid #a080c8;
+      border-radius:0;font-weight:600;letter-spacing:0.14em;font-size:11px;
+    margin:0;}
+    [data-style="lofi"] .pet-nav,[data-style="lofi"] .main{position:relative;z-index:1;}
+    [data-style="lofi"] .pet-nav{background:rgba(16,12,32,0.75);border-right:1px solid #4a3a68;gap:10px;}
+    [data-style="lofi"] .pet-nav-item{color:#8a7898;border-radius:14px;background:rgba(255,255,255,0.04);border:1px solid transparent;}
+    [data-style="lofi"] .pet-nav-item[data-active="1"]{color:#fff;background:rgba(160,120,200,0.4);border-color:#c0a0e0;box-shadow:0 0 20px rgba(180,120,220,0.25);}
+    [data-style="lofi"] .panel-head{border-bottom:1px solid #4a3a68;background:linear-gradient(90deg,rgba(200,140,220,0.22),rgba(255,180,120,0.1));}
+    [data-style="lofi"] .panel-title{color:#f0e4ff;font-weight:600;letter-spacing:0.1em;}
+    [data-style="lofi"] .theme-chip{background:rgba(16,12,32,0.85);color:#d0b8e8;border:1px solid #7a68a0;border-radius:999px;}
+    [data-style="lofi"] .theme-chip em{font-style:normal;font-weight:800;}
+    [data-style="lofi"] .theme-lab{color:#b090d0;letter-spacing:0.14em;font-weight:700;}
+    [data-style="lofi"] .theme-list{gap:10px;}
+    [data-style="lofi"] .settings-item{background:rgba(28,22,44,0.75);border:1px solid #4a3a68;border-radius:16px;}
+    [data-style="lofi"] .settings-item[data-tone="pet"]{background:linear-gradient(120deg,rgba(180,120,200,0.3),rgba(80,120,180,0.18),rgba(255,160,100,0.12));border-color:#a080c8;}
+    [data-style="lofi"] .item-title{color:#f8f0ff;font-weight:700;}
+    [data-style="lofi"] .theme-d{color:#a898b8;}
+    [data-style="lofi"] .theme-choice{border-radius:999px;border:1px solid #7a68a0;background:rgba(16,12,32,0.7);color:#d0b8e8;}
+    [data-style="lofi"] .theme-choice.on{background:rgba(170,130,210,0.55);color:#fff;border-color:#e0c0ff;}
+    [data-style="lofi"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%;background:#3a3050;border:1px solid #7a68a0;}
+    [data-style="lofi"] .theme-sw.on{background:#9a78c0;}
+    [data-style="lofi"] .theme-seg{background:rgba(16,12,32,0.7);border:1px solid #4a3a68;border-radius:999px;}
+    [data-style="lofi"] .theme-seg-opt.on{background:#5a4878;color:#fff;}
+    [data-style="lofi"] .theme-btn{border-radius:999px;background:rgba(16,12,32,0.7);color:#d0b8e8;border:1px solid #7a68a0;font-weight:700;}
+    [data-style="lofi"] .theme-btn.pri{background:linear-gradient(135deg,#9a78c0,#6090c0);color:#fff;border-color:transparent;}
+    [data-style="lofi"] .theme-bar{background:rgba(16,12,32,0.7);border:1px solid #4a3a68;border-radius:99px;}
+    [data-style="lofi"] .theme-bar i{background:linear-gradient(90deg,#9a78c0,#e0a0c0,#ffb080);}
+    [data-style="lofi"] .theme-num{color:#d0b8e8;font-weight:700;}
+
+
+    
+    [data-style="lofi"] .theme-banner,[data-style="lofi"] .theme-shell,[data-style="lofi"] .pet-hero{position:relative;z-index:1;}
+    [data-style="lofi"] .pet-nav,[data-style="lofi"] .pet-main{position:relative;z-index:1;}

@@ -1,0 +1,38 @@
+/* ========== 28 民俗刺绣 ========== */
+    [data-style="folk"].theme-stage { background: repeating-linear-gradient(0deg,#3a2420 0 12px,#422820 12px 24px); }
+    [data-style="folk"] .theme-shell { font-family: "Noto Sans SC", "Outfit", sans-serif; background:#f4e8d0;border:4px solid #8a3020;border-radius:8px;color:#2a1a14;box-shadow:0 0 0 3px #d4a040,0 12px 32px rgba(0,0,0,0.35); }
+    [data-style="folk"] .theme-banner { display: block; background:#8a3020;color:#f4e8d0;border:2px solid #d4a040;border-radius:0;font-weight:800;letter-spacing:0.2em; margin:0;}
+    [data-style="folk"] .pet-nav { background:#2a5a38;border-right:4px solid #8a3020;gap:6px; }
+    [data-style="folk"] .pet-nav-item { color:#f4ffe8;border-radius:4px;background:rgba(0,0,0,0.22);border:2px solid transparent;font-weight:700; }
+    [data-style="folk"] .pet-nav-item[data-active="1"] { color:#f4e8d0;background:#8a3020;border-color:#d4a040; }
+    [data-style="folk"] .panel-head { border-bottom:3px dashed #8a3020;background:linear-gradient(180deg,#e8d0a0,#f4e8d0); }
+    [data-style="folk"] .panel-title { color:#8a3020;font-weight:800;letter-spacing:0.16em; }
+    [data-style="folk"] .theme-chip { background:#2a5a38;color:#f4e8d0;border:2px solid #d4a040;border-radius:4px; }
+    [data-style="folk"] .theme-chip em { font-style: normal; font-weight: 800; }
+    [data-style="folk"] .theme-lab { color:#8a3020;letter-spacing:0.18em;font-weight:800; }
+    [data-style="folk"] .theme-list { gap: 9px; }
+    [data-style="folk"] .settings-item { background:#fff8e8;border:2px solid #c8a060;border-radius:6px; }
+    [data-style="folk"] .settings-item[data-tone="pet"] { background:linear-gradient(135deg,#e8d0a0,#fff8e8 40%,#d0e0c0);border-color:#8a3020; }
+    [data-style="folk"] .item-title { color:#2a1a14;font-weight:800; }
+    [data-style="folk"] .theme-d { color:#6a4a30; }
+    [data-style="folk"] .theme-choice { border-radius:4px;border:2px solid #c8a060;background:#fff8e8;color:#2a1a14;font-weight:700; }
+    [data-style="folk"] .theme-choice.on { background:#8a3020;color:#f4e8d0;border-color:#d4a040; }
+    [data-style="folk"] .theme-sw {--sw-radius:4px;--sw-knob-radius:2px; background:#c8a060;border:2px solid #8a3020; }
+    [data-style="folk"] .theme-sw.on { background:#2a5a38;border-color:#d4a040; }
+    [data-style="folk"] .theme-seg { background:#e8d0a0;border:2px solid #c8a060;border-radius:4px; }
+    [data-style="folk"] .theme-seg-opt { color:#4a3020; font-weight:700; }
+    [data-style="folk"] .theme-seg-opt.on { background:#8a3020;color:#f4e8d0; }
+    [data-style="folk"] .theme-btn { border-radius:4px;background:#fff8e8;color:#2a1a14;border:2px solid #8a3020;font-weight:800; }
+    [data-style="folk"] .theme-btn.pri { background:#8a3020;color:#f4e8d0;border-color:#d4a040; }
+    [data-style="folk"] .theme-bar { background:#e8d0a0;border:2px solid #c8a060;border-radius:4px; }
+    [data-style="folk"] .theme-bar i { background:linear-gradient(90deg,#8a3020,#2a5a38,#d4a040); }
+    [data-style="folk"] .theme-num { color:#8a3020;font-weight:800; }
+    
+
+
+    
+    [data-style="folk"] .pet-hero {
+      background: #f4e8d0;
+      border: 4px solid #8a3020;
+      border-radius: 8px;
+    }

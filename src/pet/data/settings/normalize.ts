@@ -23,7 +23,17 @@ import {
   type PetPersonality,
 } from "../../content/dialogue/personality";
 import { clampPetZoom } from "../../bridge/sizes";
-import { isAppUiTheme } from "@/theme/uiTheme";
+import { resolveThemePackId } from "@/theme/registry";
+import {
+  DEFAULT_THEME_BOOT_ANIMATION,
+  DEFAULT_THEME_STAGE_BACKDROP,
+  clampBootDurationSec,
+  clampBubbleOpacity,
+  isThemeBootDurationMode,
+  isThemeStageBackdropMode,
+  isThemeWallpaperFit,
+  type PetThemeSettings,
+} from "@/theme/types";
 import { isCustomVrmMotionId } from "../../content/motion/customVrmMotions";
 import {
   characterSupportsVrmAssets,
@@ -225,6 +235,75 @@ export function applyActiveProfile(
   };
 }
 
+function normalizeTheme(raw: unknown): PetThemeSettings {
+  const base = DEFAULT_PET_SETTINGS.theme;
+  const obj =
+    raw && typeof raw === "object" ? (raw as Partial<PetThemeSettings>) : {};
+  const stageRaw =
+    obj.stageBackdrop && typeof obj.stageBackdrop === "object"
+      ? obj.stageBackdrop
+      : {};
+  const bootRaw =
+    obj.bootAnimation && typeof obj.bootAnimation === "object"
+      ? obj.bootAnimation
+      : {};
+  const dim = Number(
+    (stageRaw as { dim?: unknown }).dim ?? DEFAULT_THEME_STAGE_BACKDROP.dim
+  );
+  return {
+    style: resolveThemePackId(obj.style ?? base.style),
+    stageBackdrop: {
+      mode: isThemeStageBackdropMode(
+        (stageRaw as { mode?: unknown }).mode
+      )
+        ? (stageRaw as { mode: PetThemeSettings["stageBackdrop"]["mode"] }).mode
+        : base.stageBackdrop.mode,
+      imagePath:
+        typeof (stageRaw as { imagePath?: unknown }).imagePath === "string"
+          ? (stageRaw as { imagePath: string }).imagePath
+          : base.stageBackdrop.imagePath,
+      dim: Number.isFinite(dim) ? Math.min(1, Math.max(0, dim)) : base.stageBackdrop.dim,
+      fit: isThemeWallpaperFit((stageRaw as { fit?: unknown }).fit)
+        ? (stageRaw as { fit: PetThemeSettings["stageBackdrop"]["fit"] }).fit
+        : base.stageBackdrop.fit,
+      muted:
+        typeof (stageRaw as { muted?: unknown }).muted === "boolean"
+          ? (stageRaw as { muted: boolean }).muted
+          : base.stageBackdrop.muted,
+    },
+    bootAnimation: {
+      enabled:
+        typeof (bootRaw as { enabled?: unknown }).enabled === "boolean"
+          ? (bootRaw as { enabled: boolean }).enabled
+          : base.bootAnimation.enabled,
+      mediaPath:
+        typeof (bootRaw as { mediaPath?: unknown }).mediaPath === "string"
+          ? (bootRaw as { mediaPath: string }).mediaPath
+          : base.bootAnimation.mediaPath,
+      muted:
+        typeof (bootRaw as { muted?: unknown }).muted === "boolean"
+          ? (bootRaw as { muted: boolean }).muted
+          : DEFAULT_THEME_BOOT_ANIMATION.muted,
+      fit: isThemeWallpaperFit((bootRaw as { fit?: unknown }).fit)
+        ? (bootRaw as { fit: PetThemeSettings["bootAnimation"]["fit"] }).fit
+        : base.bootAnimation.fit,
+      durationMode: isThemeBootDurationMode(
+        (bootRaw as { durationMode?: unknown }).durationMode
+      )
+        ? (bootRaw as { durationMode: PetThemeSettings["bootAnimation"]["durationMode"] })
+            .durationMode
+        : base.bootAnimation.durationMode,
+      durationSec: clampBootDurationSec(
+        (bootRaw as { durationSec?: unknown }).durationSec ??
+          base.bootAnimation.durationSec
+      ),
+    },
+    bubbleOpacity: clampBubbleOpacity(
+      (obj as { bubbleOpacity?: unknown }).bubbleOpacity ?? base.bubbleOpacity
+    ),
+  };
+}
+
 export function normalizePetSettings(
   raw: Partial<PetSettings> | null | undefined
 ): PetSettings {
@@ -237,9 +316,7 @@ export function normalizePetSettings(
   return {
     enabled: Boolean(raw?.enabled),
     modelKind,
-    uiTheme: isAppUiTheme(raw?.uiTheme)
-      ? raw.uiTheme
-      : DEFAULT_PET_SETTINGS.uiTheme,
+    theme: normalizeTheme(raw?.theme),
     settingsAlwaysOnTop: Boolean(
       raw?.settingsAlwaysOnTop ?? DEFAULT_PET_SETTINGS.settingsAlwaysOnTop
     ),

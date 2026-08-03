@@ -1,0 +1,54 @@
+/* ========== 56 凯尔特结 · 交织金边 ========== */
+    [data-style="celtic"].theme-stage{
+      background:
+        url("data:image/svg+xml,%3Csvg width='80' height='80' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 8c16 16 16 48 0 64C24 56 24 24 40 8zm0 16c8 8 8 32 0 40-8-8-8-32 0-40z' fill='none' stroke='%23c8a040' stroke-width='2' opacity='.35'/%3E%3C/svg%3E"),
+        #0a2014;
+    }
+    [data-style="celtic"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",sans-serif;position:relative;overflow:hidden;
+      background:#163528;border:4px solid #c8a040;border-radius:12px;color:#e8d8a0;
+      box-shadow:0 0 0 3px #1a4a30,0 0 0 7px #c8a040,0 16px 40px rgba(0,0,0,0.5);
+    }
+    [data-style="celtic"] .theme-shell::before{
+      content:"";position:absolute;inset:8px;pointer-events:none;z-index:2;border-radius:8px;
+      border:2px dashed rgba(200,160,64,0.55);
+    }
+    [data-style="celtic"] .theme-shell::after{
+      content:"";position:absolute;width:56px;height:56px;right:14px;top:48px;pointer-events:none;z-index:0;opacity:0.28;
+      background:url("data:image/svg+xml,%3Csvg width='56' height='56' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M28 4c14 14 14 34 0 48C14 38 14 18 28 4zm0 12c8 8 8 24 0 32-8-8-8-24 0-32z' fill='none' stroke='%23c8a040' stroke-width='3'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
+    [data-style="celtic"] .theme-banner{
+      display:block;position:relative;z-index:1;
+      background:#0a2014;color:#c8a040;border:2px solid #c8a040;border-radius:0;font-weight:900;letter-spacing:0.18em;
+    margin:0;}
+    [data-style="celtic"] .pet-nav,[data-style="celtic"] .main{position:relative;z-index:1;}
+    [data-style="celtic"] .pet-nav{background:#0a2014;border-right:3px solid #c8a040;gap:8px;}
+    [data-style="celtic"] .pet-nav-item{color:#8aba80;border-radius:50%;border:1px solid transparent;background:rgba(200,160,64,0.1);font-weight:800;}
+    [data-style="celtic"] .pet-nav-item[data-active="1"]{color:#0a2014;background:#c8a040;border-color:#e8d080;font-weight:900;}
+    [data-style="celtic"] .panel-head{border-bottom:2px solid #c8a040;background:linear-gradient(90deg,rgba(200,160,64,0.25),transparent);}
+    [data-style="celtic"] .panel-title{color:#c8a040;font-weight:900;letter-spacing:0.14em;}
+    [data-style="celtic"] .theme-chip{background:#0a2014;color:#c8a040;border:1px solid #c8a040;border-radius:999px;font-weight:800;}
+    [data-style="celtic"] .theme-chip em{font-style:normal;font-weight:900;}
+    [data-style="celtic"] .theme-lab{color:#8aba80;letter-spacing:0.16em;font-weight:900;}
+    [data-style="celtic"] .theme-list{gap:10px;}
+    [data-style="celtic"] .settings-item{background:rgba(10,32,20,0.85);border:1px solid rgba(200,160,64,0.4);border-radius:12px;}
+    [data-style="celtic"] .settings-item[data-tone="pet"]{background:linear-gradient(120deg,rgba(42,90,56,0.55),rgba(200,160,64,0.25));border-color:#c8a040;}
+    [data-style="celtic"] .item-title{color:#e8d8a0;font-weight:900;}
+    [data-style="celtic"] .theme-d{color:#8aaa80;}
+    [data-style="celtic"] .theme-choice{border-radius:999px;border:1px solid #c8a040;background:#0a2014;color:#e8d8a0;font-weight:800;}
+    [data-style="celtic"] .theme-choice.on{background:#c8a040;color:#0a2014;font-weight:900;}
+    [data-style="celtic"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%;background:#2a4a30;border:1px solid #c8a040;}
+    [data-style="celtic"] .theme-sw.on{background:#c8a040;}
+    [data-style="celtic"] .theme-sw::after{}
+    [data-style="celtic"] .theme-seg{background:#0a2014;border:1px solid #2a4a30;border-radius:999px;}
+    [data-style="celtic"] .theme-seg-opt.on{background:#2a5a38;color:#e8d8a0;border-radius:999px;}
+    [data-style="celtic"] .theme-btn{border-radius:999px;background:#0a2014;color:#c8a040;border:1px solid #c8a040;font-weight:900;}
+    [data-style="celtic"] .theme-btn.pri{background:#c8a040;color:#0a2014;}
+    [data-style="celtic"] .theme-bar{background:#0a2014;border:1px solid #2a4a30;border-radius:99px;}
+    [data-style="celtic"] .theme-bar i{background:linear-gradient(90deg,#2a5a38,#c8a040);}
+    [data-style="celtic"] .theme-num{color:#c8a040;font-weight:900;}
+
+
+    
+    [data-style="celtic"] .theme-banner,[data-style="celtic"] .theme-shell,[data-style="celtic"] .pet-hero{position:relative;z-index:1;}
+    [data-style="celtic"] .pet-nav,[data-style="celtic"] .pet-main{position:relative;z-index:1;}

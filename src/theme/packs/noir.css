@@ -1,0 +1,35 @@
+/* ========== 26 黑色电影 ========== */
+    [data-style="noir"].theme-stage { background: radial-gradient(ellipse at 30% 20%,#2a2a2a,transparent 50%),#0a0a0a; }
+    [data-style="noir"] .theme-shell { font-family: "Noto Sans SC", "Outfit", sans-serif; position:relative;overflow:hidden;background:#141414;border:1px solid #333;border-radius:2px;color:#e8e8e8;box-shadow:0 20px 50px rgba(0,0,0,0.6);font-family:"IBM Plex Mono","Noto Sans SC",monospace; }
+    [data-style="noir"] .theme-banner { display: block; background:#8a1010;color:#fff;border-radius:0;font-weight:700;letter-spacing:0.24em;text-transform:uppercase;font-size:11px; margin:0;}
+    [data-style="noir"] .pet-nav { background:#0a0a0a;border-right:1px solid #333;gap:4px;position:relative;z-index:1; }
+    [data-style="noir"] .pet-nav-item { color:#666;border-radius:0;background:transparent;border:0;font-size:10px;text-transform:uppercase;letter-spacing:0.1em; }
+    [data-style="noir"] .pet-nav-item[data-active="1"] { color:#fff;background:#8a1010; }
+    [data-style="noir"] .panel-head { border-bottom:1px solid #333;background:linear-gradient(90deg,rgba(138,16,16,0.25),transparent); }
+    [data-style="noir"] .panel-title { color:#fff;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;font-size:15px; }
+    [data-style="noir"] .theme-chip { background:#0a0a0a;color:#aaa;border:1px solid #444;border-radius:0;font-size:10px; }
+    [data-style="noir"] .theme-chip em { font-style: normal; font-weight: 800; }
+    [data-style="noir"] .theme-lab { color:#8a1010;letter-spacing:0.2em;font-weight:700;font-size:10px;text-transform:uppercase; }
+    [data-style="noir"] .theme-list { gap: 9px; }
+    [data-style="noir"] .settings-item { background:#1a1a1a;border:1px solid #333;border-radius:0; }
+    [data-style="noir"] .settings-item[data-tone="pet"] { background:linear-gradient(90deg,rgba(138,16,16,0.25),#1a1a1a);border-color:#8a1010; }
+    [data-style="noir"] .item-title { color:#fff;font-weight:700; }
+    [data-style="noir"] .theme-d { color:#888; }
+    [data-style="noir"] .theme-choice { border-radius:0;border:1px solid #444;background:#0a0a0a;color:#aaa;font-size:11px;text-transform:uppercase; }
+    [data-style="noir"] .theme-choice.on { background:#8a1010;color:#fff;border-color:#8a1010; }
+    [data-style="noir"] .theme-sw {--sw-radius:0;--sw-knob-radius:0; background:#333;border:1px solid #555; }
+    [data-style="noir"] .theme-sw.on { background:#8a1010; }
+    [data-style="noir"] .theme-seg { background:#0a0a0a;border:1px solid #333;border-radius:0; }
+    [data-style="noir"] .theme-seg-opt.on { background:#8a1010;color:#fff; }
+    [data-style="noir"] .theme-btn { border-radius:0;background:#1a1a1a;color:#e8e8e8;border:1px solid #444;font-weight:700;text-transform:uppercase;font-size:11px; }
+    [data-style="noir"] .theme-btn.pri { background:#8a1010;color:#fff;border-color:#b02020; }
+    [data-style="noir"] .theme-bar { background:#0a0a0a;border:1px solid #333;border-radius:0; }
+    [data-style="noir"] .theme-bar i { background:#8a1010; }
+    [data-style="noir"] .theme-num { color:#c04040;font-weight:700; }
+    [data-style="noir"] .theme-shell::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,0.04) 50%,transparent 60%);pointer-events:none;}
+    [data-style="noir"] .main{position:relative;z-index:1;}
+
+
+    
+    [data-style="noir"] .theme-banner,[data-style="noir"] .theme-shell,[data-style="noir"] .pet-hero{position:relative;z-index:1;}
+    [data-style="noir"] .pet-nav,[data-style="noir"] .pet-main{position:relative;z-index:1;}

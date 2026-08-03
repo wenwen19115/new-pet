@@ -1,0 +1,63 @@
+/* ========== 58 原住民点画 · 沙地色点 ========== */
+    [data-style="aboriginal"].theme-stage{
+      background:
+        radial-gradient(circle 4px at 12% 20%,#d47820 0 55%,transparent 56%),
+        radial-gradient(circle 3px at 28% 40%,#c02830 0 55%,transparent 56%),
+        radial-gradient(circle 3.5px at 48% 25%,#d4a040 0 55%,transparent 56%),
+        radial-gradient(circle 3px at 68% 45%,#2a6a30 0 55%,transparent 56%),
+        radial-gradient(circle 4px at 85% 30%,#d47820 0 55%,transparent 56%),
+        radial-gradient(circle 2.5px at 20% 70%,#2a6a30 0 55%,transparent 56%),
+        radial-gradient(circle 3px at 55% 75%,#c02830 0 55%,transparent 56%),
+        radial-gradient(circle 3.5px at 78% 65%,#d4a040 0 55%,transparent 56%),
+        #2a1810;
+      background-size:70px 70px,55px 55px,80px 80px,60px 60px,50px 50px,65px 65px,75px 75px,45px 45px,auto;
+    }
+    [data-style="aboriginal"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",sans-serif;position:relative;overflow:hidden;
+      background:#3a2418;border:5px solid #d47820;border-radius:16px;color:#f0e0c0;
+      box-shadow:0 0 0 4px #2a1810,0 0 0 8px #c02830,0 16px 40px rgba(0,0,0,0.45);
+    }
+    [data-style="aboriginal"] .theme-shell::before{
+      content:"";position:absolute;inset:0;pointer-events:none;z-index:0;opacity:0.4;
+      background:
+        radial-gradient(circle 2px at 20% 30%,#d47820,transparent 3px),
+        radial-gradient(circle 2px at 70% 40%,#d4a040,transparent 3px),
+        radial-gradient(circle 2px at 40% 70%,#2a6a30,transparent 3px),
+        radial-gradient(circle 2px at 85% 75%,#c02830,transparent 3px);
+      background-size:28px 28px;
+    }
+    [data-style="aboriginal"] .theme-banner{
+      display:block;position:relative;z-index:1;
+      background:#d47820;color:#1a1008;border:3px solid #f0a040;border-radius:0;font-weight:900;letter-spacing:0.14em;
+    margin:0;}
+    [data-style="aboriginal"] .pet-nav,[data-style="aboriginal"] .main{position:relative;z-index:1;}
+    [data-style="aboriginal"] .pet-nav{background:#1a1008;border-right:4px solid #d47820;gap:8px;}
+    [data-style="aboriginal"] .pet-nav-item{color:#d0a070;border-radius:50%;background:rgba(212,120,32,0.15);border:3px solid transparent;font-weight:800;}
+    [data-style="aboriginal"] .pet-nav-item[data-active="1"]{color:#1a1008;background:#d47820;border-color:#f0a040;font-weight:900;}
+    [data-style="aboriginal"] .panel-head{border-bottom:3px solid #d47820;background:linear-gradient(90deg,rgba(180,40,40,0.4),rgba(40,100,40,0.3));}
+    [data-style="aboriginal"] .panel-title{color:#f0a040;font-weight:900;letter-spacing:0.12em;}
+    [data-style="aboriginal"] .theme-chip{background:#1a1008;color:#f0a040;border:2px solid #d47820;border-radius:999px;font-weight:800;}
+    [data-style="aboriginal"] .theme-chip em{font-style:normal;font-weight:900;}
+    [data-style="aboriginal"] .theme-lab{color:#d47820;letter-spacing:0.16em;font-weight:900;}
+    [data-style="aboriginal"] .theme-list{gap:10px;}
+    [data-style="aboriginal"] .settings-item{background:rgba(30,18,12,0.88);border:3px solid rgba(212,120,32,0.5);border-radius:14px;}
+    [data-style="aboriginal"] .settings-item[data-tone="pet"]{background:linear-gradient(120deg,rgba(180,40,40,0.4),rgba(212,120,32,0.3),rgba(40,100,40,0.3));border-color:#d47820;}
+    [data-style="aboriginal"] .item-title{color:#f0e0c0;font-weight:900;}
+    [data-style="aboriginal"] .theme-d{color:#c0a080;}
+    [data-style="aboriginal"] .theme-choice{border-radius:999px;border:2px solid #d47820;background:#1a1008;color:#f0e0c0;font-weight:800;}
+    [data-style="aboriginal"] .theme-choice.on{background:#d47820;color:#1a1008;font-weight:900;}
+    [data-style="aboriginal"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%;background:#4a3020;border:2px solid #d47820;}
+    [data-style="aboriginal"] .theme-sw.on{background:#d47820;}
+    [data-style="aboriginal"] .theme-sw::after{}
+    [data-style="aboriginal"] .theme-seg{background:#1a1008;border:2px solid #4a3020;border-radius:999px;}
+    [data-style="aboriginal"] .theme-seg-opt.on{background:#8a3020;color:#f0e0c0;border-radius:999px;}
+    [data-style="aboriginal"] .theme-btn{border-radius:999px;background:#1a1008;color:#f0a040;border:2px solid #d47820;font-weight:900;}
+    [data-style="aboriginal"] .theme-btn.pri{background:#d47820;color:#1a1008;border-color:#f0a040;}
+    [data-style="aboriginal"] .theme-bar{background:#1a1008;border:2px solid #4a3020;border-radius:99px;height:8px;}
+    [data-style="aboriginal"] .theme-bar i{background:linear-gradient(90deg,#8a3020,#d47820,#2a6a30);}
+    [data-style="aboriginal"] .theme-num{color:#f0a040;font-weight:900;}
+
+
+    
+    [data-style="aboriginal"] .theme-banner,[data-style="aboriginal"] .theme-shell,[data-style="aboriginal"] .pet-hero{position:relative;z-index:1;}
+    [data-style="aboriginal"] .pet-nav,[data-style="aboriginal"] .pet-main{position:relative;z-index:1;}

@@ -1,0 +1,50 @@
+/* ========== 53 代尔夫特蓝 · 青花瓷绘 ========== */
+    [data-style="delft"].theme-stage{
+      background:
+        url("data:image/svg+xml,%3Csvg width='64' height='64' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M32 8c8 8 8 16 0 24-8-8-8-16 0-24zm0 24c8 8 8 16 0 24-8-8-8-16 0-24z' fill='none' stroke='%231a4a8a' stroke-width='1.5' opacity='.25'/%3E%3Ccircle cx='32' cy='32' r='3' fill='%231a4a8a' opacity='.2'/%3E%3C/svg%3E"),
+        #e8eef4;
+    }
+    [data-style="delft"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",sans-serif;position:relative;overflow:hidden;
+      background:#fff;border:5px solid #1a4a8a;border-radius:50% 50% 8px 8px / 18px 18px 8px 8px;color:#1a2a48;
+      box-shadow:0 0 0 3px #fff,0 0 0 6px #1a4a8a,0 12px 32px rgba(26,74,138,0.2);
+    }
+    [data-style="delft"] .theme-shell::before{
+      content:"";position:absolute;inset:10px;pointer-events:none;z-index:2;border:2px solid #1a4a8a;border-radius:inherit;opacity:0.35;
+    }
+    [data-style="delft"] .theme-shell::after{
+      content:"";position:absolute;right:16px;top:52px;width:56px;height:56px;pointer-events:none;z-index:0;
+      background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 6c10 10 14 18 14 26S42 54 32 58C22 54 18 40 18 32S22 16 32 6z' fill='none' stroke='%231a4a8a' stroke-width='2'/%3E%3C/svg%3E") center/contain no-repeat;
+      opacity:0.2;
+    }
+    [data-style="delft"] .theme-banner{display:block;position:relative;z-index:1;background:#1a4a8a;color:#fff;border:2px solid #0e2a58;border-radius:0;font-weight:800;letter-spacing:0.16em;margin:0;}
+    [data-style="delft"] .pet-nav,[data-style="delft"] .main{position:relative;z-index:1;}
+    [data-style="delft"] .pet-nav{background:#1a4a8a;border-right:4px solid #0e2a58;gap:8px;padding-top:16px;}
+    [data-style="delft"] .pet-nav-item{color:#c0d8f0;border-radius:50%;background:rgba(255,255,255,0.1);border:2px solid transparent;font-weight:700;}
+    [data-style="delft"] .pet-nav-item[data-active="1"]{color:#1a4a8a;background:#fff;border-color:#fff;}
+    [data-style="delft"] .panel-head{border-bottom:3px solid #1a4a8a;background:linear-gradient(180deg,#d0e4f8,#fff);}
+    [data-style="delft"] .panel-title{color:#1a4a8a;font-weight:900;letter-spacing:0.12em;}
+    [data-style="delft"] .theme-chip{background:#1a4a8a;color:#fff;border:0;border-radius:999px;font-weight:800;}
+    [data-style="delft"] .theme-chip em{font-style:normal;font-weight:900;}
+    [data-style="delft"] .theme-lab{color:#1a4a8a;letter-spacing:0.16em;font-weight:900;}
+    [data-style="delft"] .theme-list{gap:10px;}
+    [data-style="delft"] .settings-item{background:#f8fafc;border:2px solid #1a4a8a;border-radius:10px;}
+    [data-style="delft"] .settings-item[data-tone="pet"]{background:linear-gradient(135deg,#b8d4f0,#fff);border-color:#0e2a58;border-width:3px;}
+    [data-style="delft"] .item-title{color:#1a2a48;font-weight:900;}
+    [data-style="delft"] .theme-d{color:#4a6a88;}
+    [data-style="delft"] .theme-choice{border-radius:999px;border:2px solid #1a4a8a;background:#fff;color:#1a4a8a;font-weight:800;}
+    [data-style="delft"] .theme-choice.on{background:#1a4a8a;color:#fff;}
+    [data-style="delft"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%;background:#b0c8e0;border:2px solid #1a4a8a;}
+    [data-style="delft"] .theme-sw.on{background:#1a4a8a;}
+    [data-style="delft"] .theme-seg{background:#e0eaf4;border:2px solid #1a4a8a;border-radius:999px;}
+    [data-style="delft"] .theme-seg-opt.on{background:#1a4a8a;color:#fff;}
+    [data-style="delft"] .theme-btn{border-radius:999px;background:#fff;color:#1a4a8a;border:2px solid #1a4a8a;font-weight:900;}
+    [data-style="delft"] .theme-btn.pri{background:#1a4a8a;color:#fff;}
+    [data-style="delft"] .theme-bar{background:#d0e0f0;border:2px solid #1a4a8a;border-radius:99px;}
+    [data-style="delft"] .theme-bar i{background:#1a4a8a;}
+    [data-style="delft"] .theme-num{color:#1a4a8a;font-weight:900;}
+
+
+    
+    [data-style="delft"] .theme-banner,[data-style="delft"] .theme-shell,[data-style="delft"] .pet-hero{position:relative;z-index:1;}
+    [data-style="delft"] .pet-nav,[data-style="delft"] .pet-main{position:relative;z-index:1;}

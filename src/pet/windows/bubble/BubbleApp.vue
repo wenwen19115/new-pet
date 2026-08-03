@@ -1,17 +1,19 @@
 <template>
-  <div
-    v-if="visible"
-    class="bubble"
-    :class="{ 'is-squish': squishOn }"
-    :data-tone="tone"
-    :data-side="side"
-    @pointerdown.prevent="onPong"
-  >
-    <div class="bubble-inner">
-      <p class="text">
-        <span>{{ displayText }}</span>
-        <span v-if="typing" class="caret">▌</span>
-      </p>
+  <div class="theme-root" :data-style="theme.style" :style="themeVars">
+    <div
+      v-if="visible"
+      class="bubble"
+      :class="{ 'is-squish': squishOn }"
+      :data-tone="tone"
+      :data-side="side"
+      @pointerdown.prevent="onPong"
+    >
+      <div class="bubble-inner">
+        <p class="text">
+          <span>{{ displayText }}</span>
+          <span v-if="typing" class="caret">▌</span>
+        </p>
+      </div>
     </div>
   </div>
 </template>
@@ -32,6 +34,10 @@ import {
   advanceBubblePongTap,
   BUBBLE_PONG_HOLD_MS,
 } from "./bubblePong";
+import "@/theme";
+import { usePetWindowTheme } from "@/theme";
+
+const { theme, themeVars } = usePetWindowTheme();
 
 const visible = ref(false);
 const displayText = ref("");
@@ -224,6 +230,12 @@ body,
 </style>
 
 <style scoped>
+.theme-root {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
 .bubble {
   box-sizing: border-box;
   width: 100%;
@@ -238,15 +250,12 @@ body,
 }
 
 .bubble-inner {
+  /* 外观见 theme/bubbleTheme.css，此处只留布局 */
   position: relative;
   box-sizing: border-box;
   width: 100%;
   height: 100%;
   padding: 9px 11px;
-  border-radius: 12px;
-  background: rgba(8, 14, 22, 0.94);
-  border: 1px solid rgba(0, 229, 255, 0.4);
-  box-shadow: none;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -258,7 +267,12 @@ body,
 }
 
 .bubble[data-tone="snarky"] .bubble-inner {
-  border-color: rgba(255, 140, 80, 0.45);
+  --bubble-line: color-mix(
+    in srgb,
+    #ff8c50 70%,
+    var(--ui-primary, #00e5ff)
+  );
+  --bubble-glow: rgba(255, 140, 80, 0.35);
 }
 
 .bubble::after {
@@ -267,16 +281,15 @@ body,
   top: 50%;
   width: 8px;
   height: 8px;
-  background: rgba(8, 14, 22, 0.94);
-  border-left: 1px solid rgba(0, 229, 255, 0.4);
-  border-bottom: 1px solid rgba(0, 229, 255, 0.4);
+  background: var(--bubble-fill);
+  border-left: 2px solid var(--bubble-line);
+  border-bottom: 2px solid var(--bubble-line);
   transform: translateY(-50%) rotate(45deg);
-  box-shadow: none;
 }
 
 .bubble[data-tone="snarky"]::after {
-  border-left-color: rgba(255, 140, 80, 0.45);
-  border-bottom-color: rgba(255, 140, 80, 0.45);
+  border-left-color: var(--bubble-line);
+  border-bottom-color: var(--bubble-line);
 }
 
 .bubble[data-side="right"]::after {
@@ -292,10 +305,11 @@ body,
   margin: 0;
   font-size: 12.5px;
   line-height: 1.5;
-  color: rgba(220, 245, 255, 0.95);
+  color: var(--ui-text, rgba(220, 245, 255, 0.95));
   word-break: break-word;
   white-space: pre-wrap;
-  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: "Noto Sans SC", "Segoe UI", "PingFang SC", "Microsoft YaHei",
+    sans-serif;
   letter-spacing: 0.02em;
   pointer-events: none;
 }
@@ -303,7 +317,7 @@ body,
 .caret {
   display: inline-block;
   margin-left: 1px;
-  color: rgba(0, 229, 255, 0.85);
+  color: var(--ui-primary, rgba(0, 229, 255, 0.85));
   animation: blink 0.8s step-end infinite;
   font-size: 11px;
 }

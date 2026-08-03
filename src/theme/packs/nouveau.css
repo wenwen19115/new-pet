@@ -1,0 +1,90 @@
+/* ========== 40 新艺术 · Mucha 鞭线 ========== */
+    [data-style="nouveau"].theme-stage{
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 100%, #c8a060 0%, transparent 55%),
+        radial-gradient(circle at 10% 20%, #6a8a50 0 2px, transparent 3px),
+        radial-gradient(circle at 85% 30%, #c8a060 0 2px, transparent 3px),
+        linear-gradient(165deg,#1e2a1c,#3a4a30 45%,#8a9a58);
+    }
+    [data-style="nouveau"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",sans-serif;position:relative;overflow:hidden;
+      background:
+        radial-gradient(ellipse 120% 40% at 50% -10%,rgba(200,160,96,0.35),transparent 50%),
+        linear-gradient(165deg,#eef4e0,#d4e0c0 60%,#c8d4a8);
+      /* 百分比竖向半径会随壳高暴涨，改固定 px，只留浅拱 */
+      border:3px solid #5a7040;border-radius:36px 42px 10px 12px / 28px 32px 10px 12px;
+      color:#24301c;
+      box-shadow:0 0 0 1px #c8a060,0 18px 40px rgba(40,60,30,0.35);
+    }
+    [data-style="nouveau"] .theme-shell::before{
+      content:"";position:absolute;inset:6px;pointer-events:none;z-index:2;border-radius:30px 36px 8px 10px / 22px 26px 8px 10px;
+      border:2px solid transparent;
+      background:
+        radial-gradient(circle at 8% 20%,transparent 10px,#c8a060 11px,#c8a060 12px,transparent 13px),
+        radial-gradient(circle at 92% 25%,transparent 10px,#6a8050 11px,#6a8050 12px,transparent 13px);
+      box-shadow:inset 0 0 0 1px rgba(90,112,64,0.35);
+    }
+    [data-style="nouveau"] .theme-shell::after{
+      content:"";position:absolute;left:12%;right:12%;top:4px;height:22px;pointer-events:none;z-index:2;
+      background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 28'%3E%3Cpath d='M0 26 C30 4 50 4 70 14 S110 28 130 12 S170 0 200 18' fill='none' stroke='%23c8a060' stroke-width='2'/%3E%3Cpath d='M10 26 C40 8 60 6 80 16' fill='none' stroke='%235a7040' stroke-width='1.2'/%3E%3C/svg%3E") center/100% 100% no-repeat;
+    }
+    [data-style="nouveau"] .theme-banner{
+      display:block;position:relative;z-index:1;margin:6px 0 0;
+      background:transparent;color:#4a6038;border:2px solid #c8a060;
+      border-radius:0;
+      font-weight:700;letter-spacing:0.22em;font-size:11px;
+    }
+    [data-style="nouveau"] .pet-nav{
+      position:relative;z-index:1;padding-top:14px;
+      background:linear-gradient(180deg,#6a8a50,#3a5a30);border-right:3px solid #c8a060;gap:10px;
+    }
+    [data-style="nouveau"] .pet-nav-item{
+      color:#e8f4d8;border:1px solid transparent;
+      border-radius:55% 45% 60% 40%/50% 60% 40% 50%;
+      background:rgba(0,0,0,0.18);font-weight:700;
+    }
+    [data-style="nouveau"] .pet-nav-item[data-active="1"]{
+      color:#24301c;background:#f4f0d8;border-color:#c8a060;
+      box-shadow:0 0 0 1px #5a7040;
+    }
+    [data-style="nouveau"] .panel-head{
+      border-bottom:2px solid #a8b878;
+      background:linear-gradient(180deg,rgba(200,160,96,0.28),transparent);
+    }
+    [data-style="nouveau"] .panel-title{color:#2e3e24;font-weight:700;letter-spacing:0.18em;font-size:17px;}
+    [data-style="nouveau"] .theme-chip{
+      background:#f8f0d8;color:#4a5a30;border:1px solid #c8a060;
+      border-radius:40% 60% 50% 50%/60% 40% 60% 40%;font-size:10px;
+    }
+    [data-style="nouveau"] .theme-chip em{font-style:normal;font-weight:800;}
+    [data-style="nouveau"] .theme-lab{color:#6a8050;letter-spacing:0.2em;font-weight:800;}
+    [data-style="nouveau"] .theme-list{gap:10px;}
+    [data-style="nouveau"] .settings-item{
+      background:rgba(255,252,240,0.82);border:1.5px solid #8a9a60;
+      border-radius:22px 8px 20px 10px;
+    }
+    [data-style="nouveau"] .settings-item[data-tone="pet"]{
+      background:linear-gradient(135deg,#d8e8b0,#fff8e0 45%,#e8d8a8);
+      border-color:#c8a060;box-shadow:inset 0 0 0 1px rgba(90,112,64,0.2);
+    }
+    [data-style="nouveau"] .item-title{color:#24301c;font-weight:800;}
+    [data-style="nouveau"] .theme-d{color:#5a6a48;}
+    [data-style="nouveau"] .theme-choice{
+      border-radius:40% 60%/55% 45%;border:1.5px solid #8a9a60;background:#fff8e8;color:#24301c;font-weight:700;
+    }
+    [data-style="nouveau"] .theme-choice.on{background:#5a7040;color:#f4f0d8;border-color:#c8a060;}
+    [data-style="nouveau"] .theme-sw {--sw-radius:40% 60%/50%;--sw-knob-radius:40% 60%/50%;background:#b8c898;border:1.5px solid #5a7040;}
+    [data-style="nouveau"] .theme-sw.on{background:#c8a060;}
+    [data-style="nouveau"] .theme-sw::after{background:#fff8e8;}
+    [data-style="nouveau"] .theme-seg{background:rgba(160,180,120,0.35);border:1.5px solid #8a9a60;border-radius:40% 60%/50%;}
+    [data-style="nouveau"] .theme-seg-opt.on{background:#fff8e8;color:#24301c;border-radius:inherit;}
+    [data-style="nouveau"] .theme-btn{
+      border-radius:40% 60%/55% 45%;background:#fff8e8;color:#24301c;border:1.5px solid #5a7040;font-weight:800;
+    }
+    [data-style="nouveau"] .theme-btn.pri{background:#c8a060;color:#24301c;border-color:#8a7040;}
+    [data-style="nouveau"] .theme-bar{background:#d0e0b8;border:1.5px solid #8a9a60;border-radius:99px;}
+    [data-style="nouveau"] .theme-bar i{background:linear-gradient(90deg,#5a7040,#c8a060,#8a9a50);}
+    [data-style="nouveau"] .theme-num{color:#4a6038;font-weight:800;}
+    [data-style="nouveau"] .theme-banner,[data-style="nouveau"] .theme-shell,[data-style="nouveau"] .pet-hero{position:relative;z-index:1;}
+    [data-style="nouveau"] .pet-nav,[data-style="nouveau"] .pet-main{position:relative;z-index:1;}
+    [data-style="nouveau"] .pet-main{padding-top:8px;}

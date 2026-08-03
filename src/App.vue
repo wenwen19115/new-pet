@@ -1,18 +1,62 @@
 <template>
   <a-config-provider :theme="antdTheme">
     <div
-      class="app-root"
-      :data-ui-theme="uiTheme"
+      class="app-root theme-stage"
+      :data-style="theme.style"
       :style="themeVars"
       :data-splash="showSplash ? '1' : '0'"
     >
-      <div v-if="showSplash" class="app-splash" aria-hidden="true">
-        <div class="splash-glow" />
-        <img class="splash-logo" src="/app-icon.png" alt="" />
-        <p class="splash-title">Desktop Pet</p>
+      <ThemeMediaLayer
+        v-if="wallpaperActive && !showSplash"
+        :path="theme.stageBackdrop.imagePath"
+        :fit="theme.stageBackdrop.fit"
+        :muted="theme.stageBackdrop.muted"
+        :loop="true"
+        preload="auto"
+      />
+      <div
+        v-if="showSplash"
+        class="app-splash"
+        :class="{
+          'app-splash--media': useBootMedia,
+          'app-splash--ready': bootMediaReady,
+        }"
+        aria-hidden="true"
+        @click="onSplashClick"
+      >
+        <template v-if="useBootMedia">
+          <div class="splash-media-stage">
+            <ThemeMediaLayer
+              :path="theme.bootAnimation.mediaPath"
+              :fit="theme.bootAnimation.fit"
+              :muted="theme.bootAnimation.muted"
+              :loop="bootMediaLoop"
+              preload="metadata"
+              :defer-src="true"
+              @ready="onBootMediaReady"
+              @ended="onBootVideoEnded"
+              @error="onBootMediaError"
+            />
+          </div>
+          <BootSplashBar
+            :status-text="
+              bootMediaReady ? t('pet.bootAnimReady') : t('pet.bootAnimLoading')
+            "
+            :skip-text="skipHint"
+          />
+        </template>
+        <template v-else>
+          <div class="splash-glow" />
+          <img class="splash-logo" src="/app-icon.png" alt="" />
+          <p class="splash-title">Desktop Pet</p>
+        </template>
       </div>
-      <div class="app-main" :class="{ 'app-main--in': !showSplash }">
-        <PetSettings @ui-theme-change="onUiThemeChange" />
+      <div
+        v-if="mainMounted"
+        class="app-main"
+        :class="{ 'app-main--in': !showSplash }"
+      >
+        <PetSettings @theme-change="onThemeChange" />
       </div>
     </div>
   </a-config-provider>
@@ -20,58 +64,168 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from "vue";
-import { theme } from "ant-design-vue";
+import { theme as antTheme } from "ant-design-vue";
+import { useI18n } from "vue-i18n";
 import PetSettings from "./views/PetSettings.vue";
 import {
   applySettingsWindowPin,
   initPetHostBridge,
 } from "./pet/bridge/hostBridge";
 import { loadPetSettings } from "./pet/data/settings";
+import "@/theme";
 import {
-  isAppUiTheme,
-  type AppUiTheme,
-  uiThemeCssVars,
-  UI_THEME_TOKENS,
-} from "./theme/uiTheme";
+  bootRemainMinMs,
+  bootScheduleDelayMs,
+  clonePetThemeSettings,
+  detectThemeMediaKind,
+  getThemePack,
+  paintDocumentBackdrop,
+  themeRootStyle,
+  BootSplashBar,
+  ThemeMediaLayer,
+  type PetThemeSettings,
+} from "@/theme";
 
-const uiTheme = ref<AppUiTheme>(loadPetSettings().uiTheme);
+const { t } = useI18n();
+const theme = ref<PetThemeSettings>(loadPetSettings().theme);
 const showSplash = ref(true);
-const themeVars = computed(() => uiThemeCssVars(uiTheme.value));
+const bootMediaReady = ref(false);
+const bootVideoEnded = ref(false);
+/** 大开机媒体时延后挂设置页，减轻无响应 */
+const mainMounted = ref(false);
+const themeVars = computed(() => themeRootStyle(theme.value));
+const wallpaperActive = computed(
+  () =>
+    theme.value.stageBackdrop.mode === "wallpaper" &&
+    Boolean(theme.value.stageBackdrop.imagePath.trim()) &&
+    detectThemeMediaKind(theme.value.stageBackdrop.imagePath) !== "none"
+);
+const useBootMedia = computed(() => {
+  const boot = theme.value.bootAnimation;
+  return (
+    boot.enabled &&
+    Boolean(boot.mediaPath.trim()) &&
+    detectThemeMediaKind(boot.mediaPath) !== "none"
+  );
+});
+const bootMediaKind = computed(() =>
+  detectThemeMediaKind(theme.value.bootAnimation.mediaPath)
+);
+const bootMediaLoop = computed(
+  () =>
+    !(
+      theme.value.bootAnimation.durationMode === "media" &&
+      bootMediaKind.value === "video"
+    )
+);
+const skipHint = computed(() => t("pet.bootAnimSkip"));
 const antdTheme = computed(() => {
-  const tokens = UI_THEME_TOKENS[uiTheme.value];
+  const tokens = getThemePack(theme.value.style).tokens;
   return {
     algorithm:
-      tokens.algorithm === "dark"
-        ? theme.darkAlgorithm
-        : theme.defaultAlgorithm,
+      tokens.antAlgorithm === "dark"
+        ? antTheme.darkAlgorithm
+        : antTheme.defaultAlgorithm,
     token: { colorPrimary: tokens.colorPrimary },
   };
 });
 
 let disposeHost: (() => void) | null = null;
 let splashTimer: number | null = null;
+let bootReadyAt = 0;
 
-function onUiThemeChange(next: AppUiTheme) {
-  if (!isAppUiTheme(next)) return;
-  uiTheme.value = next;
-  document.documentElement.style.background = UI_THEME_TOKENS[next].bg0;
-  document.body.style.background = UI_THEME_TOKENS[next].bg0;
+function clearSplashTimer() {
+  if (splashTimer != null) {
+    window.clearTimeout(splashTimer);
+    splashTimer = null;
+  }
 }
 
-onMounted(() => {
-  onUiThemeChange(uiTheme.value);
+function ensureHost() {
+  if (disposeHost) return;
   disposeHost = initPetHostBridge(() => {
     void applySettingsWindowPin(loadPetSettings().settingsAlwaysOnTop);
   });
-  splashTimer = window.setTimeout(() => {
-    showSplash.value = false;
-  }, 1400);
+}
+
+function endSplash() {
+  if (!showSplash.value) return;
+  clearSplashTimer();
+  showSplash.value = false;
+  paintDocumentBackdrop(theme.value.style);
+  mainMounted.value = true;
+  // 下一帧再起 host，别和设置页首屏抢线程
+  requestAnimationFrame(() => {
+    ensureHost();
+  });
+}
+
+function onSplashClick() {
+  endSplash();
+}
+
+function scheduleFromReady() {
+  clearSplashTimer();
+  const boot = theme.value.bootAnimation;
+  const delay = bootScheduleDelayMs({
+    durationMode: boot.durationMode,
+    durationSec: boot.durationSec,
+    mediaKind: bootMediaKind.value,
+    videoEnded: bootVideoEnded.value,
+    readyAtMs: bootReadyAt,
+  });
+  if (delay == null) return;
+  splashTimer = window.setTimeout(endSplash, delay);
+}
+
+function onBootMediaReady() {
+  bootMediaReady.value = true;
+  bootReadyAt = Date.now();
+  scheduleFromReady();
+}
+
+function onBootVideoEnded() {
+  bootVideoEnded.value = true;
+  if (theme.value.bootAnimation.durationMode !== "media") return;
+  if (!bootMediaReady.value) return;
+  clearSplashTimer();
+  splashTimer = window.setTimeout(endSplash, bootRemainMinMs(bootReadyAt));
+}
+
+function onBootMediaError() {
+  endSplash();
+}
+
+function onThemeChange(next: PetThemeSettings) {
+  theme.value = clonePetThemeSettings(next);
+  if (!showSplash.value) {
+    paintDocumentBackdrop(next.style);
+  }
+}
+
+function startSplash() {
+  showSplash.value = true;
+  bootMediaReady.value = false;
+  bootVideoEnded.value = false;
+  bootReadyAt = 0;
+  clearSplashTimer();
+  if (!useBootMedia.value) {
+    mainMounted.value = true;
+    splashTimer = window.setTimeout(endSplash, 1400);
+    ensureHost();
+  }
+  // 有自定义媒体：等 ready；随视频模式不加最长兜底
+}
+
+onMounted(() => {
+  theme.value = clonePetThemeSettings(loadPetSettings().theme);
+  startSplash();
 });
 
 onUnmounted(() => {
   disposeHost?.();
   disposeHost = null;
-  if (splashTimer != null) window.clearTimeout(splashTimer);
+  clearSplashTimer();
 });
 </script>
 
@@ -81,11 +235,7 @@ onUnmounted(() => {
   min-height: 0;
   overflow: hidden;
   color: var(--ui-text);
-  background: radial-gradient(
-    120% 80% at 10% 0%,
-    var(--ui-bg-1) 0%,
-    var(--ui-bg-0) 55%
-  );
+  background: var(--ui-bg-0);
   position: relative;
 }
 
@@ -115,13 +265,52 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   gap: 14px;
-  background: radial-gradient(
-    90% 70% at 50% 40%,
-    color-mix(in srgb, var(--ui-primary) 18%, var(--ui-bg-0)),
-    var(--ui-bg-0) 70%
-  );
-  animation: splash-out 0.55s ease 1.05s forwards;
+  cursor: pointer;
+  background: #0a0a0a;
+}
+
+.app-splash--media {
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  background: #0a0a0a;
+}
+
+.app-splash--media.app-splash--ready {
+  background: #0a0a0a;
+}
+
+.splash-media-stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  background: #000;
+}
+
+.app-splash--media .splash-media-stage::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  z-index: 2;
   pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ui-primary, #7ec8ff) 75%, #fff) 0%,
+    color-mix(in srgb, var(--ui-primary, #7ec8ff) 40%, #000) 55%,
+    rgba(0, 0, 0, 0.85) 100%
+  );
+  box-shadow:
+    0 -1px 0 color-mix(in srgb, var(--ui-primary, #7ec8ff) 55%, transparent),
+    0 1px 0 rgba(0, 0, 0, 0.65),
+    0 0 10px color-mix(in srgb, var(--ui-primary, #7ec8ff) 35%, transparent);
+}
+
+.app-splash--media :deep(.theme-media-layer) {
+  z-index: 0;
 }
 
 .splash-glow {
@@ -131,72 +320,28 @@ onUnmounted(() => {
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    color-mix(in srgb, var(--ui-primary) 45%, transparent),
+    color-mix(in srgb, var(--ui-primary) 35%, transparent),
     transparent 70%
   );
   filter: blur(8px);
-  animation: splash-pulse 1.2s ease-in-out infinite;
 }
 
 .splash-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
   position: relative;
-  width: 112px;
-  height: 112px;
-  object-fit: contain;
-  border-radius: 24px;
-  animation: splash-logo-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--ui-primary) 55%, transparent));
+  z-index: 1;
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--ui-primary) 28%, transparent);
 }
 
 .splash-title {
-  position: relative;
   margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--ui-text);
-  animation: splash-title-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
-}
-
-@keyframes splash-logo-in {
-  from {
-    opacity: 0;
-    transform: scale(0.72) translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-@keyframes splash-title-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes splash-pulse {
-  0%,
-  100% {
-    transform: scale(0.92);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.08);
-    opacity: 1;
-  }
-}
-
-@keyframes splash-out {
-  to {
-    opacity: 0;
-    transform: scale(1.04);
-    visibility: hidden;
-  }
+  position: relative;
+  z-index: 1;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.88);
 }
 </style>

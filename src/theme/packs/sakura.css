@@ -1,0 +1,60 @@
+/* ========== 64 和风樱花 · 墨线粉瓣 ========== */
+    [data-style="sakura"].theme-stage{
+      background:
+        radial-gradient(circle 8px at 12% 22%,rgba(255,160,180,0.85),transparent 10px),
+        radial-gradient(circle 6px at 30% 18%,rgba(255,190,200,0.7),transparent 8px),
+        radial-gradient(circle 7px at 58% 28%,rgba(255,150,175,0.75),transparent 9px),
+        radial-gradient(circle 5px at 78% 16%,rgba(255,180,195,0.65),transparent 7px),
+        radial-gradient(circle 6px at 88% 40%,rgba(255,140,170,0.55),transparent 8px),
+        linear-gradient(180deg,#f2c8d0,#ffe8ec 35%,#fff6f2);
+    }
+    [data-style="sakura"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",sans-serif;position:relative;overflow:hidden;
+      background:rgba(255,252,250,0.94);border:2px solid #1a1a1a;border-radius:4px;color:#3a2030;
+      box-shadow:6px 6px 0 #e890a0,0 14px 36px rgba(160,60,80,0.12);
+    }
+    [data-style="sakura"] .theme-shell::before{
+      content:"";position:absolute;left:0;top:0;bottom:0;width:8px;background:#1a1a1a;z-index:2;pointer-events:none;
+    }
+    [data-style="sakura"] .theme-shell::after{
+      content:"";position:absolute;right:12px;top:40px;width:48px;height:48px;pointer-events:none;z-index:0;
+      background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='4' fill='%23e890a0'/%3E%3Cellipse cx='24' cy='12' rx='7' ry='10' fill='%23f0a8b8'/%3E%3Cellipse cx='24' cy='36' rx='7' ry='10' fill='%23f0a8b8'/%3E%3Cellipse cx='12' cy='24' rx='10' ry='7' fill='%23f0a8b8'/%3E%3Cellipse cx='36' cy='24' rx='10' ry='7' fill='%23f0a8b8'/%3E%3C/svg%3E") center/contain no-repeat;
+      opacity:0.35;
+    }
+    [data-style="sakura"] .theme-banner{
+      display:block;position:relative;z-index:1;
+      background:#1a1a1a;color:#ffd0d8;border:0;border-radius:0;
+      font-weight:700;letter-spacing:0.28em;
+    margin:0;}
+    [data-style="sakura"] .pet-nav,[data-style="sakura"] .main{position:relative;z-index:1;}
+    [data-style="sakura"] .pet-nav{background:linear-gradient(180deg,#f0b8c0,#e898a8);border-right:2px solid #1a1a1a;gap:8px;}
+    [data-style="sakura"] .pet-nav-item{color:#3a2030;border-radius:2px;background:rgba(255,255,255,0.4);border:1px solid transparent;font-weight:700;}
+    [data-style="sakura"] .pet-nav-item[data-active="1"]{color:#fff;background:#1a1a1a;border-color:#1a1a1a;}
+    [data-style="sakura"] .panel-head{border-bottom:2px solid #1a1a1a;background:linear-gradient(180deg,#ffe4ec,#fff8f4);}
+    [data-style="sakura"] .panel-title{color:#1a1a1a;font-weight:800;letter-spacing:0.22em;}
+    [data-style="sakura"] .theme-chip{background:#fff0f4;color:#8a4058;border:1px solid #1a1a1a;border-radius:0;font-weight:700;}
+    [data-style="sakura"] .theme-chip em{font-style:normal;font-weight:900;}
+    [data-style="sakura"] .theme-lab{color:#c06078;letter-spacing:0.2em;font-weight:800;}
+    [data-style="sakura"] .theme-list{gap:10px;}
+    [data-style="sakura"] .settings-item{background:rgba(255,255,255,0.85);border:1px solid #1a1a1a;border-radius:2px;}
+    [data-style="sakura"] .settings-item[data-tone="pet"]{background:linear-gradient(135deg,#ffd0d8,#fff8f4 50%,#ffe8f0);border-width:2px;}
+    [data-style="sakura"] .item-title{color:#3a2030;font-weight:800;}
+    [data-style="sakura"] .theme-d{color:#8a6070;}
+    [data-style="sakura"] .theme-choice{border-radius:0;border:1px solid #1a1a1a;background:#fff;color:#3a2030;font-weight:700;}
+    [data-style="sakura"] .theme-choice.on{background:#e890a0;color:#fff;border-color:#1a1a1a;}
+    [data-style="sakura"] .theme-sw {--sw-radius:0;--sw-knob-radius:0;background:#f0c8d0;border:1px solid #1a1a1a;}
+    [data-style="sakura"] .theme-sw.on{background:#e890a0;}
+    [data-style="sakura"] .theme-sw::after{background:#fff;}
+    [data-style="sakura"] .theme-seg{background:#ffe8ec;border:1px solid #1a1a1a;border-radius:0;}
+    [data-style="sakura"] .theme-seg-opt.on{background:#1a1a1a;color:#fff;}
+    [data-style="sakura"] .theme-btn{border-radius:0;background:#fff;color:#3a2030;border:1px solid #1a1a1a;font-weight:800;}
+    [data-style="sakura"] .theme-btn.pri{background:#e890a0;color:#fff;border-color:#1a1a1a;}
+    [data-style="sakura"] .theme-bar{background:#ffe0e8;border:1px solid #1a1a1a;border-radius:0;height:8px;}
+    [data-style="sakura"] .theme-bar i{background:linear-gradient(90deg,#1a1a1a,#e890a0);}
+    [data-style="sakura"] .theme-num{color:#c06078;font-weight:800;}
+
+
+
+  
+    [data-style="sakura"] .theme-banner,[data-style="sakura"] .theme-shell,[data-style="sakura"] .pet-hero{position:relative;z-index:1;}
+    [data-style="sakura"] .pet-nav,[data-style="sakura"] .pet-main{position:relative;z-index:1;}

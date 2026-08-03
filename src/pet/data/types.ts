@@ -1,6 +1,6 @@
 import type { PetModelKind } from "@/pet/skins/types";
 import type { PetPersonality } from "../content/dialogue/personality";
-import type { AppUiTheme } from "@/theme/uiTheme";
+import type { PetThemeSettings, ThemePackId } from "@/theme/types";
 import type { CustomVrmMotion } from "../content/motion/customVrmMotions";
 import type { PetCustomLine } from "../content/dialogue/customLines";
 import type { CharacterExtensions } from "./extensions";
@@ -15,7 +15,7 @@ export type {
 } from "./deskWeather";
 
 export type PetTone = "cute" | "snarky";
-export type { AppUiTheme };
+export type { PetThemeSettings, ThemePackId };
 export type { PetCustomLine, PetLineScene } from "../content/dialogue/customLines";
 export type {
   CharacterExtensions,
@@ -64,7 +64,8 @@ export type PetModelProfiles = Record<PetModelKind, PetModelProfile>;
 export interface PetSettings {
   enabled: boolean;
   modelKind: PetModelKind;
-  uiTheme: AppUiTheme;
+  /** Theme Pack：data-style + 背景层（壁纸） */
+  theme: PetThemeSettings;
   settingsAlwaysOnTop: boolean;
   /** 右键菜单：系统信息默认展开 */
   sysStatsDefaultExpanded: boolean;

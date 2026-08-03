@@ -1,0 +1,37 @@
+/* ========== 25 青瓷 ========== */
+    [data-style="celadon"].theme-stage { background: linear-gradient(180deg,#e8f0e8,#d0e0d4); }
+    [data-style="celadon"] .theme-shell { font-family: "Noto Sans SC", "Outfit", sans-serif; background:linear-gradient(160deg,#e8f4ec,#d0e8d8);border:1px solid #8ab89a;border-radius:20px;color:#2a4a38;box-shadow:0 12px 40px rgba(60,100,80,0.12),inset 0 1px 0 rgba(255,255,255,0.8); }
+    [data-style="celadon"] .theme-banner { display: block; background:transparent;color:#4a7a60;border:1px solid #8ab89a;border-radius:0;font-weight:500;letter-spacing:0.32em;font-size:12px; margin:0;}
+    [data-style="celadon"] .pet-nav { background:rgba(160,200,170,0.35);border-right:1px solid #a8c8b0;gap:8px; }
+    [data-style="celadon"] .pet-nav-item { color:#4a6a55;border-radius:14px;background:transparent;border:1px solid transparent;font-weight:500; }
+    [data-style="celadon"] .pet-nav-item[data-active="1"] { color:#2a4a38;background:rgba(255,255,255,0.75);border-color:#8ab89a; }
+    [data-style="celadon"] .panel-head { border-bottom:1px solid #c0d8c8;background:linear-gradient(180deg,rgba(200,230,210,0.4),transparent); }
+    [data-style="celadon"] .panel-title { color:#2a4a38;font-weight:500;letter-spacing:0.28em;font-size:18px; }
+    [data-style="celadon"] .theme-chip { background:rgba(255,255,255,0.7);color:#4a6a55;border:1px solid #a8c8b0;border-radius:999px; }
+    [data-style="celadon"] .theme-chip em { font-style: normal; font-weight: 800; }
+    [data-style="celadon"] .theme-lab { color:#6a9a78;letter-spacing:0.24em;font-weight:500; }
+    [data-style="celadon"] .theme-list { gap: 9px; }
+    [data-style="celadon"] .settings-item { background:rgba(255,255,255,0.55);border:1px solid #b8d4c0;border-radius:16px; }
+    [data-style="celadon"] .settings-item[data-tone="pet"] { background:linear-gradient(135deg,rgba(180,220,200,0.5),rgba(255,255,255,0.7));border-color:#8ab89a; }
+    [data-style="celadon"] .item-title { color:#2a4a38;font-weight:600; }
+    [data-style="celadon"] .theme-d { color:#5a7a65; }
+    [data-style="celadon"] .theme-choice { border-radius:999px;border:1px solid #a8c8b0;background:rgba(255,255,255,0.7);color:#3a5a48; }
+    [data-style="celadon"] .theme-choice.on { background:#6a9a78;color:#f4faf6;border-color:#4a7a60; }
+    [data-style="celadon"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%; background:#c0d8c8;border:1px solid #8ab89a; }
+    [data-style="celadon"] .theme-sw.on { background:#6a9a78; }
+    [data-style="celadon"] .theme-seg { background:rgba(180,210,190,0.4);border:1px solid #a8c8b0;border-radius:999px; }
+    [data-style="celadon"] .theme-seg-opt.on { background:#fff;color:#2a4a38; }
+    [data-style="celadon"] .theme-btn { border-radius:999px;background:rgba(255,255,255,0.8);color:#2a4a38;border:1px solid #8ab89a;font-weight:600; }
+    [data-style="celadon"] .theme-btn.pri { background:#6a9a78;color:#f4faf6;border-color:#4a7a60; }
+    [data-style="celadon"] .theme-bar { background:#c8e0d0;border:1px solid #a8c8b0;border-radius:99px; }
+    [data-style="celadon"] .theme-bar i { background:linear-gradient(90deg,#8ab89a,#6a9a78); }
+    [data-style="celadon"] .theme-num { color:#4a7a60;font-weight:600; }
+    
+
+
+    
+    [data-style="celadon"] .pet-hero {
+      background: linear-gradient(160deg,#e8f4ec,#d0e8d8);
+      border: 1px solid #8ab89a;
+      border-radius: 20px;
+    }

@@ -1,0 +1,42 @@
+/* ========== 36 土耳其瓷蓝 ========== */
+    [data-style="turkey"].theme-stage { background: #0a2a4a; }
+    [data-style="turkey"] .theme-shell { font-family: "Noto Sans SC", "Outfit", sans-serif; background:#f4f8fc;border:3px solid #1a5a8a;border-radius:16px;color:#0a2a40;box-shadow:0 0 0 2px #c02840,0 14px 36px rgba(0,0,0,0.3); }
+    [data-style="turkey"] .theme-banner { display: block; background:#1a5a8a;color:#f4f8fc;border:2px solid #c02840;border-radius:0;font-weight:800;letter-spacing:0.14em; margin:0;}
+    [data-style="turkey"] .pet-nav { background:#0e3a60;border-right:3px solid #c02840;gap:6px; }
+    [data-style="turkey"] .pet-nav-item { color:#f0f8ff;border-radius:12px;background:rgba(0,0,0,0.22);border:2px solid transparent;font-weight:800; }
+    [data-style="turkey"] .pet-nav-item[data-active="1"] { color:#0a2a40;background:#f4f8fc;border-color:#c02840; }
+    [data-style="turkey"] .panel-head { border-bottom:2px solid #1a5a8a;background:linear-gradient(180deg,#d8e8f4,#f4f8fc); }
+    [data-style="turkey"] .panel-title { color:#1a5a8a;font-weight:900;letter-spacing:0.1em; }
+    [data-style="turkey"] .theme-chip { background:#c02840;color:#fff;border:2px solid #1a5a8a;border-radius:999px; }
+    [data-style="turkey"] .theme-chip em { font-style: normal; font-weight: 800; }
+    [data-style="turkey"] .theme-lab { color:#1a5a8a;letter-spacing:0.14em;font-weight:800; }
+    [data-style="turkey"] .theme-list { gap: 9px; }
+    [data-style="turkey"] .settings-item { background:#fff;border:2px solid #1a5a8a;border-radius:14px; }
+    [data-style="turkey"] .settings-item[data-tone="pet"] { background:linear-gradient(135deg,#c8e0f0,#fff 45%,#f0d0d8);border-color:#c02840; }
+    [data-style="turkey"] .item-title { color:#0a2a40;font-weight:800; }
+    [data-style="turkey"] .theme-d { color:#4a6a80; }
+    [data-style="turkey"] .theme-choice { border-radius:999px;border:2px solid #1a5a8a;background:#fff;color:#0a2a40;font-weight:700; }
+    [data-style="turkey"] .theme-choice.on { background:#1a5a8a;color:#fff;border-color:#0e3a60; }
+    [data-style="turkey"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%; background:#c0d8e8;border:2px solid #1a5a8a; }
+    [data-style="turkey"] .theme-sw.on { background:#c02840; }
+    [data-style="turkey"] .theme-seg { background:#e0eef8;border:2px solid #1a5a8a;border-radius:999px; }
+    [data-style="turkey"] .theme-seg-opt { color:#0a2a40; font-weight:700; }
+    [data-style="turkey"] .theme-seg-opt.on { background:#1a5a8a;color:#fff; }
+    [data-style="turkey"] .theme-btn { border-radius:999px;background:#fff;color:#1a5a8a;border:2px solid #1a5a8a;font-weight:800; }
+    [data-style="turkey"] .theme-btn.pri { background:#c02840;color:#fff;border-color:#8a1830; }
+    [data-style="turkey"] .theme-bar { background:#d0e4f0;border:2px solid #1a5a8a;border-radius:99px; }
+    [data-style="turkey"] .theme-bar i { background:linear-gradient(90deg,#1a5a8a,#40a0c8,#c02840); }
+    [data-style="turkey"] .theme-num { color:#1a5a8a;font-weight:800; }
+    [data-style="turkey"].theme-stage{background:
+      radial-gradient(circle at 30% 40%,#1a6a9a 0 2px,transparent 3px),
+      radial-gradient(circle at 70% 60%,#c02840 0 2px,transparent 3px),
+      radial-gradient(circle at 50% 20%,#40a0c8 0 1.5px,transparent 2px),
+      #0a2a4a;background-size:48px 48px,48px 48px,32px 32px,auto;}
+
+
+    
+    [data-style="turkey"] .pet-hero {
+      background: #f4f8fc;
+      border: 3px solid #1a5a8a;
+      border-radius: 16px;
+    }

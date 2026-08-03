@@ -1,0 +1,37 @@
+/* ========== 31 印度拉贾斯坦 ========== */
+    [data-style="india"].theme-stage { background: linear-gradient(180deg,#4a0a40,#8a1838 40%,#d47820); }
+    [data-style="india"] .theme-shell { font-family: "Noto Sans SC", "Outfit", sans-serif; background:linear-gradient(160deg,#3a0a30,#1a0818);border:3px solid #d4a040;border-radius:12px;color:#ffe8c0;box-shadow:0 0 40px rgba(212,120,40,0.25),inset 0 0 40px rgba(180,40,100,0.15); }
+    [data-style="india"] .theme-banner { display: block; background:linear-gradient(90deg,#d47820,#c02860,#6a1880);color:#fff8e0;border:2px solid #d4a040;border-radius:0;font-weight:800;letter-spacing:0.14em; margin:0;}
+    [data-style="india"] .pet-nav { background:#2a0820;border-right:3px solid #d4a040;gap:6px; }
+    [data-style="india"] .pet-nav-item { color:#d4a080;border-radius:10px;border:1px solid transparent;background:rgba(255,200,100,0.06); }
+    [data-style="india"] .pet-nav-item[data-active="1"] { color:#1a0818;background:linear-gradient(160deg,#d4a040,#e8c070);border-color:#fff0c0;font-weight:800; }
+    [data-style="india"] .panel-head { border-bottom:2px solid #d4a040;background:linear-gradient(90deg,rgba(192,40,96,0.35),transparent); }
+    [data-style="india"] .panel-title { color:#ffe8c0;font-weight:800;letter-spacing:0.1em;text-shadow:0 0 16px rgba(212,160,60,0.5); }
+    [data-style="india"] .theme-chip { background:#1a0818;color:#ffe8c0;border:1px solid #d4a040;border-radius:999px; }
+    [data-style="india"] .theme-chip em { font-style: normal; font-weight: 800; }
+    [data-style="india"] .theme-lab { color:#e8a040;letter-spacing:0.16em;font-weight:800; }
+    [data-style="india"] .theme-list { gap: 9px; }
+    [data-style="india"] .settings-item { background:rgba(40,10,30,0.75);border:1px solid rgba(212,160,64,0.4);border-radius:12px; }
+    [data-style="india"] .settings-item[data-tone="pet"] { background:linear-gradient(120deg,rgba(192,40,96,0.4),rgba(212,120,32,0.35));border-color:#d4a040; }
+    [data-style="india"] .item-title { color:#fff0d8;font-weight:800; }
+    [data-style="india"] .theme-d { color:#d0a888; }
+    [data-style="india"] .theme-choice { border-radius:999px;border:1px solid #d4a040;background:#1a0818;color:#ffe8c0; }
+    [data-style="india"] .theme-choice.on { background:linear-gradient(90deg,#d47820,#c02860);color:#fff8e0;border-color:#ffe8a0;font-weight:800; }
+    [data-style="india"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%; background:#3a1830;border:1px solid #d4a040; }
+    [data-style="india"] .theme-sw.on { background:linear-gradient(90deg,#c02860,#d47820); }
+    [data-style="india"] .theme-seg { background:#1a0818;border:1px solid #d4a040;border-radius:999px; }
+    [data-style="india"] .theme-seg-opt.on { background:#c02860;color:#fff; }
+    [data-style="india"] .theme-btn { border-radius:999px;background:#2a0820;color:#ffe8c0;border:1px solid #d4a040;font-weight:800; }
+    [data-style="india"] .theme-btn.pri { background:linear-gradient(135deg,#d4a040,#d47820);color:#1a0818;border-color:#ffe8a0; }
+    [data-style="india"] .theme-bar { background:#1a0818;border:1px solid #d4a040;border-radius:99px; }
+    [data-style="india"] .theme-bar i { background:linear-gradient(90deg,#6a1880,#c02860,#d47820,#d4a040); }
+    [data-style="india"] .theme-num { color:#e8a040;font-weight:800; }
+    
+
+
+    
+    [data-style="india"] .pet-hero {
+      background: linear-gradient(160deg,#3a0a30,#1a0818);
+      border: 3px solid #d4a040;
+      border-radius: 12px;
+    }

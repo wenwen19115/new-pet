@@ -1,0 +1,54 @@
+/* ========== 52 藏地唐卡 · 织锦边框 ========== */
+    [data-style="tibet"].theme-stage{
+      background:
+        repeating-linear-gradient(90deg,#6a1828 0 10px,#c8a040 10px 14px,#1a4a38 14px 24px,#c8a040 24px 28px,#2a1040 28px 38px),
+        #1a1028;
+      background-size:100% 28px,auto;background-repeat:no-repeat,repeat;background-position:top,0;
+    }
+    [data-style="tibet"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",sans-serif;position:relative;overflow:hidden;margin-top:20px;
+      background:linear-gradient(165deg,#2a1838,#140c20);
+      border:8px solid #c8a040;border-radius:2px;color:#f0e0c0;
+      box-shadow:0 0 0 3px #6a1828,0 0 0 6px #1a4a38,0 0 0 10px #c8a040,inset 0 0 50px rgba(100,30,60,0.25);
+    }
+    [data-style="tibet"] .theme-shell::before{
+      content:"";position:absolute;inset:12px;pointer-events:none;z-index:2;
+      border:2px solid rgba(232,208,128,0.5);
+      background:radial-gradient(circle at 50% 0%,rgba(200,160,64,0.15),transparent 40%);
+    }
+    [data-style="tibet"] .theme-banner{
+      display:block;position:relative;z-index:1;
+      background:linear-gradient(90deg,#6a1828,#c8a040 25%,#1a4a38 50%,#c8a040 75%,#6a1828);
+      color:#120818;border:2px solid #e8d080;border-radius:0;font-weight:900;letter-spacing:0.14em;
+    margin:0;}
+    [data-style="tibet"] .pet-nav,[data-style="tibet"] .main{position:relative;z-index:1;}
+    [data-style="tibet"] .pet-nav{background:#100818;border-right:4px solid #c8a040;gap:8px;}
+    [data-style="tibet"] .pet-nav-item{color:#b09070;border-radius:0;border:1px solid #3a2848;background:#1a1028;font-weight:700;}
+    [data-style="tibet"] .pet-nav-item[data-active="1"]{color:#120818;background:#c8a040;border-color:#e8d080;font-weight:900;}
+    [data-style="tibet"] .panel-head{border-bottom:4px solid #c8a040;background:linear-gradient(90deg,rgba(106,24,40,0.5),rgba(26,74,56,0.4));}
+    [data-style="tibet"] .panel-title{color:#e8d080;font-weight:900;letter-spacing:0.16em;}
+    [data-style="tibet"] .theme-chip{background:#6a1828;color:#e8d080;border:1px solid #c8a040;border-radius:0;font-weight:800;}
+    [data-style="tibet"] .theme-chip em{font-style:normal;font-weight:900;}
+    [data-style="tibet"] .theme-lab{color:#c8a040;letter-spacing:0.18em;font-weight:900;}
+    [data-style="tibet"] .theme-list{gap:10px;}
+    [data-style="tibet"] .settings-item{background:rgba(18,10,32,0.9);border:1px solid rgba(200,160,64,0.4);border-radius:0;}
+    [data-style="tibet"] .settings-item[data-tone="pet"]{background:linear-gradient(120deg,rgba(106,24,40,0.5),rgba(26,74,56,0.35));border-color:#c8a040;border-width:2px;}
+    [data-style="tibet"] .item-title{color:#f0e0c0;font-weight:900;}
+    [data-style="tibet"] .theme-d{color:#a89070;}
+    [data-style="tibet"] .theme-choice{border-radius:0;border:1px solid #c8a040;background:#100818;color:#e8d080;font-weight:700;}
+    [data-style="tibet"] .theme-choice.on{background:#6a1828;color:#e8d080;border-color:#e8d080;font-weight:900;}
+    [data-style="tibet"] .theme-sw {--sw-radius:0;--sw-knob-radius:0;background:#3a2848;border:1px solid #c8a040;}
+    [data-style="tibet"] .theme-sw.on{background:#1a4a38;}
+    [data-style="tibet"] .theme-sw::after{background:#e8d080;}
+    [data-style="tibet"] .theme-seg{background:#100818;border:1px solid #3a2848;border-radius:0;}
+    [data-style="tibet"] .theme-seg-opt.on{background:#c8a040;color:#120818;}
+    [data-style="tibet"] .theme-btn{border-radius:0;background:#100818;color:#e8d080;border:1px solid #c8a040;font-weight:900;}
+    [data-style="tibet"] .theme-btn.pri{background:#c8a040;color:#120818;border-color:#e8d080;}
+    [data-style="tibet"] .theme-bar{background:#100818;border:1px solid #3a2848;border-radius:0;height:8px;}
+    [data-style="tibet"] .theme-bar i{background:linear-gradient(90deg,#6a1828,#c8a040,#1a4a38);}
+    [data-style="tibet"] .theme-num{color:#c8a040;font-weight:900;}
+
+
+    
+    [data-style="tibet"] .theme-banner,[data-style="tibet"] .theme-shell,[data-style="tibet"] .pet-hero{position:relative;z-index:1;}
+    [data-style="tibet"] .pet-nav,[data-style="tibet"] .pet-main{position:relative;z-index:1;}

@@ -1,0 +1,37 @@
+/* ========== 27 千禧铬 ========== */
+    [data-style="y2k"].theme-stage { background: linear-gradient(160deg,#f8e0f0,#d0e8ff 50%,#e8d0ff); }
+    [data-style="y2k"] .theme-shell { font-family: "Noto Sans SC", "Outfit", sans-serif; background:linear-gradient(160deg,#f0f4f8,#d8e0e8 40%,#c8d0d8);border:2px solid #fff;border-radius:24px;color:#2a3040;box-shadow:0 8px 0 #a0a8b8,0 16px 40px rgba(80,100,140,0.25),inset 0 2px 0 #fff; }
+    [data-style="y2k"] .theme-banner { display: block; background:linear-gradient(90deg,#ff80c0,#80c0ff,#c080ff);color:#fff;border-radius:0;font-weight:800;letter-spacing:0.12em;border:2px solid #fff; margin:0;}
+    [data-style="y2k"] .pet-nav { background:linear-gradient(180deg,#e8ecf0,#c8d0d8);border-right:2px solid #fff;gap:8px; }
+    [data-style="y2k"] .pet-nav-item { color:#5a6070;border-radius:16px;background:rgba(255,255,255,0.5);border:2px solid transparent;font-weight:700; }
+    [data-style="y2k"] .pet-nav-item[data-active="1"] { color:#fff;background:linear-gradient(160deg,#ff80c0,#80a0ff);border-color:#fff;box-shadow:0 4px 12px rgba(255,120,180,0.35); }
+    [data-style="y2k"] .panel-head { border-bottom:2px solid #fff;background:linear-gradient(180deg,rgba(255,180,220,0.35),transparent); }
+    [data-style="y2k"] .panel-title { color:#3a4060;font-weight:800;letter-spacing:0.06em; }
+    [data-style="y2k"] .theme-chip { background:linear-gradient(160deg,#fff,#e8ecf0);color:#4a5060;border:2px solid #fff;border-radius:999px;box-shadow:0 2px 0 #b0b8c8; }
+    [data-style="y2k"] .theme-chip em { font-style: normal; font-weight: 800; }
+    [data-style="y2k"] .theme-lab { color:#ff80c0;letter-spacing:0.14em;font-weight:800; }
+    [data-style="y2k"] .theme-list { gap: 9px; }
+    [data-style="y2k"] .settings-item { background:linear-gradient(160deg,#fff,#eef2f6);border:2px solid #fff;border-radius:18px;box-shadow:0 3px 0 #b8c0d0; }
+    [data-style="y2k"] .settings-item[data-tone="pet"] { background:linear-gradient(135deg,#ffe0f0,#e0f0ff 50%,#f0e0ff); }
+    [data-style="y2k"] .item-title { color:#2a3040;font-weight:800; }
+    [data-style="y2k"] .theme-d { color:#6a7080; }
+    [data-style="y2k"] .theme-choice { border-radius:999px;border:2px solid #fff;background:#e8ecf0;color:#4a5060;font-weight:700;box-shadow:0 2px 0 #b0b8c8; }
+    [data-style="y2k"] .theme-choice.on { background:linear-gradient(90deg,#ff80c0,#80a0ff);color:#fff;border-color:#fff; }
+    [data-style="y2k"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%; background:#c8d0d8;border:2px solid #fff; }
+    [data-style="y2k"] .theme-sw.on { background:linear-gradient(90deg,#ff80c0,#80a0ff); }
+    [data-style="y2k"] .theme-seg { background:#d8e0e8;border:2px solid #fff;border-radius:999px; }
+    [data-style="y2k"] .theme-seg-opt.on { background:#fff;color:#3a4060;box-shadow:0 2px 0 #b0b8c8; }
+    [data-style="y2k"] .theme-btn { border-radius:999px;background:linear-gradient(160deg,#fff,#e0e4e8);color:#3a4060;border:2px solid #fff;font-weight:800;box-shadow:0 3px 0 #b0b8c8; }
+    [data-style="y2k"] .theme-btn.pri { background:linear-gradient(160deg,#ff80c0,#c080ff);color:#fff; }
+    [data-style="y2k"] .theme-bar { background:#d0d8e0;border:2px solid #fff;border-radius:99px; }
+    [data-style="y2k"] .theme-bar i { background:linear-gradient(90deg,#ff80c0,#80c0ff,#c080ff); }
+    [data-style="y2k"] .theme-num { color:#ff80c0;font-weight:800; }
+    
+
+
+    
+    [data-style="y2k"] .pet-hero {
+      background: linear-gradient(160deg,#f0f4f8,#d8e0e8 40%,#c8d0d8);
+      border: 2px solid #fff;
+      border-radius: 24px;
+    }

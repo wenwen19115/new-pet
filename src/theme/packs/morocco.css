@@ -1,0 +1,40 @@
+/* ========== 30 摩洛哥瓷砖 ========== */
+    [data-style="morocco"].theme-stage { background: #0d4a4a; }
+    [data-style="morocco"] .theme-shell { font-family: "Noto Sans SC", "Outfit", sans-serif; background:#f4efe6;border:4px solid #0d4a4a;border-radius:8px;color:#1a3030;box-shadow:0 0 0 3px #c45a3a,0 16px 40px rgba(0,0,0,0.35); }
+    [data-style="morocco"] .theme-banner { display: block; background:#0d4a4a;color:#f4efe6;border:2px solid #d4a040;border-radius:0;font-weight:800;letter-spacing:0.16em; margin:0;}
+    [data-style="morocco"] .pet-nav { background:#c45a3a;border-right:4px solid #0d4a4a;gap:6px; }
+    [data-style="morocco"] .pet-nav-item { color:#fffaf2;border-radius:6px;background:rgba(0,0,0,0.22);border:2px solid transparent;font-weight:800; }
+    [data-style="morocco"] .pet-nav-item[data-active="1"] { color:#0d4a4a;background:#f4efe6;border-color:#d4a040; }
+    [data-style="morocco"] .panel-head { border-bottom:3px solid #0d4a4a;background:linear-gradient(90deg,#d4e8e0,#f4efe6); }
+    [data-style="morocco"] .panel-title { color:#0d4a4a;font-weight:900;letter-spacing:0.12em; }
+    [data-style="morocco"] .theme-chip { background:#0d4a4a;color:#f4efe6;border:2px solid #d4a040;border-radius:6px; }
+    [data-style="morocco"] .theme-chip em { font-style: normal; font-weight: 800; }
+    [data-style="morocco"] .theme-lab { color:#c45a3a;letter-spacing:0.16em;font-weight:800; }
+    [data-style="morocco"] .theme-list { gap: 9px; }
+    [data-style="morocco"] .settings-item { background:#fffaf2;border:2px solid #0d4a4a;border-radius:8px; }
+    [data-style="morocco"] .settings-item[data-tone="pet"] { background:linear-gradient(135deg,#b8d8d0,#fffaf2 45%,#f0c8b0);border-color:#c45a3a; }
+    [data-style="morocco"] .item-title { color:#1a3030;font-weight:800; }
+    [data-style="morocco"] .theme-d { color:#4a6058; }
+    [data-style="morocco"] .theme-choice { border-radius:6px;border:2px solid #0d4a4a;background:#fffaf2;color:#1a3030;font-weight:700; }
+    [data-style="morocco"] .theme-choice.on { background:#0d4a4a;color:#f4efe6;border-color:#d4a040; }
+    [data-style="morocco"] .theme-sw {--sw-radius:6px;--sw-knob-radius:3px; background:#a8c8c0;border:2px solid #0d4a4a; }
+    [data-style="morocco"] .theme-sw.on { background:#c45a3a; }
+    [data-style="morocco"] .theme-seg { background:#d8e8e0;border:2px solid #0d4a4a;border-radius:6px; }
+    [data-style="morocco"] .theme-seg-opt { color:#1a3030; font-weight:700; }
+    [data-style="morocco"] .theme-seg-opt.on { background:#0d4a4a;color:#f4efe6; }
+    [data-style="morocco"] .theme-btn { border-radius:6px;background:#fffaf2;color:#0d4a4a;border:2px solid #0d4a4a;font-weight:800; }
+    [data-style="morocco"] .theme-btn.pri { background:#c45a3a;color:#f4efe6;border-color:#d4a040; }
+    [data-style="morocco"] .theme-bar { background:#d0e0d8;border:2px solid #0d4a4a;border-radius:4px; }
+    [data-style="morocco"] .theme-bar i { background:linear-gradient(90deg,#0d4a4a,#c45a3a,#d4a040); }
+    [data-style="morocco"] .theme-num { color:#0d4a4a;font-weight:800; }
+    [data-style="morocco"].theme-stage{background:
+      repeating-linear-gradient(45deg,#0d4a4a 0 10px,#0a3a3a 10px 20px),
+      repeating-linear-gradient(-45deg,#116060 0 10px,#0d4a4a 10px 20px);}
+
+
+    
+    [data-style="morocco"] .pet-hero {
+      background: #f4efe6;
+      border: 4px solid #0d4a4a;
+      border-radius: 8px;
+    }

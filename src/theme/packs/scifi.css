@@ -1,0 +1,211 @@
+/* ========== 14 未来科幻 · 深空轨道 ========== */
+    [data-style="scifi"].theme-stage {
+      background:
+        radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,0.55), transparent 2px),
+        radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.35), transparent 2px),
+        radial-gradient(1.5px 1.5px at 78% 28%, rgba(200,210,255,0.5), transparent 2px),
+        radial-gradient(1px 1px at 88% 76%, rgba(255,255,255,0.3), transparent 2px),
+        radial-gradient(900px 520px at 75% -10%, rgba(140,150,255,0.16), transparent 55%),
+        radial-gradient(700px 480px at 10% 100%, rgba(80,40,140,0.18), transparent 50%),
+        #05060c;
+    }
+    [data-style="scifi"] .theme-shell {
+      font-family: "Outfit", "Noto Sans SC", sans-serif;
+      background:
+        linear-gradient(160deg, rgba(255,255,255,0.04), transparent 35%),
+        linear-gradient(180deg, rgba(18,20,32,0.92), rgba(8,9,16,0.96));
+      border: 1px solid rgba(220,225,255,0.14);
+      border-radius: 20px;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.5),
+        0 40px 100px rgba(0,0,0,0.55),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+      color: #e8eaf4;
+      backdrop-filter: blur(20px);
+      position: relative;
+      overflow: hidden;
+    }
+    [data-style="scifi"] .theme-shell::before {
+      content: "";
+      position: absolute;
+      inset: -40% auto auto 40%;
+      width: 280px; height: 280px;
+      border: 1px solid rgba(200,210,255,0.08);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    [data-style="scifi"] .theme-shell::after {
+      content: "";
+      position: absolute;
+      inset: -20% auto auto 48%;
+      width: 180px; height: 180px;
+      border: 1px solid rgba(200,210,255,0.06);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    [data-style="scifi"] .theme-banner {
+      display: block;
+      background: rgba(255,255,255,0.03);
+      color: rgba(220,225,255,0.7);
+      border: 1px solid rgba(220,225,255,0.12);
+      border-radius:0;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      font-size: 10px;
+      font-weight: 600;
+      text-align: center;
+      backdrop-filter: blur(8px);
+    margin:0;}
+    [data-style="scifi"] .pet-nav {
+      background: rgba(0,0,0,0.28);
+      border-right: 1px solid rgba(220,225,255,0.08);
+      gap: 8px;
+      padding: 16px 12px;
+      position: relative;
+      z-index: 1;
+    }
+    [data-style="scifi"] .pet-nav-item {
+      color: rgba(180,190,220,0.45);
+      border-radius: 14px;
+      border: 1px solid transparent;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    [data-style="scifi"] .pet-nav-item[data-active="1"] {
+      color: #f4f6ff;
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(220,225,255,0.16);
+      box-shadow:
+        0 0 24px rgba(140,150,255,0.12),
+        inset 0 0 20px rgba(255,255,255,0.03);
+    }
+    [data-style="scifi"] .pet-nav-item[data-active="1"] svg {
+      color: #c8d0ff;
+      filter: drop-shadow(0 0 8px rgba(180,190,255,0.5));
+    }
+    [data-style="scifi"] .main { position: relative; z-index: 1; }
+    [data-style="scifi"] .panel-head {
+      border-bottom: 1px solid rgba(220,225,255,0.08);
+      background: linear-gradient(90deg, rgba(255,255,255,0.03), transparent 70%);
+    }
+    [data-style="scifi"] .panel-title {
+      color: #f4f6ff;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 13px;
+    }
+    [data-style="scifi"] .theme-chip {
+      background: rgba(255,255,255,0.04);
+      color: rgba(200,210,240,0.75);
+      border: 1px solid rgba(220,225,255,0.14);
+      border-radius: 999px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+    }
+    [data-style="scifi"] .theme-chip em {
+      font-style: normal;
+      color: #e8eaff;
+      font-weight: 650;
+    }
+    [data-style="scifi"] .theme-lab {
+      color: rgba(180,190,230,0.55);
+      letter-spacing: 0.22em;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    [data-style="scifi"] .theme-list { gap: 10px; }
+    [data-style="scifi"] .settings-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(220,225,255,0.1);
+      border-radius: 16px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+      backdrop-filter: blur(12px);
+    }
+    [data-style="scifi"] .settings-item[data-tone="pet"] {
+      background:
+        linear-gradient(120deg, rgba(180,190,255,0.1), rgba(255,255,255,0.03) 50%),
+        rgba(255,255,255,0.04);
+      border-color: rgba(220,225,255,0.22);
+      box-shadow:
+        0 0 40px rgba(120,130,255,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    [data-style="scifi"] .item-title { color: #f0f2fa; font-weight: 650; font-size: 14px; }
+    [data-style="scifi"] .theme-d { color: rgba(170,180,210,0.65); font-size: 12px; }
+    [data-style="scifi"] .theme-choice {
+      border-radius: 999px;
+      border: 1px solid rgba(220,225,255,0.14);
+      background: rgba(0,0,0,0.25);
+      color: rgba(200,210,240,0.7);
+      font-size: 11px;
+    }
+    [data-style="scifi"] .theme-choice.on {
+      color: #0a0b12;
+      background: linear-gradient(135deg, #e8eaff, #c8d0ff);
+      border-color: transparent;
+      box-shadow: 0 0 20px rgba(200,210,255,0.25);
+      font-weight: 700;
+    }
+    [data-style="scifi"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%;
+      background: rgba(255,255,255,0.08);
+      
+      border: 1px solid rgba(220,225,255,0.12);
+    }
+    [data-style="scifi"] .theme-sw.on {
+      background: linear-gradient(90deg, #a8b0ff, #e0e4ff);
+      border-color: transparent;
+      box-shadow: 0 0 16px rgba(180,190,255,0.35);
+    }
+    [data-style="scifi"] .theme-sw::after {
+      
+      background: #f4f6ff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+    }
+    [data-style="scifi"] .theme-sw.on::after { background: #0a0b12; }
+    [data-style="scifi"] .theme-seg {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(220,225,255,0.1);
+      border-radius: 999px;
+      padding: 3px;
+    }
+    [data-style="scifi"] .theme-seg-opt {
+      color: rgba(170,180,210,0.55);
+      border-radius: 999px;
+      font-size: 11px;
+    }
+    [data-style="scifi"] .theme-seg-opt.on {
+      background: rgba(255,255,255,0.1);
+      color: #f4f6ff;
+    }
+    [data-style="scifi"] .theme-btn {
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      color: #d8dcf0;
+      border: 1px solid rgba(220,225,255,0.16);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+    }
+    [data-style="scifi"] .theme-btn.pri {
+      background: linear-gradient(135deg, #f0f2ff, #c4caff);
+      color: #0a0b12;
+      border-color: transparent;
+      box-shadow: 0 0 22px rgba(200,210,255,0.28);
+      font-weight: 700;
+    }
+    [data-style="scifi"] .theme-bar {
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(220,225,255,0.1);
+      border-radius: 99px;
+    }
+    [data-style="scifi"] .theme-bar i {
+      background: linear-gradient(90deg, #8a94ff, #e8eaff);
+      box-shadow: 0 0 10px rgba(180,190,255,0.4);
+    }
+    [data-style="scifi"] .theme-num { color: rgba(200,210,255,0.75); font-variant-numeric: tabular-nums; }
+
+    
+    [data-style="scifi"] .theme-banner,[data-style="scifi"] .theme-shell,[data-style="scifi"] .pet-hero{position:relative;z-index:1;}
+    [data-style="scifi"] .pet-nav,[data-style="scifi"] .pet-main{position:relative;z-index:1;}

@@ -1,0 +1,104 @@
+/* ========== 16 像素复古 ========== */
+    [data-style="pixel"].theme-stage {
+      background:
+        linear-gradient(#1a1c2c 50%, transparent 50%),
+        #1a1c2c;
+      background-size: 100% 4px;
+      image-rendering: pixelated;
+    }
+    [data-style="pixel"] .theme-shell {
+      font-family: "IBM Plex Mono", "Noto Sans SC", monospace;
+      background: #262b44;
+      border: 4px solid #a0a0a0;
+      border-radius: 0;
+      box-shadow: inset -4px -4px 0 #111, inset 4px 4px 0 #e0e0e0;
+      color: #f4f4f4;
+    }
+    [data-style="pixel"] .theme-banner {
+      display: block;
+      background: #ef7d57;
+      color: #1a1c2c;
+      border: 0;
+      border-radius:0;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      box-shadow: inset -2px -2px 0 #a03c20, inset 2px 2px 0 #ffb090;
+    margin:0;}
+    [data-style="pixel"] .pet-nav {
+      background: #1a1c2c;
+      border-right: 4px solid #111;
+      gap: 4px;
+      padding: 10px 8px;
+    }
+    [data-style="pixel"] .pet-nav-item {
+      color: #738091;
+      border-radius: 0;
+      background: #262b44;
+      border: 2px solid #111;
+      box-shadow: inset -2px -2px 0 #111, inset 2px 2px 0 #3a4060;
+      font-size: 10px;
+      image-rendering: pixelated;
+    }
+    [data-style="pixel"] .pet-nav-item[data-active="1"] {
+      color: #1a1c2c;
+      background: #38b764;
+      box-shadow: inset -2px -2px 0 #1a6b3a, inset 2px 2px 0 #7ae08a;
+    }
+    [data-style="pixel"] .pet-nav-item[data-active="1"] svg { color: #1a1c2c; }
+    [data-style="pixel"] .panel-head { border-bottom: 4px solid #111; background: #3e3546; }
+    [data-style="pixel"] .panel-title {
+      color: #ffcd75; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    [data-style="pixel"] .theme-chip {
+      background: #41a6f6; color: #1a1c2c; border-radius: 0; font-size: 10px; font-weight: 700;
+      box-shadow: inset -2px -2px 0 #1a5a9a, inset 2px 2px 0 #8ad0ff;
+    }
+    [data-style="pixel"] .theme-chip em { font-style: normal; color: #1a1c2c; }
+    [data-style="pixel"] .theme-lab { color: #ef7d57; letter-spacing: 0.12em; font-size: 10px; }
+    [data-style="pixel"] .theme-list { gap: 6px; }
+    [data-style="pixel"] .settings-item {
+      background: #3e3546;
+      border: 2px solid #111;
+      border-radius: 0;
+      box-shadow: inset 2px 2px 0 #5a5068;
+    }
+    [data-style="pixel"] .settings-item[data-tone="pet"] {
+      background: #29366f;
+      box-shadow: inset 2px 2px 0 #4a5aa0, 0 0 0 2px #41a6f6;
+    }
+    [data-style="pixel"] .theme-d { color: #a0a0b0; font-size: 11px; }
+    [data-style="pixel"] .theme-choice {
+      border-radius: 0; border: 2px solid #111; background: #262b44; color: #c0c0d0; font-size: 10px;
+    }
+    [data-style="pixel"] .theme-choice.on {
+      color: #1a1c2c; background: #ffcd75; box-shadow: inset -2px -2px 0 #b08020, inset 2px 2px 0 #ffe8a8;
+    }
+    [data-style="pixel"] .theme-sw {--sw-radius:0;--sw-knob-radius:0;
+      background: #1a1c2c;  border: 2px solid #111; width: 40px; height: 20px;
+    }
+    [data-style="pixel"] .theme-sw.on { background: #38b764; }
+    [data-style="pixel"] .theme-sw::after {
+       width: 12px; height: 12px; top: 2px; left: 2px; background: #f4f4f4;
+      box-shadow: none;
+    }
+    [data-style="pixel"] .theme-sw.on::after { left: 22px; }
+    [data-style="pixel"] .theme-seg { background: #1a1c2c; border: 2px solid #111; border-radius: 0; }
+    [data-style="pixel"] .theme-seg-opt { color: #738091; border-radius: 0; font-size: 10px; }
+    [data-style="pixel"] .theme-seg-opt.on { background: #41a6f6; color: #1a1c2c; }
+    [data-style="pixel"] .theme-btn {
+      border-radius: 0; background: #738091; color: #1a1c2c; border: 2px solid #111; font-size: 10px;
+      box-shadow: inset -2px -2px 0 #3a4050, inset 2px 2px 0 #a0a8b8;
+    }
+    [data-style="pixel"] .theme-btn.pri {
+      background: #ef7d57; box-shadow: inset -2px -2px 0 #a03c20, inset 2px 2px 0 #ffb090;
+    }
+    [data-style="pixel"] .theme-bar { background: #1a1c2c; border: 2px solid #111; border-radius: 0; height: 10px; }
+    [data-style="pixel"] .theme-bar i { background: #38b764; }
+    [data-style="pixel"] .theme-num { color: #ffcd75; font-size: 11px; }
+
+    
+    [data-style="pixel"] .pet-hero {
+      background: #262b44;
+      border: 4px solid #a0a0a0;
+      border-radius: 0;
+    }

@@ -1,0 +1,63 @@
+/* ========== 63 水族箱 · 水波气泡 ========== */
+    [data-style="aqua"].theme-stage{
+      background:
+        radial-gradient(circle 5px at 18% 35%,rgba(255,255,255,0.55),transparent 7px),
+        radial-gradient(circle 3px at 42% 55%,rgba(160,240,255,0.45),transparent 5px),
+        radial-gradient(circle 4px at 72% 28%,rgba(255,255,255,0.4),transparent 6px),
+        radial-gradient(circle 2px at 88% 62%,rgba(128,224,240,0.5),transparent 4px),
+        linear-gradient(180deg,#031420,#0a4060 45%,#0c6878);
+    }
+    [data-style="aqua"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",sans-serif;position:relative;overflow:hidden;
+      background:linear-gradient(165deg,rgba(8,56,76,0.72),rgba(4,28,40,0.92));
+      border:4px solid #48c8e0;border-radius:16px;color:#d8f8ff;
+      box-shadow:0 0 0 3px #083040,0 0 48px rgba(64,200,220,0.35),inset 0 0 40px rgba(0,100,120,0.35);
+      backdrop-filter:blur(8px);
+    }
+    [data-style="aqua"] .theme-shell::before{
+      content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+      background:
+        radial-gradient(ellipse 80% 30% at 50% 0%,rgba(180,240,255,0.25),transparent 60%),
+        repeating-linear-gradient(100deg,transparent 0 28px,rgba(100,220,240,0.06) 28px 30px);
+    }
+    [data-style="aqua"] .theme-shell::after{
+      content:"";position:absolute;left:10%;bottom:8%;width:40px;height:28px;pointer-events:none;z-index:0;
+      background:radial-gradient(ellipse,rgba(255,120,100,0.55),transparent 70%);border-radius:50%;
+      box-shadow:60px -20px 0 -8px rgba(255,200,80,0.35),100px 10px 0 -10px rgba(80,200,160,0.4);
+    }
+    [data-style="aqua"] .theme-banner{
+      display:block;position:relative;z-index:1;
+      background:rgba(6,36,52,0.85);color:#80f0ff;border:1px solid #48c8e0;
+      border-radius:0;font-weight:800;letter-spacing:0.16em;
+      box-shadow:0 0 16px rgba(72,200,224,0.3);
+    margin:0;}
+    [data-style="aqua"] .pet-nav,[data-style="aqua"] .main{position:relative;z-index:1;}
+    [data-style="aqua"] .pet-nav{background:rgba(2,18,28,0.75);border-right:2px solid #2a90b0;gap:8px;}
+    [data-style="aqua"] .pet-nav-item{color:#70b0c0;border-radius:12px;border:1px solid transparent;background:rgba(72,200,224,0.1);font-weight:700;}
+    [data-style="aqua"] .pet-nav-item[data-active="1"]{color:#031420;background:#48c8e0;border-color:#a0f0ff;font-weight:900;}
+    [data-style="aqua"] .panel-head{border-bottom:1px solid #2a90b0;background:linear-gradient(90deg,rgba(72,200,224,0.25),transparent);}
+    [data-style="aqua"] .panel-title{color:#b0f4ff;font-weight:800;letter-spacing:0.12em;text-shadow:0 0 12px rgba(100,220,240,0.5);}
+    [data-style="aqua"] .theme-chip{background:rgba(2,18,28,0.85);color:#80f0ff;border:1px solid #48c8e0;border-radius:999px;font-weight:700;}
+    [data-style="aqua"] .theme-chip em{font-style:normal;font-weight:900;}
+    [data-style="aqua"] .theme-lab{color:#48c8e0;letter-spacing:0.16em;font-weight:800;}
+    [data-style="aqua"] .theme-list{gap:10px;}
+    [data-style="aqua"] .settings-item{background:rgba(4,28,40,0.75);border:1px solid rgba(72,200,224,0.35);border-radius:14px;}
+    [data-style="aqua"] .settings-item[data-tone="pet"]{background:linear-gradient(120deg,rgba(72,200,224,0.35),rgba(40,120,200,0.25));border-color:#48c8e0;box-shadow:inset 0 0 24px rgba(100,220,240,0.15);}
+    [data-style="aqua"] .item-title{color:#e8fcff;font-weight:800;}
+    [data-style="aqua"] .theme-d{color:#80b8c8;}
+    [data-style="aqua"] .theme-choice{border-radius:999px;border:1px solid #2a90b0;background:rgba(2,18,28,0.75);color:#a8eef8;font-weight:700;}
+    [data-style="aqua"] .theme-choice.on{background:#48c8e0;color:#031420;font-weight:900;}
+    [data-style="aqua"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%;background:#0a3040;border:1px solid #2a90b0;}
+    [data-style="aqua"] .theme-sw.on{background:#48c8e0;}
+    [data-style="aqua"] .theme-seg{background:rgba(2,18,28,0.75);border:1px solid #1a5060;border-radius:999px;}
+    [data-style="aqua"] .theme-seg-opt.on{background:#1a8098;color:#fff;}
+    [data-style="aqua"] .theme-btn{border-radius:999px;background:rgba(2,18,28,0.75);color:#80f0ff;border:1px solid #48c8e0;font-weight:800;}
+    [data-style="aqua"] .theme-btn.pri{background:linear-gradient(135deg,#48c8e0,#a0f0ff);color:#031420;border-color:transparent;}
+    [data-style="aqua"] .theme-bar{background:rgba(2,18,28,0.75);border:1px solid #1a5060;border-radius:99px;height:8px;}
+    [data-style="aqua"] .theme-bar i{background:linear-gradient(90deg,#2080a0,#80f0ff);box-shadow:0 0 10px rgba(128,240,255,0.45);}
+    [data-style="aqua"] .theme-num{color:#80f0ff;font-weight:800;}
+
+
+    
+    [data-style="aqua"] .theme-banner,[data-style="aqua"] .theme-shell,[data-style="aqua"] .pet-hero{position:relative;z-index:1;}
+    [data-style="aqua"] .pet-nav,[data-style="aqua"] .pet-main{position:relative;z-index:1;}

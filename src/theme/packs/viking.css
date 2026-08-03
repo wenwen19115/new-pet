@@ -1,0 +1,53 @@
+/* ========== 57 维京北境 · 铁木血色 ========== */
+    [data-style="viking"].theme-stage{
+      background:
+        linear-gradient(180deg,#0e1218 0%,#2a3038 40%,#4a5560 70%,#8a94a0);
+    }
+    [data-style="viking"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",sans-serif;position:relative;overflow:hidden;
+      background:
+        repeating-linear-gradient(90deg,rgba(0,0,0,0.15) 0 2px,transparent 2px 14px),
+        linear-gradient(165deg,#2e343c,#1a1e24);
+      border:3px solid #8a94a0;border-radius:0;color:#e8ecf0;
+      box-shadow:0 0 0 2px #3a2020,0 18px 44px rgba(0,0,0,0.55);
+      clip-path:polygon(0 18px,18px 0,calc(100% - 18px) 0,100% 18px,100% calc(100% - 18px),calc(100% - 18px) 100%,18px 100%,0 calc(100% - 18px));
+    }
+    [data-style="viking"] .theme-shell::before{
+      content:"ᚱ";position:absolute;right:20px;top:40px;font-size:96px;line-height:1;color:rgba(192,200,208,0.08);z-index:0;pointer-events:none;
+    }
+    [data-style="viking"] .theme-banner{
+      display:block;position:relative;z-index:1;
+      background:#4a5560;color:#e8ecf0;border:2px solid #c0c8d0;border-radius:0;
+      font-weight:900;letter-spacing:0.28em;text-transform:uppercase;font-size:11px;
+    margin:0;}
+    [data-style="viking"] .pet-nav,[data-style="viking"] .main{position:relative;z-index:1;}
+    [data-style="viking"] .pet-nav{background:#101418;border-right:3px solid #5a6570;gap:4px;}
+    [data-style="viking"] .pet-nav-item{color:#7a8898;border-radius:0;border:1px solid #3a4450;background:#1a2028;font-size:10px;text-transform:uppercase;font-weight:800;}
+    [data-style="viking"] .pet-nav-item[data-active="1"]{color:#1a1e24;background:#c0c8d0;border-color:#e8ecf0;font-weight:900;}
+    [data-style="viking"] .panel-head{border-bottom:3px solid #5a6570;background:linear-gradient(90deg,rgba(140,32,32,0.4),transparent);}
+    [data-style="viking"] .panel-title{color:#e8ecf0;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;font-size:14px;}
+    [data-style="viking"] .theme-chip{background:#6a1828;color:#e8ecf0;border:1px solid #8a94a0;border-radius:0;font-size:10px;font-weight:800;}
+    [data-style="viking"] .theme-chip em{font-style:normal;font-weight:900;}
+    [data-style="viking"] .theme-lab{color:#8a94a0;letter-spacing:0.22em;font-weight:900;font-size:10px;text-transform:uppercase;}
+    [data-style="viking"] .theme-list{gap:8px;}
+    [data-style="viking"] .settings-item{background:#1e242c;border:1px solid #4a5560;border-radius:0;}
+    [data-style="viking"] .settings-item[data-tone="pet"]{background:linear-gradient(120deg,rgba(106,24,40,0.45),#1e242c);border-color:#8a94a0;border-left:6px solid #6a1828;}
+    [data-style="viking"] .item-title{color:#e8ecf0;font-weight:900;}
+    [data-style="viking"] .theme-d{color:#8a98a8;}
+    [data-style="viking"] .theme-choice{border-radius:0;border:1px solid #5a6570;background:#101418;color:#c0c8d0;font-size:11px;text-transform:uppercase;font-weight:800;}
+    [data-style="viking"] .theme-choice.on{background:#6a1828;color:#fff;border-color:#8a3040;}
+    [data-style="viking"] .theme-sw {--sw-radius:0;--sw-knob-radius:0;background:#2a323c;border:1px solid #5a6570;}
+    [data-style="viking"] .theme-sw.on{background:#6a1828;}
+    [data-style="viking"] .theme-sw::after{background:#e8ecf0;}
+    [data-style="viking"] .theme-seg{background:#101418;border:1px solid #4a5560;border-radius:0;}
+    [data-style="viking"] .theme-seg-opt.on{background:#4a5560;color:#fff;}
+    [data-style="viking"] .theme-btn{border-radius:0;background:#1e242c;color:#c0c8d0;border:1px solid #5a6570;font-weight:900;text-transform:uppercase;font-size:11px;}
+    [data-style="viking"] .theme-btn.pri{background:#6a1828;color:#fff;border-color:#8a3040;}
+    [data-style="viking"] .theme-bar{background:#101418;border:1px solid #4a5560;border-radius:0;height:8px;}
+    [data-style="viking"] .theme-bar i{background:linear-gradient(90deg,#6a1828,#8a94a0);}
+    [data-style="viking"] .theme-num{color:#c0c8d0;font-weight:900;}
+
+
+    
+    [data-style="viking"] .theme-banner,[data-style="viking"] .theme-shell,[data-style="viking"] .pet-hero{position:relative;z-index:1;}
+    [data-style="viking"] .pet-nav,[data-style="viking"] .pet-main{position:relative;z-index:1;}

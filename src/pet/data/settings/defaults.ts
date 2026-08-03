@@ -15,6 +15,10 @@ import type {
   PetSettings,
 } from "../types";
 import { DEFAULT_DESK_WEATHER, normalizeDeskWeather } from "../deskWeather";
+import {
+  DEFAULT_PET_THEME_SETTINGS,
+  clonePetThemeSettings,
+} from "@/theme/types";
 
 /** 默认档案工厂：可依赖 characters / content / chat（不放在 data/types）。 */
 export function defaultProfileForModel(model: PetModelKind): PetModelProfile {
@@ -70,7 +74,7 @@ export const DEFAULT_PET_SETTINGS: PetSettings = {
   deskWeather: normalizeDeskWeather(DEFAULT_DESK_WEATHER),
   catchphrases: defaultCatchphrasesForModel(DEFAULT_PET_MODEL),
   catchphraseChance: CATCHPHRASE_DEFAULT_CHANCE,
-  uiTheme: "night",
+  theme: clonePetThemeSettings(DEFAULT_PET_THEME_SETTINGS),
   settingsAlwaysOnTop: false,
   sysStatsDefaultExpanded: false,
   chatAi: { ...DEFAULT_PET_CHAT_AI },
@@ -88,6 +92,7 @@ export const DEFAULT_PET_SETTINGS: PetSettings = {
 export function createFactoryResetSettings(): PetSettings {
   return {
     ...DEFAULT_PET_SETTINGS,
+    theme: clonePetThemeSettings(DEFAULT_PET_SETTINGS.theme),
     profiles: createDefaultProfiles(),
     chatAi: { ...DEFAULT_PET_CHAT_AI, customModels: [] },
     deskWeather: normalizeDeskWeather(DEFAULT_DESK_WEATHER),

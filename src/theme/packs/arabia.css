@@ -1,0 +1,40 @@
+/* ========== 39 阿拉伯星纹 ========== */
+    [data-style="arabia"].theme-stage { background: #061820; }
+    [data-style="arabia"] .theme-shell { font-family: "Noto Sans SC", "Outfit", sans-serif; background:linear-gradient(160deg,#0a2430,#061820);border:2px solid #c8a050;border-radius:6px;color:#e8d8b0;box-shadow:0 0 50px rgba(200,160,80,0.15),inset 0 0 40px rgba(0,80,80,0.2); }
+    [data-style="arabia"] .theme-banner { display: block; background:linear-gradient(90deg,#0a4a48,#c8a050,#0a4a48);color:#061820;border:1px solid #e8d080;border-radius:0;font-weight:800;letter-spacing:0.24em;font-size:11px; margin:0;}
+    [data-style="arabia"] .pet-nav { background:#041018;border-right:2px solid #c8a050;gap:6px; }
+    [data-style="arabia"] .pet-nav-item { color:#7a9a90;border-radius:4px;border:1px solid transparent;background:rgba(200,160,80,0.06); }
+    [data-style="arabia"] .pet-nav-item[data-active="1"] { color:#061820;background:linear-gradient(160deg,#c8a050,#e8d080);border-color:#e8d080;font-weight:800; }
+    [data-style="arabia"] .panel-head { border-bottom:1px solid #c8a050;background:linear-gradient(90deg,rgba(10,74,72,0.5),transparent); }
+    [data-style="arabia"] .panel-title { color:#e8d080;font-weight:700;letter-spacing:0.2em; }
+    [data-style="arabia"] .theme-chip { background:#0a4a48;color:#e8d080;border:1px solid #c8a050;border-radius:2px;font-size:10px; }
+    [data-style="arabia"] .theme-chip em { font-style: normal; font-weight: 800; }
+    [data-style="arabia"] .theme-lab { color:#c8a050;letter-spacing:0.2em;font-weight:800;font-size:10px; }
+    [data-style="arabia"] .theme-list { gap: 9px; }
+    [data-style="arabia"] .settings-item { background:rgba(6,24,32,0.8);border:1px solid rgba(200,160,80,0.3);border-radius:6px; }
+    [data-style="arabia"] .settings-item[data-tone="pet"] { background:linear-gradient(120deg,rgba(10,74,72,0.5),rgba(200,160,80,0.2));border-color:#c8a050; }
+    [data-style="arabia"] .item-title { color:#f0e8d0;font-weight:700; }
+    [data-style="arabia"] .theme-d { color:#90a898; }
+    [data-style="arabia"] .theme-choice { border-radius:2px;border:1px solid #c8a050;background:#041018;color:#e8d080; }
+    [data-style="arabia"] .theme-choice.on { background:#c8a050;color:#061820;border-color:#e8d080;font-weight:800; }
+    [data-style="arabia"] .theme-sw {--sw-radius:2px;--sw-knob-radius:1px; background:#0a3038;border:1px solid #c8a050; }
+    [data-style="arabia"] .theme-sw.on { background:linear-gradient(90deg,#0a4a48,#c8a050); }
+    [data-style="arabia"] .theme-seg { background:#041018;border:1px solid #3a5848;border-radius:2px; }
+    [data-style="arabia"] .theme-seg-opt.on { background:#0a4a48;color:#e8d080; }
+    [data-style="arabia"] .theme-btn { border-radius:2px;background:#041018;color:#e8d080;border:1px solid #c8a050;font-weight:800; }
+    [data-style="arabia"] .theme-btn.pri { background:linear-gradient(135deg,#c8a050,#0a4a48);color:#fff8e0;border-color:#e8d080; }
+    [data-style="arabia"] .theme-bar { background:#041018;border:1px solid #3a5848;border-radius:2px; }
+    [data-style="arabia"] .theme-bar i { background:linear-gradient(90deg,#0a4a48,#c8a050); }
+    [data-style="arabia"] .theme-num { color:#c8a050;font-weight:800; }
+    [data-style="arabia"].theme-stage{background:
+      linear-gradient(30deg,transparent 48%,rgba(200,160,80,0.12) 49%,transparent 51%),
+      linear-gradient(-30deg,transparent 48%,rgba(10,100,90,0.15) 49%,transparent 51%),
+      #061820;background-size:40px 70px,40px 70px,auto;}
+
+
+    
+    [data-style="arabia"] .pet-hero {
+      background: linear-gradient(160deg,#0a2430,#061820);
+      border: 2px solid #c8a050;
+      border-radius: 6px;
+    }

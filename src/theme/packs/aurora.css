@@ -1,0 +1,100 @@
+/* ========== 7 极光深海 ========== */
+    [data-style="aurora"].theme-stage {
+      background:
+        radial-gradient(700px 420px at 20% 0%, rgba(92,255,176,0.18), transparent 50%),
+        radial-gradient(600px 400px at 90% 20%, rgba(122,108,255,0.2), transparent 45%),
+        radial-gradient(500px 360px at 50% 100%, rgba(40,180,220,0.12), transparent 50%),
+        #021018;
+    }
+    [data-style="aurora"] .theme-shell {
+      font-family: "Outfit", "Noto Sans SC", sans-serif;
+      background: linear-gradient(165deg, rgba(8,40,55,0.92), rgba(4,18,28,0.96));
+      border: 1px solid rgba(92,255,176,0.25);
+      border-radius: 22px;
+      box-shadow: 0 0 50px rgba(40,180,220,0.12), inset 0 1px 0 rgba(255,255,255,0.08);
+      color: #e8f7f4;
+    }
+    [data-style="aurora"] .theme-banner {
+      display: block;
+      background: linear-gradient(90deg, rgba(92,255,176,0.2), rgba(122,108,255,0.25), rgba(40,200,255,0.2));
+      color: #d8fff0;
+      border: 1px solid rgba(92,255,176,0.3);
+      border-radius:0;
+      letter-spacing: 0.08em;
+    margin:0;}
+    [data-style="aurora"] .pet-nav {
+      background: rgba(0,20,30,0.55);
+      border-right: 1px solid rgba(92,255,176,0.15);
+      gap: 8px;
+    }
+    [data-style="aurora"] .pet-nav-item {
+      color: #6a9aaa;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+    }
+    [data-style="aurora"] .pet-nav-item[data-active="1"] {
+      color: #e8fff6;
+      background: linear-gradient(160deg, rgba(92,255,176,0.2), rgba(122,108,255,0.15));
+      box-shadow: 0 0 24px rgba(92,255,176,0.15);
+    }
+    [data-style="aurora"] .pet-nav-item[data-active="1"] svg { color: #5cffb0; }
+    [data-style="aurora"] .panel-head { border-bottom: 1px solid rgba(92,255,176,0.12); }
+    [data-style="aurora"] .panel-title {
+      background: linear-gradient(90deg, #5cffb0, #7ec8ff, #b6a6ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 800;
+    }
+    [data-style="aurora"] .theme-chip {
+      background: rgba(0,0,0,0.25); color: #9ed8d0; border: 1px solid rgba(92,255,176,0.25);
+      border-radius: 999px;
+    }
+    [data-style="aurora"] .theme-chip em { font-style: normal; color: #5cffb0; font-weight: 700; }
+    [data-style="aurora"] .theme-lab { color: #6ec4d0; letter-spacing: 0.12em; }
+    [data-style="aurora"] .theme-list { gap: 10px; }
+    [data-style="aurora"] .settings-item {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(120,220,255,0.12);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+    }
+    [data-style="aurora"] .settings-item[data-tone="pet"] {
+      background: linear-gradient(120deg, rgba(92,255,176,0.12), rgba(122,108,255,0.1));
+      border-color: rgba(92,255,176,0.3);
+      box-shadow: 0 0 30px rgba(92,255,176,0.08);
+    }
+    [data-style="aurora"] .theme-d { color: #8bb8c0; }
+    [data-style="aurora"] .theme-choice {
+      border-radius: 12px; border: 1px solid rgba(120,220,255,0.18);
+      background: rgba(0,0,0,0.2); color: #9ed0d8;
+    }
+    [data-style="aurora"] .theme-choice.on {
+      color: #021018; background: #5cffb0; border-color: #5cffb0;
+      box-shadow: 0 0 16px rgba(92,255,176,0.4);
+    }
+    [data-style="aurora"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%; background: #143040;  }
+    [data-style="aurora"] .theme-sw.on { background: linear-gradient(90deg, #5cffb0, #7a6cff); }
+    [data-style="aurora"] .theme-sw::after {  }
+    [data-style="aurora"] .theme-seg {
+      background: rgba(0,0,0,0.25); border: 1px solid rgba(120,220,255,0.15); border-radius: 14px;
+    }
+    [data-style="aurora"] .theme-seg-opt { color: #6a9aaa; border-radius: 12px; }
+    [data-style="aurora"] .theme-seg-opt.on { background: rgba(122,108,255,0.35); color: #fff; }
+    [data-style="aurora"] .theme-btn {
+      border-radius: 12px; background: rgba(255,255,255,0.06); color: #e8f7f4;
+      border: 1px solid rgba(120,220,255,0.2);
+    }
+    [data-style="aurora"] .theme-btn.pri {
+      background: linear-gradient(90deg, #5cffb0, #5ec8ff); color: #021018; border-color: transparent;
+    }
+    [data-style="aurora"] .theme-bar { background: rgba(0,0,0,0.3); border-radius: 99px; }
+    [data-style="aurora"] .theme-bar i { background: linear-gradient(90deg, #5cffb0, #7a6cff); }
+    [data-style="aurora"] .theme-num { color: #5cffb0; }
+
+    
+    [data-style="aurora"] .pet-hero {
+      background: linear-gradient(165deg, rgba(8,40,55,0.92), rgba(4,18,28,0.96));
+      border: 1px solid rgba(92,255,176,0.25);
+      border-radius: 22px;
+    }

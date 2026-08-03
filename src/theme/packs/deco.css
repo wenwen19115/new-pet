@@ -1,0 +1,69 @@
+/* ========== 41 装饰艺术 · 扇形阶梯 ========== */
+    [data-style="deco"].theme-stage{
+      background:
+        repeating-conic-gradient(from 0deg at 50% 100%,#d4a040 0deg 8deg,#0a0a0a 8deg 16deg),
+        #0a0a0a;
+      background-size:100% 55%,auto;background-position:bottom,0 0;background-repeat:no-repeat,repeat;
+    }
+    [data-style="deco"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",sans-serif;position:relative;overflow:hidden;
+      background:linear-gradient(180deg,#1c1c1c,#0c0c0c);
+      border:0;border-radius:0;color:#f0e0c0;
+      clip-path:polygon(0 14px,14px 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%);
+      box-shadow:0 0 0 2px #d4a040,0 24px 56px rgba(0,0,0,0.7);
+    }
+    [data-style="deco"] .theme-shell::before{
+      content:"";position:absolute;left:0;right:0;top:0;height:14px;z-index:2;pointer-events:none;
+      background:repeating-linear-gradient(90deg,#d4a040 0 8px,#0a0a0a 8px 12px,#f0d080 12px 16px,#0a0a0a 16px 20px);
+    }
+    [data-style="deco"] .theme-shell::after{
+      content:"";position:absolute;right:-20%;top:20%;width:55%;height:55%;pointer-events:none;z-index:0;
+      background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(212,160,64,0.12) 0 6deg,transparent 6deg 12deg);
+      mask-image:radial-gradient(circle,black 20%,transparent 70%);
+    }
+    [data-style="deco"] .theme-banner{
+      display:block;position:relative;z-index:1;margin-top:10px;
+      background:linear-gradient(90deg,#a08030,#f0d080 40%,#d4a040 60%,#a08030);
+      color:#0a0a0a;border-radius:0;font-weight:900;letter-spacing:0.32em;text-transform:uppercase;font-size:11px;
+      clip-path:polygon(0 0,100% 0,96% 100%,4% 100%);
+    margin:0;}
+    [data-style="deco"] .pet-nav,[data-style="deco"] .main{position:relative;z-index:1;}
+    [data-style="deco"] .pet-nav{background:#111;border-right:3px solid #d4a040;gap:4px;padding-top:18px;}
+    [data-style="deco"] .pet-nav-item{
+      color:#8a7a50;border-radius:0;border:1px solid #2a2a2a;background:#151515;
+      font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+      clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+    }
+    [data-style="deco"] .pet-nav-item[data-active="1"]{
+      color:#0a0a0a;background:linear-gradient(180deg,#f0d080,#d4a040 50%,#a08030);border-color:#f0d080;font-weight:900;
+    }
+    [data-style="deco"] .panel-head{border-bottom:3px double #d4a040;background:linear-gradient(90deg,rgba(212,160,64,0.28),transparent 70%);}
+    [data-style="deco"] .panel-title{color:#f0d080;font-weight:900;letter-spacing:0.28em;text-transform:uppercase;font-size:13px;}
+    [data-style="deco"] .theme-chip{background:#0a0a0a;color:#d4a040;border:1px solid #d4a040;border-radius:0;font-size:10px;letter-spacing:0.1em;}
+    [data-style="deco"] .theme-chip em{font-style:normal;font-weight:900;}
+    [data-style="deco"] .theme-lab{color:#d4a040;letter-spacing:0.28em;font-weight:900;font-size:10px;text-transform:uppercase;}
+    [data-style="deco"] .theme-list{gap:8px;}
+    [data-style="deco"] .settings-item{background:#141414;border:1px solid #3a3020;border-radius:0;border-left:4px solid #d4a040;}
+    [data-style="deco"] .settings-item[data-tone="pet"]{
+      background:linear-gradient(115deg,rgba(212,160,64,0.35),#141414 55%);
+      border-color:#d4a040;border-left-width:8px;
+    }
+    [data-style="deco"] .item-title{color:#f0e0c0;font-weight:900;letter-spacing:0.06em;}
+    [data-style="deco"] .theme-d{color:#8a7a50;}
+    [data-style="deco"] .theme-choice{border-radius:0;border:1px solid #d4a040;background:#0a0a0a;color:#d4a040;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;}
+    [data-style="deco"] .theme-choice.on{background:#d4a040;color:#0a0a0a;font-weight:900;}
+    [data-style="deco"] .theme-sw {--sw-radius:0;--sw-knob-radius:0;background:#2a2a2a;border:1px solid #d4a040;}
+    [data-style="deco"] .theme-sw.on{background:#d4a040;}
+    [data-style="deco"] .theme-sw::after{background:#0a0a0a;}
+    [data-style="deco"] .theme-seg{background:#0a0a0a;border:1px solid #3a3020;border-radius:0;}
+    [data-style="deco"] .theme-seg-opt.on{background:#d4a040;color:#0a0a0a;}
+    [data-style="deco"] .theme-btn{border-radius:0;background:#141414;color:#d4a040;border:1px solid #d4a040;font-weight:900;text-transform:uppercase;font-size:11px;letter-spacing:0.1em;}
+    [data-style="deco"] .theme-btn.pri{background:#d4a040;color:#0a0a0a;}
+    [data-style="deco"] .theme-bar{background:#0a0a0a;border:1px solid #3a3020;border-radius:0;height:8px;}
+    [data-style="deco"] .theme-bar i{background:linear-gradient(90deg,#d4a040,#f0d080,#d4a040);}
+    [data-style="deco"] .theme-num{color:#d4a040;font-weight:900;}
+
+
+    
+    [data-style="deco"] .theme-banner,[data-style="deco"] .theme-shell,[data-style="deco"] .pet-hero{position:relative;z-index:1;}
+    [data-style="deco"] .pet-nav,[data-style="deco"] .pet-main{position:relative;z-index:1;}

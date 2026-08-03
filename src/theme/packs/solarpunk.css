@@ -1,0 +1,58 @@
+/* ========== 59 太阳朋克 · 绿金生态 ========== */
+    [data-style="solarpunk"].theme-stage{
+      background:
+        linear-gradient(160deg,transparent 60%,rgba(200,224,64,0.35)),
+        radial-gradient(circle at 80% 15%,#ffe080 0 8%,transparent 9%),
+        linear-gradient(165deg,#063828,#0e7a48 45%,#78c040);
+    }
+    [data-style="solarpunk"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",sans-serif;position:relative;overflow:hidden;
+      background:linear-gradient(160deg,rgba(6,50,36,0.92),rgba(4,32,24,0.96));
+      border:3px solid #80d040;border-radius:24px 8px 28px 12px;color:#e8ffe0;
+      box-shadow:0 0 0 2px #40c8a0,0 0 48px rgba(128,208,64,0.3);
+    }
+    [data-style="solarpunk"] .theme-shell::before{
+      content:"";position:absolute;right:-10%;top:-10%;width:45%;height:45%;pointer-events:none;z-index:0;
+      background:conic-gradient(from 0deg,#ffe080,#80d040,#40c8a0,#ffe080);border-radius:50%;opacity:0.2;
+      mask-image:repeating-linear-gradient(90deg,black 0 6px,transparent 6px 12px);
+    }
+    [data-style="solarpunk"] .theme-shell::after{
+      content:"";position:absolute;left:0;right:0;bottom:0;height:48px;pointer-events:none;z-index:0;
+      background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 40'%3E%3Cpath d='M0 40 C20 10 40 30 60 12 S100 35 120 18 S160 30 200 8 V40Z' fill='%2380d040' opacity='.25'/%3E%3C/svg%3E") bottom/100% 100% no-repeat;
+    }
+    [data-style="solarpunk"] .theme-banner{
+      display:block;position:relative;z-index:1;
+      background:linear-gradient(90deg,#80d040,#40c8a0,#c8e040);color:#062a18;
+      border-radius:0;font-weight:900;letter-spacing:0.12em;border:2px solid #c8e040;
+    margin:0;}
+    [data-style="solarpunk"] .pet-nav,[data-style="solarpunk"] .main{position:relative;z-index:1;}
+    [data-style="solarpunk"] .pet-nav{background:rgba(2,24,16,0.85);border-right:3px solid #80d040;gap:8px;}
+    [data-style="solarpunk"] .pet-nav-item{color:#e0ffd0;border-radius:16px 8px;border:1px solid transparent;background:rgba(0,0,0,0.28);font-weight:800;}
+    [data-style="solarpunk"] .pet-nav-item[data-active="1"]{color:#062a18;background:#80d040;border-color:#c8e040;font-weight:900;}
+    [data-style="solarpunk"] .panel-head{border-bottom:2px solid #40a060;background:linear-gradient(90deg,rgba(128,208,64,0.25),transparent);}
+    [data-style="solarpunk"] .panel-title{color:#c8e040;font-weight:900;letter-spacing:0.1em;text-shadow:0 0 12px rgba(200,224,64,0.4);}
+    [data-style="solarpunk"] .theme-chip{background:#062a18;color:#c8e040;border:1px solid #80d040;border-radius:999px;font-weight:800;}
+    [data-style="solarpunk"] .theme-chip em{font-style:normal;font-weight:900;}
+    [data-style="solarpunk"] .theme-lab{color:#80d040;letter-spacing:0.14em;font-weight:900;}
+    [data-style="solarpunk"] .theme-list{gap:10px;}
+    [data-style="solarpunk"] .settings-item{background:rgba(6,36,26,0.8);border:1px solid rgba(128,208,64,0.35);border-radius:18px 8px;}
+    [data-style="solarpunk"] .settings-item[data-tone="pet"]{background:linear-gradient(120deg,rgba(128,208,64,0.35),rgba(64,200,160,0.25));border-color:#80d040;}
+    [data-style="solarpunk"] .item-title{color:#e8ffe0;font-weight:900;}
+    [data-style="solarpunk"] .theme-d{color:#c8f0b8;}
+    [data-style="solarpunk"] .theme-choice{border-radius:999px;border:1px solid #80d040;background:#062a18;color:#c8e040;font-weight:800;}
+    [data-style="solarpunk"] .theme-choice.on{background:#80d040;color:#062a18;font-weight:900;}
+    [data-style="solarpunk"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%;background:#1a4a30;border:1px solid #80d040;}
+    [data-style="solarpunk"] .theme-sw.on{background:#80d040;}
+    [data-style="solarpunk"] .theme-seg{background:#062a18;border:1px solid #2a5a40;border-radius:999px;}
+    [data-style="solarpunk"] .theme-seg-opt{color:#c8f0b8;font-weight:700;}
+    [data-style="solarpunk"] .theme-seg-opt.on{background:#2a7a48;color:#fff;}
+    [data-style="solarpunk"] .theme-btn{border-radius:999px;background:#062a18;color:#c8e040;border:1px solid #80d040;font-weight:900;}
+    [data-style="solarpunk"] .theme-btn.pri{background:linear-gradient(135deg,#80d040,#40c8a0);color:#062a18;border-color:#c8e040;}
+    [data-style="solarpunk"] .theme-bar{background:#062a18;border:1px solid #2a5a40;border-radius:99px;height:8px;}
+    [data-style="solarpunk"] .theme-bar i{background:linear-gradient(90deg,#40a060,#c8e040);}
+    [data-style="solarpunk"] .theme-num{color:#c8e040;font-weight:900;}
+
+
+    
+    [data-style="solarpunk"] .theme-banner,[data-style="solarpunk"] .theme-shell,[data-style="solarpunk"] .pet-hero{position:relative;z-index:1;}
+    [data-style="solarpunk"] .pet-nav,[data-style="solarpunk"] .pet-main{position:relative;z-index:1;}

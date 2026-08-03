@@ -1,0 +1,135 @@
+/* ========== 3 战术 HUD ========== */
+    [data-style="hud"].theme-stage {
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,140,40,0.03) 2px, rgba(255,140,40,0.03) 3px),
+        #070604;
+    }
+    [data-style="hud"] .theme-shell {
+      font-family: "IBM Plex Mono", "Noto Sans SC", monospace;
+      background: #0c0a07;
+      border: 1px solid #ff8c28;
+      border-radius: 2px;
+      box-shadow: 0 0 0 1px #3a2208, inset 0 0 60px rgba(255,140,40,0.06);
+      clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+    }
+    [data-style="hud"] .theme-banner {margin:0;
+      display: block;
+      background: transparent;
+      color: #ff8c28;
+      border: 1px solid #ff8c28;
+      border-radius:0;
+      font-family: "IBM Plex Mono", monospace;
+    }
+    [data-style="hud"] .pet-nav {
+      background: #080704;
+      border-right: 1px solid rgba(255,140,40,0.4);
+      padding: 0;
+      gap: 0;
+    }
+    [data-style="hud"] .pet-nav-item {
+      color: #8a6a40;
+      border-radius: 0;
+      border-bottom: 1px solid rgba(255,140,40,0.2);
+      padding: 14px 8px;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+    }
+    [data-style="hud"] .pet-nav-item[data-active="1"] {
+      color: #ffb060;
+      background: rgba(255,140,40,0.1);
+      box-shadow: inset 3px 0 0 #ff8c28;
+    }
+    [data-style="hud"] .pet-nav-item[data-active="1"] svg { color: #ff8c28; }
+    [data-style="hud"] .panel-head {
+      border-bottom: 1px solid rgba(255,140,40,0.35);
+      background: linear-gradient(90deg, rgba(255,140,40,0.08), transparent);
+    }
+    [data-style="hud"] .panel-title {
+      color: #ffb060;
+      font-size: 13px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    [data-style="hud"] .theme-chip {
+      color: #ff8c28; border: 1px solid #ff8c28; border-radius: 0;
+      background: rgba(255,140,40,0.08);
+      font-size: 10px;
+    }
+    [data-style="hud"] .theme-chip em { font-style: normal; color: #ffe0b8; }
+    [data-style="hud"] .theme-lab { color: #ff8c28; letter-spacing: 0.16em; }
+    [data-style="hud"] .theme-list { border: 1px solid rgba(255,140,40,0.25); }
+    [data-style="hud"] .settings-item {
+      background: rgba(20,14,8,0.9);
+      border-top: 1px solid rgba(255,140,40,0.18);
+      border-radius: 0;
+    }
+    [data-style="hud"] .settings-item:first-child { border-top: 0; }
+    [data-style="hud"] .settings-item[data-tone="pet"] {
+      background: rgba(255,140,40,0.08);
+      box-shadow: inset 0 0 0 1px rgba(255,140,40,0.35);
+    }
+    [data-style="hud"] .theme-t { color: #ffe8c8; font-size: 12px; letter-spacing: 0.04em; }
+    [data-style="hud"] .theme-d { color: #9a7a50; font-size: 11px; }
+    [data-style="hud"] .theme-choice {
+      border-radius: 0; border: 1px solid #5a3a18; background: #100c08; color: #b89050;
+      font-size: 11px;
+    }
+    [data-style="hud"] .theme-choice.on {
+      color: #0c0a07; background: #ff8c28; border-color: #ff8c28;
+    }
+    [data-style="hud"] .theme-sw {
+      --sw-radius: 0;
+      --sw-knob-radius: 0;
+      background: #2a1c0c;
+      border: 1px solid #5a3a18;
+    }
+    [data-style="hud"] .theme-sw.on { background: #ff8c28; }
+    [data-style="hud"] .theme-sw::after { width: 16px; height: 16px; top: 3px; background: #0c0a07; }
+    [data-style="hud"] .theme-sw.on::after { left: 23px; background: #0c0a07; }
+    [data-style="hud"] .theme-seg { background: #100c08; border: 1px solid #5a3a18; border-radius: 0; }
+    [data-style="hud"] .theme-seg-opt { color: #8a6a40; border-radius: 0; font-size: 11px; }
+    [data-style="hud"] .theme-seg-opt.on { background: #ff8c28; color: #0c0a07; }
+    [data-style="hud"] .theme-btn {
+      border-radius: 0; background: #100c08; color: #ffb060; border: 1px solid #ff8c28; font-size: 11px;
+    }
+    [data-style="hud"] .theme-btn.pri { background: #ff8c28; color: #0c0a07; }
+    [data-style="hud"] .theme-bar { background: #100c08; border: 1px solid #5a3a18; border-radius: 0; }
+    [data-style="hud"] .theme-bar i { background: #ff8c28; }
+    [data-style="hud"] .theme-num { color: #ff8c28; }
+    [data-style="hud"] .pet-hero {
+      background:
+        linear-gradient(90deg, rgba(255,140,40,0.1), transparent 40%),
+        rgba(12,10,7,0.96);
+      border: 1px solid rgba(255,140,40,0.45);
+      border-radius: 0;
+      box-shadow: inset 0 0 40px rgba(255,140,40,0.06);
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+    }
+    [data-style="hud"] .hero-stage {
+      border: 1px solid rgba(255,140,40,0.3);
+      border-radius: 0;
+      background: #080704;
+    }
+    [data-style="hud"] .hero-role {
+      color: #ff8c28;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+    [data-style="hud"] .hero-name { color: #ffe8c8; letter-spacing: 0.04em; }
+    [data-style="hud"] .hero-tagline,
+    [data-style="hud"] .preview-orbit-toggle { color: #9a7a50; }
+    [data-style="hud"] .meta-pill {
+      border-radius: 0;
+      border: 1px solid rgba(255,140,40,0.4);
+      background: rgba(255,140,40,0.08);
+      color: #ffb060;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    [data-style="hud"] .meta-pill--on {
+      color: #ffb060;
+      border-color: #ff8c28;
+      background: rgba(255,140,40,0.16);
+    }

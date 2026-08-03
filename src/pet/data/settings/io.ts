@@ -59,7 +59,7 @@ export async function patchPetSettings(
       [
         "settingsAlwaysOnTop",
         "enabled",
-        "uiTheme",
+        "theme",
         "sysStatsDefaultExpanded",
         "chatEnabled",
       ].includes(k)

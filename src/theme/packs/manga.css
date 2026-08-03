@@ -1,0 +1,102 @@
+/* ========== 15 日漫分镜 ========== */
+    [data-style="manga"].theme-stage {
+      background: #f0f0f0;
+    }
+    [data-style="manga"] .theme-shell {
+      font-family: "Noto Sans SC", sans-serif;
+      background: #fff;
+      border: 3px solid #111;
+      border-radius: 0;
+      box-shadow: 0 0 0 8px #fff, 0 0 0 11px #111;
+      color: #111;
+      
+    }
+    [data-style="manga"] .theme-banner {
+      display: block;
+      background: #111;
+      color: #fff;
+      border-radius:0;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+    margin:0;}
+    [data-style="manga"] .pet-nav {
+      background: #111;
+      border-right: 3px solid #111;
+      gap: 0;
+      padding: 0;
+    }
+    [data-style="manga"] .pet-nav-item {
+      color: rgba(255,255,255,0.45);
+      border-radius: 0;
+      border-bottom: 1px solid #333;
+      padding: 16px 8px;
+      font-weight: 800;
+      writing-mode: vertical-rl;
+      letter-spacing: 0.2em;
+      min-height: 72px;
+    }
+    [data-style="manga"] .pet-nav-item svg { display: none; }
+    [data-style="manga"] .pet-nav-item[data-active="1"] {
+      color: #fff;
+      background: #e31c23;
+    }
+    [data-style="manga"] .panel-head {
+      border-bottom: 3px solid #111;
+      background: linear-gradient(90deg, #fff 70%, transparent),
+        repeating-linear-gradient(90deg, #111 0 2px, transparent 2px 6px);
+      background-size: auto, 100% 40%;
+      background-position: 0 0, 100% 50%;
+      background-repeat: no-repeat;
+    }
+    [data-style="manga"] .panel-title {
+      font-size: 32px; font-weight: 900; letter-spacing: 0.2em;
+    }
+    [data-style="manga"] .theme-chip {
+      background: #fff; color: #111; border: 2px solid #111; border-radius: 0;
+      font-weight: 800;
+      box-shadow: 3px 3px 0 #e31c23;
+    }
+    [data-style="manga"] .theme-chip em { font-style: normal; color: #e31c23; }
+    [data-style="manga"] .theme-lab { color: #e31c23; letter-spacing: 0.25em; font-weight: 900; }
+    [data-style="manga"] .theme-list { gap: 0; border: 2px solid #111; }
+    [data-style="manga"] .settings-item {
+      background: #fff;
+      border-top: 2px solid #111;
+      border-radius: 0;
+      padding: 14px 12px;
+    }
+    [data-style="manga"] .settings-item:first-child { border-top: 0; }
+    [data-style="manga"] .settings-item[data-tone="pet"] {
+      background: #111;
+      color: #fff;
+    }
+    [data-style="manga"] .settings-item[data-tone="pet"] .theme-d { color: rgba(255,255,255,0.65); }
+    [data-style="manga"] .theme-d { color: #444; }
+    [data-style="manga"] .theme-choice {
+      border-radius: 0; border: 2px solid #111; background: #fff; color: #111; font-weight: 700;
+    }
+    [data-style="manga"] .theme-choice.on { background: #e31c23; color: #fff; border-color: #e31c23; }
+    [data-style="manga"] .settings-item[data-tone="pet"] .theme-choice { border-color: #fff; color: #fff; background: transparent; }
+    [data-style="manga"] .settings-item[data-tone="pet"] .theme-choice.on { background: #e31c23; border-color: #e31c23; }
+    [data-style="manga"] .theme-sw {--sw-radius:0;--sw-knob-radius:0; background: #ddd;  border: 2px solid #111; }
+    [data-style="manga"] .theme-sw.on { background: #e31c23; }
+    [data-style="manga"] .theme-sw::after {  background: #fff; width: 16px; height: 16px; top: 2px; }
+    [data-style="manga"] .settings-item[data-tone="pet"] .theme-sw { border-color: #fff; background: #333; }
+    [data-style="manga"] .settings-item[data-tone="pet"] .theme-sw.on { background: #e31c23; }
+    [data-style="manga"] .theme-seg { background: #fff; border: 2px solid #111; border-radius: 0; }
+    [data-style="manga"] .theme-seg-opt { color: #666; border-radius: 0; font-weight: 700; }
+    [data-style="manga"] .theme-seg-opt.on { background: #111; color: #fff; }
+    [data-style="manga"] .theme-btn {
+      border-radius: 0; background: #fff; color: #111; border: 2px solid #111; font-weight: 800;
+    }
+    [data-style="manga"] .theme-btn.pri { background: #e31c23; color: #fff; border-color: #e31c23; }
+    [data-style="manga"] .theme-bar { background: #eee; border: 2px solid #111; border-radius: 0; height: 10px; }
+    [data-style="manga"] .theme-bar i { background: #111; }
+    [data-style="manga"] .theme-num { color: #111; font-weight: 800; }
+
+    
+    [data-style="manga"] .pet-hero {
+      background: #fff;
+      border: 3px solid #111;
+      border-radius: 0;
+    }

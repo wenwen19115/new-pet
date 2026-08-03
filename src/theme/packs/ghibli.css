@@ -1,0 +1,183 @@
+/* ========== 18 吉卜力 · 森林神秘 ==========
+       多层树冠、林间薄雾、透光斑、苔藓绿同类色滤镜；精灵光点；绘本深林卡纸 */
+    [data-style="ghibli"].theme-stage {
+      background:
+        radial-gradient(ellipse 80% 50% at 50% 0%, #8eb8a0, transparent 55%),
+        radial-gradient(ellipse 70% 40% at 70% 80%, #2a4a38, transparent 50%),
+        linear-gradient(180deg, #6a9a88 0%, #3a5a48 45%, #2a4038 100%);
+    }
+    [data-style="ghibli"] .theme-shell {
+      font-family: "ZCOOL QingKe HuangYou", "Noto Sans SC", sans-serif;
+      background:
+        linear-gradient(165deg, rgba(236, 244, 232, 0.94), rgba(210, 228, 208, 0.92));
+      border: 2px solid #5a7a60;
+      border-radius: 22px;
+      box-shadow:
+        0 0 0 6px rgba(80, 120, 90, 0.2),
+        0 18px 40px rgba(20, 40, 30, 0.28);
+      color: #2a3a2e;
+      backdrop-filter: blur(2px);
+    }
+    [data-style="ghibli"] .theme-banner {
+      display: block;
+      background: rgba(232, 244, 230, 0.9);
+      color: #3a6a58;
+      border: 2px solid #5a7a60;
+      border-radius:0;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      font-size: 13px;
+      box-shadow: 0 0 0 4px rgba(80, 140, 110, 0.18);
+    margin:0;}
+    [data-style="ghibli"] .pet-nav {
+      background: linear-gradient(180deg, #6a9a78, #4a7a5c 55%, #3a6a4c);
+      border-right: 2px solid #5a7a60;
+      gap: 8px;
+      padding: 16px 10px;
+    }
+    [data-style="ghibli"] .pet-nav-item {
+      color: #d8ecd8;
+      border-radius: 16px;
+      background: rgba(20, 40, 30, 0.18);
+      border: 2px solid transparent;
+      font-weight: 400;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+    }
+    [data-style="ghibli"] .pet-nav-item[data-active="1"] {
+      color: #1e2e24;
+      background: #e8f4e4;
+      border-color: #3a6a48;
+      box-shadow: 0 3px 0 rgba(20, 40, 30, 0.25);
+    }
+    [data-style="ghibli"] .pet-nav-item[data-active="1"] svg { color: #3a8a58; }
+    [data-style="ghibli"] .panel-head {
+      border-bottom: 1px solid rgba(80, 120, 90, 0.3);
+      background: linear-gradient(180deg, rgba(140, 190, 170, 0.35), rgba(236, 244, 232, 0.15));
+    }
+    [data-style="ghibli"] .panel-title {
+      color: #2a3a2e;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      font-size: 22px;
+    }
+    [data-style="ghibli"] .theme-chip {
+      background: rgba(244, 250, 242, 0.95);
+      color: #3a4a3e;
+      border: 2px solid #7a9a80;
+      border-radius: 999px;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      font-family: "Noto Sans SC", sans-serif;
+      font-size: 11px;
+    }
+    [data-style="ghibli"] .theme-chip em {
+      font-style: normal; color: #2e7a50; font-weight: 700;
+    }
+    [data-style="ghibli"] .theme-lab {
+      color: #3a7a58;
+      letter-spacing: 0.22em;
+      font-weight: 400;
+      font-size: 12px;
+    }
+    [data-style="ghibli"] .theme-list { gap: 11px; }
+    [data-style="ghibli"] .settings-item {
+      background: rgba(244, 250, 242, 0.9);
+      border: 2px solid #a0bca8;
+      border-radius: 18px;
+      box-shadow: 0 2px 0 rgba(60, 100, 70, 0.1);
+    }
+    [data-style="ghibli"] .settings-item[data-tone="pet"] {
+      background:
+        linear-gradient(135deg,
+          rgba(140, 190, 170, 0.45),
+          rgba(244, 250, 242, 0.95) 42%,
+          rgba(160, 200, 140, 0.4));
+      border-color: #4a7a58;
+    }
+    [data-style="ghibli"] .item-title {
+      color: #1e2e24;
+      font-weight: 400;
+      font-size: 16px;
+      letter-spacing: 0.08em;
+    }
+    [data-style="ghibli"] .theme-d {
+      color: #4a5a4e;
+      font-family: "Noto Sans SC", sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.02em;
+    }
+    [data-style="ghibli"] .theme-choice {
+      border-radius: 999px;
+      border: 2px solid #a0bca8;
+      background: #f4faf2;
+      color: #2a3a2e;
+      font-weight: 650;
+      font-family: "Noto Sans SC", sans-serif;
+      letter-spacing: 0.04em;
+    }
+    [data-style="ghibli"] .theme-choice.on {
+      color: #f4faf2;
+      background: #3a8a58;
+      border-color: #2a6a40;
+      box-shadow: 0 2px 8px rgba(40, 100, 70, 0.28);
+    }
+    [data-style="ghibli"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%;
+      background: #a8bca8;
+      
+      border: 2px solid #5a7a60;
+    }
+    [data-style="ghibli"] .theme-sw.on { background: #3a8a58; border-color: #2a6a40; }
+    [data-style="ghibli"] .theme-sw::after {
+      
+      background: #f4faf2;
+      box-shadow: 0 1px 3px rgba(20, 40, 30, 0.2);
+    }
+    [data-style="ghibli"] .theme-seg {
+      background: rgba(180, 200, 180, 0.5);
+      border: 2px solid #a0bca8;
+      border-radius: 999px;
+    }
+    [data-style="ghibli"] .theme-seg-opt {
+      color: #4a5a4e; border-radius: 999px; font-weight: 650;
+      font-family: "Noto Sans SC", sans-serif;
+    }
+    [data-style="ghibli"] .theme-seg-opt.on {
+      background: #f4faf2; color: #1e2e24;
+      box-shadow: 0 1px 4px rgba(40, 80, 50, 0.12);
+    }
+    [data-style="ghibli"] .theme-btn {
+      border-radius: 999px;
+      background: #f4faf2;
+      color: #1e2e24;
+      border: 2px solid #5a7a60;
+      font-weight: 700;
+      font-family: "Noto Sans SC", sans-serif;
+      letter-spacing: 0.06em;
+    }
+    [data-style="ghibli"] .theme-btn.pri {
+      background: #4a8a78;
+      color: #f4faf2;
+      border-color: #2a6a58;
+      box-shadow: 0 3px 10px rgba(40, 100, 90, 0.25);
+    }
+    [data-style="ghibli"] .theme-bar {
+      background: #c0d0c0;
+      border-radius: 99px;
+      border: 2px solid #a0bca8;
+    }
+    [data-style="ghibli"] .theme-bar i {
+      background: linear-gradient(90deg, #3a8a58, #4a8a78);
+    }
+    [data-style="ghibli"] .theme-num {
+      color: #3a4a3e;
+      font-weight: 700;
+      font-family: "Noto Sans SC", sans-serif;
+    }
+
+    
+    [data-style="ghibli"] .pet-hero {
+      background: linear-gradient(165deg, rgba(236, 244, 232, 0.94), rgba(210, 228, 208, 0.92));
+      border: 2px solid #5a7a60;
+      border-radius: 22px;
+    }

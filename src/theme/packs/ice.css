@@ -1,0 +1,37 @@
+/* ========== 29 极地冰晶 ========== */
+    [data-style="ice"].theme-stage { background: linear-gradient(180deg,#e8f4ff,#b8d8f0 40%,#d0e8f8); }
+    [data-style="ice"] .theme-shell { font-family: "Noto Sans SC", "Outfit", sans-serif; background:linear-gradient(160deg,rgba(255,255,255,0.85),rgba(200,230,250,0.75));border:1px solid rgba(180,220,255,0.8);border-radius:16px;color:#1a3a58;box-shadow:0 12px 40px rgba(80,140,200,0.2),inset 0 1px 0 #fff;backdrop-filter:blur(12px); }
+    [data-style="ice"] .theme-banner { display: block; background:rgba(255,255,255,0.7);color:#2a6a9a;border:1px solid #a0d0f0;border-radius:0;font-weight:700;letter-spacing:0.18em; margin:0;}
+    [data-style="ice"] .pet-nav { background:rgba(180,220,245,0.45);border-right:1px solid #a0d0f0;gap:8px; }
+    [data-style="ice"] .pet-nav-item { color:#3a6a8a;border-radius:12px;background:rgba(255,255,255,0.4);border:1px solid transparent; }
+    [data-style="ice"] .pet-nav-item[data-active="1"] { color:#0a2a48;background:rgba(255,255,255,0.9);border-color:#70b0e0;box-shadow:0 0 16px rgba(120,180,240,0.35); }
+    [data-style="ice"] .panel-head { border-bottom:1px solid rgba(160,200,240,0.5);background:linear-gradient(180deg,rgba(200,230,255,0.5),transparent); }
+    [data-style="ice"] .panel-title { color:#1a4a70;font-weight:700;letter-spacing:0.12em; }
+    [data-style="ice"] .theme-chip { background:rgba(255,255,255,0.75);color:#2a5a80;border:1px solid #a0d0f0;border-radius:999px; }
+    [data-style="ice"] .theme-chip em { font-style: normal; font-weight: 800; }
+    [data-style="ice"] .theme-lab { color:#3a8ab8;letter-spacing:0.16em;font-weight:700; }
+    [data-style="ice"] .theme-list { gap: 9px; }
+    [data-style="ice"] .settings-item { background:rgba(255,255,255,0.55);border:1px solid #b8d8f0;border-radius:14px; }
+    [data-style="ice"] .settings-item[data-tone="pet"] { background:linear-gradient(135deg,rgba(180,220,255,0.6),rgba(255,255,255,0.8));border-color:#70b0e0;box-shadow:0 0 20px rgba(140,200,255,0.25); }
+    [data-style="ice"] .item-title { color:#1a3a58;font-weight:700; }
+    [data-style="ice"] .theme-d { color:#4a7090; }
+    [data-style="ice"] .theme-choice { border-radius:999px;border:1px solid #a0d0f0;background:rgba(255,255,255,0.7);color:#2a5a80; }
+    [data-style="ice"] .theme-choice.on { background:linear-gradient(90deg,#70b0e0,#a0d8ff);color:#0a2a48;border-color:transparent;font-weight:800; }
+    [data-style="ice"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%; background:#c0d8e8;border:1px solid #90c0e0; }
+    [data-style="ice"] .theme-sw.on { background:linear-gradient(90deg,#50a0d8,#80d0f0); }
+    [data-style="ice"] .theme-seg { background:rgba(180,210,235,0.5);border:1px solid #a0d0f0;border-radius:999px; }
+    [data-style="ice"] .theme-seg-opt.on { background:#fff;color:#1a4a70; }
+    [data-style="ice"] .theme-btn { border-radius:999px;background:rgba(255,255,255,0.8);color:#1a4a70;border:1px solid #90c0e0;font-weight:700; }
+    [data-style="ice"] .theme-btn.pri { background:linear-gradient(135deg,#50a0d8,#80d0f0);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(80,160,220,0.3); }
+    [data-style="ice"] .theme-bar { background:#c8e0f0;border:1px solid #a0d0f0;border-radius:99px; }
+    [data-style="ice"] .theme-bar i { background:linear-gradient(90deg,#50a0d8,#c0e8ff); }
+    [data-style="ice"] .theme-num { color:#2a6a9a;font-weight:700; }
+    
+
+
+    
+    [data-style="ice"] .pet-hero {
+      background: linear-gradient(160deg,rgba(255,255,255,0.85),rgba(200,230,250,0.75));
+      border: 1px solid rgba(180,220,255,0.8);
+      border-radius: 16px;
+    }

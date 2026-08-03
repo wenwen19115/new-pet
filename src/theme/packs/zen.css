@@ -1,0 +1,55 @@
+/* ========== 50 枯山水 · 耙纹石庭 ========== */
+    [data-style="zen"].theme-stage{
+      background:
+        radial-gradient(ellipse 18% 10% at 62% 58%,#6a6860 0 40%,transparent 41%),
+        radial-gradient(ellipse 10% 6% at 58% 60%,#8a8880 0 40%,transparent 41%),
+        repeating-linear-gradient(0deg,#9a9890 0 3px,#a8a69e 3px 14px);
+    }
+    [data-style="zen"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",sans-serif;
+      background:#ecece4;border:1px solid #6a6a62;border-radius:0;color:#222;
+      box-shadow:0 12px 28px rgba(40,40,40,0.18);
+    }
+    [data-style="zen"] .theme-banner{
+      display:block;background:#222;color:#ecece4;border-radius:0;
+      font-weight:400;letter-spacing:0.5em;font-size:11px;text-align:center;
+    margin:0;}
+    [data-style="zen"] .pet-nav{background:#d8d8d0;border-right:1px solid #8a8a82;gap:14px;}
+    [data-style="zen"] .pet-nav-item{color:#222;border-radius:0;background:transparent;border:1px solid transparent;font-weight:500;letter-spacing:0.18em;}
+    [data-style="zen"] .pet-nav-item[data-active="1"]{color:#ecece4;background:#222;border-color:#222;}
+    [data-style="zen"] .panel-head{border-bottom:1px solid #b0b0a8;background:#ecece4;}
+    [data-style="zen"] .panel-title{color:#222;font-weight:400;letter-spacing:0.42em;font-size:15px;}
+    [data-style="zen"] .theme-chip{background:#222;color:#ecece4;border:0;border-radius:0;font-size:10px;letter-spacing:0.16em;}
+    [data-style="zen"] .theme-chip em{font-style:normal;font-weight:800;}
+    [data-style="zen"] .theme-lab{color:#6a6a65;letter-spacing:0.36em;font-weight:400;font-size:10px;}
+    [data-style="zen"] .theme-list{gap:14px;}
+    [data-style="zen"] .settings-item{background:#f6f6f0;border:1px solid #c0c0b8;border-radius:0;}
+    [data-style="zen"] .settings-item[data-tone="pet"]{
+      background:
+        repeating-linear-gradient(0deg,transparent 0 5px,rgba(0,0,0,0.04) 5px 6px),
+        linear-gradient(180deg,#d8d8d0,#f6f6f0);
+      border-color:#222;border-width:1px 1px 1px 4px;
+    }
+    [data-style="zen"] .item-title{color:#222;font-weight:500;letter-spacing:0.12em;}
+    [data-style="zen"] .theme-d{color:#6a6a65;}
+    [data-style="zen"] .theme-choice{border-radius:0;border:1px solid #8a8a80;background:#f6f6f0;color:#222;letter-spacing:0.08em;}
+    [data-style="zen"] .theme-choice.on{background:#222;color:#ecece4;}
+    [data-style="zen"] .theme-sw {--sw-radius:0;--sw-knob-radius:0;background:#b0b0a8;border:1px solid #8a8a80;}
+    [data-style="zen"] .theme-sw.on{background:#222;}
+    [data-style="zen"] .theme-sw::after{}
+    [data-style="zen"] .theme-seg{background:#d8d8d0;border:1px solid #b0b0a8;border-radius:0;}
+    [data-style="zen"] .theme-seg-opt{color:#222;font-weight:500;}
+    [data-style="zen"] .theme-seg-opt.on{background:#222;color:#ecece4;}
+    [data-style="zen"] .theme-btn{border-radius:0;background:#f6f6f0;color:#222;border:1px solid #8a8a80;font-weight:500;letter-spacing:0.14em;}
+    [data-style="zen"] .theme-btn.pri{background:#222;color:#ecece4;}
+    [data-style="zen"] .theme-bar{background:#d0d0c8;border:1px solid #b0b0a8;border-radius:0;}
+    [data-style="zen"] .theme-bar i{background:#222;}
+    [data-style="zen"] .theme-num{color:#5a5a55;font-weight:500;letter-spacing:0.1em;}
+
+
+    
+    [data-style="zen"] .pet-hero {
+      background: #ecece4;
+      border: 1px solid #6a6a62;
+      border-radius: 0;
+    }

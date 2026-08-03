@@ -1,0 +1,109 @@
+/* ========== 2 纸感白昼 ========== */
+    [data-style="paper"].theme-stage {
+      background:
+        radial-gradient(circle at 10% 0%, #f3f7ef, transparent 40%),
+        linear-gradient(180deg, #eef2ea, #e4e8df);
+    }
+    [data-style="paper"] .theme-shell {
+      font-family: "Noto Sans SC", sans-serif;
+      background: #fbfaf6;
+      border: 1px solid #d4dcc8;
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(60,70,50,0.12), inset 0 1px 0 #fff;
+      color: #243028;
+    }
+    [data-style="paper"] .theme-banner {margin:0;
+      display: block;
+      background: #2f5d45;
+      color: #f4f8f2;
+      border-radius:0;
+    }
+    [data-style="paper"] .pet-nav {
+      background: #eef3e8;
+      border-right: 1px solid #d2dbc8;
+    }
+    [data-style="paper"] .pet-nav-item {
+      color: #6a7668;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.5);
+    }
+    [data-style="paper"] .pet-nav-item[data-active="1"] {
+      color: #1d3b2c;
+      background: #fff;
+      box-shadow: 0 6px 16px rgba(50,70,40,0.1);
+      outline: 2px solid #2f5d45;
+    }
+    [data-style="paper"] .pet-nav-item[data-active="1"] svg { color: #2f5d45; }
+    [data-style="paper"] .panel-head { border-bottom: 1px solid #e0e6d8; }
+    [data-style="paper"] .panel-title { color: #1d2a22; font-weight: 900; }
+    [data-style="paper"] .theme-chip {
+      background: #fff; color: #4a5a4e; border: 1px solid #d2dbc8; border-radius: 999px;
+    }
+    [data-style="paper"] .theme-chip em { font-style: normal; color: #2f5d45; font-weight: 800; }
+    [data-style="paper"] .theme-lab { color: #7a8678; letter-spacing: 0.08em; }
+    [data-style="paper"] .theme-list { gap: 10px; }
+    [data-style="paper"] .settings-item {
+      background: #fff;
+      border: 1px solid #e2e8da;
+      border-radius: 16px;
+      box-shadow: 0 4px 14px rgba(60,70,50,0.05);
+    }
+    [data-style="paper"] .settings-item[data-tone="pet"] {
+      background: linear-gradient(120deg, #e7f2ea, #fff 55%);
+      border-color: #b9d0c0;
+    }
+    [data-style="paper"] .theme-t { color: #1d2a22; }
+    [data-style="paper"] .theme-d { color: #667266; }
+    [data-style="paper"] .theme-choice {
+      border-radius: 10px; border: 1px solid #d7dfcc; background: #f4f6ef; color: #556355;
+    }
+    [data-style="paper"] .theme-choice.on {
+      color: #fff; background: #2f5d45; border-color: #2f5d45;
+    }
+    [data-style="paper"] .theme-sw {
+      --sw-radius: 999px;
+      --sw-knob-radius: 50%;
+      background: #d5ddd0;
+    }
+    [data-style="paper"] .theme-sw.on { background: #2f5d45; }
+    [data-style="paper"] .theme-sw::after { box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+    [data-style="paper"] .theme-seg { background: #eef2ea; border-radius: 12px; border: 1px solid #d7dfcc; }
+    [data-style="paper"] .theme-seg-opt { color: #6a7668; border-radius: 10px; }
+    [data-style="paper"] .theme-seg-opt.on { background: #fff; color: #1d2a22; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+    [data-style="paper"] .theme-btn {
+      border-radius: 10px; background: #fff; color: #243028; border: 1px solid #d2dbc8;
+    }
+    [data-style="paper"] .theme-btn.pri { background: #2f5d45; color: #fff; border-color: #2f5d45; }
+    [data-style="paper"] .theme-bar { background: #e5ebde; border-radius: 99px; }
+    [data-style="paper"] .theme-bar i { background: #2f5d45; }
+    [data-style="paper"] .theme-num { color: #556355; }
+    [data-style="paper"] .pet-hero {
+      background:
+        radial-gradient(ellipse at 24% 10%, rgba(47,93,69,0.14), transparent 50%),
+        linear-gradient(165deg, #fff, #f3f6ef);
+      border: 1px solid #d2dbc8;
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(60,70,50,0.08), inset 0 1px 0 #fff;
+      color: #243028;
+    }
+    [data-style="paper"] .hero-stage {
+      border: 1px solid #d7dfcc;
+      border-radius: 14px;
+      background: #eef3e8;
+    }
+    [data-style="paper"] .hero-role { color: #2f5d45; letter-spacing: 0.1em; }
+    [data-style="paper"] .hero-name { color: #1d2a22; }
+    [data-style="paper"] .hero-tagline,
+    [data-style="paper"] .preview-orbit-toggle { color: #667266; }
+    [data-style="paper"] .meta-pill {
+      border-radius: 999px;
+      border: 1px solid #d2dbc8;
+      background: #fff;
+      color: #4a5a4e;
+    }
+    [data-style="paper"] .meta-pill--theme { border-color: #2f5d45; color: #1d3b2c; }
+    [data-style="paper"] .meta-pill--on {
+      color: #1d3b2c;
+      border-color: #b9d0c0;
+      background: #e7f2ea;
+    }

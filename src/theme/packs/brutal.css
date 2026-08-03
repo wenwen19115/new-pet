@@ -1,0 +1,37 @@
+/* ========== 23 粗野主义 ========== */
+    [data-style="brutal"].theme-stage { background: #8a8a8a; }
+    [data-style="brutal"] .theme-shell { font-family: "Noto Sans SC", "Outfit", sans-serif; background:#c8c8c4;border:0;border-radius:0;color:#111;box-shadow:inset 0 0 0 8px #a8a8a4;font-family:"IBM Plex Mono","Noto Sans SC",monospace; }
+    [data-style="brutal"] .theme-banner { display: block; background:#111;color:#eee;border-radius:0;font-weight:700;letter-spacing:0.3em;text-transform:uppercase;font-size:11px;font-family:"IBM Plex Mono",monospace; margin:0;}
+    [data-style="brutal"] .pet-nav { background:#9a9a96;border-right:8px solid #6a6a66;gap:4px; }
+    [data-style="brutal"] .pet-nav-item { color:#333;border-radius:0;background:transparent;border:0;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:0.08em; }
+    [data-style="brutal"] .pet-nav-item[data-active="1"] { color:#fff;background:#111; }
+    [data-style="brutal"] .panel-head { border-bottom:8px solid #111;background:#b8b8b4; }
+    [data-style="brutal"] .panel-title { color:#111;font-weight:700;font-size:28px;letter-spacing:-0.04em;text-transform:uppercase;font-family:"IBM Plex Mono",monospace; }
+    [data-style="brutal"] .theme-chip { background:#111;color:#eee;border:0;border-radius:0;font-size:10px;letter-spacing:0.1em; }
+    [data-style="brutal"] .theme-chip em { font-style: normal; font-weight: 800; }
+    [data-style="brutal"] .theme-lab { color:#333;letter-spacing:0.24em;font-weight:700;font-size:10px;text-transform:uppercase; }
+    [data-style="brutal"] .theme-list { gap: 9px; }
+    [data-style="brutal"] .settings-item { background:#d8d8d4;border:0;border-radius:0;border-left:8px solid #111; }
+    [data-style="brutal"] .settings-item[data-tone="pet"] { background:#eee;border-left-color:#111; }
+    [data-style="brutal"] .item-title { color:#111;font-weight:700;text-transform:uppercase;letter-spacing:0.04em; }
+    [data-style="brutal"] .theme-d { color:#444;font-family:"Noto Sans SC",sans-serif; }
+    [data-style="brutal"] .theme-choice { border-radius:0;border:0;background:#aaa;color:#111;font-weight:700;text-transform:uppercase;font-size:10px; }
+    [data-style="brutal"] .theme-choice.on { background:#111;color:#eee; }
+    [data-style="brutal"] .theme-sw {--sw-radius:0;--sw-knob-radius:0; background:#888;border:0; }
+    [data-style="brutal"] .theme-sw.on { background:#111; }
+    [data-style="brutal"] .theme-seg { background:#aaa;border:0;border-radius:0; }
+    [data-style="brutal"] .theme-seg-opt.on { background:#111;color:#eee; }
+    [data-style="brutal"] .theme-btn { border-radius:0;background:#aaa;color:#111;border:0;font-weight:700;text-transform:uppercase;letter-spacing:0.08em; }
+    [data-style="brutal"] .theme-btn.pri { background:#111;color:#eee; }
+    [data-style="brutal"] .theme-bar { background:#888;border:0;border-radius:0; }
+    [data-style="brutal"] .theme-bar i { background:#111; }
+    [data-style="brutal"] .theme-num { color:#111;font-weight:700;font-family:"IBM Plex Mono",monospace; }
+    
+
+
+    
+    [data-style="brutal"] .pet-hero {
+      background: #c8c8c4;
+      border: 0;
+      border-radius: 0;
+    }

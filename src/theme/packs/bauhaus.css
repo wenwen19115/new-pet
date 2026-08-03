@@ -1,0 +1,93 @@
+/* ========== 9 包豪斯几何 ========== */
+    [data-style="bauhaus"].theme-stage {
+      background: #e8e4dc;
+    }
+    [data-style="bauhaus"] .theme-shell {
+      font-family: "Space Grotesk", "Noto Sans SC", sans-serif;
+      background: #f2efe8;
+      border: 4px solid #111;
+      border-radius: 0;
+      box-shadow: 12px 12px 0 #111;
+      color: #111;
+      
+    }
+    [data-style="bauhaus"] .theme-banner {
+      display: block;
+      background: #111;
+      color: #f2efe8;
+      border-radius:0;
+      font-family: "Space Grotesk", sans-serif;
+      letter-spacing: 0.1em;
+    margin:0;}
+    [data-style="bauhaus"] .pet-nav {
+      background: #111;
+      border-right: 4px solid #111;
+      gap: 0;
+      padding: 0;
+    }
+    [data-style="bauhaus"] .pet-nav-item {
+      color: rgba(242,239,232,0.5);
+      border-radius: 0;
+      border-bottom: 2px solid #333;
+      padding: 16px 10px;
+      font-weight: 700;
+    }
+    [data-style="bauhaus"] .pet-nav-item:nth-child(1).is-on { background: #e31c23; color: #fff; }
+    [data-style="bauhaus"] .pet-nav-item:nth-child(2).is-on { background: #f5d90a; color: #111; }
+    [data-style="bauhaus"] .pet-nav-item:nth-child(3).is-on { background: #005bbb; color: #fff; }
+    [data-style="bauhaus"] .pet-nav-item:nth-child(4).is-on { background: #e31c23; color: #fff; }
+    [data-style="bauhaus"] .pet-nav-item:nth-child(5).is-on { background: #f5d90a; color: #111; }
+    [data-style="bauhaus"] .pet-nav-item[data-active="1"] svg { color: inherit; }
+    [data-style="bauhaus"] .main { background: #f2efe8; }
+    [data-style="bauhaus"] .panel-head {
+      border-bottom: 4px solid #111;
+      background: repeating-linear-gradient(90deg, #f2efe8 0 24px, #e31c23 24px 32px, #f2efe8 32px 56px, #005bbb 56px 64px, #f2efe8 64px 88px, #f5d90a 88px 96px);
+      background-size: 96px 8px;
+      background-repeat: repeat-x;
+      background-position: bottom;
+      padding-bottom: 18px;
+    }
+    [data-style="bauhaus"] .panel-title {
+      font-size: 28px; font-weight: 700; letter-spacing: -0.04em; color: #111;
+    }
+    [data-style="bauhaus"] .theme-chip {
+      background: #005bbb; color: #fff; border-radius: 0; font-weight: 700; border: 2px solid #111;
+    }
+    [data-style="bauhaus"] .theme-chip em { font-style: normal; color: #f5d90a; }
+    [data-style="bauhaus"] .theme-lab { color: #e31c23; letter-spacing: 0.14em; font-weight: 700; }
+    [data-style="bauhaus"] .theme-list { gap: 12px; }
+    [data-style="bauhaus"] .settings-item {
+      background: #fff;
+      border: 3px solid #111;
+      border-radius: 0;
+    }
+    [data-style="bauhaus"] .settings-item[data-tone="pet"] {
+      background: #f5d90a;
+      box-shadow: 6px 6px 0 #111;
+    }
+    [data-style="bauhaus"] .theme-d { color: #444; }
+    [data-style="bauhaus"] .theme-choice {
+      border-radius: 0; border: 2px solid #111; background: #fff; color: #111; font-weight: 700;
+    }
+    [data-style="bauhaus"] .theme-choice.on { background: #e31c23; color: #fff; }
+    [data-style="bauhaus"] .theme-sw {--sw-radius:0;--sw-knob-radius:0; background: #ddd;  border: 2px solid #111; }
+    [data-style="bauhaus"] .theme-sw.on { background: #005bbb; }
+    [data-style="bauhaus"] .theme-sw::after {  background: #fff; border: 1px solid #111; width: 16px; height: 16px; top: 2px; }
+    [data-style="bauhaus"] .theme-sw.on::after { left: 22px; }
+    [data-style="bauhaus"] .theme-seg { background: #fff; border: 2px solid #111; border-radius: 0; }
+    [data-style="bauhaus"] .theme-seg-opt { color: #666; border-radius: 0; font-weight: 700; }
+    [data-style="bauhaus"] .theme-seg-opt.on { background: #111; color: #fff; }
+    [data-style="bauhaus"] .theme-btn {
+      border-radius: 0; background: #fff; color: #111; border: 2px solid #111; font-weight: 700;
+    }
+    [data-style="bauhaus"] .theme-btn.pri { background: #e31c23; color: #fff; }
+    [data-style="bauhaus"] .theme-bar { background: #ddd; border: 2px solid #111; border-radius: 0; height: 10px; }
+    [data-style="bauhaus"] .theme-bar i { background: #005bbb; }
+    [data-style="bauhaus"] .theme-num { color: #111; font-weight: 700; }
+
+    
+    [data-style="bauhaus"] .pet-hero {
+      background: #f2efe8;
+      border: 4px solid #111;
+      border-radius: 0;
+    }

@@ -1,0 +1,38 @@
+/* ========== 37 意大利石纹 ========== */
+    [data-style="italy"].theme-stage { background: linear-gradient(180deg,#2a2420,#4a3a30); }
+    [data-style="italy"] .theme-shell { font-family: "Noto Sans SC", "Outfit", sans-serif; background:linear-gradient(160deg,#f4ebe0,#e8d8c8);border:2px solid #6a5040;border-radius:4px;color:#2a2018;box-shadow:0 16px 40px rgba(0,0,0,0.35),inset 0 1px 0 #fff; }
+    [data-style="italy"] .theme-banner { display: block; background:#6a2030;color:#f4ebe0;border:1px solid #d4a040;border-radius:0;font-weight:700;letter-spacing:0.28em;font-size:11px;text-transform:uppercase; margin:0;}
+    [data-style="italy"] .pet-nav { background:#3a3028;border-right:2px solid #6a5040;gap:6px; }
+    [data-style="italy"] .pet-nav-item { color:#f4ebe0;border-radius:2px;background:rgba(0,0,0,0.2);border:1px solid transparent;font-weight:700;letter-spacing:0.06em; }
+    [data-style="italy"] .pet-nav-item[data-active="1"] { color:#f4ebe0;background:#6a2030;border-color:#d4a040; }
+    [data-style="italy"] .panel-head { border-bottom:1px solid #c8b0a0;background:linear-gradient(180deg,#efe4d4,#f4ebe0); }
+    [data-style="italy"] .panel-title { color:#6a2030;font-weight:700;letter-spacing:0.16em;font-family:"Outfit","Noto Sans SC",sans-serif; }
+    [data-style="italy"] .theme-chip { background:#3a3028;color:#f4ebe0;border:1px solid #d4a040;border-radius:0;font-size:10px; }
+    [data-style="italy"] .theme-chip em { font-style: normal; font-weight: 800; }
+    [data-style="italy"] .theme-lab { color:#8a6040;letter-spacing:0.2em;font-weight:700;font-size:10px; }
+    [data-style="italy"] .theme-list { gap: 9px; }
+    [data-style="italy"] .settings-item { background:rgba(255,252,248,0.85);border:1px solid #c8b0a0;border-radius:2px; }
+    [data-style="italy"] .settings-item[data-tone="pet"] { background:linear-gradient(135deg,#e8d0c0,#f4ebe0 50%,#d8e0d0);border-color:#6a2030; }
+    [data-style="italy"] .item-title { color:#2a2018;font-weight:700; }
+    [data-style="italy"] .theme-d { color:#6a5a48; }
+    [data-style="italy"] .theme-choice { border-radius:0;border:1px solid #a89080;background:#fffaf4;color:#2a2018;font-weight:600; }
+    [data-style="italy"] .theme-choice.on { background:#6a2030;color:#f4ebe0;border-color:#6a2030; }
+    [data-style="italy"] .theme-sw {--sw-radius:0;--sw-knob-radius:0; background:#c8b8a0;border:1px solid #6a5040; }
+    [data-style="italy"] .theme-sw.on { background:#6a2030; }
+    [data-style="italy"] .theme-seg { background:#e8d8c8;border:1px solid #a89080;border-radius:0; }
+    [data-style="italy"] .theme-seg-opt { color:#2a2018; font-weight:700; }
+    [data-style="italy"] .theme-seg-opt.on { background:#6a2030;color:#f4ebe0; }
+    [data-style="italy"] .theme-btn { border-radius:0;background:#fffaf4;color:#2a2018;border:1px solid #6a5040;font-weight:700; }
+    [data-style="italy"] .theme-btn.pri { background:#6a2030;color:#f4ebe0;border-color:#d4a040; }
+    [data-style="italy"] .theme-bar { background:#ddd0c0;border:1px solid #a89080;border-radius:0; }
+    [data-style="italy"] .theme-bar i { background:linear-gradient(90deg,#6a2030,#d4a040); }
+    [data-style="italy"] .theme-num { color:#6a2030;font-weight:700; }
+    
+
+
+    
+    [data-style="italy"] .pet-hero {
+      background: linear-gradient(160deg,#f4ebe0,#e8d8c8);
+      border: 2px solid #6a5040;
+      border-radius: 4px;
+    }

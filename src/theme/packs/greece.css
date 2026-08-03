@@ -1,0 +1,53 @@
+/* ========== 54 希腊爱琴海 · 白墙蓝穹 ========== */
+    [data-style="greece"].theme-stage{
+      background:
+        linear-gradient(180deg,#3a8ad0 0 42%,#f4f4f0 42%);
+    }
+    [data-style="greece"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",sans-serif;position:relative;overflow:hidden;
+      background:#fff;border:0;border-radius:0;color:#0e3a6a;
+      box-shadow:0 14px 36px rgba(14,58,106,0.25);
+      border-top:14px solid #1a5a9a;
+    }
+    [data-style="greece"] .theme-shell::before{
+      content:"";position:absolute;left:50%;top:-28px;width:56px;height:56px;transform:translateX(-50%);
+      background:#1a5a9a;border-radius:50%;z-index:2;pointer-events:none;
+      box-shadow:0 0 0 6px #fff,inset 0 0 0 8px #1a5a9a;
+    }
+    [data-style="greece"] .theme-shell::after{
+      content:"";position:absolute;left:0;right:0;bottom:0;height:18px;pointer-events:none;z-index:2;
+      background:repeating-linear-gradient(90deg,#1a5a9a 0 16px,#fff 16px 32px);
+    }
+    [data-style="greece"] .theme-banner{display:block;position:relative;z-index:1;margin-top:16px;background:#1a5a9a;color:#fff;border-radius:0;font-weight:800;letter-spacing:0.2em;margin:0;}
+    [data-style="greece"] .pet-nav,[data-style="greece"] .main{position:relative;z-index:1;}
+    [data-style="greece"] .pet-nav{background:#1a5a9a;border-right:4px solid #0e3a6a;gap:8px;}
+    [data-style="greece"] .pet-nav-item{color:#fff;border-radius:0;background:rgba(0,0,0,0.18);border:2px solid transparent;font-weight:800;}
+    [data-style="greece"] .pet-nav-item[data-active="1"]{color:#1a5a9a;background:#fff;border-color:#fff;}
+    [data-style="greece"] .panel-head{border-bottom:4px solid #1a5a9a;background:#fff;}
+    [data-style="greece"] .panel-title{color:#1a5a9a;font-weight:900;letter-spacing:0.14em;}
+    [data-style="greece"] .theme-chip{background:#1a5a9a;color:#fff;border:0;border-radius:0;font-weight:800;}
+    [data-style="greece"] .theme-chip em{font-style:normal;font-weight:900;}
+    [data-style="greece"] .theme-lab{color:#1a5a9a;letter-spacing:0.16em;font-weight:900;}
+    [data-style="greece"] .theme-list{gap:10px;}
+    [data-style="greece"] .settings-item{background:#f8fcff;border:3px solid #1a5a9a;border-radius:0;}
+    [data-style="greece"] .settings-item[data-tone="pet"]{background:linear-gradient(180deg,#c8e0f8,#fff);border-width:3px 3px 3px 10px;}
+    [data-style="greece"] .item-title{color:#0e3a6a;font-weight:900;}
+    [data-style="greece"] .theme-d{color:#4a7090;}
+    [data-style="greece"] .theme-choice{border-radius:0;border:2px solid #1a5a9a;background:#fff;color:#1a5a9a;font-weight:800;}
+    [data-style="greece"] .theme-choice.on{background:#1a5a9a;color:#fff;}
+    [data-style="greece"] .theme-sw {--sw-radius:0;--sw-knob-radius:0;background:#a0c8e8;border:2px solid #1a5a9a;}
+    [data-style="greece"] .theme-sw.on{background:#1a5a9a;}
+    [data-style="greece"] .theme-sw::after{}
+    [data-style="greece"] .theme-seg{background:#e0f0ff;border:2px solid #1a5a9a;border-radius:0;}
+    [data-style="greece"] .theme-seg-opt{color:#0e3a6a;font-weight:700;}
+    [data-style="greece"] .theme-seg-opt.on{background:#1a5a9a;color:#fff;}
+    [data-style="greece"] .theme-btn{border-radius:0;background:#fff;color:#1a5a9a;border:2px solid #1a5a9a;font-weight:900;}
+    [data-style="greece"] .theme-btn.pri{background:#1a5a9a;color:#fff;}
+    [data-style="greece"] .theme-bar{background:#d0e8f8;border:2px solid #1a5a9a;border-radius:0;height:8px;}
+    [data-style="greece"] .theme-bar i{background:#1a5a9a;}
+    [data-style="greece"] .theme-num{color:#1a5a9a;font-weight:900;}
+
+
+    
+    [data-style="greece"] .theme-banner,[data-style="greece"] .theme-shell,[data-style="greece"] .pet-hero{position:relative;z-index:1;}
+    [data-style="greece"] .pet-nav,[data-style="greece"] .pet-main{position:relative;z-index:1;}

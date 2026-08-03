@@ -1,0 +1,37 @@
+/* ========== 38 巴西热带 ========== */
+    [data-style="brazil"].theme-stage { background: linear-gradient(160deg,#083820,#0a5a28 40%,#f0c020); }
+    [data-style="brazil"] .theme-shell { font-family: "Noto Sans SC", "Outfit", sans-serif; background:linear-gradient(160deg,#0a4020,#062818);border:3px solid #f0c020;border-radius:18px;color:#f4ffe8;box-shadow:0 0 40px rgba(240,192,32,0.2),0 16px 40px rgba(0,0,0,0.4); }
+    [data-style="brazil"] .theme-banner { display: block; background:linear-gradient(90deg,#0a6a30,#f0c020,#1a4a9a);color:#062818;border:2px solid #fff;border-radius:0;font-weight:900;letter-spacing:0.1em; margin:0;}
+    [data-style="brazil"] .pet-nav { background:#041810;border-right:3px solid #f0c020;gap:6px; }
+    [data-style="brazil"] .pet-nav-item { color:#80c080;border-radius:14px;background:rgba(240,192,32,0.08);border:2px solid transparent; }
+    [data-style="brazil"] .pet-nav-item[data-active="1"] { color:#062818;background:#f0c020;border-color:#fff;font-weight:800; }
+    [data-style="brazil"] .panel-head { border-bottom:2px solid #f0c020;background:linear-gradient(90deg,rgba(26,74,154,0.35),transparent); }
+    [data-style="brazil"] .panel-title { color:#f0c020;font-weight:900;letter-spacing:0.08em; }
+    [data-style="brazil"] .theme-chip { background:#1a4a9a;color:#fff;border:2px solid #f0c020;border-radius:999px; }
+    [data-style="brazil"] .theme-chip em { font-style: normal; font-weight: 800; }
+    [data-style="brazil"] .theme-lab { color:#f0c020;letter-spacing:0.14em;font-weight:800; }
+    [data-style="brazil"] .theme-list { gap: 9px; }
+    [data-style="brazil"] .settings-item { background:rgba(8,40,20,0.75);border:1px solid rgba(240,192,32,0.35);border-radius:14px; }
+    [data-style="brazil"] .settings-item[data-tone="pet"] { background:linear-gradient(120deg,rgba(26,74,154,0.4),rgba(240,192,32,0.25));border-color:#f0c020; }
+    [data-style="brazil"] .item-title { color:#f4ffe8;font-weight:800; }
+    [data-style="brazil"] .theme-d { color:#a0d090; }
+    [data-style="brazil"] .theme-choice { border-radius:999px;border:1px solid #f0c020;background:#041810;color:#d0f0b0; }
+    [data-style="brazil"] .theme-choice.on { background:#f0c020;color:#062818;border-color:#fff;font-weight:800; }
+    [data-style="brazil"] .theme-sw {--sw-radius:999px;--sw-knob-radius:50%; background:#1a4028;border:1px solid #f0c020; }
+    [data-style="brazil"] .theme-sw.on { background:linear-gradient(90deg,#0a6a30,#f0c020); }
+    [data-style="brazil"] .theme-seg { background:#041810;border:1px solid #2a6040;border-radius:999px; }
+    [data-style="brazil"] .theme-seg-opt.on { background:#1a4a9a;color:#fff; }
+    [data-style="brazil"] .theme-btn { border-radius:999px;background:#041810;color:#f0c020;border:2px solid #f0c020;font-weight:800; }
+    [data-style="brazil"] .theme-btn.pri { background:#f0c020;color:#062818;border-color:#fff; }
+    [data-style="brazil"] .theme-bar { background:#041810;border:1px solid #2a6040;border-radius:99px; }
+    [data-style="brazil"] .theme-bar i { background:linear-gradient(90deg,#0a6a30,#f0c020,#1a4a9a); }
+    [data-style="brazil"] .theme-num { color:#f0c020;font-weight:800; }
+    
+
+
+    
+    [data-style="brazil"] .pet-hero {
+      background: linear-gradient(160deg,#0a4020,#062818);
+      border: 3px solid #f0c020;
+      border-radius: 18px;
+    }

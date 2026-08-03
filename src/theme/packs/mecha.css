@@ -1,0 +1,102 @@
+/* ========== 17 机甲界面 ========== */
+    [data-style="mecha"].theme-stage {
+      background:
+        radial-gradient(circle at 80% 20%, rgba(255,106,61,0.12), transparent 40%),
+        linear-gradient(180deg, #1a1e24, #0e1014);
+    }
+    [data-style="mecha"] .theme-shell {
+      font-family: "Space Grotesk", "Noto Sans SC", sans-serif;
+      background: linear-gradient(160deg, #2a3038, #181c22 50%, #12151a);
+      border: 2px solid #8a94a0;
+      border-radius: 4px;
+      box-shadow:
+        inset 0 0 0 1px #3a424c,
+        0 0 0 3px #1a1e24,
+        0 16px 40px rgba(0,0,0,0.5);
+      color: #e8eef4;
+    }
+    [data-style="mecha"] .theme-banner {
+      display: block;
+      background: linear-gradient(90deg, #ff6a3d, #ff9a4a);
+      color: #1a1e24;
+      border-radius:0;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 100%, 0 100%);
+    margin:0;}
+    [data-style="mecha"] .pet-nav {
+      background: #14181e;
+      border-right: 2px solid #5a6570;
+      gap: 6px;
+      padding: 12px 8px;
+    }
+    [data-style="mecha"] .pet-nav-item {
+      color: #7a8898;
+      border-radius: 2px;
+      border: 1px solid #3a4450;
+      background: linear-gradient(180deg, #2a323c, #1a2028);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    [data-style="mecha"] .pet-nav-item[data-active="1"] {
+      color: #fff;
+      border-color: #ff6a3d;
+      background: linear-gradient(180deg, #3a444e, #242a32);
+      box-shadow: inset 0 0 0 1px rgba(255,106,61,0.4), 0 0 16px rgba(255,106,61,0.2);
+    }
+    [data-style="mecha"] .pet-nav-item[data-active="1"] svg { color: #ff6a3d; }
+    [data-style="mecha"] .panel-head {
+      border-bottom: 2px solid #5a6570;
+      background: linear-gradient(90deg, rgba(255,106,61,0.1), transparent 50%);
+    }
+    [data-style="mecha"] .panel-title {
+      color: #c4f0ff; font-size: 16px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    [data-style="mecha"] .theme-chip {
+      background: #1a2028; color: #a8b4c0; border: 1px solid #6a7380; border-radius: 2px;
+      font-size: 10px;
+    }
+    [data-style="mecha"] .theme-chip em { font-style: normal; color: #ff6a3d; font-weight: 700; }
+    [data-style="mecha"] .theme-lab { color: #ff6a3d; letter-spacing: 0.16em; font-size: 10px; }
+    [data-style="mecha"] .theme-list { gap: 8px; }
+    [data-style="mecha"] .settings-item {
+      background: linear-gradient(180deg, #2a323c, #1e242c);
+      border: 1px solid #4a5560;
+      border-radius: 2px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    [data-style="mecha"] .settings-item[data-tone="pet"] {
+      border-color: #ff6a3d;
+      background: linear-gradient(110deg, rgba(255,106,61,0.15), #1e242c 45%);
+      box-shadow: 0 0 20px rgba(255,106,61,0.1);
+    }
+    [data-style="mecha"] .theme-d { color: #8a98a8; }
+    [data-style="mecha"] .theme-choice {
+      border-radius: 2px; border: 1px solid #5a6570; background: #14181e; color: #a8b4c0; font-size: 11px;
+    }
+    [data-style="mecha"] .theme-choice.on {
+      color: #1a1e24; background: #c4f0ff; border-color: #c4f0ff;
+    }
+    [data-style="mecha"] .theme-sw {--sw-radius:2px;--sw-knob-radius:1px; background: #14181e;  border: 1px solid #5a6570; }
+    [data-style="mecha"] .theme-sw.on { background: #ff6a3d; border-color: #ff9a4a; }
+    [data-style="mecha"] .theme-sw::after {  background: #e8eef4; width: 16px; height: 16px; top: 3px; }
+    [data-style="mecha"] .theme-sw.on::after { left: 23px; background: #1a1e24; }
+    [data-style="mecha"] .theme-seg { background: #14181e; border: 1px solid #5a6570; border-radius: 2px; }
+    [data-style="mecha"] .theme-seg-opt { color: #7a8898; border-radius: 1px; font-size: 11px; }
+    [data-style="mecha"] .theme-seg-opt.on { background: #ff6a3d; color: #1a1e24; }
+    [data-style="mecha"] .theme-btn {
+      border-radius: 2px; background: #2a323c; color: #c4f0ff; border: 1px solid #6a7380; font-size: 11px;
+    }
+    [data-style="mecha"] .theme-btn.pri { background: #ff6a3d; color: #1a1e24; border-color: #ff9a4a; }
+    [data-style="mecha"] .theme-bar { background: #14181e; border: 1px solid #5a6570; border-radius: 1px; }
+    [data-style="mecha"] .theme-bar i { background: linear-gradient(90deg, #ff6a3d, #c4f0ff); }
+    [data-style="mecha"] .theme-num { color: #c4f0ff; }
+
+    
+    [data-style="mecha"] .pet-hero {
+      background: linear-gradient(160deg, #2a3038, #181c22 50%, #12151a);
+      border: 2px solid #8a94a0;
+      border-radius: 4px;
+    }

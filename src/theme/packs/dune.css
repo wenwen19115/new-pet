@@ -1,0 +1,73 @@
+/* ========== 62 沙丘科幻 · 香料沙漠 ========== */
+    [data-style="dune"].theme-stage{
+      background:
+        radial-gradient(ellipse 80% 40% at 50% 100%,#e0a040 0%,transparent 55%),
+        linear-gradient(180deg,#120e0a,#3a2818 35%,#8a6030 65%,#d4a060);
+    }
+    [data-style="dune"] .theme-shell{
+      font-family:"Noto Sans SC","Outfit",sans-serif;position:relative;overflow:hidden;
+      background:linear-gradient(165deg,#2a2016,#140e0a);
+      border:1px solid #a07840;border-radius:0;color:#f0d8a8;
+      box-shadow:0 24px 56px rgba(0,0,0,0.6),inset 0 0 60px rgba(180,100,40,0.08);
+      clip-path:polygon(0 0,100% 0,100% calc(100% - 20px),calc(100% - 40px) 100%,0 100%);
+    }
+    [data-style="dune"] .theme-shell::before{
+      content:"";position:absolute;left:-20%;right:-20%;bottom:-10%;height:40%;pointer-events:none;z-index:0;
+      background:repeating-linear-gradient(105deg,transparent 0 18px,rgba(212,160,96,0.08) 18px 20px);
+      transform:skewY(-4deg);
+    }
+    [data-style="dune"] .theme-banner{margin:0;
+      display:block;position:relative;z-index:1;
+      background:#3a2818;color:#e0a850;border:1px solid #a07840;border-radius:0;
+      font-weight:800;letter-spacing:0.28em;text-transform:uppercase;font-size:10px;
+    }
+    [data-style="dune"] .theme-banner,[data-style="dune"] .theme-shell,[data-style="dune"] .pet-hero{position:relative;z-index:1;}
+    [data-style="dune"] .pet-nav,[data-style="dune"] .pet-main{position:relative;z-index:1;}
+    [data-style="dune"] .pet-nav{background:#0e0a08;border-right:1px solid #5a4030;gap:4px;}
+    [data-style="dune"] .pet-nav-item{color:#8a7050;border-radius:0;border:1px solid transparent;background:transparent;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;}
+    [data-style="dune"] .pet-nav-item[data-active="1"]{color:#f0d8a8;background:#3a2818;border-color:#a07840;box-shadow:inset 0 0 12px rgba(224,168,80,0.2);}
+    [data-style="dune"] .panel-head{border-bottom:1px solid #5a4030;background:linear-gradient(90deg,rgba(200,110,40,0.28),transparent);}
+    [data-style="dune"] .panel-title{color:#e0a850;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;font-size:13px;}
+    [data-style="dune"] .theme-chip{background:#0e0a08;color:#d4a870;border:1px solid #6a4830;border-radius:0;font-size:10px;letter-spacing:0.08em;}
+    [data-style="dune"] .theme-chip em{font-style:normal;font-weight:900;}
+    [data-style="dune"] .theme-lab{color:#b88848;letter-spacing:0.24em;font-weight:800;font-size:10px;text-transform:uppercase;}
+    [data-style="dune"] .theme-list{gap:8px;}
+    [data-style="dune"] .settings-item{background:#1c1610;border:1px solid #4a3828;border-radius:0;}
+    [data-style="dune"] .settings-item[data-tone="pet"]{background:linear-gradient(120deg,rgba(200,110,40,0.3),#1c1610 60%);border-color:#a07840;}
+    [data-style="dune"] .theme-t{color:#f0d8a8;font-weight:800;}
+    [data-style="dune"] .theme-d{color:#9a8060;}
+    [data-style="dune"] .theme-choice{border-radius:0;border:1px solid #6a4830;background:#0e0a08;color:#d4a870;font-size:11px;text-transform:uppercase;font-weight:700;}
+    [data-style="dune"] .theme-choice.on{background:#a07840;color:#140e0a;font-weight:900;}
+    [data-style="dune"] .theme-sw{
+      --sw-radius:0;
+      --sw-knob-radius:0;
+      background:#3a3020;
+      border:1px solid #6a4830;
+    }
+    [data-style="dune"] .theme-sw.on{background:#a07840;}
+    [data-style="dune"] .theme-sw::after{background:#f0d8a8;}
+    [data-style="dune"] .theme-seg{background:#0e0a08;border:1px solid #4a3828;border-radius:0;}
+    [data-style="dune"] .theme-seg-opt.on{background:#5a4030;color:#f0d8a8;}
+    [data-style="dune"] .theme-btn{border-radius:0;background:#1c1610;color:#e0a850;border:1px solid #6a4830;font-weight:800;text-transform:uppercase;font-size:11px;}
+    [data-style="dune"] .theme-btn.pri{background:#a07840;color:#140e0a;border-color:#e0a850;}
+    [data-style="dune"] .theme-bar{background:#0e0a08;border:1px solid #4a3828;border-radius:0;height:8px;}
+    [data-style="dune"] .theme-bar i{background:linear-gradient(90deg,#5a4030,#e0a850);box-shadow:0 0 10px rgba(224,168,80,0.4);}
+    [data-style="dune"] .theme-num{color:#e0a850;font-weight:800;}
+    [data-style="dune"] .pet-hero{
+      background:linear-gradient(120deg,rgba(200,110,40,0.28),#1c1610 55%);
+      border:1px solid #a07840;border-radius:0;color:#f0d8a8;
+      box-shadow:inset 0 0 28px rgba(224,168,80,0.08);
+    }
+    [data-style="dune"] .hero-stage{
+      border:1px solid #5a4030;border-radius:0;background:#0e0a08;
+    }
+    [data-style="dune"] .hero-role{
+      color:#b88848;letter-spacing:0.2em;text-transform:uppercase;font-weight:800;font-size:10px;
+    }
+    [data-style="dune"] .hero-name{color:#f0d8a8;font-weight:800;}
+    [data-style="dune"] .hero-tagline,[data-style="dune"] .preview-orbit-toggle{color:#9a8060;}
+    [data-style="dune"] .meta-pill{
+      border-radius:0;border:1px solid #6a4830;background:#0e0a08;color:#d4a870;
+      font-size:10px;letter-spacing:0.08em;text-transform:uppercase;
+    }
+    [data-style="dune"] .meta-pill--on{border-color:#a07840;color:#f0d8a8;background:#3a2818;}
