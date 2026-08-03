@@ -89,8 +89,7 @@ const filtered = computed(() =>
 
 const scenePlaceholder = computed(() => {
   if (activeScene.value === "usb") return t("pet.customLinesUsbHint");
-  if (activeScene.value === "tap") return t("pet.customLinesTapHint");
-  return t("pet.customLinesIdleHint");
+  return t("pet.customLinesHint");
 });
 
 function countFor(scene: PetLineScene) {

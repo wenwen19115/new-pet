@@ -1,6 +1,13 @@
-export type PetLineScene = "idle" | "tap" | "usb";
+import {
+  BUILTIN_LINE_CATEGORIES,
+  isBuiltInLineCategory,
+  type BuiltInLineCategory,
+} from "../../characters/lineTypes";
 
-export const PET_LINE_SCENES: PetLineScene[] = ["idle", "tap", "usb"];
+/** 与内置台词分类一致，设置页可按场景写自定义句 */
+export type PetLineScene = BuiltInLineCategory;
+
+export const PET_LINE_SCENES: PetLineScene[] = [...BUILTIN_LINE_CATEGORIES];
 
 export interface PetCustomLine {
   id: string;
@@ -9,8 +16,8 @@ export interface PetCustomLine {
   enabled: boolean;
 }
 
-function isPetLineScene(value: unknown): value is PetLineScene {
-  return value === "idle" || value === "tap" || value === "usb";
+export function isPetLineScene(value: unknown): value is PetLineScene {
+  return isBuiltInLineCategory(value);
 }
 
 function createCustomLineId(): string {

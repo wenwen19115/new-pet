@@ -127,7 +127,10 @@ export function pickPetLine(
     lineCatOn("personality", opts) &&
     Math.random() < 0.4
   ) {
-    const special = pickFromPool(flavorPool(model, personality), avoid);
+    const special = pickFromPool(
+      mergeScenePool(flavorPool(model, personality), "personality", opts),
+      avoid
+    );
     if (special && (!avoid || special !== avoid)) {
       return withFlavor(special, personality, model);
     }
@@ -142,7 +145,7 @@ export function pickPetLine(
     lineCatOn("care", opts) &&
     Math.random() < 0.18
   ) {
-    builtIn.push(...carePool(model));
+    builtIn.push(...mergeScenePool(carePool(model), "care", opts));
   }
   if (
     !opts?.customLinesOnly &&
@@ -181,7 +184,8 @@ export function pickDragStartLine(
   opts?: PetLinePickOptions
 ): string {
   if (!lineCatOn("drag-start", opts)) return "";
-  const pool = packLang(resolveDragStart(packFor(model)));
+  const builtIn = packLang(resolveDragStart(packFor(model)));
+  const pool = mergeScenePool(builtIn, "drag-start", opts);
   return withFlavor(pickFromPool(pool), personality, model);
 }
 
@@ -194,7 +198,8 @@ export function pickPlayfulLine(
 ): string {
   if (!lineCatOn("playful", opts)) return "";
   const pack = resolvePlayful(packFor(model))[kind];
-  const pool = packLang(tone === "snarky" ? pack.snarky : pack.cute);
+  const builtIn = packLang(tone === "snarky" ? pack.snarky : pack.cute);
+  const pool = mergeScenePool(builtIn, "playful", opts);
   return withFlavor(pickFromPool(pool), personality, model);
 }
 
@@ -204,7 +209,8 @@ export function pickDragEndLine(
   opts?: PetLinePickOptions
 ): string {
   if (!lineCatOn("drag-end", opts)) return "";
-  const pool = packLang(resolveDragEnd(packFor(model)));
+  const builtIn = packLang(resolveDragEnd(packFor(model)));
+  const pool = mergeScenePool(builtIn, "drag-end", opts);
   return withFlavor(pickFromPool(pool), personality, model);
 }
 
@@ -214,7 +220,8 @@ export function pickBubblePongLine(
   opts?: PetLinePickOptions
 ): string {
   if (!lineCatOn("bubble-pong", opts)) return "";
-  const pool = packLang(resolveBubblePong(packFor(model)));
+  const builtIn = packLang(resolveBubblePong(packFor(model)));
+  const pool = mergeScenePool(builtIn, "bubble-pong", opts);
   return withFlavor(pickFromPool(pool), personality, model);
 }
 
@@ -226,22 +233,22 @@ export function pickDeskWeatherLine(
 ): string {
   if (!lineCatOn("desk-weather", opts)) return "";
   const pack = resolveDeskWeather(packFor(model));
-  let pool: string[];
+  let builtIn: string[];
   if (kind.type === "apps-up") {
-    pool = packLang(pack.appsUp);
+    builtIn = packLang(pack.appsUp);
   } else if (kind.type === "apps-down") {
-    pool = packLang(pack.appsDown);
+    builtIn = packLang(pack.appsDown);
   } else if (kind.type === "switch-burst") {
-    pool = packLang(pack.switchBurst);
+    builtIn = packLang(pack.switchBurst);
   } else {
     const packTier =
       pack.maxDwell[kind.tier] ??
       pack.maxDwell["30s"] ??
       pack.maxDwell["3m"];
-    pool = packLang(packTier);
+    builtIn = packLang(packTier);
   }
   // 情境台词不走性格润色/截断，避免「嘿嘿，窗口有点……」被砍半再被动作台词抢走
-  return pickFromPool(pool);
+  return pickFromPool(mergeScenePool(builtIn, "desk-weather", opts));
 }
 
 function fillUsbTemplate(
@@ -306,10 +313,10 @@ export function pickMotionLine(
   if (!lineCatOn("motion", opts)) return "";
   const zh = pickLocale() === "zh";
   const bundle = packFor(model).motionLines;
-  const pool = (zh ? bundle?.zh : bundle?.en)?.[motion];
-  if (pool?.length) {
-    const line = pool[Math.floor(Math.random() * pool.length)]!;
-    return withFlavor(line, personality, model);
+  const builtIn = (zh ? bundle?.zh : bundle?.en)?.[motion] ?? [];
+  const pool = mergeScenePool(builtIn, "motion", opts);
+  if (pool.length) {
+    return withFlavor(pickFromPool(pool), personality, model);
   }
   return pickPetLine(tone, null, personality, model, opts);
 }
