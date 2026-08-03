@@ -33,8 +33,8 @@ describe("desk weather", () => {
     });
     expect(cool0.cooldown.appsChangeSec).toBe(0);
     expect(cool0.cooldown.switchBurstSec).toBe(0);
-    expect(DEFAULT_DESK_WEATHER.cooldown.appsChangeSec).toBe(10);
-    expect(DEFAULT_DESK_WEATHER.cooldown.switchBurstSec).toBe(10);
+    expect(DEFAULT_DESK_WEATHER.cooldown.appsChangeSec).toBe(30);
+    expect(DEFAULT_DESK_WEATHER.cooldown.switchBurstSec).toBe(30);
   });
 
   it("pickDeskWeatherLine returns character lines per scene", () => {

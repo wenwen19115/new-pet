@@ -48,20 +48,20 @@ export const DEFAULT_DESK_WEATHER: DeskWeatherConfig = {
   enabled: true,
   appsMany: {
     enabled: true,
-    changeStep: 3,
+    changeStep: 5,
   },
   switchBurst: {
     enabled: true,
     windowMs: 3000,
-    switchCount: 3,
+    switchCount: 5,
   },
   maxDwell: {
     enabled: true,
     tiersSec: [30, 180],
   },
   cooldown: {
-    appsChangeSec: 10,
-    switchBurstSec: 10,
+    appsChangeSec: 30,
+    switchBurstSec: 30,
     maxDwellAfterTopMin: 10,
   },
 };
