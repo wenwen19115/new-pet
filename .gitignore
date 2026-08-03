@@ -20,5 +20,9 @@ target
 !.vscode/extensions.json
 .idea/
 
+# 本地试验 / 示意稿（可回溯，不入库）
+tests/local/**
+!tests/local/README.md
+
 # Build artifacts
 release-exe/

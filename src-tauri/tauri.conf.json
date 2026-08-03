@@ -27,7 +27,7 @@
   "productName": "Desktop Pet",
   "mainBinaryName": "Desktop Pet",
   "version": "0.1.0",
-  "identifier": "com.vaemc.desktop.pet",
+  "identifier": "com.wen.desktop.pet",
   "app": {
     "withGlobalTauri": false,
     "windows": [

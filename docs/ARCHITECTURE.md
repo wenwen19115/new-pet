@@ -9,7 +9,8 @@
 ## 目录结构
 
 ```
-src/settings/          # 设置页（modules + composables）
+src/settings/          # 设置页（modules + composables + components）
+src/theme/             # Theme Pack：types / registry / packs/*.css / 壁纸与开机媒体
 src/pet/
   windows/             # WebView 壳：pet / bubble / menu / chat
   runtime/             # createPetHost 接线与 use* 行为
@@ -17,7 +18,7 @@ src/pet/
   content/
     shell/             # 桌宠窗 bob
     motion/            # idle 目录、播放器、拖尾等
-    dialogue/          # 选句、性格、口头禅等
+    dialogue/          # 选句、性格（personality）、口头禅等
   data/
     settings/          # normalize / profiles / io / defaults
     …                  # store、types、deskWeather 等子域、vrm 等
@@ -38,6 +39,7 @@ src-tauri/             # 窗口、托盘、USB、工位气象传感、TTS、FS
 | 台词文案 | `characters/lines/data/*.json` |
 | 形象表现 | `characters/<id>.ts` + `models/<包>/` |
 | 设置表单项 | `settings/modules/` + `composables/` |
+| Theme Pack / 壁纸 / 开机动画 | `src/theme/` + `settings/modules/AppPanel` 等 |
 | 系统能力 | `src-tauri` + `bridge/`（桥内勿放入业务逻辑） |
 
 典型点击链路：`PetApp` → host / shell → `playMotionOnce` / `speak*` → mood 经 `applyMood`；随机 idle 与聊天暂停经 `dispatchPetHostIntent`。
@@ -48,10 +50,10 @@ src-tauri/             # 窗口、托盘、USB、工位气象传感、TTS、FS
 
 ```
 data/types
-  ↑ content（motion / shell / personality 等）
+  ↑ content（motion / shell / dialogue 等）
   ↑ characters
   ↑ data/settings
-  ↑ runtime / windows / settings UI
+  ↑ runtime / windows / settings UI / theme
 
 chat → content、data 类型
 bridge → data 类型 + Tauri
@@ -59,7 +61,7 @@ bridge → data 类型 + Tauri
 
 约束：
 
-- `content/motion`、`content/shell`、`personality` 不得 import `characters`（能力表与 idle 表由调用方注入）。
+- `content/motion`、`content/shell`、`content/dialogue`（含 `personality.ts`）不得 import `characters`（能力表与 idle 表由调用方注入）。
 - 台词编排（`lines` / `intro` / `catchphrases`）可读 `characters/lines`。
 - `data/types` 不得 import `characters`；默认档案位于 `settings/defaults.ts`。
 - `content` / `data` 不得 import Vue 窗口或 runtime。
@@ -69,8 +71,8 @@ bridge → data 类型 + Tauri
 | 词 | 含义 |
 | --- | --- |
 | look | 外观（`lookId`、色板、立绘） |
-| uiTheme | 设置页日/夜主题 |
-| personality | 台词口味（sunny / shy / cool / fiery） |
+| theme / Theme Pack | 设置页视觉包（`src/theme/`：`theme.style` + packs + 可选壁纸/开机） |
+| personality | 台词口味（sunny / shy / cool / fiery）；实现于 `content/dialogue/personality.ts` |
 
 ## 角色包
 
@@ -91,7 +93,7 @@ bridge → data 类型 + Tauri
 | toon | 分部位像素、特效、wormhole | 仅靠整窗甩动代替小品 |
 | VRM | 骨骼与表情；少做飞窗 | 以整窗杂技作为主表演 |
 
-细则见 `.cursor/rules/pet-character-motion.mdc`。
+细则见 `.cursor/rules/coding.mdc`（角色与动作）。
 
 ## 形象代码位置
 
@@ -119,6 +121,7 @@ mood、idle、暂停位等写入约定见 [`STATE.md`](./STATE.md)。跨 host �
 | 目标 | 落点 |
 | --- | --- |
 | 新角色 | `characters/<id>.ts` + lines JSON + Model + 注册表 |
+| 新 Theme Pack | `theme/packs/<id>.css` + `theme/types.ts` `THEME_PACK_IDS` + `theme/registry.ts` |
 | 新 look | `skins/looks.json` + 角色 `lookIds` |
 | 新子窗 | `windows/<name>/`，并接入 destroy 链 |
 | 新系统能力 | Rust + 薄 `bridge` |
@@ -152,7 +155,9 @@ mood、idle、暂停位等写入约定见 [`STATE.md`](./STATE.md)。跨 host �
 
 ```bash
 yarn test
-yarn check:pre-commit   # 提交前机械检查；目视清单见 .cursor/rules/pre-commit-checklist.mdc
+yarn check:pre-commit   # 提交前机械检查；目视清单见 .cursor/rules/commit.mdc
 ```
 
-手测清单见 [`GOLDEN_PATHS.md`](./GOLDEN_PATHS.md)。常用 smoke：`architecture`（目录与注册表）、`petHost`（intent / dispose）、`toonPixels`。
+手测清单见 [`GOLDEN_PATHS.md`](./GOLDEN_PATHS.md)。常用 smoke：`architecture`（目录与注册表）、`petHost`（intent / dispose）、`toonPixels`、`playfulPhysics`、`bubblePong`、`deskWeather`。
+
+本地示意/试验稿（不入库）放 `tests/local/`，见该目录说明。

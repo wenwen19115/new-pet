@@ -12,7 +12,7 @@ export default defineConfig(async () => ({
   plugins: [vue()],
   clearScreen: false,
   server: {
-    // Avoid clashing with wheat-esp-tools (1420) when both run locally
+    // 本仓固定 1421，避免与本机其它 Vite 工程抢默认 1420
     port: 1421,
     strictPort: true,
   },

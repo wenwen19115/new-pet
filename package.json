@@ -2,7 +2,7 @@
   "name": "desktop-pet",
   "private": true,
   "version": "0.1.0",
-  "author": "wheat <vaemc520@qq.com>",
+  "author": "wen <1911542586@qq.com>",
   "type": "module",
   "scripts": {
     "dev": "vite",

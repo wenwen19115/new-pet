@@ -1,10 +1,10 @@
 # Desktop Pet
 
-独立桌宠工程（从 `wheat-esp-tools` 抽出的芯宠 / Chip Pet）。
+独立桌宠工程（芯宠 / Chip Pet）。
 
 ## 功能
 
-- 夜晚 / 珍珠白白天 UI 主题（`src/theme/uiTheme.ts`）
+- 设置页 Theme Pack（`src/theme/`：`THEME_PACK_IDS` 现约 64 包 + 可选壁纸 / 开机动画）
 - 启动入场动画 + 像素宠图标
 - 右键桌宠：打开设置 / 置顶设置页
 - 乐心（VRM）自定义动作：命名、设计、加入随机池

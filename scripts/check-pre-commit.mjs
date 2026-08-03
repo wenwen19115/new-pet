@@ -1,6 +1,6 @@
 /**
  * 提交前机械检查。yarn check:pre-commit
- * 判不了的（注释品味、落点是否「对」）仍靠 .cursor/rules/pre-commit-checklist.mdc
+ * 判不了的（注释品味、落点是否「对」）仍靠 .cursor/rules/commit.mdc / coding.mdc
  */
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
@@ -113,7 +113,7 @@ for (const file of walk(join(root, "docs"))) {
   const r = rel(file);
   for (const re of bannedAi) {
     if (re.test(text)) {
-      failures.push(`${r}: 疑似 AI 腔（${re}），见 no-ai-voice`);
+      failures.push(`${r}: 疑似 AI 腔（${re}），见 coding.mdc`);
       break;
     }
   }
@@ -122,8 +122,8 @@ for (const file of walk(join(root, "docs"))) {
 if (failures.length) {
   console.error("pre-commit 检查未过:\n");
   for (const f of failures) console.error(`  - ${f}`);
-  console.error("\n清单: .cursor/rules/pre-commit-checklist.mdc");
+  console.error("\n清单: .cursor/rules/commit.mdc");
   process.exit(1);
 }
 
-console.log("pre-commit 机械检查通过。目视项仍看 pre-commit-checklist。");
+console.log("pre-commit 机械检查通过。目视项仍看 commit.mdc / coding.mdc。");
