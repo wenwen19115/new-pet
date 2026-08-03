@@ -1,5 +1,6 @@
 import { computed, reactive, ref } from "vue";
 import { getCharacter } from "@/pet/characters";
+import { getPetLocale, type PetLocale } from "@/pet/bridge/locale";
 import { loadPetSettings } from "@/pet/data/settings";
 import { resolveAppearance } from "@/pet/skins";
 import { petBodyBox, petWindowSize } from "@/pet/bridge/sizes";
@@ -13,6 +14,8 @@ export function clearPetHostTimer(id: number | null) {
 
 export function createPetHostShared() {
   const settings = ref<PetSettings>(loadPetSettings());
+  /** 参与 activeSkin，切语言后重算默认昵称 */
+  const locale = ref<PetLocale>(getPetLocale());
   const vrmSrc = ref<string | null>(null);
   const mood = ref<PetMood>("idle");
   const lastLine = ref<string | null>(null);
@@ -32,7 +35,11 @@ export function createPetHostShared() {
   let hostAlive = true;
 
   const activeSkin = computed(() =>
-    resolveAppearance(settings.value.modelKind, settings.value.lookId)
+    resolveAppearance(
+      settings.value.modelKind,
+      settings.value.lookId,
+      locale.value
+    )
   );
   const activeCharacter = computed(() => getCharacter(activeSkin.value.model));
   const v = computed(() => activeSkin.value.visual);
@@ -46,6 +53,7 @@ export function createPetHostShared() {
 
   return {
     settings,
+    locale,
     vrmSrc,
     mood,
     lastLine,

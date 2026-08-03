@@ -64,7 +64,12 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
 import { emit, listen, type UnlistenFn } from "@tauri-apps/api/event";
-import { getPetLocale } from "@/pet/bridge/locale";
+import {
+  getPetLocale,
+  isPetLocale,
+  PET_LOCALE_EVENT,
+  type PetLocale,
+} from "@/pet/bridge/locale";
 import {
   PET_MENU_ACTION_EVENT,
   PET_MENU_ACTIVITY_EVENT,
@@ -91,8 +96,9 @@ const memPct = ref(0);
 const diskPct = ref(0);
 const netPct = ref(0);
 const statsReady = ref(false);
+const appLocale = ref<PetLocale>(getPetLocale());
 
-const en = computed(() => getPetLocale() === "en");
+const en = computed(() => appLocale.value === "en");
 
 const openLabel = computed(() =>
   en.value ? "Open settings" : "打开设置"
@@ -160,6 +166,7 @@ const cells = computed(() => {
 
 let unlistenShow: UnlistenFn | null = null;
 let unlistenHide: UnlistenFn | null = null;
+let unlistenLocale: UnlistenFn | null = null;
 let statsTimer: number | null = null;
 let statsGen = 0;
 
@@ -235,6 +242,7 @@ function toggleStats() {
 }
 
 function applyPayload(payload: PetMenuPayload) {
+  appLocale.value = getPetLocale();
   chatEnabled.value = Boolean(payload.chatEnabled);
   peekHidden.value = Boolean(payload.peekHidden);
   statsExpanded.value = Boolean(payload.statsExpandDefault);
@@ -263,11 +271,16 @@ onMounted(async () => {
     visible.value = false;
     stopStatsWatch();
   });
+  unlistenLocale = await listen<{ locale?: string }>(PET_LOCALE_EVENT, (ev) => {
+    const next = ev.payload?.locale;
+    appLocale.value = isPetLocale(next) ? next : getPetLocale();
+  });
 });
 
 onUnmounted(() => {
   unlistenShow?.();
   unlistenHide?.();
+  unlistenLocale?.();
   stopStatsWatch();
 });
 </script>

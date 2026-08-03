@@ -1,4 +1,5 @@
 import { createI18n } from "vue-i18n";
+import { getPetLocale } from "@/pet/bridge/locale";
 
 const messages = {
   zh: {
@@ -77,6 +78,10 @@ const messages = {
       secLines: "台词",
       secMotion: "动作 · 反应",
       secApp: "应用",
+      languageTitle: "界面语言",
+      languageDesc: "设置页与菜单文案；桌宠台词按当前语言抽取",
+      langZh: "中文",
+      langEn: "English",
       secTheme: "界面",
       secMaintain: "维护",
       themeStageTitle: "设置页背景",
@@ -146,19 +151,26 @@ const messages = {
       customMotionRemove: "删除",
       customLinesTitle: "随机对话",
       customLinesDesc:
-        "按角色独立；可分闲聊 / 点击 / USB。启用句与内置句合并抽取，也可仅用自定义",
+        "按角色独立；场景与「对话内容开关」分类一致。启用句与内置句合并抽取，也可仅用自定义",
       customLinesAdd: "新建",
       customLinesEmpty: "这一场景还没有台词，点「新建」写一句",
       customLinesEnabled: "启用",
       customLinesRemove: "删除",
       customLinesOnly: "仅用我的台词（该场景无可用句时回退内置）",
-      customLinesIdleHint: "闲聊时随机说的话…",
-      customLinesTapHint: "连点彩蛋时说的话…",
+      customLinesHint: "写一句会在这个场景说的话…",
       customLinesUsbHint: "USB 插拔时说的话，可用 {added} / {ports}",
       customLinesScene: {
         idle: "闲聊",
         tap: "点击",
         usb: "USB",
+        personality: "性格口头禅",
+        care: "关心提醒",
+        motion: "动作台词",
+        playful: "调皮追逐",
+        "drag-start": "开始拖拽",
+        "drag-end": "拖完落地",
+        "bubble-pong": "冒泡乒乓",
+        "desk-weather": "工位气象",
       },
       motionPoolTitle: "动作开关",
       motionPoolDesc: "关闭后不会进入随机表演池；指定动作仍可手动「做一下」",
@@ -176,6 +188,7 @@ const messages = {
         "drag-start": "开始拖拽",
         "drag-end": "拖完落地",
         "bubble-pong": "冒泡乒乓",
+        "desk-weather": "工位气象",
       },
       customMotionEditBones: "调骨骼",
       customMotionCloseEditor: "收起",
@@ -527,6 +540,10 @@ const messages = {
       secLines: "Lines",
       secMotion: "Motion · react",
       secApp: "App",
+      languageTitle: "Language",
+      languageDesc: "Settings and menu copy; pet lines follow the current language",
+      langZh: "中文",
+      langEn: "English",
       secTheme: "Theme",
       secMaintain: "Maintain",
       themeStageTitle: "Settings backdrop",
@@ -599,19 +616,26 @@ const messages = {
       customMotionRemove: "Remove",
       customLinesTitle: "Custom lines",
       customLinesDesc:
-        "Per character. Buckets: idle / tap / USB. Enabled lines merge with built-ins, or use yours only",
+        "Per character; scenes match Dialogue toggles. Enabled lines merge with built-ins, or use yours only",
       customLinesAdd: "Add",
       customLinesEmpty: "No lines in this scene yet — Add one",
       customLinesEnabled: "Enabled",
       customLinesRemove: "Remove",
       customLinesOnly: "Only my lines (fallback to built-in if empty)",
-      customLinesIdleHint: "Something to say while idling…",
-      customLinesTapHint: "Said on tap-egg…",
+      customLinesHint: "A line to say in this scene…",
       customLinesUsbHint: "On USB plug — use {added} / {ports}",
       customLinesScene: {
         idle: "Idle",
         tap: "Tap",
         usb: "USB",
+        personality: "Personality",
+        care: "Care",
+        motion: "Motion",
+        playful: "Playful",
+        "drag-start": "Drag start",
+        "drag-end": "After drag",
+        "bubble-pong": "Bubble pong",
+        "desk-weather": "Desk weather",
       },
       motionPoolTitle: "Motion toggles",
       motionPoolDesc:
@@ -630,6 +654,7 @@ const messages = {
         "drag-start": "Drag start",
         "drag-end": "After drag",
         "bubble-pong": "Bubble pong",
+        "desk-weather": "Desk weather",
       },
       customMotionEditBones: "Edit bones",
       customMotionCloseEditor: "Collapse",
@@ -913,9 +938,16 @@ const messages = {
 const i18n = createI18n({
   legacy: false,
   globalInjection: true,
-  locale: "zh",
+  locale: getPetLocale(),
   fallbackLocale: "en",
   messages,
 });
+
+try {
+  document.documentElement.lang =
+    getPetLocale() === "en" ? "en" : "zh-CN";
+} catch {
+  // ignore
+}
 
 export default i18n;

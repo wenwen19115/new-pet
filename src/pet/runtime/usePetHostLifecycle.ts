@@ -15,6 +15,12 @@ import type { PetMood, PetSettings } from "@/pet/data/types";
 import type { ApplyPetMood } from "./petHostMood";
 import { clearPetRuntimeCachesLocal } from "./clearRuntimeCaches";
 import {
+  getPetLocale,
+  isPetLocale,
+  PET_LOCALE_EVENT,
+  type PetLocale,
+} from "@/pet/bridge/locale";
+import {
   PET_CHAT_OPEN_STATE_EVENT,
   PET_CHAT_REPLY_EVENT,
   PET_CLEAR_CACHE_EVENT,
@@ -41,6 +47,7 @@ function clearTimer(id: number | null) {
 export function usePetHostLifecycle(deps: {
   hostAliveRef: { get: () => boolean; set: (v: boolean) => void };
   settings: Ref<PetSettings>;
+  locale: Ref<PetLocale>;
   vrmSrc: Ref<string | null>;
   mood: Ref<PetMood>;
   lastLine: Ref<string | null>;
@@ -97,6 +104,7 @@ export function usePetHostLifecycle(deps: {
   let unlistenSuspend: UnlistenFn | null = null;
   let unlistenResume: UnlistenFn | null = null;
   let unlistenClearCache: UnlistenFn | null = null;
+  let unlistenLocale: UnlistenFn | null = null;
 
   function clearHostTimers() {
     deps.clearLifeTimers();
@@ -287,6 +295,10 @@ export function usePetHostLifecycle(deps: {
       if (!deps.hostAliveRef.get()) return;
       deps.speakBubblePong();
     });
+    unlistenLocale = await listen<{ locale?: string }>(PET_LOCALE_EVENT, (event) => {
+      const next = event.payload?.locale;
+      deps.locale.value = isPetLocale(next) ? next : getPetLocale();
+    });
     deps.refreshUsbWatch();
     deps.refreshDeskWeather();
     window.addEventListener("storage", deps.onStorage);
@@ -305,6 +317,7 @@ export function usePetHostLifecycle(deps: {
     unlistenChatReply?.();
     unlistenChatOpen?.();
     unlistenBubblePong?.();
+    unlistenLocale?.();
     window.removeEventListener("storage", deps.onStorage);
     deps.showHitBounds.value = false;
   }

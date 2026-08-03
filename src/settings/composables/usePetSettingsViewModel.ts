@@ -32,7 +32,7 @@ export function usePetSettingsViewModel(deps: {
   vrmSrc: Ref<string | null>;
   savedChatAi: SavedChatAi;
 }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
   const themeBanner = computed(
     () => getThemePack(deps.theme.value.style).meta.banner
@@ -147,9 +147,10 @@ export function usePetSettingsViewModel(deps: {
     () => [...getCharacter(deps.modelKind.value).demoMotions] as string[]
   );
 
-  const activeLook = computed(() =>
-    resolveAppearance(deps.modelKind.value, deps.lookId.value)
-  );
+  const activeLook = computed(() => {
+    void locale.value;
+    return resolveAppearance(deps.modelKind.value, deps.lookId.value);
+  });
 
   const previewHint = computed(() => {
     const character = getCharacter(activeLook.value.model);

@@ -33,6 +33,7 @@ export function createPetHost() {
 function wirePetHost(s: PetHostShared) {
   const {
     settings,
+    locale,
     vrmSrc,
     mood,
     lastLine,
@@ -325,6 +326,7 @@ function wirePetHost(s: PetHostShared) {
       },
     },
     settings,
+    locale,
     vrmSrc,
     mood,
     lastLine,

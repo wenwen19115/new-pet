@@ -15,11 +15,10 @@ import {
   resolveCustomVrmPose,
   type CustomVrmMotion,
 } from "../../content/motion/customVrmMotions";
+import { getPetLocale } from "../../bridge/locale";
 
 function defaultVrmLoadFailText(): string {
-  return localStorage.getItem("language") === "en"
-    ? "Failed to load model"
-    : "模型加载失败";
+  return getPetLocale() === "en" ? "Failed to load model" : "模型加载失败";
 }
 
 export type VrmRendererProps = {

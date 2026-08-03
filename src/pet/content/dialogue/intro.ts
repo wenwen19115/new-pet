@@ -3,19 +3,7 @@ import { flavorPetLine } from "./personality";
 import { getLinePack } from "../../characters/lines";
 import { resolvePolish } from "../../characters/lines/shared";
 import type { PetSettings, PetTone } from "../../data/types";
-
-function detectLang(): "zh" | "en" {
-  try {
-    const lang = (
-      localStorage.getItem("language") ||
-      navigator.language ||
-      "zh"
-    ).toLowerCase();
-    return lang.startsWith("zh") ? "zh" : "en";
-  } catch {
-    return "zh";
-  }
-}
+import { getPetLocale } from "../../bridge/locale";
 
 export function buildSkinIntro(
   settings: PetSettings,
@@ -24,7 +12,7 @@ export function buildSkinIntro(
   const look = resolveAppearance(settings.modelKind, settings.lookId);
   const name = resolveNickname(settings.nickname, look);
   const tone = options?.tone ?? settings.tone;
-  const lang = options?.lang ?? detectLang();
+  const lang = options?.lang ?? getPetLocale();
   const pack = getLinePack(settings.modelKind);
   const template = pack.intro[lang][tone === "snarky" ? "snarky" : "cute"];
   const base = template.replaceAll("{name}", name);

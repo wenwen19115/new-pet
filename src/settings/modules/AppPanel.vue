@@ -2,6 +2,18 @@
   <div class="app-panel">
     <ThemeSection :label="$t('pet.secApp')">
       <SettingsItemRow
+        :title="$t('pet.languageTitle')"
+        :description="$t('pet.languageDesc')"
+        tone="pet"
+      >
+        <ThemeSeg
+          :model-value="appLocale"
+          :options="languageOptions"
+          :aria-label="$t('pet.languageTitle')"
+          @update:model-value="onLanguage"
+        />
+      </SettingsItemRow>
+      <SettingsItemRow
         :title="$t('pet.chatTitle')"
         :description="$t('pet.chatDesc')"
         tone="pet"
@@ -177,7 +189,8 @@
 </template>
 
 <script setup lang="ts">
-import { inject } from "vue";
+import { computed, inject } from "vue";
+import { useI18n } from "vue-i18n";
 import SettingsItemRow from "@/components/SettingsItemRow.vue";
 import ThemePackPicker from "@/settings/components/ThemePackPicker.vue";
 import ThemeSection from "@/settings/components/ThemeSection.vue";
@@ -186,8 +199,25 @@ import ThemeSwitch from "@/settings/components/ThemeSwitch.vue";
 import ThemeMeter from "@/settings/components/ThemeMeter.vue";
 import BootAnimationSettings from "@/settings/modules/BootAnimationSettings.vue";
 import { PET_SETTINGS_PAGE_KEY } from "@/settings/context";
+import { isPetLocale, setPetLocale } from "@/pet/bridge/locale";
 
 const ctx = inject(PET_SETTINGS_PAGE_KEY)!;
+const { t, locale } = useI18n();
+
+const appLocale = computed(() =>
+  String(locale.value).toLowerCase().startsWith("zh") ? "zh" : "en"
+);
+
+const languageOptions = computed(() => [
+  { label: t("pet.langZh"), value: "zh" },
+  { label: t("pet.langEn"), value: "en" },
+]);
+
+function onLanguage(value: string) {
+  if (!isPetLocale(value) || value === appLocale.value) return;
+  setPetLocale(value);
+  locale.value = value;
+}
 </script>
 
 <style scoped>
