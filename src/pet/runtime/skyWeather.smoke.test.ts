@@ -240,7 +240,8 @@ describe("sky weather session lifecycle", () => {
     await nextTick();
 
     const afterStart = commits.length;
-    stopFn?.();
+    expect(stopFn).toBeTypeOf("function");
+    (stopFn as () => void)();
     const afterStop = commits.length;
     expect(afterStop).toBeGreaterThanOrEqual(afterStart);
     // stop 强制落盘一次
