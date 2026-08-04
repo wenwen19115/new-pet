@@ -21,6 +21,11 @@ import {
   normalizeDeskWeather,
   type DeskWeatherConfig,
 } from "@/pet/data/deskWeather";
+import {
+  DEFAULT_SKY_WEATHER,
+  normalizeSkyWeather,
+  type SkyWeatherConfig,
+} from "@/pet/data/skyWeather";
 
 export function usePetSettingsFormState() {
   const enabled = ref(false);
@@ -40,6 +45,9 @@ export function usePetSettingsFormState() {
   const hitBoundsEnabled = ref(true);
   const deskWeather = ref<DeskWeatherConfig>(
     normalizeDeskWeather(DEFAULT_DESK_WEATHER)
+  );
+  const skyWeather = ref<SkyWeatherConfig>(
+    normalizeSkyWeather(DEFAULT_SKY_WEATHER)
   );
   const catchphrases = ref<string[]>([]);
   const catchphraseChance = ref(CATCHPHRASE_DEFAULT_CHANCE);
@@ -96,6 +104,7 @@ export function usePetSettingsFormState() {
       playfulModeEnabled: playfulModeEnabled.value,
       hitBoundsEnabled: hitBoundsEnabled.value,
       deskWeather: normalizeDeskWeather(deskWeather.value),
+      skyWeather: normalizeSkyWeather(skyWeather.value),
       catchphrases: catchphrases.value.map((t) => t.trim()).filter(Boolean),
       catchphraseChance: clampCatchphraseChance(catchphraseChance.value),
       theme: clonePetThemeSettings(theme.value),
@@ -130,6 +139,7 @@ export function usePetSettingsFormState() {
     playfulModeEnabled,
     hitBoundsEnabled,
     deskWeather,
+    skyWeather,
     catchphrases,
     catchphraseChance,
     theme,

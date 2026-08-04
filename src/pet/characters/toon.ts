@@ -41,6 +41,9 @@ export const characterToon: CharacterDef = {
       );
       return { w: side, h: Math.round(side * 1.08) };
     },
+    previewBaseScale: 0.88,
+    previewMaxBoost: 13,
+    previewActor: { w: 200, h: 210, bottom: "12%", z: 40 },
   },
   previewHintKey: "pet.previewToonHint",
   appearance: {

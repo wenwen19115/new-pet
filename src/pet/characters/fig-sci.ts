@@ -37,6 +37,10 @@ export const characterFig: CharacterDef = {
       const w = Math.round(h * (2 / 3));
       return { w, h };
     },
+    // 贴合垫子上限 1；起始留滚轮余量，放大不裁头
+    previewBaseScale: 0.84,
+    previewMaxBoost: 19,
+    previewActor: { w: 236, h: 352, bottom: "5%", z: 42 },
   },
   previewHintKey: "pet.previewFigHint",
   appearance: {

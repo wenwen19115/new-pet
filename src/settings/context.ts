@@ -30,6 +30,7 @@ export type PetSettingsPageCtx = {
   playfulModeEnabled: Ref<boolean>;
   hitBoundsEnabled: Ref<boolean>;
   deskWeather: Ref<import("@/pet/data/deskWeather").DeskWeatherConfig>;
+  skyWeather: Ref<import("@/pet/data/skyWeather").SkyWeatherConfig>;
   catchphrases: Ref<string[]>;
   catchphraseChance: Ref<number>;
   theme: Ref<PetThemeSettings>;
@@ -99,6 +100,7 @@ export type PetSettingsPageCtx = {
   onPlayfulMode: (v: boolean) => void | Promise<void>;
   onHitBounds: (v: boolean) => void | Promise<void>;
   onDeskWeatherChange: () => void | Promise<void>;
+  onSkyWeatherChange: () => void | Promise<void>;
   onPickVrm: () => void | Promise<void>;
   onClearVrm: () => void | Promise<void>;
   onDemoMotion: (v: unknown) => void | Promise<void>;

@@ -225,6 +225,16 @@
   pointer-events: none;
 }
 
+.orbit-zoom {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform-origin: 50% 55%;
+  will-change: transform;
+}
+
 .orbit-rig {
   width: 120px;
   height: 120px;
@@ -232,7 +242,23 @@
   transform-style: preserve-3d;
   transform-origin: 50% 55%;
   will-change: transform;
-  scale: min(1, 80cqmin / 150);
+  /* 贴合演员框：120 设计稿边长 */
+  scale: min(1, 78cqmin / 120);
+}
+
+/* 窗外预览无垫子底栏：少留白，立绘更能铺满 */
+.orbit-stage[data-bg="0"] .fig-stage {
+  padding: 2px 6px 6px;
+}
+
+.orbit-stage[data-bg="0"] .fig-zoom {
+  --fig-fit-h: min(520px, calc(100cqh - 10px));
+  --fig-fit-w: min(320px, 96cqw, calc(var(--fig-fit-h) * 2 / 3));
+}
+
+.orbit-stage[data-bg="0"] .vrm-orbit-zoom {
+  width: min(300px, 78%);
+  height: min(460px, 94%);
 }
 
 .orbit-rig .chip-slab {
@@ -261,10 +287,11 @@
 
 .fig-zoom {
   /* Art is 480×720 → 2/3. Size from the tighter axis so the box never overflows the pad. */
+  --preview-scale: 1;
   --fig-fit-h: min(520px, calc(100cqh - 44px));
   --fig-fit-w: min(300px, 94cqw, calc(var(--fig-fit-h) * 2 / 3));
-  width: var(--fig-fit-w);
-  height: calc(var(--fig-fit-w) * 3 / 2);
+  width: calc(var(--fig-fit-w) * var(--preview-scale));
+  height: calc(var(--fig-fit-w) * var(--preview-scale) * 3 / 2);
   max-width: 100%;
   max-height: var(--fig-fit-h);
   aspect-ratio: 2 / 3;
@@ -306,6 +333,8 @@
   max-width: none;
   max-height: none;
   aspect-ratio: auto;
+  transform: scale(var(--preview-scale, 1));
+  transform-origin: 50% 100%;
 }
 
 .orbit-pad.vrm-orbit {

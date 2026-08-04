@@ -44,6 +44,10 @@ export const characterChip: CharacterDef = {
       );
       return { w: side, h: side };
     },
+    // 芯片 3D + 引脚易溢出；起始略收、放大限幅、Z 别太近
+    previewBaseScale: 0.9,
+    previewMaxBoost: 18,
+    previewActor: { w: 168, h: 168, bottom: "15%", z: 32 },
   },
   previewHintKey: "pet.previewDragHint",
   appearance: {

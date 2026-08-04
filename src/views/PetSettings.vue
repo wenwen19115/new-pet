@@ -1,22 +1,39 @@
 <template>
   <div class="pet-page">
-    <aside class="pet-hero" :data-model="activeLook.model" :style="heroPanelStyle">
+    <aside
+      class="pet-hero"
+      :data-model="activeLook.model"
+      :style="heroMergedStyle"
+    >
       <div class="hero-stage">
-        <PetPreviewOrbit
-          :key="`${activeLook.id}-${vrmModelRev}`"
-          :model="activeLook.model"
-          :visual="v"
-          :mood="tone === 'snarky' ? 'grumpy' : 'idle'"
-          :fig-art-id="activeLook.figArtId"
-          :toon-decor="activeLook.toonDecor"
-          :vrm-src="vrmSrc"
-          :custom-motions="customVrmMotions"
-          :motion-override="previewMotionOverride"
-          :auto-orbit="effectivePreviewAutoOrbit"
-          :auto-idle-clips="previewAutoIdleClips"
-          :show-bg="true"
-          :hint="previewHint"
-        />
+        <HeroWindowWorld
+          :tod="skyDisplayTod"
+          :weather="skyDisplayWeather"
+          :family="windowFamily"
+          :follow-clock="skyFollowClock"
+          :rainbow="skyRainbow"
+          :events="skyEvents"
+          :preview-actor="previewActor"
+          :clip-actor="clipPreviewActor"
+        >
+          <template #actor>
+            <PetPreviewOrbit
+              :key="`${activeLook.id}-${vrmModelRev}`"
+              :model="activeLook.model"
+              :visual="v"
+              :mood="tone === 'snarky' ? 'grumpy' : 'idle'"
+              :fig-art-id="activeLook.figArtId"
+              :toon-decor="activeLook.toonDecor"
+              :vrm-src="vrmSrc"
+              :custom-motions="customVrmMotions"
+              :motion-override="previewMotionOverride"
+              :auto-orbit="effectivePreviewAutoOrbit"
+              :auto-idle-clips="previewAutoIdleClips"
+              :show-bg="false"
+            />
+          </template>
+        </HeroWindowWorld>
+        <p v-if="previewHint" class="hero-orbit-hint">{{ previewHint }}</p>
       </div>
       <div class="hero-text">
         <p class="hero-role">{{ $t(activeLook.modelNameKey) }}</p>
@@ -77,6 +94,7 @@
 
 <script setup lang="ts">
 import PetPreviewOrbit from "@/pet/models/preview/PetPreviewOrbit.vue";
+import HeroWindowWorld from "@/pet/models/preview/HeroWindowWorld.vue";
 import ThemeSwitch from "@/settings/components/ThemeSwitch.vue";
 import { usePetSettingsPage } from "@/settings/usePetSettingsPage";
 import type { PetThemeSettings } from "@/theme/types";
@@ -105,9 +123,17 @@ const {
   previewAutoIdleClips,
   previewHint,
   displayName,
-  heroPanelStyle,
   personalityLabel,
   themeBanner,
+  heroMergedStyle,
+  skyDisplayTod,
+  skyDisplayWeather,
+  skyRainbow,
+  skyEvents,
+  skyFollowClock,
+  windowFamily,
+  previewActor,
+  clipPreviewActor,
 } = usePetSettingsPage({
   onThemeChange: (theme) => emit("theme-change", theme),
 });

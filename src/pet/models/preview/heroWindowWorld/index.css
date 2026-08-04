@@ -1,0 +1,17 @@
+/* heroWindowWorld — 设置页窗外景
+ * 按职责拆文件（改样式先对号入座）：
+ *   base.css                室内墙 / 窗洞 / 天空层
+ *   weather-layers.css      雨雪雾等粒子 + 玻璃水珠
+ *   weather-mods-normal.css data-weather 常规调制
+ *   weather-mods-egg.css    egg 氛围（日食/龙卷/硫磺等）
+ *   weather-mods-fall.css   egg 下落物（蛙/钻/陨石/落雷）
+ *   flyers.css              特殊事件飞行物
+ *   family.css              索引 → family/shared + family/{wood…ornate}
+ */
+@import "./base.css";
+@import "./weather-layers.css";
+@import "./weather-mods-normal.css";
+@import "./weather-mods-egg.css";
+@import "./weather-mods-fall.css";
+@import "./flyers.css";
+@import "./family.css";

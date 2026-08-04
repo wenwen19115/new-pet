@@ -10,17 +10,8 @@ export function clampPetZoom(value: number): number {
   return Math.min(100, Math.max(-100, Math.round(value)));
 }
 
-export function clampPreviewBoost(value: number): number {
-  if (Number.isNaN(value)) return 0;
-  return Math.min(40, Math.max(0, Math.round(value)));
-}
-
 function petScaleFromZoom(zoomPercent: number): number {
   return Math.max(0.2, 1 + clampPetZoom(zoomPercent) / 100);
-}
-
-export function previewBoostScale(boostPercent: number): number {
-  return 1 + clampPreviewBoost(boostPercent) / 100;
 }
 
 interface PetScreenMetrics {

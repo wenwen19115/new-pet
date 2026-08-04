@@ -7,3 +7,4 @@ export { usePetSettingsFormState } from "./usePetSettingsFormState";
 export { usePetSettingsPersist } from "./usePetSettingsPersist";
 export { usePetSettingsActions } from "./usePetSettingsActions";
 export { usePetSettingsViewModel } from "./usePetSettingsViewModel";
+export { useSkyWeatherPreview } from "./useSkyWeatherPreview";

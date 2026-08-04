@@ -38,6 +38,15 @@ interface CharacterScreenMetrics {
   availH: number;
 }
 
+interface CharacterPreviewActor {
+  w: number;
+  h: number;
+  /** hero 演员层 bottom，如 `10%` */
+  bottom?: string;
+  /** 相对镜头的 translateZ（px）；越大透视越「近」 */
+  z?: number;
+}
+
 interface CharacterSizeSpec {
   safeMargin: number;
   /** Bubble Y offset as a fraction of body height (negative = upward) */
@@ -46,6 +55,12 @@ interface CharacterSizeSpec {
     scale: number,
     screen: CharacterScreenMetrics
   ) => { w: number; h: number };
+  /** 设置预览贴合垫子后的起始倍率 */
+  previewBaseScale?: number;
+  /** 滚轮额外放大上限（百分点，叠在 base 上） */
+  previewMaxBoost?: number;
+  /** 设置页窗外预览的演员框 */
+  previewActor?: CharacterPreviewActor;
 }
 
 interface CharacterDefaults {

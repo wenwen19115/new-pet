@@ -1,0 +1,218 @@
+/* 特殊事件飞行物 */
+
+/* === 6. 飞行物 === */
+/* 飞行物：可辨认剪影；身形朝向 = 飞行方向 */
+.flyer { position: absolute; pointer-events: none; will-change: transform, opacity; }
+.flyer i { display: block; position: absolute; pointer-events: none; }
+
+/* 流星：固定「尾←头→」布局，整段旋转对齐位移，头永远朝前 */
+.flyer.meteor {
+  width: 78px; height: 14px; background: transparent;
+}
+.flyer.meteor .m-head {
+  position: absolute; right: 0; top: 50%; width: 12px; height: 12px; margin-top: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, #ffe9a8 38%, #ffb060 68%, transparent 78%);
+  box-shadow: 0 0 10px 3px rgba(255,230,160,.95), 0 0 18px 6px rgba(120,230,255,.4);
+  z-index: 2;
+}
+.flyer.meteor .m-tail {
+  position: absolute; left: 0; right: 10px; top: 50%; height: 5px; margin-top: -2.5px;
+  border-radius: 3px; filter: blur(.3px); z-index: 1;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(80,220,255,.25) 25%,
+    rgba(255,220,140,.75) 62%,
+    rgba(255,250,230,.95) 100%);
+  box-shadow: 0 0 8px rgba(80,230,255,.35);
+}
+.flyer.meteor.rtl { animation: meteor-rtl 10s linear forwards; }
+.flyer.meteor.ltr { animation: meteor-ltr 10s linear forwards; }
+/* CSS 旋转顺时针：30°≈右下，150°≈左下；位移同向，头在局部 +X */
+@keyframes meteor-ltr {
+  0% { transform: translate(0,0) rotate(30deg); opacity: 0; }
+  12% { opacity: 1; }
+  82% { opacity: 1; }
+  100% { transform: translate(92vw, 48vh) rotate(30deg); opacity: 0; }
+}
+@keyframes meteor-rtl {
+  0% { transform: translate(0,0) rotate(150deg); opacity: 0; }
+  12% { opacity: 1; }
+  82% { opacity: 1; }
+  100% { transform: translate(-92vw, 48vh) rotate(150deg); opacity: 0; }
+}
+
+/* 战斗机：俯视隐身机（尖头 / 大后掠翼 / 双垂尾 / 双发）；机头默认朝右 */
+.flyer.plane {
+  width: 104px; height: 52px; opacity: .97;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,.5));
+  animation: plane-fly-right 10s linear forwards;
+}
+.flyer.plane .plane-art {
+  display: block; position: absolute; inset: 0;
+  transform-origin: 50% 50%;
+}
+.flyer.plane.flip { animation-name: plane-fly-left; }
+.flyer.plane.flip .plane-art { transform: scaleX(-1); }
+.flyer.plane .plane-svg {
+  display: block; width: 100%; height: 100%;
+  overflow: visible;
+}
+.flyer.plane .p-trail {
+  position: absolute; left: -24px; top: 17px; width: 30px; height: 18px;
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(120,200,255,.32) 50%, rgba(255,150,70,.6) 100%) 0 2px / 100% 3px no-repeat,
+    linear-gradient(90deg, transparent 0%, rgba(120,200,255,.32) 50%, rgba(255,150,70,.6) 100%) 0 13px / 100% 3px no-repeat;
+  filter: blur(.55px); opacity: .8;
+  z-index: 0;
+}
+@keyframes plane-fly-right {
+  from { transform: translate(0,0); opacity: .97; }
+  to { transform: translate(110vw, -6vh); opacity: .9; }
+}
+@keyframes plane-fly-left {
+  from { transform: translate(0,0); opacity: .97; }
+  to { transform: translate(-110vw, 5vh); opacity: .9; }
+}
+
+.flyer.ufo {
+  width: 42px; height: 28px;
+  animation: ufo-fly 10s linear forwards;
+}
+.flyer.ufo .u-dome {
+  position: absolute; left: 11px; top: 2px; width: 20px; height: 12px;
+  background: radial-gradient(ellipse at 50% 70%, #f0ffff, #7ec8e8 60%, #3a7088);
+  border-radius: 50% 50% 40% 40% / 80% 80% 30% 30%;
+  box-shadow: inset 0 -2px 0 rgba(255,255,255,.35), 0 0 8px rgba(140,255,230,.45);
+}
+.flyer.ufo .u-saucer {
+  position: absolute; left: 0; top: 10px; width: 42px; height: 10px;
+  background: linear-gradient(180deg, #d8f8ff, #5a8a9a 45%, #2a5060);
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(100,255,210,.4), inset 0 1px 0 rgba(255,255,255,.5);
+}
+.flyer.ufo .u-beam {
+  position: absolute; left: 14px; top: 18px; width: 14px; height: 12px;
+  background: linear-gradient(180deg, rgba(120,255,200,.45), transparent);
+  clip-path: polygon(30% 0, 70% 0, 100% 100%, 0 100%);
+  filter: blur(.5px);
+}
+@keyframes ufo-fly {
+  from { transform: translate(0,0); }
+  50% { transform: translate(55vw, 7vh); }
+  to { transform: translate(110vw, -3vh); }
+}
+
+/* 女巫：AI 立绘（黑袍 / 银月发箍 / 魔法光迹）；图朝左，右→左飞不翻面 */
+.flyer.witch {
+  width: 104px; height: 60px;
+  filter: drop-shadow(0 0 8px rgba(180,210,255,.4));
+  animation: witch-fly 11s linear forwards;
+}
+.flyer.witch .witch-art {
+  display: block; position: absolute; inset: 0;
+  background: url("./witch-flyer.png?v=2") center / contain no-repeat;
+  transform-origin: 50% 55%;
+  animation: witch-pose 2.6s ease-in-out infinite;
+}
+@keyframes witch-pose {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  40% { transform: translateY(2px) rotate(1.5deg); }
+  70% { transform: translateY(-1px) rotate(-2deg); }
+}
+@keyframes witch-fly {
+  0%   { transform: translate(0,0) rotate(2deg); opacity: 0; }
+  6%   { opacity: 1; }
+  22%  { transform: translate(-22vw, 4vh) rotate(4deg); }
+  38%  { transform: translate(-40vw, -2vh) rotate(-5deg); }
+  52%  { transform: translate(-58vw, 8vh) rotate(6deg); }
+  72%  { transform: translate(-82vw, 2vh) rotate(-2deg); }
+  92%  { opacity: 1; }
+  100% { transform: translate(-112vw, 10vh) rotate(5deg); opacity: 0; }
+}
+
+/* 圣诞麋鹿雪橇：图朝左（鹿在前），暴风雪从右往左飞，勿镜像 */
+.flyer.santa {
+  width: 168px; height: 80px;
+  filter: drop-shadow(0 2px 4px rgba(0,20,40,.35));
+  animation: santa-fly 12s linear forwards;
+}
+.flyer.santa .santa-art {
+  display: block; position: absolute; inset: 0;
+  background: url("./santa-sleigh.gif") center / contain no-repeat;
+  transform-origin: 40% 60%;
+  animation: santa-bob 0.55s ease-in-out infinite alternate;
+}
+@keyframes santa-bob {
+  from { transform: translateY(0) rotate(-1deg); }
+  to { transform: translateY(3px) rotate(1.5deg); }
+}
+@keyframes santa-fly {
+  0%   { transform: translate(0,0) rotate(-2deg); opacity: 0; }
+  6%   { opacity: 1; }
+  25%  { transform: translate(-28vw, 3vh) rotate(1deg); }
+  50%  { transform: translate(-55vw, -2vh) rotate(-3deg); }
+  75%  { transform: translate(-82vw, 4vh) rotate(2deg); }
+  92%  { opacity: 1; }
+  100% { transform: translate(-115vw, 6vh) rotate(-1deg); opacity: 0; }
+}
+
+.flyer.spirit {
+  width: 40px; height: 40px;
+  animation: spirit-fly 10s ease-in-out forwards;
+}
+.flyer.spirit .s-glow {
+  position: absolute; inset: 4px;
+  background: radial-gradient(circle, rgba(255,240,180,.55), transparent 70%);
+  filter: blur(4px);
+}
+.flyer.spirit .s-wing-l,
+.flyer.spirit .s-wing-r {
+  position: absolute; top: 10px; width: 14px; height: 18px;
+  background: linear-gradient(140deg, rgba(255,255,255,.9), rgba(180,255,230,.55) 40%, rgba(200,180,255,.35));
+  border: 1px solid rgba(255,255,255,.45);
+  animation: wing-flap .45s ease-in-out infinite alternate;
+}
+.flyer.spirit .s-wing-l {
+  left: 2px; border-radius: 60% 20% 50% 40%; transform-origin: 100% 50%;
+  clip-path: polygon(100% 40%, 0 0, 10% 100%, 100% 70%);
+}
+.flyer.spirit .s-wing-r {
+  right: 2px; border-radius: 20% 60% 40% 50%; transform-origin: 0 50%;
+  clip-path: polygon(0 40%, 100% 0, 90% 100%, 0 70%);
+  animation-delay: -.2s;
+}
+.flyer.spirit .s-body {
+  position: absolute; left: 16px; top: 12px; width: 8px; height: 14px;
+  background: linear-gradient(180deg, #fff8e8, #f0d080 40%, #e8b060);
+  border-radius: 40% 40% 35% 35% / 30% 30% 50% 50%;
+  box-shadow: 0 0 8px rgba(255,220,140,.8);
+}
+.flyer.spirit .s-head {
+  position: absolute; left: 16px; top: 7px; width: 8px; height: 8px;
+  background: radial-gradient(circle at 35% 35%, #fffef5, #f5d9a0);
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(255,240,200,.9);
+}
+.flyer.spirit .s-spark {
+  position: absolute; right: 4px; top: 4px; width: 4px; height: 4px;
+  background: #fff; border-radius: 50%;
+  box-shadow: 0 0 6px #ffe8a0, -10px 14px 0 -1px #fff, 8px 18px 0 -1.5px #ffe8c0;
+  animation: spark-twinkle .8s ease-in-out infinite alternate;
+}
+@keyframes wing-flap {
+  from { transform: scaleX(.85) rotate(-6deg); }
+  to { transform: scaleX(1.05) rotate(6deg); }
+}
+@keyframes spark-twinkle {
+  from { opacity: .4; } to { opacity: 1; }
+}
+@keyframes spirit-fly {
+  from { transform: translate(0,0) scale(.9); opacity: 0; }
+  10% { opacity: 1; }
+  50% { transform: translate(50vw, -8vh) scale(1.05); }
+  90% { opacity: 1; }
+  to { transform: translate(105vw, 5vh) scale(.95); opacity: 0; }
+}
+
+/* clear：不叠阴罩，保留完整天色底 */

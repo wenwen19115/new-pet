@@ -1,0 +1,105 @@
+/* neon：霓虹框 / 赛博台 / 卡带灯管 */
+
+/* neon：双色霓虹边框 + HUD 角标 */
+.win-neon .frame {
+  position: absolute; inset: 6px; border: 3px solid #ff2d95;
+  box-shadow: 0 0 0 2px #00f0ff, 0 0 22px rgba(255,45,149,.45), inset 0 0 18px rgba(0,240,255,.12);
+  border-radius: 4px;
+  background: transparent;
+}
+
+.win-neon .corner {
+  position: absolute; width: 18px; height: 18px; border: 2px solid #00f0ff;
+}
+
+.win-neon .corner.tl { left: 14px; top: 14px; border-right: 0; border-bottom: 0; }
+
+.win-neon .corner.tr { right: 14px; top: 14px; border-left: 0; border-bottom: 0; }
+
+.win-neon .corner.bl { left: 14px; bottom: 14px; border-right: 0; border-top: 0; }
+
+.win-neon .corner.br { right: 14px; bottom: 14px; border-left: 0; border-top: 0; }
+
+.win-neon .scan {
+  position: absolute; left: 16px; right: 16px; top: 40%; height: 2px;
+  background: linear-gradient(90deg, transparent, #00f0ff, transparent); opacity: .55;
+  animation: scan 2.8s linear infinite;
+}
+
+.sill-neon .plane {
+  position: absolute; inset: 0; border-top: 2px solid #00f0ff;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255,45,149,.28), transparent 55%),
+    repeating-linear-gradient(90deg, transparent 0 24px, rgba(0,240,255,.12) 24px 25px),
+    #12081c;
+  box-shadow: 0 -2px 16px rgba(255,45,149,.3);
+}
+
+.sill-neon .plane::before {
+  content: ""; position: absolute; left: 6%; right: 6%; top: 28%; height: 2px;
+  background: linear-gradient(90deg, transparent, #00f0ff, #ff2d95, transparent);
+  box-shadow: 0 0 10px #00f0ff; opacity: .7;
+}
+
+/* —— neon：卡带、灯管、能量罐、电路板、旋钮、像素块 —— */
+.kit-neon .cart {
+  left: 9%; width: 42px; height: 30px; background: #2a1040; border: 2px solid #00f0ff;
+  box-shadow: 0 0 12px rgba(0,240,255,.45); color: #00f0ff; font-size: 8px; font-weight: 900;
+  display: grid; place-items: center; letter-spacing: .06em;
+}
+
+.kit-neon .cart::before {
+  content: ""; position: absolute; left: 4px; right: 4px; top: 4px; height: 3px;
+  background: linear-gradient(90deg, #ff2d95, #00f0ff); opacity: .8;
+}
+
+.kit-neon .tube {
+  right: 10%; width: 52px; height: 9px; border-radius: 5px;
+  background: linear-gradient(90deg, #ff2d95, #7a3cff, #00f0ff);
+  box-shadow: 0 0 14px rgba(255,45,149,.6); bottom: 50%;
+}
+
+.kit-neon .tube::after {
+  content: ""; position: absolute; inset: 2px; border-radius: 4px;
+  background: linear-gradient(180deg, rgba(255,255,255,.35), transparent);
+}
+
+.kit-neon .can {
+  left: 32%; width: 18px; height: 34px; background: #1a0f28; border: 2px solid #ff2d95;
+  border-radius: 3px; box-shadow: 0 0 0 1px #00f0ff, 0 0 10px rgba(255,45,149,.4);
+}
+
+.kit-neon .can::before {
+  content: ""; position: absolute; left: 3px; right: 3px; top: 6px; height: 8px;
+  background: rgba(0,240,255,.35);
+}
+
+.kit-neon .can::after {
+  content: ""; position: absolute; left: 5px; right: 5px; bottom: 6px; height: 6px;
+  border: 1px solid #00f0ff; border-radius: 2px;
+}
+
+.kit-neon .board {
+  left: 48%; width: 36px; height: 22px; bottom: 38%;
+  background:
+    repeating-linear-gradient(90deg, #1a3a28 0 3px, #0e2418 3px 6px),
+    #143020;
+  border: 1.5px solid #00f0ff;
+}
+
+.kit-neon .board::before {
+  content: ""; position: absolute; left: 4px; top: 4px; width: 6px; height: 6px;
+  background: #ff2d95; box-shadow: 10px 2px 0 #00f0ff, 18px 8px 0 #7a3cff, 6px 12px 0 #ff2d95;
+}
+
+.kit-neon .dial {
+  right: 28%; width: 20px; height: 20px; bottom: 44%;
+  background: conic-gradient(#00f0ff, #ff2d95, #7a3cff, #00f0ff);
+  border-radius: 50%; border: 2px solid #1a0f28;
+  box-shadow: 0 0 10px rgba(0,240,255,.5);
+}
+
+.kit-neon .pixel {
+  left: 68%; width: 12px; height: 12px; bottom: 48%;
+  background: #00f0ff; box-shadow: 4px 4px 0 #ff2d95, -4px 4px 0 #7a3cff;
+}

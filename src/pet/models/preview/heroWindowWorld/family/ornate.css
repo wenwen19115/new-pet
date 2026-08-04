@@ -1,0 +1,102 @@
+/* ornate：新艺术框 / 鎏金台 / 景泰蓝饰 */
+
+/* ornate：新艺术曲线框 */
+.win-ornate .frame {
+  position: absolute; inset: 4% 8% 0;
+  border: 6px solid #6a3060;
+  border-radius: 40% 40% 8px 8px / 28% 28% 8px 8px;
+  box-shadow: inset 0 0 0 3px #d8b8c8, 0 0 0 2px #2a1830;
+  background: transparent;
+}
+
+.win-ornate .vine {
+  position: absolute; left: 10%; top: 8%; width: 40px; height: 50px;
+  border: 3px solid #8a4060; border-radius: 60% 10% 60% 10%;
+  border-bottom-color: transparent; border-right-color: transparent; transform: rotate(-20deg);
+}
+
+.win-ornate .vine.r {
+  left: auto; right: 10%; transform: scaleX(-1) rotate(-20deg);
+}
+
+.sill-ornate .plane {
+  position: absolute; inset: 0; border-top: 3px solid #2a1830;
+  background:
+    radial-gradient(circle at 25% 30%, rgba(138,64,96,.18), transparent 35%),
+    radial-gradient(circle at 75% 60%, rgba(106,48,96,.14), transparent 40%),
+    linear-gradient(180deg, #e8d4c4, #d8c0b0);
+}
+
+.sill-ornate .plane::after {
+  content: ""; position: absolute; left: 10%; right: 10%; top: 16%; height: 4px;
+  background: repeating-linear-gradient(90deg, #d4a858 0 8px, transparent 8px 14px);
+  opacity: .55;
+}
+
+/* —— ornate：鎏金瓶、景泰蓝、饰盒、扇、珠宝、丝带 —— */
+.kit-ornate .gilt {
+  right: 10%; width: 24px; height: 44px;
+  background:
+    radial-gradient(circle at 40% 25%, rgba(255,240,200,.5), transparent 40%),
+    linear-gradient(180deg, #f0d080, #8a4060 48%, #4a1838);
+  border: 2px solid #2a1830; border-radius: 50% 50% 20% 20% / 18% 18% 40% 40%;
+  box-shadow: inset 0 0 0 2px rgba(240,208,128,.4);
+}
+
+.kit-ornate .gilt::before {
+  content: ""; position: absolute; left: 5px; right: 5px; top: 32%; height: 8px;
+  border: 1.5px solid rgba(240,208,128,.55); border-radius: 40%;
+}
+
+.kit-ornate .cloisonne {
+  left: 10%; width: 32px; height: 26px;
+  background:
+    radial-gradient(circle at 50% 40%, #5aaa7a, #2a5070 55%),
+    repeating-conic-gradient(from 0deg, #8a4060 0 10deg, #2a5070 10deg 20deg);
+  border: 2px solid #2a1830; border-radius: 42%;
+  box-shadow: inset 0 0 0 2px rgba(240,208,128,.3);
+}
+
+.kit-ornate .cloisonne::after {
+  content: ""; position: absolute; left: 10px; right: 10px; top: -5px; height: 6px;
+  background: #d4a858; border: 1.5px solid #2a1830; border-radius: 2px;
+}
+
+.kit-ornate .casket {
+  left: 36%; width: 36px; height: 18px;
+  background: linear-gradient(180deg, #8a4070, #5a2050);
+  border: 2px solid #2a1830; border-radius: 4px;
+  box-shadow: inset 0 0 0 2px #d8b8c8;
+}
+
+.kit-ornate .casket::before {
+  content: ""; position: absolute; left: 50%; top: 4px; width: 8px; height: 8px;
+  transform: translateX(-50%) rotate(45deg);
+  background: #d4a858; border: 1px solid #2a1830;
+}
+
+.kit-ornate .fan {
+  right: 28%; width: 34px; height: 20px; bottom: 42%;
+  background: conic-gradient(from -60deg at 50% 100%, #f0d080, #8a4060, #2a5070, #f0d080);
+  border: 1.5px solid #2a1830;
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+  opacity: .95;
+}
+
+.kit-ornate .jewel {
+  left: 56%; width: 14px; height: 14px; bottom: 48%;
+  background: radial-gradient(circle at 35% 30%, #fff, #c05090 55%, #602040);
+  border: 1.5px solid #d4a858; transform: rotate(45deg);
+  box-shadow: 0 0 10px rgba(192,80,144,.45);
+}
+
+.kit-ornate .ribbon {
+  left: 70%; width: 22px; height: 10px; bottom: 36%;
+  background: #8a4060; border: 1.5px solid #2a1830; border-radius: 2px;
+  transform: rotate(-12deg);
+}
+
+.kit-ornate .ribbon::after {
+  content: ""; position: absolute; right: -8px; top: -2px;
+  border: 6px solid transparent; border-left-color: #8a4060;
+}

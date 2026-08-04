@@ -16,6 +16,7 @@ import {
   usePetSettingsPersist,
   usePetSettingsActions,
   usePetSettingsViewModel,
+  useSkyWeatherPreview,
 } from "./composables";
 
 type Options = {
@@ -43,6 +44,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     playfulModeEnabled,
     hitBoundsEnabled,
     deskWeather,
+    skyWeather,
     catchphrases,
     catchphraseChance,
     theme,
@@ -156,6 +158,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     playfulModeEnabled,
     hitBoundsEnabled,
     deskWeather,
+    skyWeather,
     catchphrases,
     catchphraseChance,
     theme,
@@ -233,6 +236,14 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     savedChatAi,
   });
 
+  const skyPreview = useSkyWeatherPreview({
+    skyWeather,
+    onPersist: () => persist.persistOnly(),
+    themeStyle: computed(() => theme.value.style || "ukiyo"),
+    model: computed(() => vm.activeLook.value.model),
+    heroPanelStyle: vm.heroPanelStyle,
+  });
+
   function onSettingsTab(id: string) {
     settingsTab.value = id;
     if (id !== "motion") editingCustomId.value = null;
@@ -272,6 +283,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     playfulModeEnabled,
     hitBoundsEnabled,
     deskWeather,
+    skyWeather,
     catchphrases,
     catchphraseChance,
     theme,
@@ -333,6 +345,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     onPlayfulMode: actions.onPlayfulMode,
     onHitBounds: actions.onHitBounds,
     onDeskWeatherChange: () => persist.persistOnly(),
+    onSkyWeatherChange: () => persist.persistOnly(),
     onPickVrm,
     onClearVrm,
     onDemoMotion: actions.onDemoMotion,
@@ -388,6 +401,15 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
       heroPanelStyle: vm.heroPanelStyle,
       personalityLabel: vm.personalityLabel,
       themeBanner: vm.themeBanner,
+      heroMergedStyle: skyPreview.heroMergedStyle,
+      skyDisplayTod: skyPreview.skyDisplayTod,
+      skyDisplayWeather: skyPreview.skyDisplayWeather,
+      skyRainbow: skyPreview.skyRainbow,
+      skyEvents: skyPreview.skyEvents,
+      skyFollowClock: skyPreview.skyFollowClock,
+      windowFamily: skyPreview.windowFamily,
+      previewActor: skyPreview.previewActor,
+      clipPreviewActor: skyPreview.clipPreviewActor,
     },
   };
 }

@@ -1,0 +1,86 @@
+/* 族层共享：窗框/窗台/杂物显隐 + 演员位
+ * 各族样式见同目录 wood.css … ornate.css
+ */
+
+/* 窗框：只做边饰，不挡窗洞（墙+视口负责遮挡） */
+.win {
+  display: none; position: absolute; inset: 0 0 34% 0;
+  transform: translateZ(-42px); z-index: 4; pointer-events: none;
+}
+.hero-window-world[data-family="wood"] .win-wood,
+.hero-window-world[data-family="ink"] .win-ink,
+.hero-window-world[data-family="geo"] .win-geo,
+.hero-window-world[data-family="neon"] .win-neon,
+.hero-window-world[data-family="zen"] .win-zen,
+.hero-window-world[data-family="ceramic"] .win-ceramic,
+.hero-window-world[data-family="cold"] .win-cold,
+.hero-window-world[data-family="warm"] .win-warm,
+.hero-window-world[data-family="dark"] .win-dark,
+.hero-window-world[data-family="ornate"] .win-ornate { display: block; }
+
+/* 窗台层 */
+.sill-layer {
+  position: absolute; left: -5%; right: -5%; bottom: -6%; height: 48%;
+  transform: rotateX(58deg) translateZ(28px); transform-origin: 50% 100%;
+  transform-style: preserve-3d; z-index: 5; pointer-events: none;
+}
+.sill-kit { display: none; position: absolute; inset: 0; }
+.hero-window-world[data-family="wood"] .sill-wood,
+.hero-window-world[data-family="ink"] .sill-ink,
+.hero-window-world[data-family="geo"] .sill-geo,
+.hero-window-world[data-family="neon"] .sill-neon,
+.hero-window-world[data-family="zen"] .sill-zen,
+.hero-window-world[data-family="ceramic"] .sill-ceramic,
+.hero-window-world[data-family="cold"] .sill-cold,
+.hero-window-world[data-family="warm"] .sill-warm,
+.hero-window-world[data-family="dark"] .sill-dark,
+.hero-window-world[data-family="ornate"] .sill-ornate { display: block; }
+
+.sill-lip {
+  position: absolute; left: 0; right: 0; top: -12px; height: 12px;
+  background: color-mix(in srgb, var(--accent) 55%, #444); border-top: 2px solid var(--ink);
+  transform: translateZ(6px);
+}
+
+/* 杂物显隐 */
+.clutter { position: absolute; inset: 0; transform: translateZ(18px); }
+.kit { display: none; position: absolute; inset: 0; }
+.hero-window-world[data-family="wood"] .kit-wood,
+.hero-window-world[data-family="ink"] .kit-ink,
+.hero-window-world[data-family="geo"] .kit-geo,
+.hero-window-world[data-family="neon"] .kit-neon,
+.hero-window-world[data-family="zen"] .kit-zen,
+.hero-window-world[data-family="ceramic"] .kit-ceramic,
+.hero-window-world[data-family="cold"] .kit-cold,
+.hero-window-world[data-family="warm"] .kit-warm,
+.hero-window-world[data-family="dark"] .kit-dark,
+.hero-window-world[data-family="ornate"] .kit-ornate { display: block; }
+
+.obj {
+  position: absolute; bottom: 36%;
+  filter: drop-shadow(0 8px 6px rgba(0,0,0,.26));
+}
+.obj::before, .obj::after { box-sizing: border-box; }
+
+.actor-layer {
+  position: absolute;
+  left: 50%;
+  bottom: var(--actor-bottom, 12%);
+  width: var(--actor-w, 200px);
+  height: var(--actor-h, 220px);
+  transform: translateX(-50%) translateZ(var(--actor-z, 40px));
+  z-index: 8;
+  /* 阴影交给 actor-shadow；此处裁切滚轮放大，避免盖住窗景 */
+  overflow: hidden;
+  pointer-events: none;
+}
+.actor-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--actor-bottom, 12%) + 2%);
+  width: min(110px, calc(var(--actor-w, 200px) * 0.55));
+  height: 18px;
+  transform: translateX(-50%) translateZ(calc(var(--actor-z, 40px) - 20px)) rotateX(70deg);
+  background: radial-gradient(ellipse, rgba(0,0,0,.4), transparent 70%);
+  z-index: 7; filter: blur(2px); pointer-events: none;
+}

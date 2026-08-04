@@ -15,6 +15,7 @@ import { coerceLookIdForModel } from "@/pet/skins";
 import { clampCatchphraseChance } from "@/pet/content/dialogue/catchphrases";
 import { isPetPersonality } from "@/pet/content/dialogue/personality";
 import { normalizeDeskWeather } from "@/pet/data/deskWeather";
+import { normalizeSkyWeather } from "@/pet/data/skyWeather";
 
 export function usePetSettingsHydrate(deps: {
   settingsBag: Ref<PetSettings>;
@@ -34,6 +35,7 @@ export function usePetSettingsHydrate(deps: {
   playfulModeEnabled: Ref<boolean>;
   hitBoundsEnabled: Ref<boolean>;
   deskWeather: Ref<import("@/pet/data/deskWeather").DeskWeatherConfig>;
+  skyWeather: Ref<import("@/pet/data/skyWeather").SkyWeatherConfig>;
   catchphrases: Ref<string[]>;
   catchphraseChance: Ref<number>;
   theme: Ref<PetThemeSettings>;
@@ -76,6 +78,7 @@ export function usePetSettingsHydrate(deps: {
     deps.playfulModeEnabled.value = s.playfulModeEnabled;
     deps.hitBoundsEnabled.value = s.hitBoundsEnabled;
     deps.deskWeather.value = normalizeDeskWeather(s.deskWeather);
+    deps.skyWeather.value = normalizeSkyWeather(s.skyWeather);
     deps.catchphrases.value = [...(s.catchphrases ?? [])];
     deps.catchphraseChance.value = clampCatchphraseChance(s.catchphraseChance);
     deps.theme.value = clonePetThemeSettings(s.theme);

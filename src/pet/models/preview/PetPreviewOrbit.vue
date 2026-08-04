@@ -26,8 +26,10 @@
       >
         <div class="orbit-floor" />
         <div class="orbit-scene">
-          <div class="orbit-rig" :style="rigStyle">
-            <component :is="character.view.Model" v-bind="previewModelProps" />
+          <div class="orbit-zoom" :style="zoomStyle">
+            <div class="orbit-rig" :style="rigStyle">
+              <component :is="character.view.Model" v-bind="previewModelProps" />
+            </div>
           </div>
         </div>
         <p v-if="hint" class="orbit-hint">{{ hint }}</p>
@@ -116,6 +118,7 @@ const {
   character,
   stageStyle,
   previewModelProps,
+  zoomStyle,
   rigStyle,
   figZoomStyle,
   onWheel,

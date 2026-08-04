@@ -3,7 +3,10 @@ import { useI18n } from "vue-i18n";
 import type { PetIdleMotion } from "@/pet/content/motion/motions";
 import type { CustomVrmMotion } from "@/pet/content/motion/customVrmMotions";
 import type { PetFigArtId, PetModelKind, PetSkinVisual } from "@/pet/skins";
-import { clampPreviewBoost, previewBoostScale } from "@/pet/bridge/sizes";
+import {
+  clampPreviewBoost,
+  previewCombinedScale,
+} from "./previewScale";
 import type { PetMood } from "@/pet/data/types";
 import type { PetToonDecorId } from "@/pet/skins/looks";
 import { characterHas, getCharacter } from "@/pet/characters";
@@ -88,15 +91,46 @@ export function usePreviewOrbit(props: PreviewOrbitProps) {
       }) as Record<string, string>
   );
 
-  const combinedScale = computed(() => previewBoostScale(previewBoost.value));
+  const previewBaseScale = computed(
+    () => character.value.size.previewBaseScale ?? 1
+  );
+  const previewMaxBoost = computed(
+    () => character.value.size.previewMaxBoost ?? 40
+  );
 
-  const rigStyle = computed(() => ({
-    transform: `rotateX(${pitch.value}deg) rotateY(${yaw.value}deg) scale(${combinedScale.value})`,
-  }));
+  const combinedScale = computed(() =>
+    previewCombinedScale(
+      previewBaseScale.value,
+      previewBoost.value,
+      previewMaxBoost.value
+    )
+  );
 
-  const figZoomStyle = computed(() => ({
+  // flat/vrm 以垫子为上限，禁止 scale>1 裁头；orbit 仍可用略超（靠演员框）
+  const fitScale = computed(() => {
+    const s = combinedScale.value;
+    if (character.value.view.previewPad === "orbit") return s;
+    return Math.min(1, s);
+  });
+
+  // 缩放与 3D 旋转拆开，避免 AABB 膨胀后难裁切
+  const zoomStyle = computed(() => ({
     transform: `scale(${combinedScale.value})`,
   }));
+
+  const rigStyle = computed(() => ({
+    transform: `rotateX(${pitch.value}deg) rotateY(${yaw.value}deg)`,
+  }));
+
+  // 立绘用尺寸倍率而非 transform，脚底对齐且不撑破 max-height
+  const figZoomStyle = computed(() => {
+    if (character.value.view.previewPad === "vrm") {
+      return { transform: `scale(${fitScale.value})` };
+    }
+    return {
+      "--preview-scale": String(fitScale.value),
+    } as Record<string, string>;
+  });
 
   function tickLeds(now: number) {
     const phase = now / 150;
@@ -123,7 +157,10 @@ export function usePreviewOrbit(props: PreviewOrbitProps) {
 
   function onWheel(e: WheelEvent) {
     const delta = e.deltaY > 0 ? -5 : 5;
-    previewBoost.value = clampPreviewBoost(previewBoost.value + delta);
+    previewBoost.value = clampPreviewBoost(
+      previewBoost.value + delta,
+      previewMaxBoost.value
+    );
   }
 
   function onDown(e: PointerEvent) {
@@ -261,6 +298,7 @@ export function usePreviewOrbit(props: PreviewOrbitProps) {
     character,
     stageStyle,
     previewModelProps,
+    zoomStyle,
     rigStyle,
     figZoomStyle,
     onWheel,

@@ -42,6 +42,9 @@ export const characterVrm: CharacterDef = {
       const w = Math.round(h * 0.55);
       return { w, h };
     },
+    previewBaseScale: 0.86,
+    previewMaxBoost: 16,
+    previewActor: { w: 200, h: 290, bottom: "8%", z: 40 },
   },
   previewHintKey: "pet.previewVrmHint",
   appearance: {

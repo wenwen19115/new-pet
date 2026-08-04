@@ -170,11 +170,32 @@
 .hero-stage {
   flex: 1 1 0;
   min-height: 0;
-  display: flex;
+  position: relative;
+  display: block;
   border-radius: 14px;
   overflow: hidden;
   border: 1px solid var(--ui-border);
   background: color-mix(in srgb, var(--ui-bg-0) 72%, transparent);
+  perspective: 1100px;
+  perspective-origin: 50% 40%;
+}
+
+.hero-orbit-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  z-index: 12;
+  margin: 0;
+  padding: 0 10px;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--ink, var(--ui-text)) 42%, transparent);
+  pointer-events: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pet-hero[data-model="chip"] .hero-stage {
