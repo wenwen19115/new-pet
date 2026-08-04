@@ -21,13 +21,13 @@ src/pet/
     dialogue/          # 选句、性格（personality）、口头禅等
   data/
     settings/          # normalize / profiles / io / defaults
-    …                  # store、types、deskWeather 等子域、vrm 等
+    …                  # store、types、deskWeather / skyWeather 等子域、vrm 等
   chat/                # 陪聊领域（ai / providers），不含窗口壳
   bridge/              # Tauri invoke 薄封装
   events/              # 跨窗事件名索引
   models/              # toon / chip / fig-sci / preview / trail / vrm
   skins/               # look 表与文案
-src-tauri/             # 窗口、托盘、USB、工位气象传感、TTS、FS
+src-tauri/             # 窗口、托盘、USB、工位气象传感、窗外气象拉取、TTS、FS
 ```
 
 ## 常见入口
@@ -107,6 +107,7 @@ bridge → data 类型 + Tauri
 - 接线：`createPetSettingsPageRuntime.ts`；`usePetSettingsPage` 仅负责挂载并返回 view。
 - 新增 tab：`registerSettingsModule`，并补充所需 composable / `modules/*.vue`。
 - 传感类设置（如工位气象）：配置位于 `data/<名>.ts` 并挂入 `PetSettings`；阈值与轮询位于 `runtime/`；`bridge` 仅负责 invoke（含跨窗共享的焦点线程租约 acquire / release）。
+- 窗外天气（`skyWeather`，≠ 工位气象）：配置/映射 `data/skyWeather.ts`；调度 `runtime/skyWeatherScheduler`；设置预览会话 `settings/composables/useSkyWeatherPreview` → `useSkyWeatherSession`；模式切换走 `runtime/skyWeatherModeOps`；真气象 `bridge/skyWeather` → Rust Open-Meteo；窗景 CSS 在 `models/preview/heroWindowWorld/`（`base` / `weather-layers` / `weather-mods-{normal,egg,fall}` / `flyers` / `family/{shared,wood…ornate}`）；**仅设置左侧预览叠层**，不进桌宠主窗。真气象权限只挂设置窗（`capabilities/main.json`），不进 pet 能力集。
 - 维护类操作：
   - 出厂数据：`data/maintenance.ts`（默认快照来自 `settings/defaults.createFactoryResetSettings`）；设置页负责确认框、进度 Modal、表单 hydrate、窗同步。
   - 清缓存：`runtime/clearRuntimeCaches.ts`（本窗清 + `requestClearPetCache` 广播）；pet host 监听同事件再清一次。
@@ -158,6 +159,6 @@ yarn test
 yarn check:pre-commit   # 提交前机械检查；目视清单见 .cursor/rules/commit.mdc
 ```
 
-手测清单见 [`GOLDEN_PATHS.md`](./GOLDEN_PATHS.md)。常用 smoke：`architecture`（目录与注册表）、`petHost`（intent / dispose）、`toonPixels`、`playfulPhysics`、`bubblePong`、`deskWeather`。
+手测清单见 [`GOLDEN_PATHS.md`](./GOLDEN_PATHS.md)。常用 smoke：`architecture`（目录与注册表）、`petHost`（intent / dispose）、`toonPixels`、`playfulPhysics`、`bubblePong`、`deskWeather`、`skyWeather`。
 
 本地示意/试验稿（不入库）放 `tests/local/`，见该目录说明。

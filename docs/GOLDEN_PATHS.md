@@ -2,7 +2,7 @@
 
 发版前回归清单，用于覆盖关键用户路径，而非追求测试覆盖率。代码改动后应先执行 `yarn test`，再按相关条目手测。
 
-自动化对照（`yarn test`）：`architecture.smoke.test.ts`、`petHost.smoke.test.ts`、`toonPixels.smoke.test.ts`、`deskWeather.smoke.test.ts`、`playfulPhysics.smoke.test.ts`、`bubblePong.smoke.test.ts`。
+自动化对照（`yarn test`）：`architecture.smoke.test.ts`、`petHost.smoke.test.ts`、`toonPixels.smoke.test.ts`、`deskWeather.smoke.test.ts`、`skyWeather.smoke.test.ts`、`previewFit.smoke.test.ts`、`playfulPhysics.smoke.test.ts`、`bubblePong.smoke.test.ts`。
 
 | # | 路径 | 手测要点 | 自动化对照 |
 | --- | --- | --- | --- |
@@ -22,6 +22,7 @@
 | 14 | Theme Pack | 设置 → 应用：切换 `theme.style` 后整页配色/边框即时变；气泡与菜单窗跟包；与 look（形象）独立、互不覆盖 | `src/theme/` + settings sync |
 | 15 | 壁纸层 | 背景模式切「壁纸」选图/GIF/视频后舞台显示；压暗与适配生效；切回「跟随风格」恢复 pack 底 | `ThemeMediaLayer` / `stageBackdrop` |
 | 16 | 开机动画 | 开启后重启设置窗见闪屏；auto / media / manual 时长符合预期；可跳过；无媒体或失败时不卡死 | `bootHold` / `BootAnimationSettings` |
+| 17 | 窗外天气 | 设置 → 天气：天色/天气三选一 + 地区；左侧预览有天色洗染与雨雪雾；跟随天气可拉 Open-Meteo（失败回退深圳示意）。**不画在桌宠主窗** | `skyWeather.smoke.test.ts`；预览缩放 `previewFit.smoke.test.ts` |
 
 ## 勾选范围
 
@@ -29,5 +30,6 @@
 - 改动调皮模式或躲起来：追加 11–12。
 - 改动工位气象：追加 13。
 - 改动 Theme Pack / 壁纸 / 开机：追加 14–16。
+- 改动窗外天气：追加 17。
 - 仅改 Toon 像素：执行 toon smoke，并手测待机与一个 `toon-*` 动作。
 - 仅改 mood / intent：执行 `yarn test` 后抽测相关条目。

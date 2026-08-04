@@ -21,6 +21,7 @@
 | `hostAlive` | `usePetHostLifecycle` | |
 | settings 镜像 | `usePetSettingsSync` | 可能再发 `random-idle-setting`；deskWeather 变更时调用 `refreshDeskWeather` |
 | 工位气象 | `usePetDeskWeather`（poll + engine） | bridge 只 invoke（快照 / acquire·release 租约）；冷却在 engine；说话成功后再 commit |
+| 窗外天气 | 设置页 `useSkyWeatherPreview` → `useSkyWeatherSession` | 配置在 `PetSettings.skyWeather`；调度在 runtime；真气象 bridge→Rust；只驱动设置预览，≠ 工位气象、不进主窗 |
 
 host 内请勿直接赋值 `mood.value`。
 
