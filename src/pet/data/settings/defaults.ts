@@ -15,6 +15,7 @@ import type {
   PetSettings,
 } from "../types";
 import { DEFAULT_DESK_WEATHER, normalizeDeskWeather } from "../deskWeather";
+import { DEFAULT_SKY_WEATHER, normalizeSkyWeather } from "../skyWeather";
 import {
   DEFAULT_PET_THEME_SETTINGS,
   clonePetThemeSettings,
@@ -72,6 +73,7 @@ export const DEFAULT_PET_SETTINGS: PetSettings = {
   vrmModelRev: 0,
   hitBoundsEnabled: true,
   deskWeather: normalizeDeskWeather(DEFAULT_DESK_WEATHER),
+  skyWeather: normalizeSkyWeather(DEFAULT_SKY_WEATHER),
   catchphrases: defaultCatchphrasesForModel(DEFAULT_PET_MODEL),
   catchphraseChance: CATCHPHRASE_DEFAULT_CHANCE,
   theme: clonePetThemeSettings(DEFAULT_PET_THEME_SETTINGS),
@@ -96,6 +98,7 @@ export function createFactoryResetSettings(): PetSettings {
     profiles: createDefaultProfiles(),
     chatAi: { ...DEFAULT_PET_CHAT_AI, customModels: [] },
     deskWeather: normalizeDeskWeather(DEFAULT_DESK_WEATHER),
+    skyWeather: normalizeSkyWeather(DEFAULT_SKY_WEATHER),
     catchphrases: defaultCatchphrasesForModel(DEFAULT_PET_MODEL),
     customVrmMotions: [],
     vrmModelName: "",

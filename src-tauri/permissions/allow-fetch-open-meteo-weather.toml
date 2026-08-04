@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-fetch-open-meteo-weather"
+description = "Allows fetching outdoor weather via Open-Meteo"
+commands.allow = ["fetch_open_meteo_weather"]

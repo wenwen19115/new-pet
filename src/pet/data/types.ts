@@ -6,6 +6,7 @@ import type { PetCustomLine } from "../content/dialogue/customLines";
 import type { CharacterExtensions } from "./extensions";
 import type { PetChatAiConfig } from "../chat/providers";
 import type { DeskWeatherConfig } from "./deskWeather";
+import type { SkyWeatherConfig } from "./skyWeather";
 
 export type { PetChatAiConfig, PetChatProviderId } from "../chat/providers";
 export type {
@@ -13,6 +14,13 @@ export type {
   DeskWeatherKind,
   DeskWeatherMaxDwellTierId,
 } from "./deskWeather";
+export type {
+  SkyWeatherConfig,
+  SkyTodMode,
+  SkyWeatherMode,
+  SkyTodId,
+  SkyWeatherId,
+} from "./skyWeather";
 
 export type PetTone = "cute" | "snarky";
 export type { PetThemeSettings, ThemePackId };
@@ -90,6 +98,8 @@ export interface PetSettings {
   playfulModeEnabled: boolean;
   hitBoundsEnabled: boolean;
   deskWeather: DeskWeatherConfig;
+  /** 窗外天色/天气（非工位气象） */
+  skyWeather: SkyWeatherConfig;
   catchphrases: string[];
   catchphraseChance: number;
   tone: PetTone;
