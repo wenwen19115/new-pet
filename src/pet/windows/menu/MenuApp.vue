@@ -416,7 +416,12 @@ body,
   margin: 2px 2px 4px;
   padding: 8px 6px 8px;
   border-radius: 8px;
-  background: var(--ui-accent-soft, rgba(255, 255, 255, 0.04));
+  /* 浅色主题也要托住字，别透到底 */
+  background: color-mix(
+    in srgb,
+    var(--ui-surface-strong, #0c1016) 82%,
+    var(--ui-accent-soft, rgba(255, 255, 255, 0.06))
+  );
   animation: pet-stats-pop 0.22s ease-out;
 }
 
@@ -455,7 +460,7 @@ body,
   top: 12%;
   bottom: 12%;
   width: 1px;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--ui-border, rgba(255, 255, 255, 0.12));
 }
 
 .pet-ctx-meter-value {
@@ -474,29 +479,30 @@ body,
   letter-spacing: 0.02em;
 }
 
+/* 深色色相，浅底也能看清；再与正文色混一点跟包 */
 .pet-ctx-meter.tone-cpu .pet-ctx-meter-value {
-  color: #ffd39a;
+  color: color-mix(in srgb, #b45309 78%, var(--ui-text, #1a1a1a));
 }
 .pet-ctx-meter.tone-cpu .pet-ctx-meter-label {
-  color: rgba(255, 211, 154, 0.78);
+  color: color-mix(in srgb, #b45309 55%, var(--ui-text-muted, #555));
 }
 .pet-ctx-meter.tone-mem .pet-ctx-meter-value {
-  color: var(--ui-primary, #9fe4ff);
+  color: color-mix(in srgb, var(--ui-primary, #2563eb) 45%, var(--ui-text, #1a1a1a));
 }
 .pet-ctx-meter.tone-mem .pet-ctx-meter-label {
-  color: color-mix(in srgb, var(--ui-primary, #9fe4ff) 78%, transparent);
+  color: color-mix(in srgb, var(--ui-primary, #2563eb) 40%, var(--ui-text-muted, #555));
 }
 .pet-ctx-meter.tone-disk .pet-ctx-meter-value {
-  color: #b8f0c0;
+  color: color-mix(in srgb, #15803d 78%, var(--ui-text, #1a1a1a));
 }
 .pet-ctx-meter.tone-disk .pet-ctx-meter-label {
-  color: rgba(184, 240, 192, 0.78);
+  color: color-mix(in srgb, #15803d 55%, var(--ui-text-muted, #555));
 }
 .pet-ctx-meter.tone-net .pet-ctx-meter-value {
-  color: #d2c4ff;
+  color: color-mix(in srgb, #6d28d9 72%, var(--ui-text, #1a1a1a));
 }
 .pet-ctx-meter.tone-net .pet-ctx-meter-label {
-  color: rgba(210, 196, 255, 0.78);
+  color: color-mix(in srgb, #6d28d9 50%, var(--ui-text-muted, #555));
 }
 
 .pet-ctx-meter.hot .pet-ctx-meter-value {
