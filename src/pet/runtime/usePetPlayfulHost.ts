@@ -7,6 +7,7 @@ import { linePickOptsFromSettings } from "./usePetLines";
 import {
   PLAYFUL_CATCH_WINDOW_MS,
   PLAYFUL_CHASE_MS,
+  PLAYFUL_MENU_BURST_MS,
   PLAYFUL_POST_CATCH_COOLDOWN_MS,
   PLAYFUL_POST_MISS_COOLDOWN_MS,
   advancePlayfulMissStreak,
@@ -14,6 +15,7 @@ import {
   cursorNearPet,
   playfulScareRadius,
 } from "./playfulPhysics";
+import { bumpMoyuDay } from "@/pet/data/moyuDay";
 
 export function usePetPlayfulHost(deps: {
   hostAlive: () => boolean;
@@ -46,12 +48,33 @@ export function usePetPlayfulHost(deps: {
   let chaseTimer: number | null = null;
   let chaseGen = 0;
   let missStreak = 0;
+  /** 菜单触发的限时调皮；不写 playfulModeEnabled */
+  let burstActive = false;
+  let burstTimer: number | null = null;
+  let lastCursor = { x: 0, y: 0 };
+  let hasCursor = false;
+
+  function isEnabled() {
+    return deps.enabled() || burstActive;
+  }
 
   function clearChaseTimer() {
     if (chaseTimer != null) {
       window.clearTimeout(chaseTimer);
       chaseTimer = null;
     }
+  }
+
+  function clearBurstTimer() {
+    if (burstTimer != null) {
+      window.clearTimeout(burstTimer);
+      burstTimer = null;
+    }
+  }
+
+  function clearBurstFlag() {
+    burstActive = false;
+    clearBurstTimer();
   }
 
   function endChase(opts?: { rescheduleIdle?: boolean }) {
@@ -61,6 +84,7 @@ export function usePetPlayfulHost(deps: {
   }
 
   function stop() {
+    clearBurstFlag();
     endChase({ rescheduleIdle: false });
     fleeBusy = false;
     cooldownUntil = 0;
@@ -92,6 +116,7 @@ export function usePetPlayfulHost(deps: {
     cooldownUntil = Date.now() + PLAYFUL_POST_MISS_COOLDOWN_MS;
     catchUntil = 0;
     endChase();
+    clearBurstFlag();
   }
 
   function beginChase() {
@@ -113,8 +138,10 @@ export function usePetPlayfulHost(deps: {
     cursor: { x: number; y: number },
     winCenter: { x: number; y: number }
   ) {
+    lastCursor = cursor;
+    hasCursor = true;
     if (!deps.hostAlive()) return;
-    if (!deps.enabled()) {
+    if (!isEnabled()) {
       if (deps.chasePausesIdle()) stop();
       return;
     }
@@ -142,13 +169,14 @@ export function usePetPlayfulHost(deps: {
   }
 
   function tryCatchOnTap(): boolean {
-    if (!deps.enabled() || !deps.chasePausesIdle() || fleeBusy) return false;
+    if (!isEnabled() || !deps.chasePausesIdle() || fleeBusy) return false;
     if (deps.mood() === "sleep") return false;
     if (!canPlayfulCatch(Date.now(), catchUntil)) return false;
 
     clearChaseTimer();
     missStreak = 0;
     deps.applyMood("happy", "playful-catch");
+    bumpMoyuDay({ catches: 1, taps: 1 });
     void deps.speakText(lineFor("catch"), true, {
       force: true,
       keepMotion: true,
@@ -156,13 +184,45 @@ export function usePetPlayfulHost(deps: {
     cooldownUntil = Date.now() + PLAYFUL_POST_CATCH_COOLDOWN_MS;
     catchUntil = 0;
     endChase();
+    clearBurstFlag();
     deps.resetSleepTimer();
+    return true;
+  }
+
+  /** 菜单「调皮一下」：立刻躲一次；10s 内未抓到则结束，不改常驻设置 */
+  function startBurst(): boolean {
+    if (!deps.hostAlive()) return false;
+    if (deps.isDragging() || deps.isPeeking()) return false;
+    if (deps.mood() === "sleep") return false;
+    if (fleeBusy || deps.chasePausesIdle()) return false;
+
+    burstActive = true;
+    clearBurstTimer();
+    burstTimer = window.setTimeout(() => {
+      if (!burstActive) return;
+      if (deps.chasePausesIdle()) onChaseMiss();
+      else clearBurstFlag();
+    }, PLAYFUL_MENU_BURST_MS);
+
+    beginChase();
+    fleeBusy = true;
+    deps.resetSleepTimer();
+    const cursor = hasCursor ? lastCursor : { x: 0, y: 0 };
+    void (async () => {
+      try {
+        const ok = await deps.runPlayfulFlee(cursor);
+        if (ok) catchUntil = Date.now() + PLAYFUL_CATCH_WINDOW_MS;
+      } finally {
+        fleeBusy = false;
+      }
+    })();
     return true;
   }
 
   return {
     tickProximity,
     tryCatchOnTap,
+    startBurst,
     stop,
   };
 }

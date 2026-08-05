@@ -1,5 +1,6 @@
 import { clearPetTtsCache } from "@/pet/bridge/tts";
 import { resetPetUsbWatchBootstrap } from "@/pet/bridge/usbWatch";
+import { clearMoyuDayStats } from "@/pet/data/moyuDay";
 import { clearPetHandshakeKeys } from "@/pet/data/storageKeys";
 import { clearPetVrmSrcCache } from "@/pet/data/vrmStorage";
 import { PET_CLEAR_CACHE_EVENT } from "@/pet/events";
@@ -10,7 +11,8 @@ export type PetCachePartId =
   | "vrm"
   | "tts"
   | "usb"
-  | "weather";
+  | "weather"
+  | "moyu";
 
 export type PetCacheClearReport = {
   /** 实际清到的类别数 */
@@ -68,6 +70,12 @@ export async function clearPetRuntimeCachesLocal(
 
   await withCacheStep(onStep, "weather", () => {
     const hit = resetPetDeskWeatherEngine();
+    if (hit) parts += 1;
+    return hit;
+  });
+
+  await withCacheStep(onStep, "moyu", () => {
+    const hit = clearMoyuDayStats();
     if (hit) parts += 1;
     return hit;
   });

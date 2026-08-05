@@ -35,7 +35,7 @@ host 内请勿直接赋值 `mood.value`。
 | `wake` / `usb-wake` | life / speech | 仅能从 sleep 转入；USB 后 chip 可按 `usbFollowUpChance` 追加一句 |
 | `drag-start` | pointer | curious，并配合开拖台词 |
 | `drag-land` | shell（松手后） | happy 余韵；动作概率见 `accents.dragLandMotionChance` |
-| `playful-flee` / `catch` / `miss` | playful | 躲开 / 抓到 / 超时；连续未抓中 3 次仅台词嫌弃 |
+| `playful-flee` / `catch` / `miss` | playful | 躲开 / 抓到 / 超时；连续未抓中 3 次仅台词嫌弃；菜单「调皮一下」为限时 burst（不写常驻开关） |
 | `bubble-pong` | speech ← 气泡窗 | 连点三次进入嫌烦 |
 | `desk-weather` | speech ← 工位气象 | curious，并配合角色台词 / 动作 |
 | `peek-hide` / `peek-reveal` | peek | 躲起 / 现身 |

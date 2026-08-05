@@ -1,13 +1,18 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
+import { ref } from "vue";
 import { getCharacter } from "../characters";
 import { pickPlayfulLine, pickUsbFollowUpLine } from "../content/dialogue/lines";
+import { buildIdleMotionPool } from "../content/motion/motionPlayer";
 import {
   advancePlayfulMissStreak,
   canPlayfulCatch,
   cursorNearPet,
   playfulScareRadius,
+  PLAYFUL_MENU_BURST_MS,
   PLAYFUL_MISS_STREAK_NEED,
 } from "./playfulPhysics";
+import { usePetPlayfulHost } from "./usePetPlayfulHost";
+import type { PetSettings } from "../data/types";
 
 describe("playfulPhysics", () => {
   it("scare radius grows with body size", () => {
@@ -48,6 +53,23 @@ describe("playfulPhysics", () => {
     expect(canPlayfulCatch(999, 1000)).toBe(true);
     expect(canPlayfulCatch(1001, 1000)).toBe(false);
   });
+
+  it("menu burst window is 10s", () => {
+    expect(PLAYFUL_MENU_BURST_MS).toBe(10_000);
+  });
+});
+
+describe("menu perform pool", () => {
+  it("buildIdleMotionPool drops disabled motions", () => {
+    const chip = getCharacter("chip");
+    const disabled = [chip.idleMotions[0]!];
+    const pool = buildIdleMotionPool({
+      idleMotions: chip.idleMotions,
+      disabledMotions: disabled,
+    });
+    expect(pool).not.toContain(disabled[0]);
+    expect(pool.length).toBe(chip.idleMotions.length - 1);
+  });
 });
 
 describe("character accents", () => {
@@ -78,5 +100,64 @@ describe("pickPlayfulLine by character", () => {
     expect(pickPlayfulLine("start", "cute", "fig-sci").length).toBeGreaterThan(
       0
     );
+  });
+});
+
+describe("playful menu burst", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("startBurst flees once and ends after timeout without sticky enable", async () => {
+    let chaseActive = false;
+    let enabledSticky = false;
+    const flee = vi.fn(async () => true);
+    const applyMood = vi.fn(() => true);
+    const speakText = vi.fn();
+    const settings = ref({
+      tone: "cute",
+      personality: "sunny",
+      profiles: {},
+    } as unknown as PetSettings);
+
+    const host = usePetPlayfulHost({
+      hostAlive: () => true,
+      enabled: () => enabledSticky,
+      mood: () => "idle",
+      isDragging: () => false,
+      isMenuOpen: () => false,
+      isPeeking: () => false,
+      chasePausesIdle: () => chaseActive,
+      setChaseIdleGate: (active) => {
+        chaseActive = active;
+      },
+      tone: () => "cute",
+      model: () => "chip",
+      settings,
+      bodyBox: () => ({ w: 120, h: 120 }),
+      applyMood: applyMood as never,
+      runPlayfulFlee: flee,
+      speakText,
+      resetSleepTimer: () => {},
+    });
+
+    expect(host.startBurst()).toBe(true);
+    expect(chaseActive).toBe(true);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(flee).toHaveBeenCalledTimes(1);
+
+    // 超时未抓 → miss 并清 burst；常驻开关仍关
+    await vi.advanceTimersByTimeAsync(PLAYFUL_MENU_BURST_MS);
+    expect(chaseActive).toBe(false);
+    expect(enabledSticky).toBe(false);
+    expect(applyMood).toHaveBeenCalledWith("grumpy", "playful-miss");
+
+    // burst 结束后靠近不再追
+    flee.mockClear();
+    await host.tickProximity({ x: 500, y: 400 }, { x: 500, y: 400 });
+    expect(flee).not.toHaveBeenCalled();
   });
 });

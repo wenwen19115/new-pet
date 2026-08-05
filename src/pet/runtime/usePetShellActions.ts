@@ -7,8 +7,14 @@ import {
   showPetMenu,
   type PetMenuAction,
 } from "@/pet/windows/menu";
+import { bumpMoyuDay } from "@/pet/data/moyuDay";
 import { filterEnabledMotions } from "@/pet/content/dialogue/customLines";
-import { resolveMotionForModel } from "@/pet/characters";
+import {
+  characterSupportsVrmAssets,
+  getCharacter,
+  resolveMotionForModel,
+} from "@/pet/characters";
+import { buildIdleMotionPool } from "@/pet/content/motion/motionPlayer";
 import { isScreenFlightMotion, PET_TAP_EGG_MOTIONS } from "@/pet/content/motion/motions";
 import type { CharacterRuntimeSpec } from "@/pet/characters/types";
 import type { PetSettings } from "@/pet/data/types";
@@ -37,6 +43,7 @@ export function usePetShellActions(deps: {
   speak: (fromAuto?: boolean) => void | Promise<void>;
   pointerOnPointerDown: (e: PointerEvent) => void;
   tryPlayfulCatch?: () => boolean;
+  startPlayfulBurst?: () => boolean;
   stopPlayful?: () => void;
   isPeeking?: () => boolean;
   startPeek?: () => void | Promise<boolean>;
@@ -95,7 +102,11 @@ export function usePetShellActions(deps: {
     onTap: () => {
       if (deps.tryRevealPeekOnTap?.()) return;
       if (deps.tryPlayfulCatch?.()) return;
-      if (registerTapForEgg()) return;
+      if (registerTapForEgg()) {
+        bumpMoyuDay({ taps: 1 });
+        return;
+      }
+      bumpMoyuDay({ taps: 1 });
       void deps.speak(false);
     },
     onAfterPointerUp: (info) => {
@@ -137,8 +148,32 @@ export function usePetShellActions(deps: {
     });
   }
 
+  function triggerPerformOnce() {
+    const model = deps.activeSkin.value.model;
+    const profile = deps.settings.value.profiles[model];
+    const character = getCharacter(model);
+    const pool = buildIdleMotionPool({
+      idleMotions: character.idleMotions,
+      allowCustomVrm: characterSupportsVrmAssets(model),
+      disabledMotions: profile?.disabledMotions,
+      customVrmMotions: deps.settings.value.customVrmMotions,
+    });
+    if (!pool.length) return;
+    const pick = pool[Math.floor(Math.random() * pool.length)]!;
+    deps.beginMotion(pick, { manual: true });
+    bumpMoyuDay({ performs: 1 });
+  }
+
   function onCtxMenuAction(action: PetMenuAction) {
     void hidePetMenu();
+    if (action === "perform") {
+      triggerPerformOnce();
+      return;
+    }
+    if (action === "playful") {
+      deps.startPlayfulBurst?.();
+      return;
+    }
     if (action === "open") {
       void requestOpenPetSettings();
       return;

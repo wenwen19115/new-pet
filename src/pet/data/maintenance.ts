@@ -1,4 +1,5 @@
 import { clearAllChatHistory } from "../chat/history";
+import { clearMoyuDayStats } from "./moyuDay";
 import { clearPetVrmFile } from "./vrmStorage";
 import { createFactoryResetSettings } from "./settings/defaults";
 import { publishPetSettings } from "./settings/io";
@@ -32,6 +33,7 @@ export async function factoryResetPet(
 ): Promise<PetSettings> {
   await withStep(onStep, "handshake", () => {
     clearPetHandshakeKeys();
+    clearMoyuDayStats();
   });
 
   await withStep(onStep, "chat", () => {

@@ -311,6 +311,7 @@ function wirePetHost(s: PetHostShared) {
     speak: speech.speak,
     pointerOnPointerDown: pointerHost.onPointerDown,
     tryPlayfulCatch: () => playful.tryCatchOnTap(),
+    startPlayfulBurst: () => playful.startBurst(),
     stopPlayful: () => playful.stop(),
     isPeeking: () => s.peekPausesRandomIdle,
     startPeek: () => peek.startPeek(),

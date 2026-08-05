@@ -419,7 +419,7 @@ const messages = {
       resetProfileOk: "已重置当前角色设置",
       clearCacheTitle: "清除缓存",
       clearCacheDesc:
-        "清掉可重建的内存缓存（VRM 预览、TTS 音色列表、USB/工位气象状态等），不改设置与聊天",
+        "清掉可重建的内存缓存（VRM 预览、TTS 音色列表、USB/工位气象状态、今日摸鱼战绩等），不改设置与聊天",
       clearCache: "清除",
       clearCacheWorking: "正在清除缓存…",
       clearCacheStepRun: "正在处理：{name}…",
@@ -431,6 +431,7 @@ const messages = {
         tts: "TTS 音色列表",
         usb: "USB 监视状态",
         weather: "工位气象状态",
+        moyu: "今日摸鱼战绩",
       },
       clearCacheOkEmpty: "没有可清除的缓存",
       clearCacheDoneTitle: "清除缓存完成",
@@ -955,7 +956,7 @@ const messages = {
       resetProfileOk: "Character settings reset",
       clearCacheTitle: "Clear cache",
       clearCacheDesc:
-        "Drop rebuildable memory caches (VRM preview, TTS voice list, USB/desk-weather state). Settings and chat stay.",
+        "Drop rebuildable memory caches (VRM preview, TTS voices, USB/desk-weather, today's moyu stats). Settings and chat stay.",
       clearCache: "Clear",
       clearCacheWorking: "Clearing cache…",
       clearCacheStepRun: "Working: {name}…",
@@ -967,6 +968,7 @@ const messages = {
         tts: "TTS voice list",
         usb: "USB watch state",
         weather: "desk-weather state",
+        moyu: "today's moyu stats",
       },
       clearCacheOkEmpty: "Nothing to clear",
       clearCacheDoneTitle: "Cache cleared",

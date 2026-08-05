@@ -5,6 +5,7 @@ import {
   pickPeekRevealOuterPosition,
   type PeekEdge,
 } from "@/pet/bridge/screenFly";
+import { noteMoyuPeekEnd, noteMoyuPeekStart } from "@/pet/data/moyuDay";
 import type { ApplyPetMood } from "./petHostMood";
 
 export function usePetPeekHost(deps: {
@@ -73,6 +74,7 @@ export function usePetPeekHost(deps: {
     const signal = moveSignal;
     deps.setPeekIdleGate(true);
     deps.applyMood("curious", "peek-hide");
+    noteMoyuPeekStart();
 
     try {
       await movePetWindowTo(dest.x, dest.y, 680, signal, () => {
@@ -122,6 +124,7 @@ export function usePetPeekHost(deps: {
     deps.setPeekIdleGate(false, {
       rescheduleIdle: opts?.rescheduleIdle !== false,
     });
+    noteMoyuPeekEnd();
 
     if (!opts?.silent) {
       deps.applyMood("happy", "peek-reveal");
@@ -151,6 +154,7 @@ export function usePetPeekHost(deps: {
     savedEdge = null;
     busy = false;
     if (deps.isPeeking()) {
+      noteMoyuPeekEnd();
       deps.setPeekIdleGate(false, {
         rescheduleIdle: opts?.rescheduleIdle === true,
       });

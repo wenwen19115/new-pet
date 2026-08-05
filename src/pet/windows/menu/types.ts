@@ -5,7 +5,14 @@ export const PET_MENU_ACTION_EVENT = "pet://menu-action";
 export const PET_MENU_ACTIVITY_EVENT = "pet://menu-activity";
 export const PET_MENU_LAYOUT_EVENT = "pet://menu-layout";
 
-export type PetMenuAction = "open" | "pin" | "chat" | "hide" | "reveal";
+export type PetMenuAction =
+  | "open"
+  | "pin"
+  | "chat"
+  | "hide"
+  | "reveal"
+  | "perform"
+  | "playful";
 
 export interface PetMenuPayload {
   chatEnabled: boolean;
@@ -23,9 +30,9 @@ export interface PetMenuLayoutPayload {
 export const PET_MENU_IDLE_MS = 15_000;
 
 export const PET_MENU_W = 228;
-/** 折叠高度：开关 + 分隔 + 4 项，留一点 DPI 余量 */
-export const PET_MENU_H_COLLAPSED = 208;
-export const PET_MENU_H_EXPANDED = 260;
+/** 折叠：仪表盘 + 双列互动 + 底栏；实测高度优先 */
+export const PET_MENU_H_COLLAPSED = 236;
+export const PET_MENU_H_EXPANDED = 312;
 /** 摆位按展开高度算，靠屏幕边也能展开 */
 export const PET_MENU_H = PET_MENU_H_EXPANDED;
 export const PET_MENU_GAP = -6;

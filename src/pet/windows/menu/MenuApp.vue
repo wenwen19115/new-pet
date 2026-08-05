@@ -23,17 +23,38 @@
     </button>
 
     <div v-if="statsExpanded" class="pet-ctx-stats-panel" aria-live="polite">
-      <div
-        v-for="(cell, i) in cells"
-        :key="cell.key"
-        class="pet-ctx-meter"
-        :class="[`tone-${cell.key}`, { hot: cell.hot }]"
-        :style="{ animationDelay: `${i * 40}ms` }"
-      >
-        <span class="pet-ctx-meter-value">{{ cell.value }}</span>
-        <span class="pet-ctx-meter-label">{{ cell.label }}</span>
+      <div class="pet-ctx-moyu-line">{{ moyuLine }}</div>
+      <div class="pet-ctx-meters">
+        <div
+          v-for="(cell, i) in cells"
+          :key="cell.key"
+          class="pet-ctx-meter"
+          :class="[`tone-${cell.key}`, { hot: cell.hot }]"
+          :style="{ animationDelay: `${i * 40}ms` }"
+        >
+          <span class="pet-ctx-meter-value">{{ cell.value }}</span>
+          <span class="pet-ctx-meter-label">{{ cell.label }}</span>
+        </div>
       </div>
     </div>
+
+    <div class="pet-ctx-divider" />
+
+    <div class="pet-ctx-row">
+      <button type="button" class="pet-ctx-item" @click="emitAction('perform')">
+        {{ performLabel }}
+      </button>
+      <button type="button" class="pet-ctx-item" @click="emitAction('playful')">
+        {{ playfulLabel }}
+      </button>
+    </div>
+    <button
+      type="button"
+      class="pet-ctx-item"
+      @click="emitAction(peekHidden ? 'reveal' : 'hide')"
+    >
+      {{ peekLabel }}
+    </button>
 
     <div class="pet-ctx-divider" />
     <button
@@ -44,19 +65,14 @@
     >
       {{ chatLabel }}
     </button>
-    <button type="button" class="pet-ctx-item" @click="emitAction('open')">
-      {{ openLabel }}
-    </button>
-    <button type="button" class="pet-ctx-item" @click="emitAction('pin')">
-      {{ pinLabel }}
-    </button>
-    <button
-      type="button"
-      class="pet-ctx-item"
-      @click="emitAction(peekHidden ? 'reveal' : 'hide')"
-    >
-      {{ peekLabel }}
-    </button>
+    <div class="pet-ctx-row">
+      <button type="button" class="pet-ctx-item" @click="emitAction('open')">
+        {{ openLabel }}
+      </button>
+      <button type="button" class="pet-ctx-item" @click="emitAction('pin')">
+        {{ pinLabel }}
+      </button>
+    </div>
   </div>
   </div>
 </template>
@@ -80,6 +96,7 @@ import {
   type PetMenuPayload,
 } from "@/pet/events";
 import { petMenuHeight } from "./types";
+import { formatMoyuDayLine } from "@/pet/data/moyuDay";
 import { formatStatPercent, getSystemStats } from "@/pet/bridge/systemStats";
 import "@/theme";
 import { usePetWindowTheme } from "@/theme";
@@ -96,22 +113,31 @@ const memPct = ref(0);
 const diskPct = ref(0);
 const netPct = ref(0);
 const statsReady = ref(false);
+const moyuLine = ref("");
 const appLocale = ref<PetLocale>(getPetLocale());
 
 const en = computed(() => appLocale.value === "en");
 
+function refreshMoyuLine() {
+  moyuLine.value = formatMoyuDayLine(appLocale.value);
+}
+
+const performLabel = computed(() =>
+  en.value ? "Do a trick" : "表演一个"
+);
+const playfulLabel = computed(() =>
+  en.value ? "Playful" : "调皮一下"
+);
 const openLabel = computed(() =>
-  en.value ? "Open settings" : "打开设置"
+  en.value ? "Settings" : "打开设置"
 );
-const pinLabel = computed(() =>
-  en.value ? "Pin settings on top" : "置顶设置页"
-);
+const pinLabel = computed(() => (en.value ? "Pin" : "置顶"));
 const chatLabel = computed(() =>
   chatEnabled.value ? (en.value ? "Chat" : "聊天") : ""
 );
 const peekLabel = computed(() => {
   if (peekHidden.value) return en.value ? "Come out" : "出来";
-  return en.value ? "Hide away" : "躲起来";
+  return en.value ? "Hide" : "躲起来";
 });
 
 const toggleTitle = computed(() =>
@@ -236,9 +262,11 @@ function stopStatsWatch() {
 function toggleStats() {
   statsExpanded.value = !statsExpanded.value;
   void pingActivity();
+  if (statsExpanded.value) {
+    refreshMoyuLine();
+    startStatsWatch();
+  } else stopStatsWatch();
   void publishLayout(statsExpanded.value);
-  if (statsExpanded.value) startStatsWatch();
-  else stopStatsWatch();
 }
 
 function applyPayload(payload: PetMenuPayload) {
@@ -246,6 +274,7 @@ function applyPayload(payload: PetMenuPayload) {
   chatEnabled.value = Boolean(payload.chatEnabled);
   peekHidden.value = Boolean(payload.peekHidden);
   statsExpanded.value = Boolean(payload.statsExpandDefault);
+  refreshMoyuLine();
   visible.value = true;
   void pingActivity();
   void publishLayout(statsExpanded.value);
@@ -381,15 +410,31 @@ body,
 }
 
 .pet-ctx-stats-panel {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   margin: 2px 2px 4px;
-  padding: 8px 2px 8px;
-  min-height: 52px;
+  padding: 8px 6px 8px;
   border-radius: 8px;
   background: var(--ui-accent-soft, rgba(255, 255, 255, 0.04));
   animation: pet-stats-pop 0.22s ease-out;
+}
+
+.pet-ctx-moyu-line {
+  font-size: 11px;
+  font-weight: 560;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  color: var(--ui-text-muted, rgba(255, 255, 255, 0.72));
+  text-align: center;
+  padding: 0 4px 2px;
+}
+
+.pet-ctx-meters {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: stretch;
+  min-height: 44px;
 }
 
 .pet-ctx-meter {
@@ -462,6 +507,12 @@ body,
   height: 1px;
   margin: 2px 6px 4px;
   background: var(--ui-border, rgba(255, 255, 255, 0.1));
+}
+
+.pet-ctx-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
 }
 
 .pet-ctx-item {

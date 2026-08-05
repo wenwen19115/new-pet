@@ -263,7 +263,9 @@ export function usePetHostLifecycle(deps: {
           action !== "pin" &&
           action !== "chat" &&
           action !== "hide" &&
-          action !== "reveal"
+          action !== "reveal" &&
+          action !== "perform" &&
+          action !== "playful"
         ) {
           return;
         }
