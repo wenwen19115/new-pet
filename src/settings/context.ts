@@ -101,6 +101,9 @@ export type PetSettingsPageCtx = {
   onHitBounds: (v: boolean) => void | Promise<void>;
   onDeskWeatherChange: () => void | Promise<void>;
   onSkyWeatherChange: () => void | Promise<void>;
+  /** 跟随系统解析城；探测/同步 busy */
+  skyNetCityId: Ref<string>;
+  skyNetBusy: Ref<boolean>;
   onPickVrm: () => void | Promise<void>;
   onClearVrm: () => void | Promise<void>;
   onDemoMotion: (v: unknown) => void | Promise<void>;

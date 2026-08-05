@@ -137,6 +137,99 @@
   overflow-wrap: anywhere;
 }
 
+.hero-net {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.hero-net-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.3;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+}
+
+.hero-net-badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ui-text-muted) 70%, transparent);
+  flex: 0 0 auto;
+  margin-right: 4px;
+}
+
+.hero-net-badge[data-busy="1"] {
+  border-color: color-mix(in srgb, var(--hero-accent, #c45c26) 40%, var(--ui-border));
+  background: color-mix(in srgb, var(--hero-accent, #c45c26) 12%, var(--ui-surface));
+}
+
+.hero-net-badge[data-busy="1"]::before {
+  animation: hero-net-pulse 0.9s ease-in-out infinite;
+  background: var(--hero-accent, #c45c26);
+}
+
+@keyframes hero-net-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.72);
+    opacity: 0.45;
+  }
+}
+
+.hero-net-badge[data-online="1"] {
+  border-color: color-mix(in srgb, #2f7d4a 35%, var(--ui-border));
+  background: color-mix(in srgb, #2f7d4a 12%, var(--ui-surface));
+}
+
+.hero-net-badge[data-online="1"]::before {
+  background: #2f7d4a;
+}
+
+.hero-net-badge[data-online="0"] {
+  border-color: color-mix(in srgb, #a45b2a 35%, var(--ui-border));
+  background: color-mix(in srgb, #a45b2a 12%, var(--ui-surface));
+}
+
+.hero-net-badge[data-online="0"]::before {
+  background: #a45b2a;
+}
+
+.hero-net-refresh {
+  padding: 3px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hero-net-refresh:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.hero-net-refresh:not(:disabled):hover {
+  background: color-mix(in srgb, var(--hero-accent, var(--ui-primary)) 12%, var(--ui-surface));
+}
+
 .pet-hero {
   min-width: 0;
   min-height: 0;
@@ -288,6 +381,9 @@
 }
 
 .panel-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: 18px;
   font-weight: 800;
   letter-spacing: 0.02em;

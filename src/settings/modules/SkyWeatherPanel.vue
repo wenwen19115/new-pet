@@ -3,6 +3,8 @@
     <ThemeSection :label="$t('pet.secSkyWeather')">
       <SkyWeatherSettings
         :model-value="skyWeatherModel"
+        :net-city-id="netCityId"
+        :busy="busy"
         @update:model-value="onSkyWeather"
         @change="() => ctx.onSkyWeatherChange()"
       />
@@ -25,6 +27,8 @@ const ctx = inject(PET_SETTINGS_PAGE_KEY)!;
 const skyWeatherModel = computed(
   () => ctx.skyWeather?.value ?? DEFAULT_SKY_WEATHER
 );
+const netCityId = computed(() => ctx.skyNetCityId.value);
+const busy = computed(() => ctx.skyNetBusy.value);
 
 function onSkyWeather(next: SkyWeatherConfig) {
   if (!ctx.skyWeather) return;

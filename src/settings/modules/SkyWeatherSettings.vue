@@ -7,15 +7,37 @@
     >
       <template #body>
         <div class="sky-weather-body">
-          <div class="sky-weather-row">
+          <div class="sky-weather-row sky-weather-row--link">
+            <div class="sky-weather-link-meta">
+              <div class="sky-weather-label">{{ $t("pet.skyWeatherLinkMode") }}</div>
+              <p class="sky-weather-hint">{{ $t("pet.skyWeatherLinkModeDesc") }}</p>
+            </div>
+            <label class="sky-weather-link-sw">
+              <span>{{
+                model.linkMode === "online"
+                  ? $t("pet.skyWeatherLinkOnline")
+                  : $t("pet.skyWeatherLinkOffline")
+              }}</span>
+              <ThemeSwitch
+                :checked="model.linkMode === 'online'"
+                :aria-label="$t('pet.skyWeatherLinkMode')"
+                @update:checked="onLinkOnline"
+              />
+            </label>
+          </div>
+
+          <div class="sky-weather-row sky-weather-row--stack">
             <div class="sky-weather-label">{{ $t("pet.skyWeatherRegion") }}</div>
+            <p class="sky-weather-hint">{{ regionHint }}</p>
             <select
               class="sky-weather-select"
               :value="model.regionId"
               :aria-label="$t('pet.skyWeatherRegion')"
+              :aria-busy="busy ? 'true' : 'false'"
+              :disabled="!linkOnline"
               @change="onRegion"
             >
-              <option value="system">{{ $t("pet.skyWeatherRegionSystem") }}</option>
+              <option value="system">{{ systemRegionLabel }}</option>
               <option v-for="r in regionList" :key="r.id" :value="r.id">
                 {{ r.name }}
               </option>
@@ -100,8 +122,6 @@
               </div>
             </div>
           </div>
-
-          <div class="sky-weather-status">{{ statusText }}</div>
         </div>
       </template>
     </SettingsItemRow>
@@ -113,10 +133,12 @@ import { computed, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import SettingsItemRow from "@/components/SettingsItemRow.vue";
 import ThemeSeg from "@/settings/components/ThemeSeg.vue";
+import ThemeSwitch from "@/settings/components/ThemeSwitch.vue";
 import {
   NORMAL_WEATHER_POOL,
   SKY_REGIONS,
   normalizeSkyWeather,
+  type SkyLinkMode,
   type SkyTodId,
   type SkyTodMode,
   type SkyWeatherConfig,
@@ -124,15 +146,18 @@ import {
   type SkyWeatherMode,
 } from "@/pet/data/skyWeather";
 import {
+  applySkyLinkMode,
   applySkyTodMode,
   applySkyWeatherMode,
-  resolveDisplayTod,
-  resolveDisplayWeather,
 } from "@/pet/runtime/skyWeatherModeOps";
 import "./skyWeatherSettings.css";
 
 const props = defineProps<{
   modelValue: SkyWeatherConfig;
+  /** 跟随系统解析出的城 id；空=尚未定位 */
+  netCityId?: string;
+  /** 探测/换城同步中 */
+  busy?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -143,6 +168,7 @@ const emit = defineEmits<{
 const { t } = useI18n();
 
 const model = computed(() => normalizeSkyWeather(props.modelValue));
+const linkOnline = computed(() => model.value.linkMode === "online");
 const wxMenuOpen = ref(false);
 const wxMenuRoot = ref<HTMLElement | null>(null);
 /** 视口下方可用高度算出的面板限高 */
@@ -186,33 +212,47 @@ const regionList = computed(() =>
   )
 );
 
+/** 在线跟随：有探测城则显示城名，不写「跟随系统」 */
+const systemRegionLabel = computed(() => {
+  const id = props.netCityId || "";
+  const city = SKY_REGIONS[id]?.name || "";
+  if (city) return t("pet.skyWeatherRegionSystemCity", { city });
+  if (props.busy) return t("pet.skyWeatherRegionLocating");
+  return t("pet.skyWeatherRegionSystem");
+});
+
+const regionHint = computed(() =>
+  linkOnline.value
+    ? t("pet.skyWeatherRegionSystemHint")
+    : t("pet.skyWeatherRegionOfflineHint")
+);
+
 const normalWeatherIds = NORMAL_WEATHER_POOL;
 
-const todModeOptions = computed(() => [
-  { value: "offline" as const, label: t("pet.skyModeOffline") },
-  { value: "sync" as const, label: t("pet.skyModeSyncTod") },
-  { value: "fixed" as const, label: t("pet.skyModeFixedTod") },
-]);
+const todModeOptions = computed(() => {
+  const all = [
+    { value: "offline" as const, label: t("pet.skyModeOffline") },
+    { value: "sync" as const, label: t("pet.skyModeSyncTod") },
+    { value: "fixed" as const, label: t("pet.skyModeFixedTod") },
+  ];
+  // 总闸离线：不提供跟随项
+  return linkOnline.value ? all : all.filter((o) => o.value !== "sync");
+});
 
-const wxModeOptions = computed(() => [
-  { value: "offline" as const, label: t("pet.skyModeOffline") },
-  { value: "sync" as const, label: t("pet.skyModeSyncWx") },
-  { value: "fixed" as const, label: t("pet.skyModeFixedWx") },
-]);
+const wxModeOptions = computed(() => {
+  const all = [
+    { value: "offline" as const, label: t("pet.skyModeOffline") },
+    { value: "sync" as const, label: t("pet.skyModeSyncWx") },
+    { value: "fixed" as const, label: t("pet.skyModeFixedWx") },
+  ];
+  return linkOnline.value ? all : all.filter((o) => o.value !== "sync");
+});
 
 const todOptions = computed(() =>
   (["morning", "noon", "dusk", "evening", "night", "predawn"] as SkyTodId[]).map(
     (value) => ({ value, label: t(`pet.skyTod.${value}`) })
   )
 );
-
-const statusText = computed(() => {
-  const cfg = model.value;
-  return t("pet.skyWeatherStatus", {
-    tod: t(`pet.skyTod.${resolveDisplayTod(cfg)}`),
-    weather: weatherLabel(resolveDisplayWeather(cfg)),
-  });
-});
 
 function weatherLabel(id: string) {
   const key = `pet.skyWx.${id}`;
@@ -230,7 +270,14 @@ function patch(partial: Partial<SkyWeatherConfig>) {
 }
 
 function onRegion(e: Event) {
+  if (!linkOnline.value) return;
   patch({ regionId: (e.target as HTMLSelectElement).value });
+}
+
+function onLinkOnline(online: boolean) {
+  const next = online ? "online" : "offline";
+  if (model.value.linkMode === next) return;
+  commit(applySkyLinkMode(model.value, next as SkyLinkMode));
 }
 
 function onTodMode(v: string | number) {

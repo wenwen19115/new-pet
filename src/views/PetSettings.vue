@@ -48,6 +48,25 @@
           <span v-if="enabled" class="meta-pill meta-pill--on">{{ $t("pet.statusOn") }}</span>
           <span v-else class="meta-pill">{{ $t("pet.statusOff") }}</span>
         </div>
+        <div class="hero-net" aria-live="polite">
+          <!-- busy 只挂徽章：文案变「同步中」+ 点脉冲；刷新钮仅 aria/disabled -->
+          <span
+            class="hero-net-badge"
+            :data-online="skyNetBadgeOnline ? '1' : '0'"
+            :data-busy="skyNetBusy ? '1' : '0'"
+          >
+            {{ skyNetLabel }}
+          </span>
+          <button
+            type="button"
+            class="hero-net-refresh"
+            :disabled="skyNetBusy"
+            :aria-busy="skyNetBusy ? 'true' : 'false'"
+            @click="refreshSkyNet"
+          >
+            {{ $t("pet.skyWeatherLinkRefresh") }}
+          </button>
+        </div>
         <label
           class="preview-orbit-toggle"
           :class="{ 'is-disabled': !canPreviewOrbit }"
@@ -131,6 +150,10 @@ const {
   skyRainbow,
   skyEvents,
   skyFollowClock,
+  skyNetBusy,
+  skyNetLabel,
+  skyNetBadgeOnline,
+  refreshSkyNet,
   windowFamily,
   previewActor,
   clipPreviewActor,
