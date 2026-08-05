@@ -191,6 +191,31 @@ describe("sky weather mode ops", () => {
     expect(wxFixed.manualWeather).toBe("rain-mid");
     expect(wxFixed.runtime.eggWeather).toBe("");
   });
+
+  it("离线再切跟随：作废同步戳，避免沿用离线天气", async () => {
+    const { applySkyWeatherMode } = await import(
+      "@/pet/runtime/skyWeatherModeOps"
+    );
+    const cfg = normalizeSkyWeather({
+      weatherMode: "offline",
+      todMode: "fixed",
+      manualWeather: "cloudy",
+      runtime: {
+        ...normalizeSkyWeather({}).runtime,
+        everSynced: true,
+        lastSyncAt: Date.now(),
+        snapWeather: "clear",
+      },
+    });
+    const next = applySkyWeatherMode(cfg, "sync");
+    expect(next.weatherMode).toBe("sync");
+    expect(next.runtime.everSynced).toBe(false);
+    expect(next.runtime.lastSyncAt).toBe(0);
+    // 未同步前显示地区示意，而不是离线抽签/旧 manual
+    expect(resolveDisplayWeather(next)).toBe(
+      regionWeatherOrFallback(next.regionId).weather
+    );
+  });
 });
 
 describe("sky weather session lifecycle", () => {
@@ -250,6 +275,68 @@ describe("sky weather session lifecycle", () => {
     await vi.advanceTimersByTimeAsync(5_000);
     expect(commits.length).toBe(afterStop);
 
+    app.unmount();
+  });
+
+  it("换地区强制同步时，写回 manual 不会拉网死循环", async () => {
+    fetchOpenMeteoWeather.mockResolvedValue({
+      ok: true,
+      weather: "rain-mid",
+      source: "test",
+    });
+    const { useSkyWeatherSession } = await import(
+      "@/pet/runtime/useSkyWeatherSession"
+    );
+    const config = ref(
+      normalizeSkyWeather({
+        todMode: "fixed",
+        weatherMode: "sync",
+        regionId: "shenzhen",
+        manualTod: "noon",
+        manualWeather: "clear",
+        runtime: {
+          ...normalizeSkyWeather({}).runtime,
+          lastDayRollKey: "2026-01-01",
+          everSynced: false,
+          lastSyncAt: 0,
+        },
+      })
+    );
+
+    let stopFn: (() => void) | null = null;
+    const app = createApp(
+      defineComponent({
+        setup() {
+          const session = useSkyWeatherSession({
+            config,
+            commit: (next) => {
+              config.value = next;
+            },
+          });
+          stopFn = session.stop;
+          return () => h("div");
+        },
+      })
+    );
+    app.mount(document.createElement("div"));
+    await nextTick();
+    await new Promise((r) => setTimeout(r, 30));
+
+    const afterBoot = fetchOpenMeteoWeather.mock.calls.length;
+    expect(afterBoot).toBeGreaterThanOrEqual(1);
+
+    config.value = normalizeSkyWeather({
+      ...config.value,
+      regionId: "xian",
+    });
+    await nextTick();
+    await new Promise((r) => setTimeout(r, 30));
+
+    const afterRegion = fetchOpenMeteoWeather.mock.calls.length;
+    expect(afterRegion - afterBoot).toBeLessThanOrEqual(2);
+    expect(afterRegion).toBeLessThan(8);
+
+    stopFn?.();
     app.unmount();
   });
 

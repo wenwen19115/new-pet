@@ -176,7 +176,7 @@ export function useSkyWeatherSession(deps: {
     deps.commit(r.cfg, { persist: shouldPersist });
   }
 
-  async function maybeSync() {
+  async function maybeSync(opts?: { force?: boolean }) {
     if (deps.enableNetworkSync === false) return;
     if (syncing || stopped) return;
     const cfg = normalizeSkyWeather(deps.config.value);
@@ -184,7 +184,11 @@ export function useSkyWeatherSession(deps: {
       cfg.todMode === "sync" || cfg.weatherMode === "sync";
     if (!need) return;
     const intervalMs = cfg.sched.syncIntervalMin * 60 * 1000;
-    if (cfg.runtime.everSynced && Date.now() - cfg.runtime.lastSyncAt < intervalMs) {
+    if (
+      !opts?.force &&
+      cfg.runtime.everSynced &&
+      Date.now() - cfg.runtime.lastSyncAt < intervalMs
+    ) {
       return;
     }
     syncing = true;
@@ -240,16 +244,25 @@ export function useSkyWeatherSession(deps: {
   }
 
   watch(
-    () => [
-      deps.config.value.todMode,
-      deps.config.value.weatherMode,
-      deps.config.value.regionId,
-      deps.config.value.manualTod,
-      deps.config.value.manualWeather,
+    [
+      () => deps.config.value.todMode,
+      () => deps.config.value.weatherMode,
+      () => deps.config.value.regionId,
     ],
     () => {
       refreshDisplay(normalizeSkyWeather(deps.config.value));
-      void maybeSync();
+      // 模式/地区真变了才强制拉；多源 watch 避免 sync 写回 manual 再进回调
+      void maybeSync({ force: true });
+    }
+  );
+
+  watch(
+    [
+      () => deps.config.value.manualTod,
+      () => deps.config.value.manualWeather,
+    ],
+    () => {
+      refreshDisplay(normalizeSkyWeather(deps.config.value));
     }
   );
 

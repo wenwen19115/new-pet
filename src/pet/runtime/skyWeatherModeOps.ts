@@ -34,6 +34,14 @@ export function applySkyTodMode(
   if (todMode === "fixed") {
     next.manualTod = resolveDisplayTod(cfg);
   }
+  // 进跟随：作废旧同步戳，避免沿用离线/固定态，立刻可再拉
+  if (todMode === "sync" && cfg.todMode !== "sync") {
+    next.runtime = {
+      ...next.runtime,
+      lastSyncAt: 0,
+      everSynced: false,
+    };
+  }
   return normalizeSkyWeather(next);
 }
 
@@ -59,6 +67,14 @@ export function applySkyWeatherMode(
       runtime: { ...cfg.runtime, eggWeather: "" },
     });
     next.runtime = { ...next.runtime, eggWeather: "" };
+  }
+  // 进跟随：作废旧同步戳，避免继续显示离线抽签天气
+  if (weatherMode === "sync" && cfg.weatherMode !== "sync") {
+    next.runtime = {
+      ...next.runtime,
+      lastSyncAt: 0,
+      everSynced: false,
+    };
   }
   return normalizeSkyWeather(next);
 }
