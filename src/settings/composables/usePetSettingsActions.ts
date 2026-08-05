@@ -227,7 +227,7 @@ export function usePetSettingsActions(deps: {
   async function onSaveNickname() {
     await deps.persistAndSync();
     if (!deps.enabled.value) {
-      message.warning(t("pet.motionNeedEnable"));
+      message.success(t("pet.nicknameSaved"));
       return;
     }
     try {

@@ -13,7 +13,7 @@
       </SettingsItemRow>
     </ThemeSection>
 
-    <ThemeSection v-if="ctx.enabled.value" :label="$t('pet.secIdentity')">
+    <ThemeSection :label="$t('pet.secIdentity')">
       <SettingsItemRow
         :title="$t('pet.formTitle')"
         :description="$t('pet.formDesc')"
