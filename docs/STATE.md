@@ -21,7 +21,7 @@
 | `hostAlive` | `usePetHostLifecycle` | |
 | settings 镜像 | `usePetSettingsSync` | 可能再发 `random-idle-setting`；deskWeather 变更时调用 `refreshDeskWeather` |
 | 工位气象 | `usePetDeskWeather`（poll + engine） | bridge 只 invoke（快照 / acquire·release 租约）；冷却在 engine；说话成功后再 commit |
-| 窗外天气 | 设置页 `useSkyWeatherPreview` → `useSkyWeatherSession` | 配置在 `PetSettings.skyWeather`；调度在 runtime；真气象 bridge→Rust；只驱动设置预览，≠ 工位气象、不进主窗 |
+| 窗外天气 | 设置页 `useSkyWeatherPreview` → `useSkyWeatherSession`（tick）+ `skyWeatherLinkController`（联网） | 配置在 `PetSettings.skyWeather`；**联网总闸** `linkMode`（离线→深圳+双离线；在线→跟随系统+实况天气；首次按探测 bootstrap；**在线探测失败（开机/刷新/换城）自动回落离线并落盘**）；**仅 `linkMode===online` 才拉 Open-Meteo**；落盘只经 `useSkyWeatherPreview.schedulePersist` 防抖（离开页 `flush` 即时写）；同步判定在 `skyWeatherSync`；sync 天色用 Open-Meteo 日出日落（无则回退系统钟）；全局状态左侧预览下方 `skyNetLabel` / `refreshSkyNet`；只驱动设置预览，≠ 工位气象、不进主窗 |
 
 host 内请勿直接赋值 `mood.value`。
 

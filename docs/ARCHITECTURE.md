@@ -107,7 +107,7 @@ bridge → data 类型 + Tauri
 - 接线：`createPetSettingsPageRuntime.ts`；`usePetSettingsPage` 仅负责挂载并返回 view。
 - 新增 tab：`registerSettingsModule`，并补充所需 composable / `modules/*.vue`。
 - 传感类设置（如工位气象）：配置位于 `data/<名>.ts` 并挂入 `PetSettings`；阈值与轮询位于 `runtime/`；`bridge` 仅负责 invoke（含跨窗共享的焦点线程租约 acquire / release）。
-- 窗外天气（`skyWeather`，≠ 工位气象）：配置/映射 `data/skyWeather.ts`；调度 `runtime/skyWeatherScheduler`；设置预览会话 `settings/composables/useSkyWeatherPreview` → `useSkyWeatherSession`；模式切换走 `runtime/skyWeatherModeOps`；真气象 `bridge/skyWeather` → Rust Open-Meteo；窗景 CSS 在 `models/preview/heroWindowWorld/`（`base` / `weather-layers` / `weather-mods-{normal,egg,fall}` / `flyers` / `family/{shared,wood…ornate}`）；**仅设置左侧预览叠层**，不进桌宠主窗。真气象权限只挂设置窗（`capabilities/main.json`），不进 pet 能力集。
+- 窗外天气（`skyWeather`，≠ 工位气象）：配置/映射 `data/skyWeather.ts`；调度 `runtime/skyWeatherScheduler`；跟随系统 `runtime/skyWeatherSystemRegion`（`peekSystemRegionId`）；网络同步/落盘判定 `runtime/skyWeatherSync`（**须 `linkMode===online`**）；联网编排（探测/busy/gen/防抖）`runtime/skyWeatherLinkController`；会话 `useSkyWeatherSession`（tick+展示）→ 预览文案在 `useSkyWeatherPreview`（`refreshSkyNet`；探测失败回落离线；离开页 flush）；设置预览 `settings/composables/useSkyWeatherPreview` → `useSkyWeatherSession`；模式切换 `runtime/skyWeatherModeOps`（离线拒切 sync）；真气象一次包 `bridge/skyWeather` → Rust Open-Meteo；sync 天色用日照（无则回退系统钟）；窗景 CSS 在 `models/preview/heroWindowWorld/`；**仅设置左侧预览**，不进桌宠主窗。真气象/粗定位权限只挂设置窗（`capabilities/main.json`），不进 pet 能力集。
 - 维护类操作：
   - 出厂数据：`data/maintenance.ts`（默认快照来自 `settings/defaults.createFactoryResetSettings`）；设置页负责确认框、进度 Modal、表单 hydrate、窗同步。
   - 清缓存：`runtime/clearRuntimeCaches.ts`（本窗清 + `requestClearPetCache` 广播）；pet host 监听同事件再清一次。

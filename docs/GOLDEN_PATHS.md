@@ -22,7 +22,7 @@
 | 14 | Theme Pack | 设置 → 应用：切换 `theme.style` 后整页配色/边框即时变；气泡与菜单窗跟包；与 look（形象）独立、互不覆盖 | `src/theme/` + settings sync |
 | 15 | 壁纸层 | 背景模式切「壁纸」选图/GIF/视频后舞台显示；压暗与适配生效；切回「跟随风格」恢复 pack 底 | `ThemeMediaLayer` / `stageBackdrop` |
 | 16 | 开机动画 | 开启后重启设置窗见闪屏；auto / media / manual 时长符合预期；可跳过；无媒体或失败时不卡死 | `bootHold` / `BootAnimationSettings` |
-| 17 | 窗外天气 | 设置 → 天气：天色/天气三选一 + 地区；左侧预览有天色洗染与雨雪雾；跟随天气可拉 Open-Meteo（失败回退深圳示意）。**不画在桌宠主窗** | `skyWeather.smoke.test.ts`；预览缩放 `previewFit.smoke.test.ts` |
+| 17 | 窗外天气 | 设置 → 天气：联网总闸 + 天色/天气/地区；离线总闸锁死实况/定位城；实况一次拉 Open-Meteo（天气+日出日落）；左侧预览下方统一联网状态 + 手动刷新；**在线探测失败回落离线**。**不画在桌宠主窗** | `skyWeather.smoke.test.ts`；预览缩放 `previewFit.smoke.test.ts` |
 | 18 | 右键菜单 / 摸鱼 | 展开摸鱼仪表盘见「今日摸鱼一行」；互动后计数变化；清缓存或出厂后战绩归零 | `moyuDay.smoke.test.ts` |
 
 ## 勾选范围
