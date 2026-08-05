@@ -1,94 +1,32 @@
 /**
- * 窗外天气会话：tick + 可选真气象同步
+ * 窗外天气会话：tick + 展示；联网走 skyWeatherLinkController。
  * 设置预览用；persist 由调用方写入 PetSettings。
  */
 import type { Ref } from "vue";
 import { onUnmounted, ref, watch } from "vue";
 import {
-  FALLBACK_REGION_ID,
-  SKY_REGIONS,
   normalizeSkyWeather,
-  regionWeatherOrFallback,
-  resolveRegionByTimezone,
   resolveTodFromDate,
   type SkyEventId,
   type SkyTodId,
   type SkyWeatherConfig,
   type SkyWeatherId,
-  type SkyWeatherRuntimeState,
 } from "@/pet/data/skyWeather";
-import { fetchOpenMeteoWeather } from "@/pet/bridge/skyWeather";
 import {
-  applySkySyncSuccess,
   resolveDisplayTod,
   resolveDisplayWeather,
   seedOfflineBoot,
   tickSkyWeather,
   type SkyTickFire,
 } from "@/pet/runtime/skyWeatherScheduler";
-
-export type SkyWeatherCommitOpts = {
-  /** 默认 true；tick 的 pity 递增应 false，避免每秒写盘 */
-  persist?: boolean;
-};
-
-function resolveCoords(regionId: string): { lat: number; lon: number; id: string } {
-  const id =
-    regionId === "system"
-      ? resolveRegionByTimezone().id
-      : SKY_REGIONS[regionId]
-        ? regionId
-        : FALLBACK_REGION_ID;
-  const r = SKY_REGIONS[id] || SKY_REGIONS[FALLBACK_REGION_ID]!;
-  return { lat: r.lat, lon: r.lon, id: r.id };
-}
-
-/** 相位/极端/彩虹等值得落盘；pity 递增不算 */
-export function skyRuntimePersistWorthy(
-  before: SkyWeatherRuntimeState,
-  after: SkyWeatherRuntimeState
-): boolean {
-  return (
-    before.lastDayRollKey !== after.lastDayRollKey
-    || before.eggWeather !== after.eggWeather
-    || before.eggStartedAt !== after.eggStartedAt
-    || before.eggBaseWeather !== after.eggBaseWeather
-    || before.eggDayKey !== after.eggDayKey
-    || before.rainbowUntil !== after.rainbowUntil
-    || before.lastExtremeAt !== after.lastExtremeAt
-    || before.offlineIsDay !== after.offlineIsDay
-    || before.offlinePhaseStartedAt !== after.offlinePhaseStartedAt
-    || before.snapTod !== after.snapTod
-    || before.snapWeather !== after.snapWeather
-    || before.everSynced !== after.everSynced
-    || before.lastSyncAt !== after.lastSyncAt
-  );
-}
-
-export async function syncSkyWeatherFromNetwork(
-  cfg: SkyWeatherConfig,
-  now = Date.now()
-): Promise<SkyWeatherConfig> {
-  const needWx = cfg.weatherMode === "sync";
-  const needTod = cfg.todMode === "sync";
-  if (!needWx && !needTod) return cfg;
-
-  let weather: SkyWeatherId | undefined;
-  if (needWx) {
-    const coords = resolveCoords(cfg.regionId);
-    const hit = await fetchOpenMeteoWeather(coords.lat, coords.lon);
-    if (hit?.ok && hit.weather) {
-      weather = hit.weather;
-    } else {
-      weather = regionWeatherOrFallback(cfg.regionId).weather;
-    }
-  }
-  return applySkySyncSuccess(cfg, {
-    weather,
-    tod: needTod ? resolveTodFromDate(new Date(now)) : undefined,
-    now,
-  });
-}
+import {
+  createSkyWeatherLinkController,
+  type SkyWeatherCommitOpts,
+} from "@/pet/runtime/skyWeatherLinkController";
+import {
+  skyRuntimeMemoryDirty,
+  skyRuntimePersistWorthy,
+} from "@/pet/runtime/skyWeatherSync";
 
 export function useSkyWeatherSession(deps: {
   config: Ref<SkyWeatherConfig>;
@@ -108,9 +46,25 @@ export function useSkyWeatherSession(deps: {
   let timer: ReturnType<typeof setInterval> | null = null;
   let syncTimer: ReturnType<typeof setInterval> | null = null;
   let seeded = false;
-  let syncing = false;
   let stopped = false;
   const pendingTimeouts = new Set<number>();
+
+  function refreshDisplay(cfg: SkyWeatherConfig) {
+    displayTod.value = resolveDisplayTod(cfg);
+    displayWeather.value = resolveDisplayWeather(cfg);
+    rainbowActive.value = (cfg.runtime.rainbowUntil || 0) > Date.now();
+  }
+
+  const link = createSkyWeatherLinkController({
+    getConfig: () => deps.config.value,
+    commit: deps.commit,
+    enableNetworkSync: deps.enableNetworkSync,
+    onRefreshDisplay: refreshDisplay,
+    onSyncDisplay: (cfg) => {
+      displayTod.value = cfg.runtime.snapTod;
+      displayWeather.value = cfg.runtime.snapWeather;
+    },
+  });
 
   function scheduleTimeout(fn: () => void, ms: number) {
     const id = window.setTimeout(() => {
@@ -124,12 +78,6 @@ export function useSkyWeatherSession(deps: {
   function clearPendingTimeouts() {
     for (const id of pendingTimeouts) window.clearTimeout(id);
     pendingTimeouts.clear();
-  }
-
-  function refreshDisplay(cfg: SkyWeatherConfig) {
-    displayTod.value = resolveDisplayTod(cfg);
-    displayWeather.value = resolveDisplayWeather(cfg);
-    rainbowActive.value = (cfg.runtime.rainbowUntil || 0) > Date.now();
   }
 
   function applyTick() {
@@ -165,8 +113,7 @@ export function useSkyWeatherSession(deps: {
     const manualChanged =
       r.cfg.manualTod !== cfg.manualTod
       || r.cfg.manualWeather !== cfg.manualWeather;
-    const runtimeChanged =
-      JSON.stringify(r.cfg.runtime) !== JSON.stringify(cfg.runtime);
+    const runtimeChanged = skyRuntimeMemoryDirty(cfg.runtime, r.cfg.runtime);
     if (!runtimeChanged && !manualChanged) return;
 
     const shouldPersist =
@@ -174,33 +121,6 @@ export function useSkyWeatherSession(deps: {
       || manualChanged
       || skyRuntimePersistWorthy(cfg.runtime, r.cfg.runtime);
     deps.commit(r.cfg, { persist: shouldPersist });
-  }
-
-  async function maybeSync(opts?: { force?: boolean }) {
-    if (deps.enableNetworkSync === false) return;
-    if (syncing || stopped) return;
-    const cfg = normalizeSkyWeather(deps.config.value);
-    const need =
-      cfg.todMode === "sync" || cfg.weatherMode === "sync";
-    if (!need) return;
-    const intervalMs = cfg.sched.syncIntervalMin * 60 * 1000;
-    if (
-      !opts?.force &&
-      cfg.runtime.everSynced &&
-      Date.now() - cfg.runtime.lastSyncAt < intervalMs
-    ) {
-      return;
-    }
-    syncing = true;
-    try {
-      const next = await syncSkyWeatherFromNetwork(cfg);
-      if (stopped) return;
-      deps.commit(next, { persist: true });
-      displayTod.value = next.runtime.snapTod;
-      displayWeather.value = next.runtime.snapWeather;
-    } finally {
-      syncing = false;
-    }
   }
 
   function ensureSeeded() {
@@ -219,17 +139,19 @@ export function useSkyWeatherSession(deps: {
 
   function start() {
     stopped = false;
+    link.markRunning();
     ensureSeeded();
-    void maybeSync();
+    void link.bootProbe();
     applyTick();
     if (timer) clearInterval(timer);
     timer = setInterval(applyTick, 1000);
     if (syncTimer) clearInterval(syncTimer);
-    syncTimer = setInterval(() => void maybeSync(), 60_000);
+    syncTimer = setInterval(() => void link.maybeSync(), 60_000);
   }
 
   function stop() {
     stopped = true;
+    link.invalidate();
     if (timer) {
       clearInterval(timer);
       timer = null;
@@ -239,8 +161,11 @@ export function useSkyWeatherSession(deps: {
       syncTimer = null;
     }
     clearPendingTimeouts();
-    // 离开页时落盘一次（含 pity），避免会话内每秒写盘
-    deps.commit(normalizeSkyWeather(deps.config.value), { persist: true });
+    // 离开页即时落盘（含 pity），避免防抖未到就卸载
+    deps.commit(normalizeSkyWeather(deps.config.value), {
+      persist: true,
+      flush: true,
+    });
   }
 
   watch(
@@ -248,11 +173,13 @@ export function useSkyWeatherSession(deps: {
       () => deps.config.value.todMode,
       () => deps.config.value.weatherMode,
       () => deps.config.value.regionId,
+      () => deps.config.value.linkMode,
     ],
-    () => {
+    (curr, prev) => {
       refreshDisplay(normalizeSkyWeather(deps.config.value));
-      // 模式/地区真变了才强制拉；多源 watch 避免 sync 写回 manual 再进回调
-      void maybeSync({ force: true });
+      const linkBecameOnline =
+        curr[3] === "online" && (prev?.[3] ?? "") !== "online";
+      link.scheduleModeWatchSync({ forceProbe: linkBecameOnline });
     }
   );
 
@@ -274,8 +201,10 @@ export function useSkyWeatherSession(deps: {
     displayWeather,
     rainbowActive,
     activeEvents,
+    netOnline: link.netOnline,
+    netCityId: link.netCityId,
+    linkBusy: link.linkBusy,
+    refreshLinks: link.refreshLinks,
     stop,
-    start,
-    forceSync: maybeSync,
   };
 }

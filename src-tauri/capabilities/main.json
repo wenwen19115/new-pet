@@ -27,6 +27,7 @@
     "allow-get-serial-port-details",
     "allow-get-desk-weather-snapshot",
     "allow-fetch-open-meteo-weather",
+    "allow-fetch-client-geo",
     "allow-edge-tts",
     "fs:allow-exists",
     "fs:allow-read-file",

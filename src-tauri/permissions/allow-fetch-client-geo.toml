@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-fetch-client-geo"
+description = "Allows coarse IP geolocation for sky-weather follow-system"
+commands.allow = ["fetch_client_geo"]

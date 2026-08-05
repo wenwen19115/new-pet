@@ -12,8 +12,10 @@ import {
   type SkyWeatherRuntimeState,
   isEggWeatherId,
   resolveTodFromDate,
+  resolveTodFromSun,
   regionWeatherOrFallback,
 } from "@/pet/data/skyWeather";
+import { peekSystemRegionId } from "@/pet/runtime/skyWeatherSystemRegion";
 
 const DAY_TODS = new Set<SkyTodId>(["morning", "noon", "dusk"]);
 const NIGHT_TODS = new Set<SkyTodId>(["evening", "night", "predawn"]);
@@ -47,12 +49,12 @@ const EGG_DEFS: { id: SkyWeatherId; gate: EggGate }[] = [
   { id: "wind-typhoon", gate: null },
 ];
 
-export interface SkyBoost {
+interface SkyBoost {
   baseAdd: number;
   stepAdd: number;
 }
 
-export interface SkyEventDef {
+interface SkyEventDef {
   id: SkyEventId;
   kind: "flyer" | "meteor" | "rainbow";
   weatherOk: (w: SkyWeatherId, rainbowUntil: number, now: number) => boolean;
@@ -152,7 +154,7 @@ function clamp(n: number, lo: number, hi: number) {
   return Math.min(hi, Math.max(lo, n));
 }
 
-export function rollPct(pct: number, rng = Math.random): boolean {
+function rollPct(pct: number, rng = Math.random): boolean {
   return rng() * 100 < clamp(pct, 0, 100);
 }
 
@@ -170,12 +172,16 @@ function pickWeighted(
   return entries[entries.length - 1]?.id ?? null;
 }
 
-export function dayRollKey(d = new Date()): string {
+function dayRollKey(d = new Date()): string {
   return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
 }
 
 export function resolveDisplayTod(cfg: SkyWeatherConfig, now = new Date()): SkyTodId {
   if (cfg.todMode === "fixed" || cfg.todMode === "offline") return cfg.manualTod;
+  // sync：优先用 Open-Meteo 日出日落
+  const rise = cfg.runtime.sunRiseAt || 0;
+  const set = cfg.runtime.sunSetAt || 0;
+  if (rise > 0 && set > rise) return resolveTodFromSun(now, rise, set);
   return resolveTodFromDate(now);
 }
 
@@ -187,7 +193,7 @@ export function resolveDisplayWeather(cfg: SkyWeatherConfig): SkyWeatherId {
   }
   // sync：已同步用 manualWeather（网络或地区回退写入）；未同步前用地区示意
   if (cfg.runtime.everSynced) return cfg.manualWeather;
-  return regionWeatherOrFallback(cfg.regionId).weather;
+  return regionWeatherOrFallback(cfg.regionId, peekSystemRegionId()).weather;
 }
 
 export function rollNormalWeather(
@@ -259,13 +265,13 @@ export function eventChancePct(
   return clamp(base + steps * step, 0, 100);
 }
 
-export function markEventMiss(rt: SkyWeatherRuntimeState, id: SkyEventId) {
+function markEventMiss(rt: SkyWeatherRuntimeState, id: SkyEventId) {
   const p = rt.eventPity[id] || { drySec: 0, lastAt: 0 };
   p.drySec = (p.drySec || 0) + 1;
   rt.eventPity[id] = p;
 }
 
-export function markEventHit(rt: SkyWeatherRuntimeState, id: SkyEventId, sched: SkySchedParams, now: number) {
+function markEventHit(rt: SkyWeatherRuntimeState, id: SkyEventId, sched: SkySchedParams, now: number) {
   rt.eventPity[id] = { drySec: 0, lastAt: now };
   rt.eventCdUntil[id] = now + sched.eventCooldownSec * 1000;
 }
@@ -294,7 +300,7 @@ export function seedOfflineBoot(
 
 export type SkyTickFire = { eventId: SkyEventId; kind: SkyEventDef["kind"] };
 
-export interface SkyTickResult {
+interface SkyTickResult {
   cfg: SkyWeatherConfig;
   fires: SkyTickFire[];
   displayTod: SkyTodId;
@@ -428,21 +434,37 @@ export function tickSkyWeather(
   };
 }
 
-/** 跟随同步成功：写入快照；示意表或 API 天气 */
+/** 跟随同步写入快照；wxOnline 表示实况是否真拉到 */
 export function applySkySyncSuccess(
   cfg: SkyWeatherConfig,
-  opts: { weather?: SkyWeatherId; tod?: SkyTodId; now?: number }
+  opts: {
+    weather?: SkyWeatherId;
+    tod?: SkyTodId;
+    now?: number;
+    wxOnline?: boolean;
+    sunRiseAt?: number;
+    sunSetAt?: number;
+  }
 ): SkyWeatherConfig {
   const now = opts.now ?? Date.now();
   const next = { ...cfg, runtime: { ...cfg.runtime } };
+  if (typeof opts.sunRiseAt === "number" && opts.sunRiseAt > 0) {
+    next.runtime.sunRiseAt = opts.sunRiseAt;
+  }
+  if (typeof opts.sunSetAt === "number" && opts.sunSetAt > 0) {
+    next.runtime.sunSetAt = opts.sunSetAt;
+  }
   if (next.todMode === "sync") {
-    next.manualTod = opts.tod ?? resolveTodFromDate(new Date(now));
+    next.manualTod = opts.tod ?? resolveDisplayTod(next, new Date(now));
   }
   if (next.weatherMode === "sync" && !next.runtime.eggWeather && opts.weather) {
     next.manualWeather = opts.weather;
   }
   next.runtime.everSynced = true;
   next.runtime.lastSyncAt = now;
+  if (typeof opts.wxOnline === "boolean") {
+    next.runtime.wxOnline = opts.wxOnline;
+  }
   next.runtime.snapTod = resolveDisplayTod(next, new Date(now));
   next.runtime.snapWeather = resolveDisplayWeather(next);
   return next;

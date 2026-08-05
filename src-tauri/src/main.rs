@@ -32,6 +32,7 @@ fn main() {
             desk_weather::acquire_desk_weather_watch,
             desk_weather::release_desk_weather_watch,
             sky_weather::fetch_open_meteo_weather,
+            sky_weather::fetch_client_geo,
             tts::list_edge_tts_voices,
             tts::synthesize_edge_tts,
         ])

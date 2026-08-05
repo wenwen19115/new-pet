@@ -17,6 +17,9 @@ export type SkyTodMode = "offline" | "sync" | "fixed";
 /** 天气驱动：离线普通池 | 跟随地区 | 固定 */
 export type SkyWeatherMode = "offline" | "sync" | "fixed";
 
+/** 总闸：在线跟随 / 离线本地（地区落到深圳） */
+export type SkyLinkMode = "online" | "offline";
+
 export type SkyWeatherId =
   | "clear"
   | "cloudy"
@@ -123,6 +126,12 @@ export interface SkyWeatherRuntimeState {
   lastDayRollKey: string;
   lastSyncAt: number;
   everSynced: boolean;
+  /** 实况天气最近一次是否拉到真气象（失败仍可能用示意表） */
+  wxOnline: boolean;
+  /** Open-Meteo 今日日出（epoch ms）；0=无 */
+  sunRiseAt: number;
+  /** Open-Meteo 今日日落（epoch ms）；0=无 */
+  sunSetAt: number;
   snapWeather: SkyWeatherId;
   snapTod: SkyTodId;
   rainbowUntil: number;
@@ -135,6 +144,10 @@ export interface SkyWeatherConfig {
   regionId: string;
   todMode: SkyTodMode;
   weatherMode: SkyWeatherMode;
+  /** 总闸：在线=跟随系统+系统钟+实况；离线=深圳+双离线 */
+  linkMode: SkyLinkMode;
+  /** 是否已按首次联网探测落过总闸默认 */
+  linkBootstrapped: boolean;
   /** 固定或离线手选天色 */
   manualTod: SkyTodId;
   /** 固定或离线手选天气（非极端） */
@@ -172,7 +185,7 @@ export const EGG_WEATHER_IDS: SkyWeatherId[] = [
   "egg-tornado", "egg-thunder", "egg-frog", "egg-diamond", "egg-meteor", "wind-typhoon",
 ];
 
-export const DEFAULT_SKY_SCHED: SkySchedParams = {
+const DEFAULT_SKY_SCHED: SkySchedParams = {
   eventBasePctPerSec: 1,
   eventPityStepPct: 0.5,
   eventPityIntervalSec: 60,
@@ -231,6 +244,9 @@ function emptyRuntime(now = Date.now()): SkyWeatherRuntimeState {
     lastDayRollKey: "",
     lastSyncAt: 0,
     everSynced: false,
+    wxOnline: false,
+    sunRiseAt: 0,
+    sunSetAt: 0,
     snapWeather: "clear",
     snapTod: "noon",
     rainbowUntil: 0,
@@ -238,7 +254,7 @@ function emptyRuntime(now = Date.now()): SkyWeatherRuntimeState {
   };
 }
 
-export function normalizeSkySched(raw: unknown): SkySchedParams {
+function normalizeSkySched(raw: unknown): SkySchedParams {
   const d = DEFAULT_SKY_SCHED;
   const o = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
   const n = (k: keyof SkySchedParams, lo: number, hi: number) =>
@@ -294,7 +310,15 @@ export function normalizeSkyWeather(raw: unknown): SkyWeatherConfig {
   const manualTod = TOD_SET.has(String(o.manualTod)) ? (o.manualTod as SkyTodId) : "morning";
   let manualWeather = String(o.manualWeather || "clear");
   if (!WEATHER_SET.has(manualWeather) || manualWeather === "rainbow") manualWeather = "clear";
-  let regionId = String(o.regionId || "system");
+  const linkMode: SkyLinkMode = o.linkMode === "online" ? "online" : "offline";
+  // 旧档无此字段：视为已落过，避免升级后被首次探测盖掉用户选择
+  const linkBootstrapped =
+    "linkBootstrapped" in o
+      ? Boolean(o.linkBootstrapped)
+      : Object.keys(o).length > 0;
+  let regionId = String(
+    o.regionId || (linkMode === "online" ? "system" : FALLBACK_REGION_ID)
+  );
   if (regionId !== "system" && !SKY_REGIONS[regionId]) regionId = FALLBACK_REGION_ID;
 
   const rtRaw = o.runtime && typeof o.runtime === "object"
@@ -317,12 +341,17 @@ export function normalizeSkyWeather(raw: unknown): SkyWeatherConfig {
       ? (rtRaw.snapWeather as SkyWeatherId)
       : "clear",
     snapTod: TOD_SET.has(String(rtRaw.snapTod)) ? (rtRaw.snapTod as SkyTodId) : "noon",
+    wxOnline: Boolean(rtRaw.wxOnline),
+    sunRiseAt: clampNum(Number(rtRaw.sunRiseAt ?? 0), 0, Number.MAX_SAFE_INTEGER, 0),
+    sunSetAt: clampNum(Number(rtRaw.sunSetAt ?? 0), 0, Number.MAX_SAFE_INTEGER, 0),
   };
 
   return {
     regionId,
     todMode,
     weatherMode,
+    linkMode,
+    linkBootstrapped,
     manualTod,
     manualWeather: manualWeather as SkyWeatherId,
     sched: normalizeSkySched(o.sched),
@@ -331,14 +360,16 @@ export function normalizeSkyWeather(raw: unknown): SkyWeatherConfig {
 }
 
 export const DEFAULT_SKY_WEATHER: SkyWeatherConfig = normalizeSkyWeather({
-  regionId: "system",
+  regionId: FALLBACK_REGION_ID,
   todMode: "offline",
   weatherMode: "offline",
+  linkMode: "offline",
+  linkBootstrapped: false,
   manualTod: "morning",
   manualWeather: "clear",
 });
 
-/** 系统钟 → 天色 */
+/** 系统钟 → 天色（无日照数据时的回退） */
 export function resolveTodFromDate(date = new Date()): SkyTodId {
   const h = date.getHours() + date.getMinutes() / 60;
   if (h >= 5 && h < 10) return "morning";
@@ -349,7 +380,48 @@ export function resolveTodFromDate(date = new Date()): SkyTodId {
   return "predawn";
 }
 
-export function resolveRegionByTimezone(): { id: string; source: string } {
+/**
+ * 按当地日出日落切天色；无效则回退 resolveTodFromDate。
+ * 白天按时长比例切晨/午/暮，日落后 evening→night，日出前 predawn。
+ */
+export function resolveTodFromSun(
+  date: Date,
+  sunRiseAt: number,
+  sunSetAt: number
+): SkyTodId {
+  if (
+    !Number.isFinite(sunRiseAt)
+    || !Number.isFinite(sunSetAt)
+    || sunRiseAt <= 0
+    || sunSetAt <= 0
+    || sunSetAt <= sunRiseAt
+  ) {
+    return resolveTodFromDate(date);
+  }
+  const t = date.getTime();
+  const dayLen = sunSetAt - sunRiseAt;
+  const predawnMs = 90 * 60 * 1000;
+  const eveningMs = 120 * 60 * 1000;
+  if (t < sunRiseAt - predawnMs) return "night";
+  if (t < sunRiseAt) return "predawn";
+  if (t < sunRiseAt + dayLen * 0.28) return "morning";
+  if (t < sunRiseAt + dayLen * 0.72) return "noon";
+  if (t < sunSetAt) return "dusk";
+  if (t < sunSetAt + eveningMs) return "evening";
+  return "night";
+}
+
+/**
+ * Open-Meteo `timezone=auto` 常返回无偏移本地 ISO（如 `2026-06-01T06:00`）。
+ * 无 Z/偏移时按运行环境本地墙钟解析；带 Z/偏移按 UTC/偏移。失败回 0。
+ */
+export function parseOpenMeteoIso(iso: string | undefined | null): number {
+  if (!iso || typeof iso !== "string") return 0;
+  const ms = Date.parse(iso);
+  return Number.isFinite(ms) ? ms : 0;
+}
+
+function resolveRegionByTimezone(): { id: string; source: string } {
   let tz = "";
   try {
     tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
@@ -385,13 +457,23 @@ export function nearestSkyRegion(lat: number, lon: number): string {
   return best;
 }
 
-export function regionWeatherOrFallback(regionId: string): {
+/**
+ * 示意城天气；`system` 时用调用方传入的定位城（runtime peek），否则时区粗估。
+ * 不在 data 层持有可变全局，避免 runtime 副作用倒灌。
+ */
+export function regionWeatherOrFallback(
+  regionId: string,
+  systemResolvedId?: string | null
+): {
   ok: boolean;
   weather: SkyWeatherId;
   regionId: string;
 } {
   if (regionId === "system") {
-    const id = resolveRegionByTimezone().id;
+    const id =
+      systemResolvedId && SKY_REGIONS[systemResolvedId]
+        ? systemResolvedId
+        : resolveRegionByTimezone().id;
     const r = SKY_REGIONS[id] || SKY_REGIONS[FALLBACK_REGION_ID]!;
     return { ok: true, weather: r.weather, regionId: r.id };
   }

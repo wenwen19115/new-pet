@@ -18,6 +18,7 @@ export type {
   SkyWeatherConfig,
   SkyTodMode,
   SkyWeatherMode,
+  SkyLinkMode,
   SkyTodId,
   SkyWeatherId,
 } from "./skyWeather";
