@@ -21,7 +21,7 @@
 | `hostAlive` | `usePetHostLifecycle` | |
 | settings 镜像 | `usePetSettingsSync` | 可能再发 `random-idle-setting`；deskWeather 变更时调用 `refreshDeskWeather` |
 | 工位气象 | `usePetDeskWeather`（poll + engine） | bridge 只 invoke（快照 / acquire·release 租约）；冷却在 engine；说话成功后再 commit |
-| 窗外天气 | 设置页 `useSkyWeatherPreview` → `useSkyWeatherSession`（tick）+ `skyWeatherLinkController`（联网） | 配置在 `PetSettings.skyWeather`；**联网总闸** `linkMode`；**`enableOnPet`（默认关）** 由「窗景」tab / 预览说明右侧 / 右键菜单开关，开时桌宠 `useSkyWeatherPetBackdrop` 为 tick leader、设置预览镜像，关时设置页为 leader；桌宠 HWND **固定窗景画布**（开关只显隐动效、不扩/缩窗；zoom/换模钉中心见 `windowAnchor`）；**`bgOpacity`（默认 1）** 只淡化桌宠窗景背景；**`hideableOnPet`（默认开）** 时拖拽/飞行/peek 收起窗景，关则始终完整显示；**`hideEffectOnPet`**（`vortexHalo`/`fade`/`suckPoint`/`shutter`，默认漩涡光晕）定收起动效；落盘：设置页经 `schedulePersist`（unmount / session.stop flush），桌宠 leader 经 `publishPetSettings`（`stopLeader` / session.stop 的 flush 在 leader 已关后仍落盘）；瞬时飞行物经 `SKY_WEATHER_FIRE_EVENT`；≠ 工位气象 |
+| 窗外天气 | 设置页 `useSkyWeatherPreview` → `useSkyWeatherSession`（tick）+ `skyWeatherLinkController`（联网） | 配置在 `PetSettings.skyWeather`；**天气系统** `linkMode`（切在线经 `probeSkyNet` 先探测，失败保持离线并提示；已在线探测失败回落离线）；左侧预览徽章**始终**显示联网探测状态；驱动行右侧值槽定宽（固定可改 / 其它只读同槽）；**`enableOnPet`（默认关）** 由「窗景」tab / 右键菜单应用组开关，开时桌宠 `useSkyWeatherPetBackdrop` 为 tick leader、设置预览镜像，关时设置页为 leader；桌宠 HWND **固定窗景画布**（开关只显隐动效、不扩/缩窗；zoom/换模钉中心见 `windowAnchor`）；**`bgOpacity`（默认 1）** 只淡化桌宠窗景背景；**`hideableOnPet`（默认开）** 时拖拽/飞行/peek 收起窗景，关则始终完整显示；**`hideEffectOnPet`**（`vortexHalo`/`fade`/`suckPoint`/`shutter`，默认漩涡光晕）定收起动效；落盘：设置页经 `schedulePersist`（unmount / session.stop flush），桌宠 leader 经 `publishPetSettings`（`stopLeader` / session.stop 的 flush 在 leader 已关后仍落盘）；瞬时飞行物经 `SKY_WEATHER_FIRE_EVENT`；≠ 工位气象 |
 
 host 内请勿直接赋值 `mood.value`。
 

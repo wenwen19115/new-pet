@@ -22,7 +22,7 @@
 | 14 | Theme Pack | 设置 → 应用：切换 `theme.style` 后整页配色/边框即时变；气泡与菜单窗跟包；与 look（形象）独立、互不覆盖 | `src/theme/` + settings sync |
 | 15 | 壁纸层 | 背景模式切「壁纸」选图/GIF/视频后舞台显示；压暗与适配生效；切回「跟随风格」恢复 pack 底 | `ThemeMediaLayer` / `stageBackdrop` |
 | 16 | 开机动画 | 开启后重启设置窗见闪屏；auto / media / manual 时长符合预期；可跳过；无媒体或失败时不卡死 | `bootHold` / `BootAnimationSettings` |
-| 17 | 窗外天气 | 设置 → 天气：联网总闸 + 天色/天气/地区；离线总闸锁死实况/定位城；实况一次拉 Open-Meteo；左侧预览联网状态 + 刷新；**在线探测失败回落离线**。**窗景 tab**：投射/透明度/`hideableOnPet`（拖拽·飞行·peek）/`hideEffectOnPet`；预览说明右侧与右键菜单可快速开关投射；开关时设置/桌宠 tick 互斥；桌宠 HWND 固定窗景画布（开关不 `setSize`；zoom/换模钉中心）；关投射/关设置页后 pity 等 runtime 仍落盘；窗景 phase（appear/dismiss/busy/gen） | `skyWeather.smoke.test.ts`（含 `usePetSkySurface`）；预览缩放 `previewFit.smoke.test.ts` |
+| 17 | 窗外天气 | 设置 → **窗景**：上半段投射；下半段**天气系统**在线/离线（切在线**先探测**，失败则保持离线）+ 天色/天气/地区；驱动行右侧值槽固定宽（固定可改 / 其它只读）；左侧预览始终联网状态；**在线探测失败回落离线** | `skyWeather.smoke.test.ts`；`previewFit.smoke.test.ts` |
 | 18 | 右键菜单 / 摸鱼 | 展开摸鱼仪表盘见「今日摸鱼一行」；互动后计数变化；清缓存或出厂后战绩归零；「退出召唤」关 `enabled` 并软隐藏桌宠 | `moyuDay.smoke.test.ts` |
 
 ## 勾选范围
