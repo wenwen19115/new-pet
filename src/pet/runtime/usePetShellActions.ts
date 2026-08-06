@@ -2,12 +2,16 @@ import type { ComputedRef, Ref } from "vue";
 import { hidePetBubble } from "@/pet/windows/bubble";
 import { hidePetChat, showPetChat } from "@/pet/windows/chat";
 import { requestOpenPetSettings, requestPinPetSettings } from "@/pet/bridge/hostBridge";
+import { syncPetWindow } from "@/pet/windows/pet";
 import {
   hidePetMenu,
   showPetMenu,
   type PetMenuAction,
 } from "@/pet/windows/menu";
 import { bumpMoyuDay } from "@/pet/data/moyuDay";
+import { normalizeSkyWeather } from "@/pet/data/skyWeather";
+import { patchPetSettings, publishPetSettings } from "@/pet/data/settings";
+import { clearPetIntroPending } from "@/pet/data/storageKeys";
 import { filterEnabledMotions } from "@/pet/content/dialogue/customLines";
 import {
   characterSupportsVrmAssets,
@@ -49,6 +53,7 @@ export function usePetShellActions(deps: {
   startPeek?: () => void | Promise<boolean>;
   revealPeek?: () => void | Promise<boolean>;
   tryRevealPeekOnTap?: () => boolean;
+  skyVisualHold?: Ref<boolean>;
 }) {
   let tapTimes: number[] = [];
 
@@ -145,6 +150,7 @@ export function usePetShellActions(deps: {
       chatEnabled: deps.settings.value.chatEnabled,
       statsExpandDefault: deps.settings.value.sysStatsDefaultExpanded,
       peekHidden: Boolean(deps.isPeeking?.()),
+      skyOnPet: Boolean(deps.settings.value.skyWeather?.enableOnPet),
     });
   }
 
@@ -194,6 +200,26 @@ export function usePetShellActions(deps: {
     }
     if (action === "reveal") {
       void deps.revealPeek?.();
+      return;
+    }
+    if (action === "sky-on-pet") {
+      const sw = normalizeSkyWeather(deps.settings.value.skyWeather);
+      const nextOn = !sw.enableOnPet;
+      if (!nextOn && deps.skyVisualHold) deps.skyVisualHold.value = true;
+      void publishPetSettings({
+        ...deps.settings.value,
+        skyWeather: { ...sw, enableOnPet: nextOn },
+      }).then((next) => {
+        deps.settings.value = next;
+      });
+      return;
+    }
+    if (action === "dismiss") {
+      clearPetIntroPending();
+      void patchPetSettings({ enabled: false }).then((next) => {
+        deps.settings.value = next;
+        return syncPetWindow();
+      });
     }
   }
 

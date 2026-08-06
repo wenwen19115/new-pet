@@ -1,9 +1,9 @@
 import type { Ref } from "vue";
-import { LogicalSize } from "@tauri-apps/api/dpi";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { syncPetBubbleToPet } from "@/pet/windows/bubble";
 import { hidePetChat } from "@/pet/windows/chat";
+import { setWindowSizeKeepCenter } from "@/pet/bridge/windowAnchor";
 import { isCustomVrmMotionId } from "@/pet/content/motion/customVrmMotions";
 import { isPetIdleMotion } from "@/pet/content/motion/motions";
 import { loadPetSettings } from "@/pet/data/settings";
@@ -63,6 +63,7 @@ export function usePetHostLifecycle(deps: {
   clearLifeTimers: () => void;
   clearUsbFollowUpTimer: () => void;
   clearDeskWeather: () => void;
+  clearSkyWeatherBackdrop: () => void;
   clearMotionTimers: () => void;
   resetDragState: () => void;
   syncWindowCenter: () => Promise<unknown>;
@@ -78,6 +79,7 @@ export function usePetHostLifecycle(deps: {
   refreshVrmSrc: () => void | Promise<void>;
   refreshUsbWatch: () => void;
   refreshDeskWeather: () => void;
+  refreshSkyWeatherBackdrop: () => void;
   applySettings: (
     next: PetSettings | Partial<PetSettings>,
     options?: { introIfSkinChanged?: boolean }
@@ -93,6 +95,8 @@ export function usePetHostLifecycle(deps: {
   let rafId = 0;
   let lastTick = 0;
   let frame = 0;
+  /** 串行改尺寸，避免并发读到中间态 */
+  let resizeTail: Promise<void> = Promise.resolve();
 
   let unlistenSettings: UnlistenFn | null = null;
   let unlistenMotion: UnlistenFn | null = null;
@@ -114,22 +118,24 @@ export function usePetHostLifecycle(deps: {
     deps.moodResetTimerRef.set(null);
     deps.clearUsbFollowUpTimer();
     deps.clearDeskWeather();
+    deps.clearSkyWeatherBackdrop();
     deps.clearMotionTimers();
   }
 
-  async function resizePetWindow() {
-    if (!deps.hostAliveRef.get()) return;
-    try {
-      const win = getCurrentWindow();
-      const size = deps.winSize.value;
-      await win.setSize(new LogicalSize(size.w, size.h));
-      const scale = await win.scaleFactor();
-      const outer = (await win.outerPosition()).toLogical(scale);
-      deps.setWinCenterFromResize(outer);
-      if (deps.speaking.value) void syncPetBubbleToPet();
-    } catch {
-      // ignore
-    }
+  function resizePetWindow(): Promise<void> {
+    const run = async () => {
+      if (!deps.hostAliveRef.get()) return;
+      try {
+        const win = getCurrentWindow();
+        const pos = await setWindowSizeKeepCenter(win, deps.winSize.value);
+        deps.setWinCenterFromResize(pos);
+        if (deps.speaking.value) void syncPetBubbleToPet();
+      } catch {
+        // ignore
+      }
+    };
+    resizeTail = resizeTail.then(run, run);
+    return resizeTail;
   }
 
   function loop(now: number) {
@@ -182,7 +188,7 @@ export function usePetHostLifecycle(deps: {
     petStore.setSettings(deps.settings.value);
     try {
       const win = getCurrentWindow();
-      await win.setSize(new LogicalSize(deps.winSize.value.w, deps.winSize.value.h));
+      await setWindowSizeKeepCenter(win, deps.winSize.value);
       await deps.syncWindowCenter();
     } catch {
       // ignore
@@ -196,6 +202,7 @@ export function usePetHostLifecycle(deps: {
     await deps.refreshVrmSrc();
     deps.refreshUsbWatch();
     deps.refreshDeskWeather();
+    deps.refreshSkyWeatherBackdrop();
     flushPendingIntro();
   }
 
@@ -206,7 +213,7 @@ export function usePetHostLifecycle(deps: {
 
     try {
       const win = getCurrentWindow();
-      await win.setSize(new LogicalSize(deps.winSize.value.w, deps.winSize.value.h));
+      await setWindowSizeKeepCenter(win, deps.winSize.value);
       await deps.syncWindowCenter();
       await deps.initCursorLog();
     } catch {
@@ -265,7 +272,9 @@ export function usePetHostLifecycle(deps: {
           action !== "hide" &&
           action !== "reveal" &&
           action !== "perform" &&
-          action !== "playful"
+          action !== "playful" &&
+          action !== "sky-on-pet" &&
+          action !== "dismiss"
         ) {
           return;
         }
@@ -303,6 +312,7 @@ export function usePetHostLifecycle(deps: {
     });
     deps.refreshUsbWatch();
     deps.refreshDeskWeather();
+    deps.refreshSkyWeatherBackdrop();
     window.addEventListener("storage", deps.onStorage);
     flushPendingIntro();
   }

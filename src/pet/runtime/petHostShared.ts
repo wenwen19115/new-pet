@@ -43,6 +43,9 @@ export function createPetHostShared() {
   );
   const activeCharacter = computed(() => getCharacter(activeSkin.value.model));
   const v = computed(() => activeSkin.value.visual);
+  /** 关投射动效未结束前仍为 true（停会话用）；窗尺寸固定窗景画布，不随开关伸缩 */
+  const skyVisualHold = ref(false);
+  // 桌宠 HWND 固定窗景画布：开关投射只做显隐动效，避免透明窗 setSize 闪烁
   const winSize = computed(() =>
     petWindowSize(activeSkin.value.model, settings.value.zoomPercent)
   );
@@ -66,6 +69,7 @@ export function createPetHostShared() {
     activeCharacter,
     v,
     winSize,
+    skyVisualHold,
     bodyBox,
     activeModel,
     applyMood,

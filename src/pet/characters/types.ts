@@ -48,7 +48,6 @@ interface CharacterPreviewActor {
 }
 
 interface CharacterSizeSpec {
-  safeMargin: number;
   /** Bubble Y offset as a fraction of body height (negative = upward) */
   bubbleOffsetYFactor: number;
   bodyBox: (

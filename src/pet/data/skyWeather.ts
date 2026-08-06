@@ -139,6 +139,20 @@ export interface SkyWeatherRuntimeState {
   eggWeather: string;
 }
 
+/** 桌宠窗景忙碌收起动效 */
+export type SkyPetHideEffect =
+  | "vortexHalo"
+  | "fade"
+  | "suckPoint"
+  | "shutter";
+
+export const SKY_PET_HIDE_EFFECTS: SkyPetHideEffect[] = [
+  "vortexHalo",
+  "fade",
+  "suckPoint",
+  "shutter",
+];
+
 export interface SkyWeatherConfig {
   /** 地区：system = 跟随系统解析；否则城市 id */
   regionId: string;
@@ -152,9 +166,71 @@ export interface SkyWeatherConfig {
   manualTod: SkyTodId;
   /** 固定或离线手选天气（非极端） */
   manualWeather: SkyWeatherId;
+  /** 投射完整窗景到桌宠主窗；默认关 */
+  enableOnPet: boolean;
+  /** 桌宠窗景背景不透明度 0..1；默认 1 */
+  bgOpacity: number;
+  /** 拖拽/飞行/peek 时是否收起窗景；默认开 */
+  hideableOnPet: boolean;
+  /** 收起动效；默认漩涡光晕 */
+  hideEffectOnPet: SkyPetHideEffect;
   sched: SkySchedParams;
   runtime: SkyWeatherRuntimeState;
 }
+
+/** tick leader 广播瞬时事件（飞行物等）给镜像窗 */
+export const SKY_WEATHER_FIRE_EVENT = "pet://sky-weather-fire";
+
+/** 镜像窗请求 leader 刷新联网 */
+export const SKY_WEATHER_REFRESH_EVENT = "pet://sky-weather-refresh";
+
+/** 设置页 / 桌宠 leader 共用落盘防抖 */
+export const SKY_WEATHER_PERSIST_DEBOUNCE_MS = 420;
+
+/** 两 leader 共用：schedule 合并；flush 立刻跑（force 时无排队也跑） */
+export function createDebouncedPersist(
+  run: () => void | Promise<void>,
+  delayMs = SKY_WEATHER_PERSIST_DEBOUNCE_MS
+) {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let queued = false;
+
+  function clearTimer() {
+    if (!timer) return;
+    clearTimeout(timer);
+    timer = null;
+  }
+
+  function schedule() {
+    queued = true;
+    if (timer) return;
+    timer = setTimeout(() => {
+      timer = null;
+      if (!queued) return;
+      queued = false;
+      void run();
+    }, delayMs);
+  }
+
+  function flush(force = false) {
+    clearTimer();
+    if (!queued && !force) return;
+    queued = false;
+    void run();
+  }
+
+  function discard() {
+    clearTimer();
+    queued = false;
+  }
+
+  return { schedule, flush, discard };
+}
+
+export type SkyWeatherFirePayload = {
+  events: SkyEventId[];
+  at: number;
+};
 
 export const FALLBACK_REGION_ID = "shenzhen";
 
@@ -296,9 +372,15 @@ function normalizeSkySched(raw: unknown): SkySchedParams {
 const TOD_SET = new Set<string>(["morning", "noon", "dusk", "evening", "night", "predawn"]);
 const MODE_SET = new Set<string>(["offline", "sync", "fixed"]);
 const WEATHER_SET = new Set<string>([...NORMAL_WEATHER_POOL, ...EGG_WEATHER_IDS]);
+const HIDE_EFFECT_SET = new Set<string>(SKY_PET_HIDE_EFFECTS);
 
 export function isEggWeatherId(id: string): boolean {
   return EGG_WEATHER_IDS.includes(id as SkyWeatherId);
+}
+
+export function normalizeSkyPetHideEffect(raw: unknown): SkyPetHideEffect {
+  const s = String(raw || "");
+  return HIDE_EFFECT_SET.has(s) ? (s as SkyPetHideEffect) : "vortexHalo";
 }
 
 export function normalizeSkyWeather(raw: unknown): SkyWeatherConfig {
@@ -354,6 +436,10 @@ export function normalizeSkyWeather(raw: unknown): SkyWeatherConfig {
     linkBootstrapped,
     manualTod,
     manualWeather: manualWeather as SkyWeatherId,
+    enableOnPet: "enableOnPet" in o ? Boolean(o.enableOnPet) : false,
+    bgOpacity: clampNum(Number(o.bgOpacity ?? 1), 0, 1, 1),
+    hideableOnPet: "hideableOnPet" in o ? Boolean(o.hideableOnPet) : true,
+    hideEffectOnPet: normalizeSkyPetHideEffect(o.hideEffectOnPet),
     sched: normalizeSkySched(o.sched),
     runtime,
   };
@@ -367,6 +453,10 @@ export const DEFAULT_SKY_WEATHER: SkyWeatherConfig = normalizeSkyWeather({
   linkBootstrapped: false,
   manualTod: "morning",
   manualWeather: "clear",
+  enableOnPet: false,
+  bgOpacity: 1,
+  hideableOnPet: true,
+  hideEffectOnPet: "vortexHalo",
 });
 
 /** 系统钟 → 天色（无日照数据时的回退） */

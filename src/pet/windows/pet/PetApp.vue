@@ -1,8 +1,45 @@
 <template>
   <div class="pet-root" :style="rootStyle">
     <div
+      v-if="skySurfaceOn"
+      class="pet-sky-vortex"
+      :data-vortex="skyVortexPhase"
+      :data-hide-effect="skyHideEffectOnPet"
+      :style="skyBackdropStyle"
+    >
+      <div class="pet-sky-vortex-spin">
+        <!-- 底部室内底板：补全窗台以下透明区 -->
+        <i class="pet-sky-floor" aria-hidden="true" />
+        <HeroWindowWorld
+          class="pet-sky-backdrop"
+          :tod="skyDisplayTod"
+          :weather="skyDisplayWeather"
+          :family="skyWindowFamily"
+          :follow-clock="skyFollowClock"
+          :rainbow="skyRainbow"
+          :events="skyEvents"
+          :clip-actor="false"
+        />
+      </div>
+      <!-- 漩涡光晕：收束时的水流旋纹 -->
+      <i
+        v-if="skyHideEffectOnPet === 'vortexHalo'"
+        class="pet-sky-flow"
+        aria-hidden="true"
+      />
+    </div>
+    <!-- 漩涡光晕：收束后主题色旋转光晕 -->
+    <i
+      v-if="skyHaloVisible"
+      class="pet-sky-halo"
+      :data-vortex="skyVortexPhase"
+      :style="skyHaloStyle"
+      aria-hidden="true"
+    />
+    <div
       class="pet-stage"
       :data-model="activeSkin.model"
+      :data-sky="skyStageClip ? '1' : '0'"
       :style="stageFlyStyle"
     >
       <PetMeteorTrail
@@ -64,11 +101,14 @@
 import { computed, onMounted, onUnmounted } from "vue";
 import { characterHas } from "@/pet/characters";
 import { createPetHost } from "@/pet/runtime";
+import { usePetSkySurface } from "@/pet/runtime/usePetSkySurface";
 import { PetMeteorTrail } from "@/pet/models";
+import HeroWindowWorld from "@/pet/models/preview/HeroWindowWorld.vue";
 import { resolvePetShellBobAnimation } from "@/pet/content/shell/petShellMotions";
 import { resolveTrailStyle } from "@/pet/content/motion/trailStyles";
 import { resolveNickname } from "@/pet/skins";
 import "@/pet/content/shell/petShellMotions.css";
+import "./petSkySurface.css";
 
 const host = createPetHost();
 const {
@@ -82,6 +122,7 @@ const {
   v,
   bodyBox,
   isDragging,
+  isPeeking,
   showHitBounds,
   dragTrailAngle,
   dragTrailSpeed,
@@ -100,7 +141,39 @@ const {
   onContextMenu,
   mount,
   dispose,
+  skyBackdropEnabled,
+  skyHideableOnPet,
+  skyHideEffectOnPet,
+  skyDisplayTod,
+  skyDisplayWeather,
+  skyRainbow,
+  skyEvents,
+  skyFollowClock,
+  skyWindowFamily,
+  skyBackdropStyle,
+  skyVisualHold,
+  finishSkyDismiss,
 } = host;
+
+const {
+  skySurfaceOn,
+  skyVortexPhase,
+  skyStageClip,
+  skyHaloVisible,
+  skyHaloStyle,
+} = usePetSkySurface({
+  skyBackdropEnabled,
+  skyHideableOnPet,
+  skyHideEffectOnPet,
+  skyBackdropStyle,
+  bodyBox,
+  isDragging,
+  isPeeking,
+  flyVisualX,
+  flyVisualY,
+  skyVisualHold,
+  finishSkyDismiss,
+});
 
 const displayName = computed(() =>
   resolveNickname(settings.value.nickname, activeSkin.value)
@@ -215,6 +288,7 @@ onUnmounted(() => {
 .pet-stage {
   position: absolute;
   inset: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -232,9 +306,13 @@ onUnmounted(() => {
   backface-visibility: visible;
 }
 
+.pet-stage[data-sky="1"] {
+  overflow: hidden;
+}
+
 .pet-avatar {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: var(--pet-body-w, var(--pet-body, 108px));
   height: var(--pet-body-h, var(--pet-body, 108px));
   flex-shrink: 0;

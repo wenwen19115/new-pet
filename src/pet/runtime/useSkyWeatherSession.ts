@@ -36,6 +36,8 @@ export function useSkyWeatherSession(deps: {
   onFire?: (fires: SkyTickFire[]) => void;
   /** 是否跑真同步；默认 true */
   enableNetworkSync?: boolean;
+  /** 默认 true；桌宠/设置按 enableOnPet 互斥启停 */
+  autoStart?: boolean;
 }) {
   const displayTod = ref<SkyTodId>(resolveTodFromDate());
   const displayWeather = ref<SkyWeatherId>("clear");
@@ -150,6 +152,8 @@ export function useSkyWeatherSession(deps: {
   }
 
   function stop() {
+    // 父级显式 stop + onUnmounted(stop) 会叠一次；只 flush 首趟
+    if (stopped) return;
     stopped = true;
     link.invalidate();
     if (timer) {
@@ -193,7 +197,7 @@ export function useSkyWeatherSession(deps: {
     }
   );
 
-  start();
+  if (deps.autoStart !== false) start();
   onUnmounted(stop);
 
   return {
@@ -205,6 +209,7 @@ export function useSkyWeatherSession(deps: {
     netCityId: link.netCityId,
     linkBusy: link.linkBusy,
     refreshLinks: link.refreshLinks,
+    start,
     stop,
   };
 }

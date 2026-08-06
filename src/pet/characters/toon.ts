@@ -32,7 +32,6 @@ export const characterToon: CharacterDef = {
   },
   lookIds: STANDARD_LOOK_IDS,
   size: {
-    safeMargin: 36,
     bubbleOffsetYFactor: -0.06,
     bodyBox: (scale, screen) => {
       const short = Math.min(screen.availW, screen.availH);

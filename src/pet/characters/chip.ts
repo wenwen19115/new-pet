@@ -35,7 +35,6 @@ export const characterChip: CharacterDef = {
   },
   lookIds: STANDARD_LOOK_IDS,
   size: {
-    safeMargin: 28,
     bubbleOffsetYFactor: 0,
     bodyBox: (scale, screen) => {
       const short = Math.min(screen.availW, screen.availH);

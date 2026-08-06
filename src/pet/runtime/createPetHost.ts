@@ -1,3 +1,4 @@
+import { ref } from "vue";
 import { hidePetBubble, syncPetBubbleToPet } from "@/pet/windows/bubble";
 import { hidePetChat } from "@/pet/windows/chat";
 import { hidePetMenu, isPetMenuOpen } from "@/pet/windows/menu";
@@ -9,6 +10,7 @@ import { usePetPlayfulHost } from "./usePetPlayfulHost";
 import { usePetPeekHost } from "./usePetPeekHost";
 import { usePetSpeech } from "./usePetSpeech";
 import { usePetDeskWeather } from "./usePetDeskWeather";
+import { useSkyWeatherPetBackdrop } from "./useSkyWeatherPetBackdrop";
 import { usePetHostLifecycle } from "./usePetHostLifecycle";
 import { usePetSettingsSync } from "./usePetSettingsSync";
 import { usePetShellActions } from "./usePetShellActions";
@@ -46,10 +48,14 @@ function wirePetHost(s: PetHostShared) {
     activeCharacter,
     v,
     winSize,
+    skyVisualHold,
     bodyBox,
     activeModel,
     applyMood,
   } = s;
+
+  /** 与 peekPausesRandomIdle 同步，供 PetApp 响应式订阅 */
+  const isPeeking = ref(false);
 
   let tickPlayfulProximity: (
     cursor: { x: number; y: number },
@@ -222,6 +228,14 @@ function wirePetHost(s: PetHostShared) {
     },
   });
 
+  let resizePetWindow: () => Promise<void> =
+    async () => {};
+
+  const skyBackdrop = useSkyWeatherPetBackdrop({
+    settings,
+    skyVisualHold,
+  });
+
   bindPorts({
     resetSleepTimer: life.resetSleepTimer,
     scheduleAutoSpeak: life.scheduleAutoSpeak,
@@ -263,6 +277,7 @@ function wirePetHost(s: PetHostShared) {
     peekPausesRandomIdle: () => s.peekPausesRandomIdle,
     setPeekPausesRandomIdle: (active) => {
       s.peekPausesRandomIdle = active;
+      isPeeking.value = active;
     },
     setIdleActionTimer: motionHost.setIdleActionTimer,
     cancelFlight: motionHost.cancelFlight,
@@ -277,8 +292,6 @@ function wirePetHost(s: PetHostShared) {
     dispatchIntent(intent);
   }
 
-  let resizePetWindow: () => void | Promise<void> = () => {};
-
   const settingsSync = usePetSettingsSync({
     settings,
     vrmSrc,
@@ -287,6 +300,7 @@ function wirePetHost(s: PetHostShared) {
     getActiveSkinModel: () => activeSkin.value.model,
     refreshUsbWatch: life.refreshUsbWatch,
     refreshDeskWeather: deskWeather.refreshDeskWeather,
+    refreshSkyWeatherBackdrop: skyBackdrop.refreshSkyWeatherBackdrop,
     resizePetWindow: () => resizePetWindow(),
     onRandomIdleSetting: (enabled) => {
       dispatch({ type: "random-idle-setting", enabled });
@@ -317,6 +331,7 @@ function wirePetHost(s: PetHostShared) {
     startPeek: () => peek.startPeek(),
     revealPeek: () => peek.revealPeek(),
     tryRevealPeekOnTap: () => peek.tryRevealOnTap(),
+    skyVisualHold,
   });
 
   const lifecycle = usePetHostLifecycle({
@@ -359,6 +374,7 @@ function wirePetHost(s: PetHostShared) {
     clearLifeTimers: life.clearLifeTimers,
     clearUsbFollowUpTimer: speech.clearUsbFollowUpTimer,
     clearDeskWeather: deskWeather.clearDeskWeather,
+    clearSkyWeatherBackdrop: skyBackdrop.clearSkyWeatherBackdrop,
     clearMotionTimers: motionHost.clearMotionTimers,
     resetDragState: pointerHost.resetDragState,
     syncWindowCenter: pointerHost.syncWindowCenter,
@@ -374,6 +390,7 @@ function wirePetHost(s: PetHostShared) {
     refreshVrmSrc: settingsSync.refreshVrmSrc,
     refreshUsbWatch: life.refreshUsbWatch,
     refreshDeskWeather: deskWeather.refreshDeskWeather,
+    refreshSkyWeatherBackdrop: skyBackdrop.refreshSkyWeatherBackdrop,
     applySettings: settingsSync.applySettings,
     speakIntro: speech.speakIntro,
     speakBubblePong: speech.speakBubblePong,
@@ -398,6 +415,7 @@ function wirePetHost(s: PetHostShared) {
     v,
     bodyBox,
     isDragging: pointerHost.isDragging,
+    isPeeking,
     showHitBounds: pointerHost.showHitBounds,
     dragTrailAngle: pointerHost.dragTrailAngle,
     dragTrailSpeed: pointerHost.dragTrailSpeed,
@@ -416,5 +434,17 @@ function wirePetHost(s: PetHostShared) {
     onContextMenu: shell.onContextMenu,
     mount: lifecycle.mount,
     dispose: lifecycle.dispose,
+    skyBackdropEnabled: skyBackdrop.skyBackdropEnabled,
+    skyHideableOnPet: skyBackdrop.skyHideableOnPet,
+    skyHideEffectOnPet: skyBackdrop.skyHideEffectOnPet,
+    skyDisplayTod: skyBackdrop.skyDisplayTod,
+    skyDisplayWeather: skyBackdrop.skyDisplayWeather,
+    skyRainbow: skyBackdrop.skyRainbow,
+    skyEvents: skyBackdrop.skyEvents,
+    skyFollowClock: skyBackdrop.skyFollowClock,
+    skyWindowFamily: skyBackdrop.skyWindowFamily,
+    skyBackdropStyle: skyBackdrop.skyBackdropStyle,
+    skyVisualHold,
+    finishSkyDismiss: skyBackdrop.finishSkyDismiss,
   };
 }

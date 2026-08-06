@@ -1,8 +1,11 @@
 import { createApp, defineComponent, h, nextTick, ref } from "vue";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  createDebouncedPersist,
   DEFAULT_SKY_WEATHER,
   normalizeSkyWeather,
+  normalizeSkyPetHideEffect,
+  SKY_PET_HIDE_EFFECTS,
   resolveTodFromDate,
   resolveTodFromSun,
   parseOpenMeteoIso,
@@ -58,6 +61,34 @@ describe("sky weather", () => {
     expect(normalizeSkyWeather(undefined).regionId).toBe(FALLBACK_REGION_ID);
     expect(normalizeSkyWeather({}).regionId).toBe(FALLBACK_REGION_ID);
     expect(normalizeSkyWeather({ linkMode: "online" }).regionId).toBe("system");
+    expect(DEFAULT_SKY_WEATHER.enableOnPet).toBe(false);
+    expect(DEFAULT_SKY_WEATHER.bgOpacity).toBe(1);
+    expect(DEFAULT_SKY_WEATHER.hideableOnPet).toBe(true);
+    expect(DEFAULT_SKY_WEATHER.hideEffectOnPet).toBe("vortexHalo");
+    expect(normalizeSkyWeather({}).enableOnPet).toBe(false);
+    expect(normalizeSkyWeather({}).hideableOnPet).toBe(true);
+    expect(normalizeSkyWeather({ enableOnPet: true, bgOpacity: 0.4 }).enableOnPet).toBe(
+      true
+    );
+    expect(normalizeSkyWeather({ bgOpacity: 2 }).bgOpacity).toBe(1);
+    expect(normalizeSkyWeather({ bgOpacity: -1 }).bgOpacity).toBe(0);
+    expect(
+      normalizeSkyWeather({ hideableOnPet: false, hideEffectOnPet: "fade" }).hideableOnPet
+    ).toBe(false);
+    expect(normalizeSkyWeather({ hideEffectOnPet: "fade" }).hideEffectOnPet).toBe(
+      "fade"
+    );
+    expect(normalizeSkyWeather({ hideEffectOnPet: "nope" }).hideEffectOnPet).toBe(
+      "vortexHalo"
+    );
+    expect(normalizeSkyPetHideEffect("shutter")).toBe("shutter");
+    expect(normalizeSkyPetHideEffect("")).toBe("vortexHalo");
+    expect(SKY_PET_HIDE_EFFECTS).toEqual([
+      "vortexHalo",
+      "fade",
+      "suckPoint",
+      "shutter",
+    ]);
   });
 
   it("resolveTodFromDate covers day segments", () => {
@@ -310,6 +341,35 @@ describe("sky weather", () => {
       Date.parse("2026-06-01T06:00:00Z")
     );
     expect(parseOpenMeteoIso("")).toBe(0);
+  });
+});
+
+describe("sky weather debounced persist", () => {
+  it("schedule 合并；flush / force / discard 语义正确", () => {
+    vi.useFakeTimers();
+    const run = vi.fn();
+    const persist = createDebouncedPersist(run, 100);
+
+    persist.schedule();
+    persist.schedule();
+    expect(run).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(100);
+    expect(run).toHaveBeenCalledTimes(1);
+
+    persist.schedule();
+    persist.flush();
+    expect(run).toHaveBeenCalledTimes(2);
+
+    persist.flush();
+    expect(run).toHaveBeenCalledTimes(2);
+    persist.flush(true);
+    expect(run).toHaveBeenCalledTimes(3);
+
+    persist.schedule();
+    persist.discard();
+    vi.advanceTimersByTime(100);
+    expect(run).toHaveBeenCalledTimes(3);
+    vi.useRealTimers();
   });
 });
 
@@ -889,5 +949,195 @@ describe("sky weather session lifecycle", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+});
+
+describe("pet sky surface phase", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("开投射：appear 后 phase 清空；关投射：dismiss 后 finishSkyDismiss", async () => {
+    vi.useFakeTimers();
+    const { usePetSkySurface } = await import("./usePetSkySurface");
+
+    const skyBackdropEnabled = ref(true);
+    const skyHideableOnPet = ref(true);
+    const skyHideEffectOnPet = ref("vortexHalo" as const);
+    const skyBackdropStyle = ref<Record<string, string>>({});
+    const bodyBox = ref({ w: 80, h: 100 });
+    const isDragging = ref(false);
+    const isPeeking = ref(false);
+    const flyVisualX = ref(0);
+    const flyVisualY = ref(0);
+    const skyVisualHold = ref(false);
+    const finishSkyDismiss = vi.fn();
+
+    let surface: ReturnType<typeof usePetSkySurface> | null = null;
+    const app = createApp(
+      defineComponent({
+        setup() {
+          surface = usePetSkySurface({
+            skyBackdropEnabled,
+            skyHideableOnPet,
+            skyHideEffectOnPet,
+            skyBackdropStyle,
+            bodyBox,
+            isDragging,
+            isPeeking,
+            flyVisualX,
+            flyVisualY,
+            skyVisualHold,
+            finishSkyDismiss,
+          });
+          return () => h("div");
+        },
+      })
+    );
+    app.mount(document.createElement("div"));
+    await nextTick();
+
+    expect(surface!.skySurfaceOn.value).toBe(true);
+    // appear：held → raf×2 → out → 720ms 清空
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(surface!.skyVortexPhase.value).toBe("out");
+    await vi.advanceTimersByTimeAsync(720);
+    expect(surface!.skyVortexPhase.value).toBe("");
+    expect(skyVisualHold.value).toBe(false);
+
+    skyBackdropEnabled.value = false;
+    await nextTick();
+    expect(skyVisualHold.value).toBe(true);
+    expect(surface!.skyVortexPhase.value).toBe("in");
+    await vi.advanceTimersByTimeAsync(680);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(surface!.skySurfaceOn.value).toBe(false);
+    expect(finishSkyDismiss).toHaveBeenCalled();
+    expect(skyVisualHold.value).toBe(false);
+
+    app.unmount();
+  });
+
+  it("hideable + 拖拽：in → held；松手 out → 清空", async () => {
+    vi.useFakeTimers();
+    const { usePetSkySurface } = await import("./usePetSkySurface");
+
+    const skyBackdropEnabled = ref(true);
+    const skyHideableOnPet = ref(true);
+    const skyHideEffectOnPet = ref("fade" as const);
+    const skyBackdropStyle = ref<Record<string, string>>({});
+    const bodyBox = ref({ w: 80, h: 100 });
+    const isDragging = ref(false);
+    const isPeeking = ref(false);
+    const flyVisualX = ref(0);
+    const flyVisualY = ref(0);
+    const skyVisualHold = ref(false);
+    const finishSkyDismiss = vi.fn();
+
+    let surface: ReturnType<typeof usePetSkySurface> | null = null;
+    const app = createApp(
+      defineComponent({
+        setup() {
+          surface = usePetSkySurface({
+            skyBackdropEnabled,
+            skyHideableOnPet,
+            skyHideEffectOnPet,
+            skyBackdropStyle,
+            bodyBox,
+            isDragging,
+            isPeeking,
+            flyVisualX,
+            flyVisualY,
+            skyVisualHold,
+            finishSkyDismiss,
+          });
+          return () => h("div");
+        },
+      })
+    );
+    app.mount(document.createElement("div"));
+    // 跳过 appear
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(720);
+    expect(surface!.skyVortexPhase.value).toBe("");
+
+    isDragging.value = true;
+    await nextTick();
+    expect(surface!.skyVortexPhase.value).toBe("in");
+    await vi.advanceTimersByTimeAsync(680);
+    expect(surface!.skyVortexPhase.value).toBe("held");
+    expect(surface!.skyStageClip.value).toBe(false);
+
+    isDragging.value = false;
+    await nextTick();
+    expect(surface!.skyVortexPhase.value).toBe("out");
+    await vi.advanceTimersByTimeAsync(720);
+    expect(surface!.skyVortexPhase.value).toBe("");
+    expect(surface!.skyStageClip.value).toBe(true);
+
+    app.unmount();
+  });
+
+  it("hideable 关时 busy 不收起；快速关开投射 gen 作废旧 dismiss", async () => {
+    vi.useFakeTimers();
+    const { usePetSkySurface } = await import("./usePetSkySurface");
+
+    const skyBackdropEnabled = ref(true);
+    const skyHideableOnPet = ref(false);
+    const skyHideEffectOnPet = ref("vortexHalo" as const);
+    const skyBackdropStyle = ref<Record<string, string>>({});
+    const bodyBox = ref({ w: 80, h: 100 });
+    const isDragging = ref(false);
+    const isPeeking = ref(false);
+    const flyVisualX = ref(0);
+    const flyVisualY = ref(0);
+    const skyVisualHold = ref(false);
+    const finishSkyDismiss = vi.fn();
+
+    let surface: ReturnType<typeof usePetSkySurface> | null = null;
+    const app = createApp(
+      defineComponent({
+        setup() {
+          surface = usePetSkySurface({
+            skyBackdropEnabled,
+            skyHideableOnPet,
+            skyHideEffectOnPet,
+            skyBackdropStyle,
+            bodyBox,
+            isDragging,
+            isPeeking,
+            flyVisualX,
+            flyVisualY,
+            skyVisualHold,
+            finishSkyDismiss,
+          });
+          return () => h("div");
+        },
+      })
+    );
+    app.mount(document.createElement("div"));
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(720);
+
+    isDragging.value = true;
+    await nextTick();
+    expect(surface!.skyVortexPhase.value).toBe("");
+
+    // 关投射再立刻开：旧 dismiss 不应卸层
+    skyBackdropEnabled.value = false;
+    await nextTick();
+    expect(surface!.skyVortexPhase.value).toBe("in");
+    skyBackdropEnabled.value = true;
+    await nextTick();
+    expect(surface!.skySurfaceOn.value).toBe(true);
+    await vi.advanceTimersByTimeAsync(680);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(surface!.skySurfaceOn.value).toBe(true);
+    expect(finishSkyDismiss).not.toHaveBeenCalled();
+
+    app.unmount();
   });
 });

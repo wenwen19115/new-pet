@@ -285,6 +285,7 @@ onUnmounted(() => {
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+  opacity: var(--sky-bg-opacity, 1);
 }
 .hero-window-world :deep(.world) {
   pointer-events: none;

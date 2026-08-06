@@ -40,37 +40,55 @@
 
     <div class="pet-ctx-divider" />
 
-    <div class="pet-ctx-row">
+    <div class="pet-ctx-group">
+      <div class="pet-ctx-group-label">{{ sectionInteract }}</div>
       <button type="button" class="pet-ctx-item" @click="emitAction('perform')">
         {{ performLabel }}
       </button>
       <button type="button" class="pet-ctx-item" @click="emitAction('playful')">
         {{ playfulLabel }}
       </button>
+      <button
+        type="button"
+        class="pet-ctx-item"
+        @click="emitAction(peekHidden ? 'reveal' : 'hide')"
+      >
+        {{ peekLabel }}
+      </button>
     </div>
-    <button
-      type="button"
-      class="pet-ctx-item"
-      @click="emitAction(peekHidden ? 'reveal' : 'hide')"
-    >
-      {{ peekLabel }}
-    </button>
 
     <div class="pet-ctx-divider" />
-    <button
-      v-if="chatLabel"
-      type="button"
-      class="pet-ctx-item"
-      @click="emitAction('chat')"
-    >
-      {{ chatLabel }}
-    </button>
-    <div class="pet-ctx-row">
+
+    <div class="pet-ctx-group">
+      <div class="pet-ctx-group-label">{{ sectionSky }}</div>
+      <button type="button" class="pet-ctx-item pet-ctx-item--switch" @click="emitAction('sky-on-pet')">
+        <span>{{ skyOnPetTitle }}</span>
+        <span class="pet-ctx-switch" :data-on="skyOnPet ? '1' : '0'" aria-hidden="true">
+          <span class="pet-ctx-switch-knob" />
+        </span>
+      </button>
+    </div>
+
+    <div class="pet-ctx-divider" />
+
+    <div class="pet-ctx-group">
+      <div class="pet-ctx-group-label">{{ sectionApp }}</div>
+      <button
+        v-if="chatLabel"
+        type="button"
+        class="pet-ctx-item"
+        @click="emitAction('chat')"
+      >
+        {{ chatLabel }}
+      </button>
       <button type="button" class="pet-ctx-item" @click="emitAction('open')">
         {{ openLabel }}
       </button>
       <button type="button" class="pet-ctx-item" @click="emitAction('pin')">
         {{ pinLabel }}
+      </button>
+      <button type="button" class="pet-ctx-item" @click="emitAction('dismiss')">
+        {{ dismissLabel }}
       </button>
     </div>
   </div>
@@ -108,6 +126,7 @@ const visible = ref(false);
 const statsExpanded = ref(false);
 const chatEnabled = ref(false);
 const peekHidden = ref(false);
+const skyOnPet = ref(false);
 const cpuPct = ref(0);
 const memPct = ref(0);
 const diskPct = ref(0);
@@ -132,6 +151,9 @@ const openLabel = computed(() =>
   en.value ? "Settings" : "打开设置"
 );
 const pinLabel = computed(() => (en.value ? "Pin" : "置顶"));
+const dismissLabel = computed(() =>
+  en.value ? "Dismiss pet" : "退出召唤"
+);
 const chatLabel = computed(() =>
   chatEnabled.value ? (en.value ? "Chat" : "聊天") : ""
 );
@@ -139,6 +161,12 @@ const peekLabel = computed(() => {
   if (peekHidden.value) return en.value ? "Come out" : "出来";
   return en.value ? "Hide" : "躲起来";
 });
+const sectionInteract = computed(() => (en.value ? "Interact" : "互动"));
+const sectionSky = computed(() => (en.value ? "Window sky" : "窗景"));
+const sectionApp = computed(() => (en.value ? "App" : "应用"));
+const skyOnPetTitle = computed(() =>
+  en.value ? "Project to pet" : "投射到桌宠"
+);
 
 const toggleTitle = computed(() =>
   en.value ? "System peek" : "摸鱼仪表盘"
@@ -273,6 +301,7 @@ function applyPayload(payload: PetMenuPayload) {
   appLocale.value = getPetLocale();
   chatEnabled.value = Boolean(payload.chatEnabled);
   peekHidden.value = Boolean(payload.peekHidden);
+  skyOnPet.value = Boolean(payload.skyOnPet);
   statsExpanded.value = Boolean(payload.statsExpandDefault);
   refreshMoyuLine();
   visible.value = true;
@@ -334,7 +363,7 @@ body,
 .pet-ctx-menu {
   width: 100%;
   height: auto;
-  padding: 5px;
+  padding: 6px;
   border-radius: 12px;
   border: 1px solid var(--ui-border, rgba(255, 255, 255, 0.14));
   background:
@@ -416,7 +445,6 @@ body,
   margin: 2px 2px 4px;
   padding: 8px 6px 8px;
   border-radius: 8px;
-  /* 浅色主题也要托住字，别透到底 */
   background: color-mix(
     in srgb,
     var(--ui-surface-strong, #0c1016) 82%,
@@ -479,7 +507,6 @@ body,
   letter-spacing: 0.02em;
 }
 
-/* 深色色相，浅底也能看清；再与正文色混一点跟包 */
 .pet-ctx-meter.tone-cpu .pet-ctx-meter-value {
   color: color-mix(in srgb, #b45309 78%, var(--ui-text, #1a1a1a));
 }
@@ -511,19 +538,28 @@ body,
 
 .pet-ctx-divider {
   height: 1px;
-  margin: 2px 6px 4px;
+  margin: 5px 8px;
   background: var(--ui-border, rgba(255, 255, 255, 0.1));
 }
 
-.pet-ctx-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2px;
+.pet-ctx-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.pet-ctx-group-label {
+  padding: 2px 10px 4px;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  color: var(--ui-text-faint, rgba(255, 255, 255, 0.42));
 }
 
 .pet-ctx-item {
   appearance: none;
   border: 0;
+  width: 100%;
   background: transparent;
   color: var(--ui-text, rgba(255, 255, 255, 0.9));
   font-size: 12px;
@@ -531,6 +567,48 @@ body,
   padding: 8px 10px;
   border-radius: 7px;
   cursor: pointer;
+  line-height: 1.25;
+}
+
+.pet-ctx-item--switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.pet-ctx-switch {
+  position: relative;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 16px;
+  border-radius: var(--sw-radius, 999px);
+  background: color-mix(in srgb, var(--ui-text, #fff) 16%, transparent);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--ui-text, #fff) 12%, transparent);
+  transition: background 0.16s ease;
+}
+
+.pet-ctx-switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--sw-knob-radius, 999px);
+  background: color-mix(in srgb, var(--ui-text, #fff) 88%, transparent);
+  transition: transform 0.16s ease, background 0.16s ease;
+}
+
+.pet-ctx-switch[data-on="1"] {
+  background: color-mix(in srgb, var(--ui-primary, #40c4ff) 55%, transparent);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--ui-primary, #40c4ff) 35%, transparent);
+}
+
+.pet-ctx-switch[data-on="1"] .pet-ctx-switch-knob {
+  transform: translateX(12px);
+  background: var(--ui-primary, #9fe4ff);
 }
 
 .pet-ctx-item:hover {

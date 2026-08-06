@@ -32,7 +32,6 @@ export const characterVrm: CharacterDef = {
   },
   lookIds: [],
   size: {
-    safeMargin: 18,
     bubbleOffsetYFactor: -0.18,
     bodyBox: (scale, screen) => {
       const short = Math.min(screen.availW, screen.availH);

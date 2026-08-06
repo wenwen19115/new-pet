@@ -19,6 +19,7 @@ export function usePetSettingsSync(deps: {
   getActiveSkinModel: () => string;
   refreshUsbWatch: () => void;
   refreshDeskWeather: () => void;
+  refreshSkyWeatherBackdrop: () => void;
   resizePetWindow: () => void | Promise<void>;
   /** 随机 idle 门禁；由 host dispatch 维护 */
   onRandomIdleSetting: (enabled: boolean) => void;
@@ -53,6 +54,7 @@ export function usePetSettingsSync(deps: {
     const prevZoom = deps.settings.value.zoomPercent;
     const prevUsb = deps.settings.value.usbWatchEnabled;
     const prevDesk = JSON.stringify(deps.settings.value.deskWeather);
+    const prevSky = JSON.stringify(deps.settings.value.skyWeather);
     const prevRandomIdle = deps.settings.value.randomIdleEnabled;
     const prevVrmName = deps.settings.value.vrmModelName;
     const prevVrmRev = deps.settings.value.vrmModelRev;
@@ -84,6 +86,12 @@ export function usePetSettingsSync(deps: {
     }
     if (
       deps.hostAlive() &&
+      JSON.stringify(deps.settings.value.skyWeather) !== prevSky
+    ) {
+      deps.refreshSkyWeatherBackdrop();
+    }
+    if (
+      deps.hostAlive() &&
       deps.settings.value.randomIdleEnabled !== prevRandomIdle
     ) {
       deps.onRandomIdleSetting(deps.settings.value.randomIdleEnabled);
@@ -95,6 +103,7 @@ export function usePetSettingsSync(deps: {
     ) {
       void refreshVrmSrc();
     }
+    // 关投射不再缩窗（HWND 固定窗景画布）；模型/缩放仍 resize
     if (
       nextLook.model !== prevModel ||
       deps.settings.value.zoomPercent !== prevZoom

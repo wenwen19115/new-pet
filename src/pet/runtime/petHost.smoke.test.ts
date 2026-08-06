@@ -2,9 +2,10 @@
  * host 回归烟测：dispose、settings、chat-open / intent、mood 门禁。
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ref } from "vue";
+import { createApp, defineComponent, h, nextTick, ref } from "vue";
 import { type PetMood, type PetSettings } from "@/pet/data/types";
-import { DEFAULT_PET_SETTINGS } from "@/pet/data/settings";
+import { DEFAULT_PET_SETTINGS, publishPetSettings } from "@/pet/data/settings";
+import { normalizeSkyWeather } from "@/pet/data/skyWeather";
 import {
   dispatchPetHostIntent,
   type PetHostIntentEffects,
@@ -18,6 +19,7 @@ import {
 import { usePetIdleLoop } from "./usePetIdleLoop";
 import { usePetHostLifecycle } from "./usePetHostLifecycle";
 import { usePetSettingsSync } from "./usePetSettingsSync";
+import { useSkyWeatherPetBackdrop } from "./useSkyWeatherPetBackdrop";
 
 const hidePetChat = vi.fn();
 const cancelPetTts = vi.fn();
@@ -57,6 +59,11 @@ vi.mock("@tauri-apps/api/event", () => ({
     unlistenFns.push(un);
     return un;
   }),
+  emit: vi.fn(async () => undefined),
+}));
+vi.mock("@/pet/bridge/skyWeather", () => ({
+  fetchOpenMeteoWeather: vi.fn(async () => null),
+  fetchClientGeo: vi.fn(async () => null),
 }));
 vi.mock("@tauri-apps/api/dpi", () => ({
   LogicalSize: class {
@@ -399,6 +406,7 @@ describe("host regression smokes", () => {
       getActiveSkinModel: () => settings.value.modelKind,
       refreshUsbWatch: vi.fn(),
       refreshDeskWeather: vi.fn(),
+      refreshSkyWeatherBackdrop: vi.fn(),
       resizePetWindow: vi.fn(),
       onRandomIdleSetting,
       speakIntro: vi.fn(),
@@ -504,6 +512,7 @@ describe("host regression smokes", () => {
       clearLifeTimers,
       clearUsbFollowUpTimer,
       clearDeskWeather: vi.fn(),
+      clearSkyWeatherBackdrop: vi.fn(),
       clearMotionTimers,
       resetDragState,
       syncWindowCenter: vi.fn(async () => undefined),
@@ -519,6 +528,7 @@ describe("host regression smokes", () => {
       refreshVrmSrc: vi.fn(),
       refreshUsbWatch: vi.fn(),
       refreshDeskWeather: vi.fn(),
+      refreshSkyWeatherBackdrop: vi.fn(),
       applySettings: vi.fn(),
       speakIntro: vi.fn(),
       speakBubblePong: vi.fn(),
@@ -611,6 +621,7 @@ describe("host regression smokes", () => {
       clearLifeTimers: vi.fn(),
       clearUsbFollowUpTimer: vi.fn(),
       clearDeskWeather: vi.fn(),
+      clearSkyWeatherBackdrop: vi.fn(),
       clearMotionTimers: vi.fn(),
       resetDragState: vi.fn(),
       syncWindowCenter: vi.fn(async () => undefined),
@@ -626,6 +637,7 @@ describe("host regression smokes", () => {
       refreshVrmSrc: vi.fn(),
       refreshUsbWatch: vi.fn(),
       refreshDeskWeather: vi.fn(),
+      refreshSkyWeatherBackdrop: vi.fn(),
       applySettings,
       speakIntro,
       speakBubblePong: vi.fn(),
@@ -652,5 +664,56 @@ describe("host regression smokes", () => {
     expect(speakIntro).not.toHaveBeenCalled();
 
     life.dispose();
+  });
+});
+
+describe("sky weather pet backdrop stop flush", () => {
+  beforeEach(() => {
+    vi.mocked(publishPetSettings).mockClear();
+    vi.mocked(publishPetSettings).mockImplementation(async (s) => s);
+  });
+
+  it("stopLeader 在 running 已关后仍 flush 落盘", async () => {
+    const settings = ref(
+      baseSettings({
+        skyWeather: normalizeSkyWeather({
+          enableOnPet: true,
+          linkBootstrapped: true,
+          todMode: "offline",
+          weatherMode: "offline",
+          manualTod: "noon",
+          manualWeather: "cloudy",
+          runtime: {
+            ...normalizeSkyWeather({}).runtime,
+            lastDayRollKey: "2026-01-01",
+          },
+        }),
+      })
+    );
+
+    let clearFn: (() => void) | null = null;
+    const app = createApp(
+      defineComponent({
+        setup() {
+          const skyVisualHold = ref(false);
+          const backdrop = useSkyWeatherPetBackdrop({
+            settings,
+            skyVisualHold,
+          });
+          clearFn = backdrop.clearSkyWeatherBackdrop;
+          return () => h("div");
+        },
+      })
+    );
+    app.mount(document.createElement("div"));
+    await nextTick();
+
+    expect(clearFn).toBeTypeOf("function");
+    vi.mocked(publishPetSettings).mockClear();
+    (clearFn as () => void)();
+    await nextTick();
+    expect(publishPetSettings).toHaveBeenCalled();
+
+    app.unmount();
   });
 });

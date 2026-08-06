@@ -14,6 +14,7 @@ import { destroyChatWindow, hidePetChat } from "@/pet/windows/chat";
 import { loadPetSettings } from "@/pet/data/settings";
 import { resolveAppearance } from "@/pet/skins";
 import { petWindowSize } from "@/pet/bridge/sizes";
+import { setWindowSizeKeepCenter } from "@/pet/bridge/windowAnchor";
 import {
   PET_RESUME_EVENT,
   PET_SUSPEND_EVENT,
@@ -187,9 +188,13 @@ async function openPetWindow(): Promise<WebviewWindow | null> {
     try {
       const size = currentPetWindowSize();
       try {
-        await existing.setSize(new LogicalSize(size.w, size.h));
+        await setWindowSizeKeepCenter(existing, size);
       } catch {
-        // ignore
+        try {
+          await existing.setSize(new LogicalSize(size.w, size.h));
+        } catch {
+          // ignore
+        }
       }
       await existing.show();
       await existing.setAlwaysOnTop(true);

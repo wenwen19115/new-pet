@@ -1,10 +1,6 @@
 import type { PetModelKind } from "@/pet/skins/types";
 import { getCharacter } from "../characters";
 
-function petSafeMargin(model: PetModelKind): number {
-  return getCharacter(model).size.safeMargin;
-}
-
 export function clampPetZoom(value: number): number {
   if (Number.isNaN(value)) return 0;
   return Math.min(100, Math.max(-100, Math.round(value)));
@@ -50,16 +46,20 @@ export function petBubbleAnchor(
   return { halfW: box.w / 2, offsetY: box.h * factor };
 }
 
+/** 桌宠窗景画布基准（约设置 hero 缩小版）；随 zoom 缩放 */
+const SKY_PET_BACKDROP_W = 280;
+const SKY_PET_BACKDROP_H = 360;
+
 export function petWindowSize(
-  model: PetModelKind,
-  zoomPercent = 0,
-  screen?: PetScreenMetrics
+  _model: PetModelKind,
+  zoomPercent = 0
 ): { w: number; h: number } {
-  const body = petBodyBox(model, zoomPercent, screen ?? readPetScreenMetrics());
-  const safe = petSafeMargin(model);
+  // 桌宠 HWND 固定窗景画布（开关投射只显隐，不改尺寸）
+  const scale = petScaleFromZoom(zoomPercent);
+  const k = Math.max(0.85, Math.min(1.25, scale));
   return {
-    w: body.w + safe * 2,
-    h: body.h + safe * 2,
+    w: Math.round(SKY_PET_BACKDROP_W * k),
+    h: Math.round(SKY_PET_BACKDROP_H * k),
   };
 }
 

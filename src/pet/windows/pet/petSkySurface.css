@@ -1,0 +1,391 @@
+/* 窗景漩涡壳：外层收束，内层带水流转，叠旋纹 */
+.pet-sky-vortex {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transform-origin: 50% 48%;
+  overflow: hidden;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.pet-sky-vortex-spin {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 48%;
+  will-change: transform, filter;
+  backface-visibility: hidden;
+}
+
+/* 窗台以下室内底板，避免透出桌面 */
+.pet-sky-floor {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--sky-bg-opacity, 1);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--cream, #f4ebe0) 92%, #000) 0%,
+      var(--sand, #e6d5c0) 58%,
+      color-mix(in srgb, var(--cream, #f4ebe0) 88%, var(--sand, #e6d5c0)) 78%,
+      color-mix(in srgb, var(--sand, #e6d5c0) 82%, #000) 100%
+    );
+}
+
+.pet-sky-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.pet-sky-flow {
+  position: absolute;
+  inset: -18%;
+  z-index: 2;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform-origin: 50% 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    transparent 0deg 14deg,
+    color-mix(in srgb, var(--accent, #c45a48) 42%, transparent) 14deg 22deg,
+    transparent 22deg 40deg,
+    color-mix(in srgb, var(--panel, #16365f) 38%, transparent) 40deg 50deg,
+    transparent 50deg 68deg,
+    color-mix(in srgb, var(--cream, #fff8f0) 28%, transparent) 68deg 76deg
+  );
+  mix-blend-mode: soft-light;
+  filter: blur(5px) contrast(1.05);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.pet-sky-vortex[data-hide-effect="vortexHalo"][data-vortex="in"] {
+  animation: pet-sky-vortex-shrink 0.68s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.pet-sky-vortex[data-hide-effect="vortexHalo"][data-vortex="in"] .pet-sky-vortex-spin {
+  animation: pet-sky-water-spin-in 0.68s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.pet-sky-vortex[data-hide-effect="vortexHalo"][data-vortex="in"] .pet-sky-flow {
+  animation: pet-sky-flow-in 0.68s linear forwards;
+}
+
+.pet-sky-vortex[data-hide-effect="vortexHalo"][data-vortex="held"] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.pet-sky-vortex[data-hide-effect="vortexHalo"][data-vortex="out"] {
+  visibility: visible;
+  animation: pet-sky-vortex-expand 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.pet-sky-vortex[data-hide-effect="vortexHalo"][data-vortex="out"] .pet-sky-vortex-spin {
+  animation: pet-sky-water-spin-out 0.72s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.pet-sky-vortex[data-hide-effect="vortexHalo"][data-vortex="out"] .pet-sky-flow {
+  animation: pet-sky-flow-out 0.72s linear forwards;
+}
+
+/* 渐隐：整体淡出，held 不留光晕 */
+.pet-sky-vortex[data-hide-effect="fade"][data-vortex="in"] {
+  animation: pet-sky-fade-out 0.68s ease-in forwards;
+}
+
+.pet-sky-vortex[data-hide-effect="fade"][data-vortex="held"] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.pet-sky-vortex[data-hide-effect="fade"][data-vortex="out"] {
+  visibility: visible;
+  animation: pet-sky-fade-in 0.72s ease-out forwards;
+}
+
+@keyframes pet-sky-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes pet-sky-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 吸入光点：缩到角色中心一点再灭 */
+.pet-sky-vortex[data-hide-effect="suckPoint"][data-vortex="in"] {
+  animation: pet-sky-suck-in 0.55s cubic-bezier(0.55, 0.05, 0.35, 1) forwards;
+}
+
+.pet-sky-vortex[data-hide-effect="suckPoint"][data-vortex="held"] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(0);
+}
+
+.pet-sky-vortex[data-hide-effect="suckPoint"][data-vortex="out"] {
+  visibility: visible;
+  animation: pet-sky-suck-out 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes pet-sky-suck-in {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+    border-radius: 0;
+    filter: blur(0);
+  }
+  70% {
+    opacity: 1;
+    filter: blur(1px);
+  }
+  100% {
+    transform: scale(0.02);
+    opacity: 0;
+    border-radius: 50%;
+    filter: blur(2px);
+  }
+}
+
+@keyframes pet-sky-suck-out {
+  0% {
+    transform: scale(0.02);
+    opacity: 0;
+    border-radius: 50%;
+    filter: blur(2px);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    border-radius: 0;
+    filter: blur(0);
+  }
+}
+
+/* 关窗折叠：四边向中收成细线 */
+.pet-sky-vortex[data-hide-effect="shutter"][data-vortex="in"] {
+  animation: pet-sky-shutter-in 0.68s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.pet-sky-vortex[data-hide-effect="shutter"][data-vortex="held"] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  clip-path: inset(50% 0 50% 0);
+}
+
+.pet-sky-vortex[data-hide-effect="shutter"][data-vortex="out"] {
+  visibility: visible;
+  animation: pet-sky-shutter-out 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes pet-sky-shutter-in {
+  0% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(50% 0 50% 0);
+    opacity: 0;
+  }
+}
+
+@keyframes pet-sky-shutter-out {
+  0% {
+    clip-path: inset(50% 0 50% 0);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+/* 外层：整体缩小进角色（漩涡） */
+@keyframes pet-sky-vortex-shrink {
+  from {
+    transform: scale(1);
+    opacity: 1;
+    border-radius: 0;
+  }
+  to {
+    transform: scale(0.12);
+    opacity: 0;
+    border-radius: 50%;
+  }
+}
+
+@keyframes pet-sky-vortex-expand {
+  from {
+    transform: scale(0.12);
+    opacity: 0;
+    border-radius: 50%;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+    border-radius: 0;
+  }
+}
+
+/* 内层：窗景自己在壳里「搅水」旋转 + 轻微拉丝模糊 */
+@keyframes pet-sky-water-spin-in {
+  from {
+    transform: rotate(0deg) scale(1);
+    filter: blur(0);
+  }
+  55% {
+    filter: blur(1.2px);
+  }
+  to {
+    transform: rotate(380deg) scale(1.12);
+    filter: blur(2.5px);
+  }
+}
+
+@keyframes pet-sky-water-spin-out {
+  from {
+    transform: rotate(-300deg) scale(1.1);
+    filter: blur(2.5px);
+  }
+  45% {
+    filter: blur(1px);
+  }
+  to {
+    transform: rotate(0deg) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* 旋纹层：转得更快，像水流纹路 */
+@keyframes pet-sky-flow-in {
+  0% {
+    opacity: 0;
+    transform: rotate(0deg) scale(1.05);
+  }
+  18% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(540deg) scale(0.55);
+  }
+}
+
+@keyframes pet-sky-flow-out {
+  0% {
+    opacity: 0;
+    transform: rotate(-420deg) scale(0.55);
+  }
+  22% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(0deg) scale(1.05);
+  }
+}
+
+/* 主题色光晕：更小、转得更快 */
+.pet-sky-halo {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  z-index: 0;
+  width: calc(var(--pet-body-w, 108px) * 1.2);
+  height: calc(var(--pet-body-h, 108px) * 1.2);
+  margin-left: calc(var(--pet-body-w, 108px) * -0.6);
+  margin-top: calc(var(--pet-body-h, 108px) * -0.6);
+  border-radius: 50%;
+  pointer-events: none;
+  transform-origin: 50% 50%;
+  background:
+    radial-gradient(
+      circle at 30% 28%,
+      color-mix(in srgb, var(--accent, #c45a48) 90%, #fff) 0%,
+      transparent 48%
+    ),
+    radial-gradient(
+      circle at 70% 65%,
+      color-mix(in srgb, var(--panel, #16365f) 75%, transparent) 0%,
+      transparent 56%
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      color-mix(in srgb, var(--cream, #fff8f0) 45%, transparent) 0%,
+      transparent 70%
+    );
+  filter: blur(8px) saturate(1.1);
+  opacity: 0;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.pet-sky-halo[data-vortex="in"] {
+  animation:
+    pet-sky-halo-fade-in 0.45s ease-out forwards,
+    pet-sky-halo-spin 1.35s linear infinite;
+}
+
+.pet-sky-halo[data-vortex="held"] {
+  opacity: 0.88;
+  animation: pet-sky-halo-spin 1.35s linear infinite;
+}
+
+.pet-sky-halo[data-vortex="out"] {
+  animation:
+    pet-sky-halo-fade-out 0.5s ease-in forwards,
+    pet-sky-halo-spin 1.35s linear infinite;
+}
+
+@keyframes pet-sky-halo-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.88;
+  }
+}
+
+@keyframes pet-sky-halo-fade-out {
+  from {
+    opacity: 0.88;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes pet-sky-halo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

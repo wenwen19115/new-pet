@@ -46,6 +46,12 @@ export type {
   PetChatOpenStatePayload,
 } from "../windows/chat/types";
 
+export {
+  SKY_WEATHER_FIRE_EVENT,
+  SKY_WEATHER_REFRESH_EVENT,
+} from "../data/skyWeather";
+export type { SkyWeatherFirePayload } from "../data/skyWeather";
+
 /** 事件名清单（审计 / 文档用）。 */
 export const PET_EVENT_CATALOG = [
   "pet://settings-changed",
@@ -70,4 +76,6 @@ export const PET_EVENT_CATALOG = [
   "pet://chat-close-req",
   "pet://chat-reply",
   "pet://chat-open-state",
+  "pet://sky-weather-fire",
+  "pet://sky-weather-refresh",
 ] as const;

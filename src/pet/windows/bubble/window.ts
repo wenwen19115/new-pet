@@ -127,8 +127,10 @@ async function resolveBubblePlacement(
   const model = resolveAppearance(s.modelKind, s.lookId).model;
   const body = petBodyBox(model, s.zoomPercent);
   const anchor = petBubbleAnchor(model, s.zoomPercent);
-  const halfW = body.w / 2;
-  const halfH = body.h / 2;
+  // 投射窗景时墙面铺满主窗：避让整窗外缘，别只按角色 body（否则气泡叠在墙上被挡）
+  const skyOn = Boolean(s.skyWeather?.enableOnPet);
+  const halfW = skyOn ? size.width / 2 : body.w / 2;
+  const halfH = skyOn ? size.height / 2 : body.h / 2;
   const petCenterX = outer.x + size.width / 2;
   const petCenterY = outer.y + size.height / 2;
   const bodyLeft = petCenterX - halfW;
