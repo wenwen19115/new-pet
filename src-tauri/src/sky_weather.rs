@@ -64,7 +64,9 @@ fn fetch_open_meteo_weather_blocking(lat: f64, lon: f64) -> Result<SkyWeatherFet
         "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=weather_code&daily=sunrise,sunset&timezone=auto&forecast_days=1"
     );
     let body = ureq::get(&url)
-        .timeout(std::time::Duration::from_secs(8))
+        .set("User-Agent", "desktop-pet/1.0")
+        .set("Accept", "application/json")
+        .timeout(std::time::Duration::from_secs(12))
         .call()
         .map_err(|e| format!("open-meteo request failed: {e}"))?
         .into_string()
@@ -151,21 +153,34 @@ fn geo_from_json(body: &str, source: &str) -> Option<SkyClientGeo> {
 }
 
 fn try_geo_url(url: &str, source: &str) -> Option<SkyClientGeo> {
-    let body = ureq::get(url)
-        .timeout(std::time::Duration::from_secs(6))
+    match ureq::get(url)
+        .set("User-Agent", "desktop-pet/1.0")
+        .set("Accept", "application/json")
+        .timeout(std::time::Duration::from_secs(8))
         .call()
-        .ok()?
-        .into_string()
-        .ok()?;
-    geo_from_json(&body, source)
+    {
+        Ok(resp) => {
+            let body = resp.into_string().ok()?;
+            geo_from_json(&body, source)
+        }
+        Err(e) => {
+            eprintln!("[sky-weather] geo {source} failed: {e}");
+            None
+        }
+    }
 }
 
 /// IP 粗定位：大陆同属 Asia/Shanghai，时区分不出深圳/上海，跟随时靠这个。
 fn fetch_client_geo_blocking() -> Result<SkyClientGeo, String> {
+    // 多源：部分环境拦其一；无 UA 也易被拒
     if let Some(hit) = try_geo_url("https://ipwho.is/", "ipwho.is") {
         return Ok(hit);
     }
     if let Some(hit) = try_geo_url("https://get.geojs.io/v1/ip/geo.json", "geojs") {
+        return Ok(hit);
+    }
+    // ipinfo：loc="lat,lon"
+    if let Some(hit) = try_geo_ipinfo() {
         return Ok(hit);
     }
     Ok(SkyClientGeo {
@@ -174,6 +189,37 @@ fn fetch_client_geo_blocking() -> Result<SkyClientGeo, String> {
         lon: 0.0,
         city: String::new(),
         source: "geo-failed".into(),
+    })
+}
+
+fn try_geo_ipinfo() -> Option<SkyClientGeo> {
+    let body = ureq::get("https://ipinfo.io/json")
+        .set("User-Agent", "desktop-pet/1.0")
+        .set("Accept", "application/json")
+        .timeout(std::time::Duration::from_secs(8))
+        .call()
+        .ok()?
+        .into_string()
+        .ok()?;
+    let v: serde_json::Value = serde_json::from_str(&body).ok()?;
+    let loc = v.get("loc").and_then(|x| x.as_str())?;
+    let mut parts = loc.split(',');
+    let lat: f64 = parts.next()?.trim().parse().ok()?;
+    let lon: f64 = parts.next()?.trim().parse().ok()?;
+    if !(-90.0..=90.0).contains(&lat) || !(-180.0..=180.0).contains(&lon) {
+        return None;
+    }
+    let city = v
+        .get("city")
+        .and_then(|x| x.as_str())
+        .unwrap_or("")
+        .to_string();
+    Some(SkyClientGeo {
+        ok: true,
+        lat,
+        lon,
+        city,
+        source: "ipinfo".into(),
     })
 }
 

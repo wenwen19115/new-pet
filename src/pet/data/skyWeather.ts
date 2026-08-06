@@ -128,6 +128,10 @@ export interface SkyWeatherRuntimeState {
   everSynced: boolean;
   /** 实况天气最近一次是否拉到真气象（失败仍可能用示意表） */
   wxOnline: boolean;
+  /** IP 粗定位是否成功（预览联网徽章；≠ wxOnline） */
+  geoOnline: boolean;
+  /** 最近一次定位城（跟随系统 UI；regionId 仍为 system） */
+  locatedRegionId: string;
   /** Open-Meteo 今日日出（epoch ms）；0=无 */
   sunRiseAt: number;
   /** Open-Meteo 今日日落（epoch ms）；0=无 */
@@ -321,6 +325,8 @@ function emptyRuntime(now = Date.now()): SkyWeatherRuntimeState {
     lastSyncAt: 0,
     everSynced: false,
     wxOnline: false,
+    geoOnline: false,
+    locatedRegionId: "",
     sunRiseAt: 0,
     sunSetAt: 0,
     snapWeather: "clear",
@@ -424,6 +430,11 @@ export function normalizeSkyWeather(raw: unknown): SkyWeatherConfig {
       : "clear",
     snapTod: TOD_SET.has(String(rtRaw.snapTod)) ? (rtRaw.snapTod as SkyTodId) : "noon",
     wxOnline: Boolean(rtRaw.wxOnline),
+    geoOnline: Boolean(rtRaw.geoOnline),
+    locatedRegionId: (() => {
+      const id = String(rtRaw.locatedRegionId || "");
+      return SKY_REGIONS[id] ? id : "";
+    })(),
     sunRiseAt: clampNum(Number(rtRaw.sunRiseAt ?? 0), 0, Number.MAX_SAFE_INTEGER, 0),
     sunSetAt: clampNum(Number(rtRaw.sunSetAt ?? 0), 0, Number.MAX_SAFE_INTEGER, 0),
   };

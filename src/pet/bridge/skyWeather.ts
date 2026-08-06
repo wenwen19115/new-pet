@@ -71,10 +71,16 @@ export async function fetchClientGeo(): Promise<ClientGeoHit | null> {
       city?: string;
       source?: string;
     };
-    if (!raw?.ok) return null;
+    if (!raw?.ok) {
+      console.warn("[pet] client geo not ok", raw?.source || "unknown", raw);
+      return null;
+    }
     const lat = Number(raw.lat);
     const lon = Number(raw.lon);
-    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+      console.warn("[pet] client geo bad coords", raw);
+      return null;
+    }
     return {
       ok: true,
       lat,

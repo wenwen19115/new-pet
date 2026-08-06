@@ -44,6 +44,28 @@ export function createSkyWeatherLinkController(deps: {
   function applyNetStatus(online: boolean, cityId: string) {
     netOnline.value = online;
     netCityId.value = online ? cityId : "";
+    const cfg = normalizeSkyWeather(deps.getConfig());
+    const located =
+      online && cityId && SKY_REGIONS[cityId]
+        ? cityId
+        : cfg.runtime.locatedRegionId;
+    if (
+      cfg.runtime.geoOnline === online &&
+      cfg.runtime.locatedRegionId === located
+    ) {
+      return;
+    }
+    deps.commit(
+      {
+        ...cfg,
+        runtime: {
+          ...cfg.runtime,
+          geoOnline: online,
+          locatedRegionId: located,
+        },
+      },
+      { persist: true }
+    );
   }
 
   function isStale(gen: number) {
