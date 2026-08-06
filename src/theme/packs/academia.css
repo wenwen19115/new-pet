@@ -64,31 +64,6 @@
     [data-style="academia"] .theme-bar i{background:linear-gradient(90deg,#6a4830,#d4b080);}
     [data-style="academia"] .theme-num{color:#d4b080;font-weight:700;}
 
-    [data-style="academia"] .hero-sky-pet-chip{
-      border-radius:0;border-color:#5a4838;background:#1a140e;color:#e8dcc8;
-    }
-    [data-style="academia"] .hero-sky-pet-chip:hover,
-    [data-style="academia"] .hero-sky-pet-chip[data-on="1"]{
-      border-color:#d4b080;background:#2a2016;
-      box-shadow:inset 3px 0 0 #8a6848;
-    }
-    [data-style="academia"] .hero-sky-pet-led{
-      border-radius:0;width:7px;height:7px;
-      background:#5a4838;box-shadow:none;
-    }
-    [data-style="academia"] .hero-sky-pet-chip[data-on="1"] .hero-sky-pet-led{
-      background:#d4b080;
-      box-shadow:0 0 0 2px rgba(212,176,128,0.25);
-    }
-    [data-style="academia"] .hero-sky-pet-chip-title{color:#e8dcc8;}
-    [data-style="academia"] .hero-sky-pet-chip-desc{color:#9a8a70;}
-    [data-style="academia"] .hero-sky-pet-chip-state{
-      border-radius:0;border-color:#5a4838;background:#221c14;color:#9a8a70;
-    }
-    [data-style="academia"] .hero-sky-pet-chip[data-on="1"] .hero-sky-pet-chip-state{
-      border-color:#d4b080;background:#3a2a18;color:#d4b080;
-    }
-
     
     [data-style="academia"] .theme-banner,[data-style="academia"] .theme-shell,[data-style="academia"] .pet-hero{position:relative;z-index:1;}
     [data-style="academia"] .pet-nav,[data-style="academia"] .pet-main{position:relative;z-index:1;}

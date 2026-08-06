@@ -1,7 +1,6 @@
 import {
   BorderOuterOutlined,
   BulbOutlined,
-  CloudOutlined,
   CommentOutlined,
   EyeOutlined,
   RobotOutlined,
@@ -13,7 +12,6 @@ import BehaviorPanel from "./modules/BehaviorPanel.vue";
 import MotionPanel from "./modules/MotionPanel.vue";
 import ChatPanel from "./modules/ChatPanel.vue";
 import SkyWeatherPanel from "./modules/SkyWeatherPanel.vue";
-import SkyPetBackdropPanel from "./modules/SkyPetBackdropPanel.vue";
 import AppPanel from "./modules/AppPanel.vue";
 
 let registered = false;
@@ -59,16 +57,8 @@ export function registerBuiltinSettingsModules(): void {
     id: "sky",
     order: 50,
     labelKey: "pet.tabSkyWeather",
-    icon: CloudOutlined,
-    panel: SkyWeatherPanel,
-  });
-
-  registerSettingsModule({
-    id: "sky-pet",
-    order: 55,
-    labelKey: "pet.tabSkyPetBackdrop",
     icon: BorderOuterOutlined,
-    panel: SkyPetBackdropPanel,
+    panel: SkyWeatherPanel,
   });
 
   registerSettingsModule({

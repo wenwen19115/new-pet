@@ -60,19 +60,13 @@
     <div class="pet-ctx-divider" />
 
     <div class="pet-ctx-group">
-      <div class="pet-ctx-group-label">{{ sectionSky }}</div>
+      <div class="pet-ctx-group-label">{{ sectionApp }}</div>
       <button type="button" class="pet-ctx-item pet-ctx-item--switch" @click="emitAction('sky-on-pet')">
         <span>{{ skyOnPetTitle }}</span>
         <span class="pet-ctx-switch" :data-on="skyOnPet ? '1' : '0'" aria-hidden="true">
           <span class="pet-ctx-switch-knob" />
         </span>
       </button>
-    </div>
-
-    <div class="pet-ctx-divider" />
-
-    <div class="pet-ctx-group">
-      <div class="pet-ctx-group-label">{{ sectionApp }}</div>
       <button
         v-if="chatLabel"
         type="button"
@@ -162,7 +156,6 @@ const peekLabel = computed(() => {
   return en.value ? "Hide" : "躲起来";
 });
 const sectionInteract = computed(() => (en.value ? "Interact" : "互动"));
-const sectionSky = computed(() => (en.value ? "Window sky" : "窗景"));
 const sectionApp = computed(() => (en.value ? "App" : "应用"));
 const skyOnPetTitle = computed(() =>
   en.value ? "Project to pet" : "投射到桌宠"

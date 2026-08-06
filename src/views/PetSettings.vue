@@ -5,7 +5,7 @@
       :data-model="activeLook.model"
       :style="heroMergedStyle"
     >
-      <div class="hero-stage">
+      <div class="hero-stage" :data-syncing="skyNetBusy ? '1' : '0'">
         <HeroWindowWorld
           :tod="skyDisplayTod"
           :weather="skyDisplayWeather"
@@ -33,91 +33,48 @@
             />
           </template>
         </HeroWindowWorld>
+        <div
+          v-if="skyNetBusy"
+          class="hero-sync-top"
+          aria-live="polite"
+        >
+          <span class="hero-net-badge" data-busy="1" data-online="0">
+            {{ $t("pet.skyWeatherUpdating") }}
+          </span>
+        </div>
         <p v-if="previewHint" class="hero-orbit-hint">{{ previewHint }}</p>
       </div>
       <div class="hero-text">
-        <div class="hero-text-main">
-          <p class="hero-role">{{ $t(activeLook.modelNameKey) }}</p>
-          <h1 class="hero-name">{{ displayName || $t(activeLook.modelNameKey) }}</h1>
-          <p class="hero-tagline">{{ $t("pet.pageTagline") }}</p>
-          <div class="hero-meta">
-            <span class="meta-pill meta-pill--theme">
-              <i class="theme-dot" :style="{ background: v.accent }" />
-              {{ $t(activeLook.nameKey) }}
-            </span>
-            <span class="meta-pill">{{ personalityLabel }}</span>
-            <span v-if="enabled" class="meta-pill meta-pill--on">{{ $t("pet.statusOn") }}</span>
-            <span v-else class="meta-pill">{{ $t("pet.statusOff") }}</span>
-          </div>
-          <div class="hero-net" aria-live="polite">
-            <!-- busy 只挂徽章：文案变「同步中」+ 点脉冲；刷新钮仅 aria/disabled -->
-            <span
-              class="hero-net-badge"
-              :data-online="skyNetBadgeOnline ? '1' : '0'"
-              :data-busy="skyNetBusy ? '1' : '0'"
-            >
-              {{ skyNetLabel }}
-            </span>
-            <button
-              type="button"
-              class="hero-net-refresh"
-              :disabled="skyNetBusy"
-              :aria-busy="skyNetBusy ? 'true' : 'false'"
-              @click="refreshSkyNet"
-            >
-              {{ $t("pet.skyWeatherLinkRefresh") }}
-            </button>
-          </div>
-          <label
-            class="preview-orbit-toggle"
-            :class="{ 'is-disabled': !canPreviewOrbit }"
-            :title="canPreviewOrbit ? undefined : $t('pet.previewAutoOrbit2dHint')"
-          >
-            <ThemeSwitch v-model:checked="previewAutoOrbit" :disabled="!canPreviewOrbit" />
-            <span>{{ $t("pet.previewAutoOrbit") }}</span>
-          </label>
+        <p class="hero-role">{{ $t(activeLook.modelNameKey) }}</p>
+        <h1 class="hero-name">{{ displayName || $t(activeLook.modelNameKey) }}</h1>
+        <p class="hero-tagline">{{ $t("pet.pageTagline") }}</p>
+        <div class="hero-meta">
+          <span class="meta-pill meta-pill--theme">
+            <i class="theme-dot" :style="{ background: v.accent }" />
+            {{ $t(activeLook.nameKey) }}
+          </span>
+          <span class="meta-pill">{{ personalityLabel }}</span>
+          <span v-if="enabled" class="meta-pill meta-pill--on">{{ $t("pet.statusOn") }}</span>
+          <span v-else class="meta-pill">{{ $t("pet.statusOff") }}</span>
         </div>
-        <div class="hero-sky-pet">
+        <div class="hero-net" aria-live="polite">
+          <!-- 始终显示：仅反映联网探测；刷新再探测。≠ 窗景「天气系统」在线/离线 -->
+          <span
+            class="hero-net-badge"
+            :data-online="skyNetBadgeOnline ? '1' : '0'"
+            :data-busy="skyNetBusy ? '1' : '0'"
+          >
+            {{ skyNetLabel }}
+          </span>
           <button
             type="button"
-            class="hero-sky-pet-chip"
-            :data-on="skyEnableOnPet ? '1' : '0'"
-            :aria-pressed="skyEnableOnPet"
-            :aria-label="$t('pet.skyWeatherOnPet')"
-            @click="onSkyEnableOnPet(!skyEnableOnPet)"
+            class="hero-net-refresh"
+            :disabled="skyNetRefreshDisabled"
+            :aria-busy="skyNetBusy ? 'true' : 'false'"
+            @click="refreshSkyNet"
           >
-            <span class="hero-sky-pet-chip-head">
-              <span class="hero-sky-pet-led" aria-hidden="true" />
-              <span class="hero-sky-pet-chip-title">{{ $t("pet.skyWeatherOnPet") }}</span>
-              <span class="hero-sky-pet-chip-state">{{
-                skyEnableOnPet
-                  ? $t("pet.skyWeatherOnPetOn")
-                  : $t("pet.skyWeatherOnPetOff")
-              }}</span>
-            </span>
-            <span class="hero-sky-pet-chip-desc">{{
-              skyEnableOnPet
-                ? $t("pet.skyWeatherOnPetHintOn")
-                : $t("pet.skyWeatherOnPetHintOff")
-            }}</span>
+            {{ $t("pet.skyWeatherLinkRefresh") }}
           </button>
-          <div v-if="skyEnableOnPet" class="hero-sky-pet-opacity">
-            <span class="hero-sky-pet-opacity-label">{{
-              $t("pet.skyWeatherBgOpacityShort")
-            }}</span>
-            <ThemeMeter
-              :value="skyBgOpacityPercent"
-              :min="0"
-              :max="100"
-              :step="5"
-              :title="$t('pet.dblClickReset')"
-              :aria-label="$t('pet.skyWeatherBgOpacity')"
-              @change="onSkyBgOpacity"
-              @dblclick="resetSkyBgOpacity"
-            >
-              {{ skyBgOpacityPercent }}%
-            </ThemeMeter>
-          </div>
         </div>
       </div>
     </aside>
@@ -158,8 +115,6 @@
 <script setup lang="ts">
 import PetPreviewOrbit from "@/pet/models/preview/PetPreviewOrbit.vue";
 import HeroWindowWorld from "@/pet/models/preview/HeroWindowWorld.vue";
-import ThemeSwitch from "@/settings/components/ThemeSwitch.vue";
-import ThemeMeter from "@/settings/components/ThemeMeter.vue";
 import { usePetSettingsPage } from "@/settings/usePetSettingsPage";
 import type { PetThemeSettings } from "@/theme/types";
 
@@ -170,8 +125,6 @@ const emit = defineEmits<{
 const {
   enabled,
   tone,
-  previewAutoOrbit,
-  canPreviewOrbit,
   effectivePreviewAutoOrbit,
   settingsTab,
   settingsTabs,
@@ -198,12 +151,8 @@ const {
   skyNetBusy,
   skyNetLabel,
   skyNetBadgeOnline,
+  skyNetRefreshDisabled,
   refreshSkyNet,
-  skyEnableOnPet,
-  skyBgOpacityPercent,
-  onSkyEnableOnPet,
-  onSkyBgOpacity,
-  resetSkyBgOpacity,
   windowFamily,
   previewActor,
   clipPreviewActor,

@@ -110,9 +110,15 @@ export type PetSettingsPageCtx = {
   resetSkyBgOpacity: () => void;
   /** 与预览旁芯片同一计算源 */
   skyBgOpacityPercent: ComputedRef<number>;
-  /** 跟随系统解析城；探测/同步 busy */
+  /** 跟随系统解析城；探测/同步 busy；联网探测是否成功 */
   skyNetCityId: Ref<string>;
   skyNetBusy: Ref<boolean>;
+  skyNetBadgeOnline: Ref<boolean>;
+  /** 强制探测联网；天气系统切在线前用 */
+  probeSkyNet: () => Promise<boolean>;
+  /** 当前展示天色/天气（驱动行旁提示） */
+  skyDisplayTod: Ref<import("@/pet/data/skyWeather").SkyTodId>;
+  skyDisplayWeather: Ref<import("@/pet/data/skyWeather").SkyWeatherId>;
   onPickVrm: () => void | Promise<void>;
   onClearVrm: () => void | Promise<void>;
   onDemoMotion: (v: unknown) => void | Promise<void>;

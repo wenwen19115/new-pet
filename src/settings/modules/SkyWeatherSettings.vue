@@ -1,139 +1,102 @@
 <template>
   <div class="sky-weather span-2">
     <SettingsItemRow
-      :title="$t('pet.skyWeatherTitle')"
-      :description="$t('pet.skyWeatherDesc')"
+      :title="$t('pet.skyWeatherLinkMode')"
+      :description="linkModeDesc"
       tone="pet"
     >
-      <template #body>
-        <div class="sky-weather-body">
-          <div class="sky-weather-row sky-weather-row--link">
-            <div class="sky-weather-link-meta">
-              <div class="sky-weather-label">{{ $t("pet.skyWeatherLinkMode") }}</div>
-              <p class="sky-weather-hint">{{ $t("pet.skyWeatherLinkModeDesc") }}</p>
-            </div>
-            <label class="sky-weather-link-sw">
-              <span>{{
-                model.linkMode === "online"
-                  ? $t("pet.skyWeatherLinkOnline")
-                  : $t("pet.skyWeatherLinkOffline")
-              }}</span>
-              <ThemeSwitch
-                :checked="model.linkMode === 'online'"
-                :aria-label="$t('pet.skyWeatherLinkMode')"
-                @update:checked="onLinkOnline"
-              />
-            </label>
-          </div>
+      <label class="sky-weather-link-sw">
+        <span>{{
+          model.linkMode === "online"
+            ? $t("pet.skyWeatherLinkOnline")
+            : $t("pet.skyWeatherLinkOffline")
+        }}</span>
+        <ThemeSwitch
+          :checked="model.linkMode === 'online'"
+          :disabled="Boolean(busy) || linking"
+          :aria-label="$t('pet.skyWeatherLinkMode')"
+          @update:checked="onLinkOnline"
+        />
+      </label>
+    </SettingsItemRow>
 
-          <div class="sky-weather-row sky-weather-row--stack">
-            <div class="sky-weather-label">{{ $t("pet.skyWeatherRegion") }}</div>
-            <p class="sky-weather-hint">{{ regionHint }}</p>
-            <select
-              class="sky-weather-select"
-              :value="model.regionId"
-              :aria-label="$t('pet.skyWeatherRegion')"
-              :aria-busy="busy ? 'true' : 'false'"
-              :disabled="!linkOnline"
-              @change="onRegion"
-            >
-              <option value="system">{{ systemRegionLabel }}</option>
-              <option v-for="r in regionList" :key="r.id" :value="r.id">
-                {{ r.name }}
-              </option>
-            </select>
-          </div>
+    <SettingsItemRow
+      :title="$t('pet.skyWeatherRegion')"
+      :description="linkOnline ? '' : $t('pet.skyWeatherRegionOfflineHint')"
+      tone="pet"
+      :class="{ 'is-disabled': !linkOnline }"
+    >
+      <SkyMenuSelect
+        :open="openMenu === 'region'"
+        :disabled="!linkOnline"
+        :busy="busy"
+        :label="regionTriggerLabel"
+        :aria-label="$t('pet.skyWeatherRegion')"
+        :options="regionOptions"
+        :model-value="model.regionId"
+        @toggle="toggleMenu('region')"
+        @pick="pickRegion"
+      />
+    </SettingsItemRow>
 
-          <div class="sky-weather-row sky-weather-row--stack">
-            <div class="sky-weather-label">{{ $t("pet.skyWeatherTodMode") }}</div>
-            <p class="sky-weather-hint">{{ $t("pet.skyWeatherTodModeDesc") }}</p>
-            <ThemeSeg
-              :model-value="model.todMode"
-              :options="todModeOptions"
-              :aria-label="$t('pet.skyWeatherTodMode')"
-              @update:model-value="onTodMode"
-            />
-          </div>
-
-          <div class="sky-weather-row sky-weather-row--stack">
-            <div class="sky-weather-label">{{ $t("pet.skyWeatherWxMode") }}</div>
-            <p class="sky-weather-hint">{{ $t("pet.skyWeatherWxModeDesc") }}</p>
-            <ThemeSeg
-              :model-value="model.weatherMode"
-              :options="wxModeOptions"
-              :aria-label="$t('pet.skyWeatherWxMode')"
-              @update:model-value="onWxMode"
-            />
-          </div>
-
-          <div
-            v-if="model.todMode !== 'sync'"
-            class="sky-weather-row sky-weather-row--stack"
-          >
-            <div class="sky-weather-label">{{ $t("pet.skyWeatherManualTod") }}</div>
-            <ThemeSeg
-              :model-value="model.manualTod"
-              :options="todOptions"
-              :aria-label="$t('pet.skyWeatherManualTod')"
-              @update:model-value="onManualTod"
-            />
-          </div>
-
-          <div
-            v-if="model.weatherMode !== 'sync'"
-            class="sky-weather-row sky-weather-row--stack"
-          >
-            <div class="sky-weather-label">{{ $t("pet.skyWeatherManualWx") }}</div>
-            <div
-              ref="wxMenuRoot"
-              class="sky-weather-menu"
-              :data-open="wxMenuOpen ? '1' : '0'"
-            >
-              <button
-                type="button"
-                class="sky-weather-menu-trigger"
-                :aria-expanded="wxMenuOpen"
-                :aria-label="$t('pet.skyWeatherManualWx')"
-                @click="toggleWxMenu"
-              >
-                <span>{{ weatherLabel(model.manualWeather) }}</span>
-                <span class="sky-weather-menu-caret" aria-hidden="true" />
-              </button>
-              <div
-                v-if="wxMenuOpen"
-                class="sky-weather-menu-panel"
-                role="listbox"
-                :style="wxMenuPanelStyle"
-                @wheel.stop
-                @touchmove.stop
-              >
-                <button
-                  v-for="id in normalWeatherIds"
-                  :key="id"
-                  type="button"
-                  class="sky-weather-menu-opt"
-                  role="option"
-                  :aria-selected="model.manualWeather === id"
-                  :data-active="model.manualWeather === id ? '1' : '0'"
-                  @click="pickManualWx(id)"
-                >
-                  {{ weatherLabel(id) }}
-                </button>
-              </div>
-            </div>
-          </div>
+    <!-- 模式 + 值同槽同宽：固定可改，其余只读，避免换行撑高 -->
+    <SettingsItemRow :title="$t('pet.skyWeatherTodMode')" tone="pet">
+      <div class="sky-drive-row">
+        <ThemeSeg
+          :model-value="model.todMode"
+          :options="todModeOptions"
+          :aria-label="$t('pet.skyWeatherTodMode')"
+          @update:model-value="onTodMode"
+        />
+        <div class="sky-drive-value">
+          <SkyMenuSelect
+            :open="model.todMode === 'fixed' && openMenu === 'tod'"
+            :disabled="model.todMode !== 'fixed'"
+            :hide-caret="model.todMode !== 'fixed'"
+            :label="todValueLabel"
+            :aria-label="$t('pet.skyWeatherManualTod')"
+            :options="todSelectOptions"
+            :model-value="model.manualTod"
+            @toggle="toggleMenu('tod')"
+            @pick="pickManualTod"
+          />
         </div>
-      </template>
+      </div>
+    </SettingsItemRow>
+
+    <SettingsItemRow :title="$t('pet.skyWeatherWxMode')" tone="pet">
+      <div class="sky-drive-row">
+        <ThemeSeg
+          :model-value="model.weatherMode"
+          :options="wxModeOptions"
+          :aria-label="$t('pet.skyWeatherWxMode')"
+          @update:model-value="onWxMode"
+        />
+        <div class="sky-drive-value">
+          <SkyMenuSelect
+            :open="model.weatherMode === 'fixed' && openMenu === 'wx'"
+            :disabled="model.weatherMode !== 'fixed'"
+            :hide-caret="model.weatherMode !== 'fixed'"
+            :label="wxValueLabel"
+            :aria-label="$t('pet.skyWeatherManualWx')"
+            :options="wxSelectOptions"
+            :model-value="model.manualWeather"
+            @toggle="toggleMenu('wx')"
+            @pick="pickManualWx"
+          />
+        </div>
+      </div>
     </SettingsItemRow>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onUnmounted, ref } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import SettingsItemRow from "@/components/SettingsItemRow.vue";
 import ThemeSeg from "@/settings/components/ThemeSeg.vue";
 import ThemeSwitch from "@/settings/components/ThemeSwitch.vue";
+import SkyMenuSelect from "@/settings/components/SkyMenuSelect.vue";
 import {
   NORMAL_WEATHER_POOL,
   SKY_REGIONS,
@@ -158,6 +121,12 @@ const props = defineProps<{
   netCityId?: string;
   /** 探测/换城同步中 */
   busy?: boolean;
+  /** 切换在线前强制探测 */
+  probeNet?: () => Promise<boolean>;
+  /** 当前展示天色（系统钟/离线旁提示） */
+  displayTod?: SkyTodId;
+  /** 当前展示天气（实况/离线旁提示） */
+  displayWeather?: SkyWeatherId;
 }>();
 
 const emit = defineEmits<{
@@ -169,41 +138,30 @@ const { t } = useI18n();
 
 const model = computed(() => normalizeSkyWeather(props.modelValue));
 const linkOnline = computed(() => model.value.linkMode === "online");
-const wxMenuOpen = ref(false);
-const wxMenuRoot = ref<HTMLElement | null>(null);
-/** 视口下方可用高度算出的面板限高 */
-const wxMenuMaxH = ref(220);
+/** 正在为「切在线」做探测，开关先不拨过去 */
+const linking = ref(false);
+const linkDenied = ref(false);
 
-const wxMenuPanelStyle = computed(() => ({
-  maxHeight: `${wxMenuMaxH.value}px`,
-}));
-
-function layoutWxMenu() {
-  const root = wxMenuRoot.value;
-  if (!root) return;
-  const trigger = root.querySelector(".sky-weather-menu-trigger") as HTMLElement | null;
-  if (!trigger) return;
-  const rect = trigger.getBoundingClientRect();
-  const gap = 4;
-  const pad = 8;
-  const below = Math.floor(window.innerHeight - rect.bottom - gap - pad);
-  // 至少留一截可点，最多别超过大半屏
-  const cap = Math.floor(window.innerHeight * 0.55);
-  wxMenuMaxH.value = Math.max(96, Math.min(cap, below));
-}
-
-function toggleWxMenu() {
-  if (wxMenuOpen.value) {
-    wxMenuOpen.value = false;
-    return;
+const linkModeDesc = computed(() => {
+  if (linking.value) return t("pet.skyWeatherLinkNeedNet");
+  if (linkDenied.value && !linkOnline.value) {
+    return t("pet.skyWeatherLinkProbeDenied");
   }
-  layoutWxMenu();
-  wxMenuOpen.value = true;
+  return t("pet.skyWeatherLinkModeDesc");
+});
+
+type MenuId = "region" | "tod" | "wx";
+const openMenu = ref<MenuId | null>(null);
+
+function toggleMenu(id: MenuId) {
+  if (id === "region" && !linkOnline.value) return;
+  if (id === "tod" && model.value.todMode !== "fixed") return;
+  if (id === "wx" && model.value.weatherMode !== "fixed") return;
+  openMenu.value = openMenu.value === id ? null : id;
 }
 
-function onWxMenuRelayout() {
-  if (!wxMenuOpen.value) return;
-  layoutWxMenu();
+function closeMenus() {
+  openMenu.value = null;
 }
 
 const regionList = computed(() =>
@@ -212,22 +170,24 @@ const regionList = computed(() =>
   )
 );
 
-/** 在线跟随：有探测城则显示城名，不写「跟随系统」 */
+/** 跟随系统：优先显示定位城名 */
 const systemRegionLabel = computed(() => {
-  const id = props.netCityId || "";
+  const id = props.netCityId || model.value.runtime.locatedRegionId || "";
   const city = SKY_REGIONS[id]?.name || "";
   if (city) return t("pet.skyWeatherRegionSystemCity", { city });
   if (props.busy) return t("pet.skyWeatherRegionLocating");
   return t("pet.skyWeatherRegionSystem");
 });
 
-const regionHint = computed(() =>
-  linkOnline.value
-    ? t("pet.skyWeatherRegionSystemHint")
-    : t("pet.skyWeatherRegionOfflineHint")
-);
+const regionTriggerLabel = computed(() => {
+  if (model.value.regionId === "system") return systemRegionLabel.value;
+  return SKY_REGIONS[model.value.regionId]?.name || model.value.regionId;
+});
 
-const normalWeatherIds = NORMAL_WEATHER_POOL;
+const regionOptions = computed(() => [
+  { value: "system", label: systemRegionLabel.value },
+  ...regionList.value.map((r) => ({ value: r.id, label: r.name })),
+]);
 
 const todModeOptions = computed(() => {
   const all = [
@@ -235,7 +195,6 @@ const todModeOptions = computed(() => {
     { value: "sync" as const, label: t("pet.skyModeSyncTod") },
     { value: "fixed" as const, label: t("pet.skyModeFixedTod") },
   ];
-  // 总闸离线：不提供跟随项
   return linkOnline.value ? all : all.filter((o) => o.value !== "sync");
 });
 
@@ -248,10 +207,19 @@ const wxModeOptions = computed(() => {
   return linkOnline.value ? all : all.filter((o) => o.value !== "sync");
 });
 
-const todOptions = computed(() =>
+const todSelectOptions = computed(() =>
   (["morning", "noon", "dusk", "evening", "night", "predawn"] as SkyTodId[]).map(
     (value) => ({ value, label: t(`pet.skyTod.${value}`) })
   )
+);
+
+const todTriggerLabel = computed(() => {
+  const hit = todSelectOptions.value.find((o) => o.value === model.value.manualTod);
+  return hit?.label || model.value.manualTod;
+});
+
+const wxSelectOptions = computed(() =>
+  NORMAL_WEATHER_POOL.map((id) => ({ value: id, label: weatherLabel(id) }))
 );
 
 function weatherLabel(id: string) {
@@ -259,6 +227,29 @@ function weatherLabel(id: string) {
   const msg = t(key);
   return msg === key ? id : msg;
 }
+
+const displayTodLabel = computed(() => {
+  const id = props.displayTod || model.value.runtime.snapTod || model.value.manualTod;
+  return t(`pet.skyTod.${id}`);
+});
+
+const displayWxLabel = computed(() => {
+  const id =
+    props.displayWeather ||
+    model.value.runtime.snapWeather ||
+    model.value.manualWeather;
+  return weatherLabel(id);
+});
+
+const todValueLabel = computed(() =>
+  model.value.todMode === "fixed" ? todTriggerLabel.value : displayTodLabel.value
+);
+
+const wxValueLabel = computed(() =>
+  model.value.weatherMode === "fixed"
+    ? weatherLabel(model.value.manualWeather)
+    : displayWxLabel.value
+);
 
 function commit(next: SkyWeatherConfig) {
   emit("update:modelValue", normalizeSkyWeather(next));
@@ -269,47 +260,58 @@ function patch(partial: Partial<SkyWeatherConfig>) {
   commit({ ...model.value, ...partial });
 }
 
-function onRegion(e: Event) {
+function pickRegion(id: string) {
   if (!linkOnline.value) return;
-  patch({ regionId: (e.target as HTMLSelectElement).value });
+  closeMenus();
+  patch({ regionId: id });
 }
 
-function onLinkOnline(online: boolean) {
-  const next = online ? "online" : "offline";
-  if (model.value.linkMode === next) return;
-  commit(applySkyLinkMode(model.value, next as SkyLinkMode));
+function pickManualTod(id: string) {
+  closeMenus();
+  patch({ manualTod: id as SkyTodId });
 }
 
-function onTodMode(v: string | number) {
-  commit(applySkyTodMode(model.value, v as SkyTodMode));
-}
-
-function onWxMode(v: string | number) {
-  commit(applySkyWeatherMode(model.value, v as SkyWeatherMode));
-}
-
-function onManualTod(v: string | number) {
-  patch({ manualTod: v as SkyTodId });
-}
-
-function pickManualWx(id: SkyWeatherId) {
-  wxMenuOpen.value = false;
+function pickManualWx(id: string) {
+  closeMenus();
   patch({
-    manualWeather: id,
+    manualWeather: id as SkyWeatherId,
     runtime: { ...model.value.runtime, eggWeather: "" },
   });
 }
 
-function onDocPointerDown(e: PointerEvent) {
-  if (!wxMenuOpen.value) return;
-  const root = wxMenuRoot.value;
-  if (root && !root.contains(e.target as Node)) wxMenuOpen.value = false;
+async function onLinkOnline(online: boolean) {
+  if (linking.value) return;
+  if (!online) {
+    linkDenied.value = false;
+    if (model.value.linkMode === "offline") return;
+    closeMenus();
+    commit(applySkyLinkMode(model.value, "offline"));
+    return;
+  }
+  if (model.value.linkMode === "online") return;
+  // 先探测，成功才切在线；失败开关保持离线
+  linking.value = true;
+  linkDenied.value = false;
+  try {
+    const ok = props.probeNet ? await props.probeNet() : false;
+    if (!ok) {
+      linkDenied.value = true;
+      return;
+    }
+    closeMenus();
+    commit(applySkyLinkMode(model.value, "online" as SkyLinkMode));
+  } finally {
+    linking.value = false;
+  }
 }
 
-document.addEventListener("pointerdown", onDocPointerDown);
-window.addEventListener("resize", onWxMenuRelayout);
-onUnmounted(() => {
-  document.removeEventListener("pointerdown", onDocPointerDown);
-  window.removeEventListener("resize", onWxMenuRelayout);
-});
+function onTodMode(v: string | number) {
+  closeMenus();
+  commit(applySkyTodMode(model.value, v as SkyTodMode));
+}
+
+function onWxMode(v: string | number) {
+  closeMenus();
+  commit(applySkyWeatherMode(model.value, v as SkyWeatherMode));
+}
 </script>

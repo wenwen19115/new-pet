@@ -33,6 +33,7 @@ import {
   resolveDisplayTod,
   resolveDisplayWeather,
 } from "@/pet/runtime/skyWeatherScheduler";
+import { resolveSystemRegion } from "@/pet/runtime/skyWeatherSystemRegion";
 import { useSkyWeatherSession } from "@/pet/runtime/useSkyWeatherSession";
 import {
   familyToneVars,
@@ -85,7 +86,6 @@ export function useSkyWeatherPreview(opts: {
     schedulePersist();
   }
 
-  const enableOnPet = computed(() => Boolean(skyConfig.value.enableOnPet));
   const bgOpacityPercent = computed(() =>
     Math.round(Math.min(1, Math.max(0, skyConfig.value.bgOpacity)) * 100)
   );
@@ -222,10 +222,6 @@ export function useSkyWeatherPreview(opts: {
     () => (opts.skyWeather.value?.todMode ?? "offline") === "sync"
   );
 
-  const skyLinkMode = computed(
-    () => opts.skyWeather.value?.linkMode ?? "offline"
-  );
-
   const skyDisplayTod = computed(() =>
     mirroring ? mirrorTod.value : session.displayTod.value
   );
@@ -239,59 +235,118 @@ export function useSkyWeatherPreview(opts: {
     mirroring ? mirrorEvents.value : session.activeEvents.value
   );
 
+  /** 刷新后仍无网：显示「同步失败」 */
+  const probeFailed = ref(false);
+  /** 本页正在做 IP 探测（含镜像态，不全靠 session.linkBusy） */
+  const localProbeBusy = ref(false);
+  let minBusyTimer: ReturnType<typeof setTimeout> | null = null;
+  let minBusyUntil = 0;
+
+  /** 最短 busy 展示，避免探测瞬间完成看不到「同步中」 */
+  const minBusyTick = ref(0);
+  function armMinBusy(ms = 480) {
+    minBusyUntil = Date.now() + ms;
+    minBusyTick.value += 1;
+    if (minBusyTimer) clearTimeout(minBusyTimer);
+    minBusyTimer = setTimeout(() => {
+      minBusyTimer = null;
+      minBusyTick.value += 1;
+    }, ms);
+  }
+
+  const skyNetBusy = computed(() => {
+    void minBusyTick.value;
+    return (
+      localProbeBusy.value ||
+      (!mirroring && Boolean(session.linkBusy.value)) ||
+      Date.now() < minBusyUntil
+    );
+  });
+
+  /** 预览徽章 = IP 联网探测（落盘 geoOnline；session 热缓存优先） */
+  const netProbeOnline = computed(() => {
+    if (session.netOnline.value) return true;
+    return Boolean(normalizeSkyWeather(skyConfig.value).runtime.geoOnline);
+  });
+
+  watch(netProbeOnline, (online) => {
+    if (online) probeFailed.value = false;
+  });
+
   const skyNetLabel = computed(() => {
-    if (skyLinkMode.value === "offline") {
-      return t("pet.skyWeatherLinkOfflineCity", {
-        city: SKY_REGIONS.shenzhen?.name || "深圳",
-      });
+    if (skyNetBusy.value) return t("pet.skyWeatherUpdating");
+    if (!netProbeOnline.value) {
+      return probeFailed.value
+        ? t("pet.skyWeatherLinkProbeFail")
+        : t("pet.skyWeatherLinkOffline");
     }
-    if (!mirroring && session.linkBusy.value) {
-      return t("pet.skyWeatherUpdating");
-    }
-    if (mirroring) {
-      const cfg = normalizeSkyWeather(skyConfig.value);
-      if (!cfg.runtime.wxOnline) return t("pet.skyWeatherLinkOffline");
-      const id =
-        cfg.regionId === "system"
-          ? ""
-          : cfg.regionId;
-      const city = SKY_REGIONS[id]?.name || id;
-      if (!city) return t("pet.skyWeatherLinkOnline");
-      return t("pet.skyWeatherLinkOnlineCity", { city });
-    }
-    if (!session.netOnline.value) return t("pet.skyWeatherLinkOffline");
-    const id = session.netCityId.value;
+    const cfg = normalizeSkyWeather(skyConfig.value);
+    const id =
+      session.netCityId.value ||
+      (cfg.regionId === "system" ? cfg.runtime.locatedRegionId : cfg.regionId) ||
+      "";
     const city = SKY_REGIONS[id]?.name || id;
     if (!city) return t("pet.skyWeatherLinkOnline");
     return t("pet.skyWeatherLinkOnlineCity", { city });
   });
 
-  const skyNetBadgeOnline = computed(() => {
-    if (skyLinkMode.value !== "online") return false;
-    if (mirroring) {
-      return Boolean(normalizeSkyWeather(skyConfig.value).runtime.wxOnline);
-    }
-    return session.netOnline.value;
-  });
-
   const skyNetCityId = computed(() => {
-    if (mirroring) {
-      const cfg = normalizeSkyWeather(skyConfig.value);
-      return cfg.regionId === "system" ? "" : cfg.regionId;
-    }
-    return session.netCityId.value;
+    const cfg = normalizeSkyWeather(skyConfig.value);
+    if (cfg.regionId !== "system") return cfg.regionId;
+    return (
+      (!mirroring && session.netCityId.value) ||
+      cfg.runtime.locatedRegionId ||
+      session.netCityId.value ||
+      ""
+    );
   });
 
-  const skyNetBusy = computed(() =>
-    mirroring ? false : session.linkBusy.value
-  );
+  const skyNetRefreshDisabled = computed(() => skyNetBusy.value);
 
-  function refreshSkyNet() {
-    if (petOwnsTick.value) {
-      void emit(SKY_WEATHER_REFRESH_EVENT);
-      return;
+  /** 强制探测联网；返回是否成功（天气系统开在线前调用） */
+  async function probeSkyNet(): Promise<boolean> {
+    if (localProbeBusy.value) return netProbeOnline.value;
+    localProbeBusy.value = true;
+    armMinBusy(480);
+    try {
+      if (petOwnsTick.value) {
+        // 镜像：session 已停，本页本地探测并落盘徽章态；再通知桌宠拉实况
+        const hit = await resolveSystemRegion({ force: true });
+        const ok = !hit.offline;
+        probeFailed.value = !ok;
+        const cfg = normalizeSkyWeather(skyConfig.value);
+        const located = ok ? hit.id : cfg.runtime.locatedRegionId;
+        if (
+          cfg.runtime.geoOnline !== ok ||
+          cfg.runtime.locatedRegionId !== located
+        ) {
+          skyConfig.value = normalizeSkyWeather({
+            ...cfg,
+            runtime: {
+              ...cfg.runtime,
+              geoOnline: ok,
+              locatedRegionId: located,
+            },
+          });
+          schedulePersist();
+        }
+        void emit(SKY_WEATHER_REFRESH_EVENT);
+        return ok;
+      }
+
+      // 本页 leader：只走 linkController（applyNetStatus 写 geoOnline）
+      await session.refreshLinks();
+      const ok = session.netOnline.value;
+      probeFailed.value = !ok;
+      return ok;
+    } finally {
+      localProbeBusy.value = false;
     }
-    void session.refreshLinks();
+  }
+
+  async function refreshSkyNet() {
+    if (skyNetRefreshDisabled.value) return;
+    await probeSkyNet();
   }
 
   const heroMergedStyle = computed(() => ({
@@ -309,6 +364,10 @@ export function useSkyWeatherPreview(opts: {
   );
 
   onUnmounted(() => {
+    if (minBusyTimer) {
+      clearTimeout(minBusyTimer);
+      minBusyTimer = null;
+    }
     stopMirror();
     session.stop();
     flushPersist();
@@ -323,11 +382,12 @@ export function useSkyWeatherPreview(opts: {
     skyNetCityId,
     skyNetBusy,
     skyNetLabel,
-    skyNetBadgeOnline,
+    skyNetBadgeOnline: netProbeOnline,
+    skyNetRefreshDisabled,
     refreshSkyNet,
+    probeSkyNet,
     schedulePersist,
     patchSkyWeather,
-    enableOnPet,
     bgOpacityPercent,
     onEnableOnPet,
     onBgOpacity,

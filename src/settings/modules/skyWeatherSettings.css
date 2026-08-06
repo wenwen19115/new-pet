@@ -1,32 +1,5 @@
-.sky-weather-body {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 100%;
-}
-
-.sky-weather-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.sky-weather-row--stack {
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.sky-weather-row--link {
-  align-items: flex-start;
-}
-
-.sky-weather-link-meta {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.sky-weather {
+  display: contents;
 }
 
 .sky-weather-link-sw {
@@ -34,7 +7,6 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-top: 2px;
   font-size: 12px;
   font-weight: 650;
   color: var(--ui-text);
@@ -42,104 +14,38 @@
   user-select: none;
 }
 
-.sky-weather-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ui-text);
+.settings-item.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
 }
 
-.sky-weather-hint {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.45;
-  color: var(--ui-text-muted);
-}
-
-.sky-weather-select {
-  min-width: 160px;
-  max-width: 100%;
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid var(--ui-border);
-  background: var(--ui-surface);
-  color: var(--ui-text);
-  font: inherit;
-  font-size: 12px;
-}
-
-.sky-weather-select:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.sky-weather-menu {
-  position: relative;
-  width: 100%;
-  max-width: 280px;
-}
-
-.sky-weather-menu-trigger {
-  width: 100%;
-  display: flex;
+.sky-drive-row {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 8px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid var(--ui-border);
-  background: var(--ui-surface);
-  color: var(--ui-text);
-  font: inherit;
-  font-size: 12px;
-  cursor: pointer;
-  text-align: left;
+  flex-wrap: nowrap;
+  max-width: 100%;
 }
 
-.sky-weather-menu-caret {
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 5px solid var(--ui-text-muted);
-  flex: 0 0 auto;
-  transition: transform 0.15s ease;
+.sky-drive-value {
+  flex: 0 0 5.75rem;
+  width: 5.75rem;
+  min-width: 5.75rem;
 }
 
-.sky-weather-menu[data-open="1"] .sky-weather-menu-caret {
-  transform: rotate(180deg);
-}
-
-.sky-weather-menu-panel {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(100% + 4px);
-  z-index: 20;
-  overflow: auto;
-  overscroll-behavior: contain;
-  border-radius: 8px;
-  border: 1px solid var(--ui-border);
-  background: var(--ui-surface-strong, var(--ui-surface));
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
-  padding: 4px;
-}
-
-.sky-weather-menu-opt {
-  display: block;
+.sky-drive-value :deep(.sky-menu-select) {
   width: 100%;
-  border: 0;
-  background: transparent;
-  color: var(--ui-text);
-  font: inherit;
-  font-size: 12px;
-  text-align: left;
-  padding: 7px 10px;
-  border-radius: 6px;
-  cursor: pointer;
+  min-width: 0;
 }
 
-.sky-weather-menu-opt:hover,
-.sky-weather-menu-opt[data-active="1"] {
-  background: color-mix(in srgb, var(--ui-primary, #3d6b4f) 16%, transparent);
+.sky-drive-value :deep(.sky-menu-select-trigger) {
+  min-height: 30px;
+  box-sizing: border-box;
 }
 
+.sky-drive-value :deep(.sky-menu-select-trigger:disabled) {
+  opacity: 1;
+  cursor: default;
+  color: var(--ui-muted, var(--ui-text));
+}
