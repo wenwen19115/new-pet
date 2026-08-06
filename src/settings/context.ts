@@ -101,6 +101,15 @@ export type PetSettingsPageCtx = {
   onHitBounds: (v: boolean) => void | Promise<void>;
   onDeskWeatherChange: () => void | Promise<void>;
   onSkyWeatherChange: () => void | Promise<void>;
+  /** 窗景 tab 与预览旁芯片共用 */
+  patchSkyWeather: (
+    partial: Partial<import("@/pet/data/skyWeather").SkyWeatherConfig>
+  ) => void;
+  onSkyEnableOnPet: (on: boolean) => void;
+  onSkyBgOpacity: (v: number) => void;
+  resetSkyBgOpacity: () => void;
+  /** 与预览旁芯片同一计算源 */
+  skyBgOpacityPercent: ComputedRef<number>;
   /** 跟随系统解析城；探测/同步 busy */
   skyNetCityId: Ref<string>;
   skyNetBusy: Ref<boolean>;

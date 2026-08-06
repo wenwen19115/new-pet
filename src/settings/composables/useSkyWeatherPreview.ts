@@ -1,24 +1,45 @@
 /**
  * 设置左侧窗外天气预览：会话 + hero 绑定。
- * 生命周期跟设置页；落盘只经本门 schedulePersist（会话 commit / UI change 共用）。
+ * enableOnPet 关：本页为 tick leader；开：镜像桌宠 leader（防双写盘）。
+ * 落盘只经 schedulePersist（UI change / 本页会话 commit 共用）。
  */
-import { computed, onUnmounted, type ComputedRef, type Ref } from "vue";
+import {
+  computed,
+  onUnmounted,
+  ref,
+  watch,
+  type ComputedRef,
+  type Ref,
+} from "vue";
+import { emit, listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { useI18n } from "vue-i18n";
 import { characterHas, getCharacter } from "@/pet/characters";
 import type { PetModelKind } from "@/pet/skins";
 import {
+  createDebouncedPersist,
   DEFAULT_SKY_WEATHER,
   normalizeSkyWeather,
+  resolveTodFromDate,
   SKY_REGIONS,
+  SKY_WEATHER_FIRE_EVENT,
+  SKY_WEATHER_REFRESH_EVENT,
+  type SkyEventId,
+  type SkyTodId,
   type SkyWeatherConfig,
+  type SkyWeatherFirePayload,
+  type SkyWeatherId,
 } from "@/pet/data/skyWeather";
+import {
+  resolveDisplayTod,
+  resolveDisplayWeather,
+} from "@/pet/runtime/skyWeatherScheduler";
 import { useSkyWeatherSession } from "@/pet/runtime/useSkyWeatherSession";
 import {
   familyToneVars,
   themePackToFamily,
 } from "@/pet/models/preview/themePackToFamily";
 
-const PERSIST_DEBOUNCE_MS = 420;
+const MIRROR_TICK_MS = 1000;
 
 export function useSkyWeatherPreview(opts: {
   skyWeather: Ref<SkyWeatherConfig>;
@@ -36,44 +57,162 @@ export function useSkyWeatherPreview(opts: {
     },
   });
 
-  let persistTimer: ReturnType<typeof setTimeout> | null = null;
-  let persistQueued = false;
+  const petOwnsTick = computed(() => Boolean(skyConfig.value.enableOnPet));
 
-  /** 会话与天气页控件共用的唯一落盘防抖 */
-  function schedulePersist() {
-    persistQueued = true;
-    if (persistTimer) return;
-    persistTimer = setTimeout(() => {
-      persistTimer = null;
-      if (!persistQueued) return;
-      persistQueued = false;
-      void opts.onPersist();
-    }, PERSIST_DEBOUNCE_MS);
+  let mirrorTimer: ReturnType<typeof setInterval> | null = null;
+  let fireUnlisten: UnlistenFn | null = null;
+  /** listen() 异步返回前 stopMirror 时作废 */
+  let fireListenGen = 0;
+  let mirroring = false;
+  const mirrorFireTimeouts = new Set<number>();
+
+  const mirrorTod = ref<SkyTodId>(resolveTodFromDate());
+  const mirrorWeather = ref<SkyWeatherId>("clear");
+  const mirrorRainbow = ref(false);
+  const mirrorEvents = ref<SkyEventId[]>([]);
+
+  /** 会话与天气页控件共用落盘防抖（与桌宠 leader 同工厂） */
+  const persist = createDebouncedPersist(() => opts.onPersist());
+  const schedulePersist = persist.schedule;
+  const flushPersist = () => persist.flush();
+
+  /** 窗景 / 天气控件共用 patch（含落盘） */
+  function patchSkyWeather(partial: Partial<SkyWeatherConfig>) {
+    skyConfig.value = normalizeSkyWeather({
+      ...skyConfig.value,
+      ...partial,
+    });
+    schedulePersist();
   }
 
-  function flushPersist() {
-    if (persistTimer) {
-      clearTimeout(persistTimer);
-      persistTimer = null;
-    }
-    if (!persistQueued) return;
-    persistQueued = false;
-    void opts.onPersist();
+  const enableOnPet = computed(() => Boolean(skyConfig.value.enableOnPet));
+  const bgOpacityPercent = computed(() =>
+    Math.round(Math.min(1, Math.max(0, skyConfig.value.bgOpacity)) * 100)
+  );
+
+  function onEnableOnPet(on: boolean) {
+    if (skyConfig.value.enableOnPet === on) return;
+    patchSkyWeather({ enableOnPet: on });
+  }
+
+  function onBgOpacity(v: number) {
+    const pct = Math.min(100, Math.max(0, Math.round(v)));
+    patchSkyWeather({ bgOpacity: pct / 100 });
+  }
+
+  function resetBgOpacity() {
+    patchSkyWeather({ bgOpacity: 1 });
   }
 
   const session = useSkyWeatherSession({
     config: skyConfig,
+    autoStart: !petOwnsTick.value,
     commit: (next, commitOpts) => {
       skyConfig.value = normalizeSkyWeather(next);
+      // pet 为 leader 时本页不 tick 写盘；交接 stop flush 仍要落盘
+      if (petOwnsTick.value && commitOpts?.flush !== true) return;
       if (commitOpts?.persist === false) return;
       if (commitOpts?.flush) {
-        persistQueued = true;
-        flushPersist();
+        persist.flush(true);
         return;
       }
       schedulePersist();
     },
   });
+
+  function syncMirrorDisplay() {
+    const cfg = normalizeSkyWeather(skyConfig.value);
+    mirrorTod.value = resolveDisplayTod(cfg);
+    mirrorWeather.value = resolveDisplayWeather(cfg);
+    mirrorRainbow.value = (cfg.runtime.rainbowUntil || 0) > Date.now();
+  }
+
+  function clearMirrorTimer() {
+    if (!mirrorTimer) return;
+    clearInterval(mirrorTimer);
+    mirrorTimer = null;
+  }
+
+  function clearMirrorFireTimeouts() {
+    for (const id of mirrorFireTimeouts) window.clearTimeout(id);
+    mirrorFireTimeouts.clear();
+  }
+
+  function clearFireListen() {
+    fireListenGen += 1;
+    if (fireUnlisten) {
+      fireUnlisten();
+      fireUnlisten = null;
+    }
+  }
+
+  function bindFireMirror() {
+    if (fireUnlisten) return;
+    const gen = ++fireListenGen;
+    void listen<SkyWeatherFirePayload>(SKY_WEATHER_FIRE_EVENT, (ev) => {
+      if (!mirroring) return;
+      const list = ev.payload?.events ?? [];
+      for (const id of list) {
+        if (!mirrorEvents.value.includes(id)) {
+          mirrorEvents.value = [...mirrorEvents.value, id];
+        }
+        const ms = id === "meteor" ? 2500 : 12_000;
+        const tid = window.setTimeout(() => {
+          mirrorFireTimeouts.delete(tid);
+          if (!mirroring) return;
+          mirrorEvents.value = mirrorEvents.value.filter((x) => x !== id);
+        }, ms);
+        mirrorFireTimeouts.add(tid);
+      }
+    }).then((un) => {
+      if (gen !== fireListenGen || !mirroring) {
+        un();
+        return;
+      }
+      fireUnlisten = un;
+    });
+  }
+
+  function startMirror() {
+    mirroring = true;
+    clearMirrorTimer();
+    syncMirrorDisplay();
+    mirrorTimer = setInterval(syncMirrorDisplay, MIRROR_TICK_MS);
+    bindFireMirror();
+  }
+
+  function stopMirror() {
+    mirroring = false;
+    clearMirrorTimer();
+    clearMirrorFireTimeouts();
+    clearFireListen();
+    mirrorEvents.value = [];
+  }
+
+  function applyTickOwner() {
+    if (petOwnsTick.value) {
+      session.stop();
+      startMirror();
+    } else {
+      stopMirror();
+      session.start();
+    }
+  }
+
+  watch(petOwnsTick, () => {
+    applyTickOwner();
+  });
+
+  if (petOwnsTick.value) startMirror();
+
+  watch(
+    () => opts.skyWeather.value,
+    () => {
+      if (!mirroring) return;
+      syncMirrorDisplay();
+    },
+    { deep: true }
+  );
 
   const windowFamily = computed(() =>
     themePackToFamily(opts.themeStyle.value || "ukiyo")
@@ -87,14 +226,39 @@ export function useSkyWeatherPreview(opts: {
     () => opts.skyWeather.value?.linkMode ?? "offline"
   );
 
+  const skyDisplayTod = computed(() =>
+    mirroring ? mirrorTod.value : session.displayTod.value
+  );
+  const skyDisplayWeather = computed(() =>
+    mirroring ? mirrorWeather.value : session.displayWeather.value
+  );
+  const skyRainbow = computed(() =>
+    mirroring ? mirrorRainbow.value : session.rainbowActive.value
+  );
+  const skyEvents = computed(() =>
+    mirroring ? mirrorEvents.value : session.activeEvents.value
+  );
+
   const skyNetLabel = computed(() => {
-    // 总闸离线：固定显示离线（深圳）
     if (skyLinkMode.value === "offline") {
       return t("pet.skyWeatherLinkOfflineCity", {
         city: SKY_REGIONS.shenzhen?.name || "深圳",
       });
     }
-    if (session.linkBusy.value) return t("pet.skyWeatherUpdating");
+    if (!mirroring && session.linkBusy.value) {
+      return t("pet.skyWeatherUpdating");
+    }
+    if (mirroring) {
+      const cfg = normalizeSkyWeather(skyConfig.value);
+      if (!cfg.runtime.wxOnline) return t("pet.skyWeatherLinkOffline");
+      const id =
+        cfg.regionId === "system"
+          ? ""
+          : cfg.regionId;
+      const city = SKY_REGIONS[id]?.name || id;
+      if (!city) return t("pet.skyWeatherLinkOnline");
+      return t("pet.skyWeatherLinkOnlineCity", { city });
+    }
     if (!session.netOnline.value) return t("pet.skyWeatherLinkOffline");
     const id = session.netCityId.value;
     const city = SKY_REGIONS[id]?.name || id;
@@ -102,9 +266,33 @@ export function useSkyWeatherPreview(opts: {
     return t("pet.skyWeatherLinkOnlineCity", { city });
   });
 
-  const skyNetBadgeOnline = computed(
-    () => skyLinkMode.value === "online" && session.netOnline.value
+  const skyNetBadgeOnline = computed(() => {
+    if (skyLinkMode.value !== "online") return false;
+    if (mirroring) {
+      return Boolean(normalizeSkyWeather(skyConfig.value).runtime.wxOnline);
+    }
+    return session.netOnline.value;
+  });
+
+  const skyNetCityId = computed(() => {
+    if (mirroring) {
+      const cfg = normalizeSkyWeather(skyConfig.value);
+      return cfg.regionId === "system" ? "" : cfg.regionId;
+    }
+    return session.netCityId.value;
+  });
+
+  const skyNetBusy = computed(() =>
+    mirroring ? false : session.linkBusy.value
   );
+
+  function refreshSkyNet() {
+    if (petOwnsTick.value) {
+      void emit(SKY_WEATHER_REFRESH_EVENT);
+      return;
+    }
+    void session.refreshLinks();
+  }
 
   const heroMergedStyle = computed(() => ({
     ...(opts.heroPanelStyle.value || {}),
@@ -120,29 +308,30 @@ export function useSkyWeatherPreview(opts: {
     () => !characterHas(opts.model.value, "preview-orbit")
   );
 
-  // 离开页落盘由 session.stop → commit({ flush:true })，别再挂一层 flush
   onUnmounted(() => {
-    if (persistTimer) {
-      clearTimeout(persistTimer);
-      persistTimer = null;
-    }
+    stopMirror();
+    session.stop();
+    flushPersist();
   });
 
   return {
-    skyDisplayTod: session.displayTod,
-    skyDisplayWeather: session.displayWeather,
-    skyRainbow: session.rainbowActive,
-    skyEvents: session.activeEvents,
+    skyDisplayTod,
+    skyDisplayWeather,
+    skyRainbow,
+    skyEvents,
     skyFollowClock,
-    /** 天气 tab 地区下拉「跟随系统」城名 */
-    skyNetCityId: session.netCityId,
-    /** 全局联网文案 / 手动刷新 */
-    skyNetBusy: session.linkBusy,
+    skyNetCityId,
+    skyNetBusy,
     skyNetLabel,
     skyNetBadgeOnline,
-    refreshSkyNet: session.refreshLinks,
-    /** UI @change 与会话 commit 共用 */
+    refreshSkyNet,
     schedulePersist,
+    patchSkyWeather,
+    enableOnPet,
+    bgOpacityPercent,
+    onEnableOnPet,
+    onBgOpacity,
+    resetBgOpacity,
     windowFamily,
     heroMergedStyle,
     previewActor,

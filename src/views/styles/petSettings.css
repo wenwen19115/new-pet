@@ -291,6 +291,161 @@
   white-space: nowrap;
 }
 
+/* 预览说明右侧：投射到桌宠 */
+.hero-sky-pet {
+  flex: 0 1 220px;
+  width: min(220px, 40%);
+  min-width: 168px;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.hero-sky-pet-chip {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--ui-border);
+  background: color-mix(in srgb, var(--ui-surface) 92%, transparent);
+  color: var(--ui-text);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  box-sizing: border-box;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.hero-sky-pet-chip:hover {
+  border-color: color-mix(
+    in srgb,
+    var(--hero-accent, var(--ui-primary, #3d6b4f)) 42%,
+    var(--ui-border)
+  );
+  background: color-mix(
+    in srgb,
+    var(--hero-accent, var(--ui-primary, #3d6b4f)) 10%,
+    var(--ui-surface)
+  );
+}
+
+.hero-sky-pet-chip:focus-visible {
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--hero-accent, var(--ui-primary, #3d6b4f)) 45%, transparent);
+}
+
+.hero-sky-pet-chip[data-on="1"] {
+  border-color: color-mix(
+    in srgb,
+    var(--hero-accent, var(--ui-primary, #3d6b4f)) 55%,
+    var(--ui-border)
+  );
+  background: color-mix(
+    in srgb,
+    var(--hero-accent, var(--ui-primary, #3d6b4f)) 14%,
+    var(--ui-surface)
+  );
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--hero-accent, var(--ui-primary, #3d6b4f)) 18%, transparent);
+}
+
+.hero-sky-pet-chip-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.hero-sky-pet-led {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ui-text-muted) 70%, transparent);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--ui-text-muted) 25%, transparent);
+}
+
+.hero-sky-pet-chip[data-on="1"] .hero-sky-pet-led {
+  background: var(--hero-accent, var(--ui-primary, #3d6b4f));
+  box-shadow:
+    0 0 0 3px
+      color-mix(in srgb, var(--hero-accent, var(--ui-primary, #3d6b4f)) 22%, transparent),
+    0 0 10px
+      color-mix(in srgb, var(--hero-accent, var(--ui-primary, #3d6b4f)) 40%, transparent);
+}
+
+.hero-sky-pet-chip-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ui-text);
+}
+
+.hero-sky-pet-chip-state {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--ui-border);
+  background: var(--ui-surface);
+  color: var(--ui-text-muted);
+}
+
+.hero-sky-pet-chip[data-on="1"] .hero-sky-pet-chip-state {
+  border-color: color-mix(
+    in srgb,
+    var(--hero-accent, var(--ui-primary, #3d6b4f)) 45%,
+    var(--ui-border)
+  );
+  background: color-mix(
+    in srgb,
+    var(--hero-accent, var(--ui-primary, #3d6b4f)) 18%,
+    var(--ui-surface)
+  );
+  color: var(--ui-text);
+}
+
+.hero-sky-pet-chip-desc {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ui-text-muted);
+}
+
+.hero-sky-pet-opacity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 2px;
+}
+
+.hero-sky-pet-opacity-label {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--ui-text-muted);
+}
+
+.hero-sky-pet-opacity :deep(.meter-row) {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .pet-hero[data-model="chip"] .hero-stage {
   overflow: hidden;
 }
@@ -306,9 +461,18 @@
 .hero-text {
   flex: 0 0 auto;
   display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 14px;
+  min-height: 0;
+}
+
+.hero-text-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
   flex-direction: column;
   gap: 4px;
-  min-height: 0;
 }
 
 .hero-role {
@@ -474,6 +638,16 @@
 
   .hero-tagline {
     -webkit-line-clamp: 2;
+  }
+
+  .hero-sky-pet {
+    width: min(180px, 36%);
+    min-width: 140px;
+    flex-basis: 160px;
+  }
+
+  .hero-sky-pet-chip {
+    padding: 10px 12px;
   }
 
   .item-stack :deep(.settings-item) {

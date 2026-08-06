@@ -16,6 +16,7 @@ export function usePetSettingsPersist(deps: {
   settingsBag: Ref<PetSettings>;
   getCurrentSettings: () => PetSettings;
   modelKind: Ref<PetModelKind>;
+  enabled: Ref<boolean>;
   settingsAlwaysOnTop: Ref<boolean>;
   sysStatsDefaultExpanded: Ref<boolean>;
   theme: Ref<PetThemeSettings>;
@@ -49,6 +50,7 @@ export function usePetSettingsPersist(deps: {
   let unlistenSettings: UnlistenFn | null = null;
 
   function applyPartialIncoming(incoming: PetSettings) {
+    deps.enabled.value = Boolean(incoming.enabled);
     deps.settingsAlwaysOnTop.value = Boolean(incoming.settingsAlwaysOnTop);
     deps.sysStatsDefaultExpanded.value = Boolean(incoming.sysStatsDefaultExpanded);
     if (incoming.theme) {
