@@ -23,7 +23,7 @@ src/pet/
     settings/          # normalize / profiles / io / defaults
     …                  # store、types、deskWeather / skyWeather 等子域、vrm 等
   chat/                # 陪聊领域（ai / providers），不含窗口壳
-  bridge/              # Tauri invoke 薄封装
+  bridge/              # Tauri invoke 薄封装；窗几何 sizes / windowAnchor（钉中心）
   events/              # 跨窗事件名索引
   models/              # toon / chip / fig-sci / preview / trail / vrm
   skins/               # look 表与文案
@@ -40,7 +40,7 @@ src-tauri/             # 窗口、托盘、USB、工位气象传感、窗外气�
 | 形象表现 | `characters/<id>.ts` + `models/<包>/` |
 | 设置表单项 | `settings/modules/` + `composables/` |
 | Theme Pack / 壁纸 / 开机动画 | `src/theme/` + `settings/modules/AppPanel` 等 |
-| 系统能力 | `src-tauri` + `bridge/`（桥内勿放入业务逻辑） |
+| 系统能力 | `src-tauri` + `bridge/`（invoke 与窗几何助手；桥内勿塞业务调度） |
 
 典型点击链路：`PetApp` → host / shell → `playMotionOnce` / `speak*` → mood 经 `applyMood`；随机 idle 与聊天暂停经 `dispatchPetHostIntent`。
 
@@ -107,7 +107,7 @@ bridge → data 类型 + Tauri
 - 接线：`createPetSettingsPageRuntime.ts`；`usePetSettingsPage` 仅负责挂载并返回 view。
 - 新增 tab：`registerSettingsModule`，并补充所需 composable / `modules/*.vue`。
 - 传感类设置（如工位气象）：配置位于 `data/<名>.ts` 并挂入 `PetSettings`；阈值与轮询位于 `runtime/`；`bridge` 仅负责 invoke（含跨窗共享的焦点线程租约 acquire / release）。
-- 窗外天气（`skyWeather`，≠ 工位气象）：配置/映射 `data/skyWeather.ts`；调度 `runtime/skyWeatherScheduler`；跟随系统 `runtime/skyWeatherSystemRegion`（`peekSystemRegionId`）；网络同步/落盘判定 `runtime/skyWeatherSync`（**须 `linkMode===online`**）；联网编排（探测/busy/gen/防抖）`runtime/skyWeatherLinkController`；会话 `useSkyWeatherSession`（tick+展示）→ 预览文案在 `useSkyWeatherPreview`（`refreshSkyNet`；探测失败回落离线；离开页 flush）；设置预览 `settings/composables/useSkyWeatherPreview` → `useSkyWeatherSession`；模式切换 `runtime/skyWeatherModeOps`（离线拒切 sync）；真气象一次包 `bridge/skyWeather` → Rust Open-Meteo；sync 天色用日照（无则回退系统钟）；窗景 CSS 在 `models/preview/heroWindowWorld/`；**仅设置左侧预览**，不进桌宠主窗。真气象/粗定位权限只挂设置窗（`capabilities/main.json`），不进 pet 能力集。
+- 窗外天气（`skyWeather`，≠ 工位气象）：配置/映射 `data/skyWeather.ts`（含 `enableOnPet` / `bgOpacity` / `hideableOnPet` / `hideEffectOnPet`）；调度 `runtime/skyWeatherScheduler`；跟随系统 `runtime/skyWeatherSystemRegion`；网络同步 `runtime/skyWeatherSync`（**须 `linkMode===online`**）；联网编排 `runtime/skyWeatherLinkController`；会话 `useSkyWeatherSession`；设置预览 `useSkyWeatherPreview`（`enableOnPet` 关时为 tick leader）；桌宠投射 `runtime/useSkyWeatherPetBackdrop` + `runtime/usePetSkySurface`（显隐 phase）+ `PetApp` 挂 `HeroWindowWorld`（`enableOnPet` 开时为 tick leader；桌宠 HWND **固定窗景画布** `bridge/sizes.petWindowSize`，开关只做显隐动效、不 `setSize`；zoom/换模改尺寸走 `bridge/windowAnchor.setWindowSizeKeepCenter` 钉中心；设置预览镜像；飞行物经 `SKY_WEATHER_FIRE_EVENT`；可隐藏时拖拽/飞行/peek 按 `hideEffectOnPet` 收起；动效 CSS `windows/pet/petSkySurface.css`）；**窗景 tab**（`sky-pet` / `SkyPetBackdropPanel`）管投射/透明度/可隐藏/动效；预览说明右侧与右键菜单仍可快速开关投射；模式切换 `skyWeatherModeOps`；真气象 `bridge/skyWeather` → Rust；窗景 CSS 在 `models/preview/heroWindowWorld/`。Open-Meteo / 粗定位权限挂 `main.json` 与 `pet.json`（桌宠 leader 时需拉网）。
 - 维护类操作：
   - 出厂数据：`data/maintenance.ts`（默认快照来自 `settings/defaults.createFactoryResetSettings`）；设置页负责确认框、进度 Modal、表单 hydrate、窗同步。
   - 清缓存：`runtime/clearRuntimeCaches.ts`（本窗清 + `requestClearPetCache` 广播）；pet host 监听同事件再清一次。
