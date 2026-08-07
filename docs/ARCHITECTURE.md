@@ -10,10 +10,10 @@
 
 ```
 src/settings/          # 设置页（modules + composables + components）
-src/theme/             # Theme Pack：types / registry / packs/*.css / 壁纸与开机媒体
+src/theme/             # Theme Pack：types / registry / packs / 壁纸与开机 / 自定义标题栏
 src/pet/
-  windows/             # WebView 壳：pet / bubble / menu / chat
-  runtime/             # createPetHost 接线与 use* 行为
+  windows/             # WebView 壳：pet / bubble / menu / chat；shared/ 浮层避让等跨壳几何
+  runtime/             # createPetHost 接线与 use* 行为；精确命中桥 petHitBridge
   characters/          # 角色包、台词 JSON、capabilities
   content/
     shell/             # 桌宠窗 bob
@@ -23,7 +23,7 @@ src/pet/
     settings/          # normalize / profiles / io / defaults
     …                  # store、types、deskWeather / skyWeather 等子域、vrm 等
   chat/                # 陪聊领域（ai / providers），不含窗口壳
-  bridge/              # Tauri invoke 薄封装；窗几何 sizes / windowAnchor（钉中心）
+  bridge/              # Tauri invoke 薄封装；窗几何 sizes / windowAnchor；主窗边框 windowChrome
   events/              # 跨窗事件名索引
   models/              # toon / chip / fig-sci / preview / trail / vrm
   skins/               # look 表与文案
@@ -35,11 +35,14 @@ src-tauri/             # 窗口、托盘、USB、工位气象传感、窗外气�
 | 改动目标 | 建议入口 |
 | --- | --- |
 | 点击、拖拽、睡眠、说话 | `runtime/createPetHost.ts` → 对应 `usePet*` |
+| 精确命中 / 空白穿透 | `runtime/petHitBridge` + `models/<包>/*Hit`（仅桌宠窗 `isPetHitHostWindow` 注册） |
+| 气泡 / 菜单共存避让 | `windows/shared/floatOverlayRects` ← bubble / menu `window.ts` |
 | 气泡 / 菜单 / 聊天 UI | `windows/<名>/` |
 | 台词文案 | `characters/lines/data/*.json` |
 | 形象表现 | `characters/<id>.ts` + `models/<包>/` |
 | 设置表单项 | `settings/modules/` + `composables/` |
 | Theme Pack / 壁纸 / 开机动画 | `src/theme/` + `settings/modules/AppPanel` 等 |
+| 设置主窗标题栏（跟主题） | `theme/ThemeTitleBar.vue` + `titlebar.css`；主窗 `decorations: false`；边框 `bridge/windowChrome` → Rust `titlebar` |
 | 系统能力 | `src-tauri` + `bridge/`（invoke 与窗几何助手；桥内勿塞业务调度） |
 
 典型点击链路：`PetApp` → host / shell → `playMotionOnce` / `speak*` → mood 经 `applyMood`；随机 idle 与聊天暂停经 `dispatchPetHostIntent`。
@@ -71,7 +74,7 @@ bridge → data 类型 + Tauri
 | 词 | 含义 |
 | --- | --- |
 | look | 外观（`lookId`、色板、立绘） |
-| theme / Theme Pack | 设置页视觉包（`src/theme/`：`theme.style` + packs + 可选壁纸/开机） |
+| theme / Theme Pack | 设置页视觉包（`src/theme/`：`theme.style` + packs + 可选壁纸/开机；主窗自定义标题栏 `ThemeTitleBar`） |
 | personality | 台词口味（sunny / shy / cool / fiery）；实现于 `content/dialogue/personality.ts` |
 
 ## 角色包
@@ -123,6 +126,7 @@ mood、idle、暂停位等写入约定见 [`STATE.md`](./STATE.md)。跨 host �
 | --- | --- |
 | 新角色 | `characters/<id>.ts` + lines JSON + Model + 注册表 |
 | 新 Theme Pack | `theme/packs/<id>.css` + `theme/types.ts` `THEME_PACK_IDS` + `theme/registry.ts` |
+| 设置主窗 chrome | `ThemeTitleBar` / `titlebar.css`；`paintDocumentBackdrop` → 边框 `set_window_border_color` |
 | 新 look | `skins/looks.json` + 角色 `lookIds` |
 | 新子窗 | `windows/<name>/`，并接入 destroy 链 |
 | 新系统能力 | Rust + 薄 `bridge` |
@@ -159,6 +163,6 @@ yarn test
 yarn check:pre-commit   # 提交前机械检查；目视清单见 .cursor/rules/commit.mdc
 ```
 
-手测清单见 [`GOLDEN_PATHS.md`](./GOLDEN_PATHS.md)。常用 smoke：`architecture`（目录与注册表）、`petHost`（intent / dispose）、`toonPixels`、`playfulPhysics`、`bubblePong`、`deskWeather`、`skyWeather`。
+手测清单见 [`GOLDEN_PATHS.md`](./GOLDEN_PATHS.md)。常用 smoke：`architecture`（目录与注册表）、`petHost`（intent / dispose）、`petHit`（各形象精检）、`floatOverlayRects`（气泡/菜单避让）、`toonPixels`、`playfulPhysics`、`bubblePong`、`deskWeather`、`skyWeather`。
 
 本地示意/试验稿（不入库）放 `tests/local/`，见该目录说明。
