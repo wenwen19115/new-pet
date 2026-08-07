@@ -9,6 +9,11 @@ const messages = {
       sectionControl: "伙伴控制",
       enableTitle: "召唤桌宠",
       enableDesc: "在系统桌面显示可拖拽的小伙伴（主窗关闭时一起退出）",
+      resetPosition: "复位位置",
+      resetPositionDesc: "回到首次召唤的默认起始位（工作区右上）",
+      resetPositionAction: "复位",
+      resetPositionDone: "已复位到默认位置",
+      resetPositionFailed: "复位失败，请确认桌宠已召唤",
       formTitle: "角色",
       formDesc: "昵称、性格、静音、透明度、大小、调性、口头禅、提醒、随机动作等均按角色独立记忆",
       lookTitle: "形象",
@@ -129,6 +134,10 @@ const messages = {
       bootAnimSkip: "点击跳过",
       bootAnimLoading: "加载中…",
       bootAnimReady: "已就绪",
+      windowMinimize: "最小化",
+      windowMaximize: "最大化",
+      windowRestore: "还原",
+      windowClose: "关闭",
       bootAnimFitDesc: "铺满裁切边缘，或完整显示留边",
       bootAnimDurationTitle: "开机时长",
       bootAnimDurationDesc:
@@ -438,8 +447,6 @@ const messages = {
       playfulModeTitle: "调皮模式",
       playfulModeDesc:
         "鼠标靠近就躲开；开局 10 秒内点中算抓到（落地后有短窗口可点）。全角色可用",
-      hitBoundsTitle: "体积边界",
-      hitBoundsDesc: "鼠标移到桌宠上时显示灰色半透明方框，方便确认所占面积（按角色记忆）",
       resetProfileTitle: "重置本角色",
       resetProfileDesc:
         "清除当前角色的昵称、性格、静音、透明度、大小、调性、口头禅、形象、提醒、随机动作、调皮模式等设置",
@@ -561,6 +568,11 @@ const messages = {
       enableTitle: "Summon pet",
       enableDesc:
         "Show a draggable buddy on the desktop (closes with the main window)",
+      resetPosition: "Reset position",
+      resetPositionDesc: "Return to the default spawn (top-right of the work area)",
+      resetPositionAction: "Reset",
+      resetPositionDone: "Back at the default position",
+      resetPositionFailed: "Could not reset — is the pet summoned?",
       formTitle: "Character",
       formDesc:
         "Nickname, personality, mute, opacity, size, tone, catchphrases, USB alerts, random motions, and more are saved per character",
@@ -684,6 +696,10 @@ const messages = {
       bootAnimSkip: "Click to skip",
       bootAnimLoading: "Loading…",
       bootAnimReady: "Ready",
+      windowMinimize: "Minimize",
+      windowMaximize: "Maximize",
+      windowRestore: "Restore",
+      windowClose: "Close",
       bootAnimFitDesc: "Cover crops edges, or contain shows the full frame",
       bootAnimDurationTitle: "Boot duration",
       bootAnimDurationDesc:
@@ -1002,9 +1018,6 @@ const messages = {
       playfulModeTitle: "Playful mode",
       playfulModeDesc:
         "Flees when the cursor gets close; catch it with a click within 10s (short window after each land). All characters",
-      hitBoundsTitle: "Hit bounds",
-      hitBoundsDesc:
-        "Show a gray translucent box when the cursor is over the pet (saved per character)",
       resetProfileTitle: "Reset this character",
       resetProfileDesc:
         "Clear nickname, personality, mute, opacity, size, tone, catchphrases, look, USB alerts, random motions, playful mode, and more for the current character",

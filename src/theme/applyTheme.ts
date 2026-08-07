@@ -1,6 +1,7 @@
 import type { PetThemeSettings, ThemePackId, ThemeStageBackdrop } from "./types";
 import { clampBubbleOpacity } from "./types";
 import { getThemePack } from "./registry";
+import { syncNativeWindowChrome } from "./syncNativeWindowChrome";
 
 export function themePackCssVars(style: ThemePackId): Record<string, string> {
   const t = getThemePack(style).tokens;
@@ -44,9 +45,10 @@ export function themeRootStyle(theme: PetThemeSettings): Record<string, string> 
   };
 }
 
-/** 同步 document 底色，避免闪白 */
+/** 同步 document 底色与无边框窗底色/边框，避免闪白 */
 export function paintDocumentBackdrop(style: ThemePackId): void {
   const bg = getThemePack(style).tokens.bg0;
   document.documentElement.style.background = bg;
   document.body.style.background = bg;
+  void syncNativeWindowChrome(style);
 }

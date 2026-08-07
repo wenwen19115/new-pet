@@ -6,13 +6,17 @@
       :style="themeVars"
       :data-splash="showSplash ? '1' : '0'"
     >
+      <ThemeTitleBar :pack-title="packTitle" />
       <ThemeMediaLayer
-        v-if="wallpaperActive && !showSplash"
+        v-if="wallpaperActive"
+        class="app-wallpaper"
         :path="theme.stageBackdrop.imagePath"
         :fit="theme.stageBackdrop.fit"
         :muted="theme.stageBackdrop.muted"
         :loop="true"
         preload="auto"
+        @ready="onWallpaperReady"
+        @error="onWallpaperError"
       />
       <div
         v-if="showSplash"
@@ -83,6 +87,7 @@ import {
   themeRootStyle,
   BootSplashBar,
   ThemeMediaLayer,
+  ThemeTitleBar,
   type PetThemeSettings,
 } from "@/theme";
 
@@ -91,9 +96,11 @@ const theme = ref<PetThemeSettings>(loadPetSettings().theme);
 const showSplash = ref(true);
 const bootMediaReady = ref(false);
 const bootVideoEnded = ref(false);
+const wallpaperReady = ref(false);
 /** 大开机媒体时延后挂设置页，减轻无响应 */
 const mainMounted = ref(false);
 const themeVars = computed(() => themeRootStyle(theme.value));
+const packTitle = computed(() => getThemePack(theme.value.style).meta.title);
 const wallpaperActive = computed(
   () =>
     theme.value.stageBackdrop.mode === "wallpaper" &&
@@ -133,6 +140,9 @@ const antdTheme = computed(() => {
 let disposeHost: (() => void) | null = null;
 let splashTimer: number | null = null;
 let bootReadyAt = 0;
+let wallpaperWaitResolve: (() => void) | null = null;
+let splashEnding = false;
+const WALLPAPER_WAIT_MS = 2200;
 
 function clearSplashTimer() {
   if (splashTimer != null) {
@@ -148,20 +158,57 @@ function ensureHost() {
   });
 }
 
-function endSplash() {
-  if (!showSplash.value) return;
-  clearSplashTimer();
-  showSplash.value = false;
-  paintDocumentBackdrop(theme.value.style);
-  mainMounted.value = true;
-  // 下一帧再起 host，别和设置页首屏抢线程
-  requestAnimationFrame(() => {
-    ensureHost();
+function resolveWallpaperWait() {
+  wallpaperWaitResolve?.();
+  wallpaperWaitResolve = null;
+}
+
+function onWallpaperReady() {
+  wallpaperReady.value = true;
+  resolveWallpaperWait();
+}
+
+function onWallpaperError() {
+  // 加载失败也别卡 splash
+  wallpaperReady.value = true;
+  resolveWallpaperWait();
+}
+
+function waitWallpaperOrTimeout(): Promise<void> {
+  if (!wallpaperActive.value || wallpaperReady.value) return Promise.resolve();
+  return new Promise((resolve) => {
+    const timer = window.setTimeout(() => {
+      wallpaperWaitResolve = null;
+      resolve();
+    }, WALLPAPER_WAIT_MS);
+    wallpaperWaitResolve = () => {
+      window.clearTimeout(timer);
+      resolve();
+    };
   });
 }
 
+async function endSplash() {
+  if (!showSplash.value || splashEnding) return;
+  splashEnding = true;
+  clearSplashTimer();
+  try {
+    await waitWallpaperOrTimeout();
+    if (!showSplash.value) return;
+    showSplash.value = false;
+    paintDocumentBackdrop(theme.value.style);
+    mainMounted.value = true;
+    // 下一帧再起 host，别和设置页首屏抢线程
+    requestAnimationFrame(() => {
+      ensureHost();
+    });
+  } finally {
+    if (showSplash.value) splashEnding = false;
+  }
+}
+
 function onSplashClick() {
-  endSplash();
+  void endSplash();
 }
 
 function scheduleFromReady() {
@@ -175,7 +222,9 @@ function scheduleFromReady() {
     readyAtMs: bootReadyAt,
   });
   if (delay == null) return;
-  splashTimer = window.setTimeout(endSplash, delay);
+  splashTimer = window.setTimeout(() => {
+    void endSplash();
+  }, delay);
 }
 
 function onBootMediaReady() {
@@ -189,29 +238,38 @@ function onBootVideoEnded() {
   if (theme.value.bootAnimation.durationMode !== "media") return;
   if (!bootMediaReady.value) return;
   clearSplashTimer();
-  splashTimer = window.setTimeout(endSplash, bootRemainMinMs(bootReadyAt));
+  splashTimer = window.setTimeout(() => {
+    void endSplash();
+  }, bootRemainMinMs(bootReadyAt));
 }
 
 function onBootMediaError() {
-  endSplash();
+  void endSplash();
 }
 
 function onThemeChange(next: PetThemeSettings) {
+  const prevPath = theme.value.stageBackdrop.imagePath;
   theme.value = clonePetThemeSettings(next);
-  if (!showSplash.value) {
-    paintDocumentBackdrop(next.style);
+  if (next.stageBackdrop.imagePath !== prevPath) {
+    wallpaperReady.value = false;
   }
+  paintDocumentBackdrop(next.style);
 }
 
 function startSplash() {
   showSplash.value = true;
+  splashEnding = false;
   bootMediaReady.value = false;
   bootVideoEnded.value = false;
+  wallpaperReady.value = false;
   bootReadyAt = 0;
   clearSplashTimer();
+  paintDocumentBackdrop(theme.value.style);
   if (!useBootMedia.value) {
     mainMounted.value = true;
-    splashTimer = window.setTimeout(endSplash, 1400);
+    splashTimer = window.setTimeout(() => {
+      void endSplash();
+    }, 1400);
     ensureHost();
   }
   // 有自定义媒体：等 ready；随视频模式不加最长兜底
@@ -226,21 +284,33 @@ onUnmounted(() => {
   disposeHost?.();
   disposeHost = null;
   clearSplashTimer();
+  resolveWallpaperWait();
 });
 </script>
 
 <style scoped>
 .app-root {
+  --titlebar-h: 38px;
   height: 100%;
   min-height: 0;
   overflow: hidden;
   color: var(--ui-text);
   background: var(--ui-bg-0);
   position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-wallpaper {
+  z-index: 0;
 }
 
 .app-main {
-  height: 100%;
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
   opacity: 0;
   transform: translateY(10px) scale(0.985);
 }
@@ -258,7 +328,10 @@ onUnmounted(() => {
 
 .app-splash {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: var(--titlebar-h, 38px);
+  bottom: 0;
   z-index: 20;
   display: flex;
   flex-direction: column;
@@ -266,18 +339,18 @@ onUnmounted(() => {
   justify-content: center;
   gap: 14px;
   cursor: pointer;
-  background: #0a0a0a;
+  background: var(--ui-bg-0, #0a0a0a);
 }
 
 .app-splash--media {
   align-items: stretch;
   justify-content: flex-start;
   gap: 0;
-  background: #0a0a0a;
+  background: var(--ui-bg-0, #0a0a0a);
 }
 
 .app-splash--media.app-splash--ready {
-  background: #0a0a0a;
+  background: var(--ui-bg-0, #0a0a0a);
 }
 
 .splash-media-stage {
@@ -285,7 +358,7 @@ onUnmounted(() => {
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
-  background: #000;
+  background: var(--ui-bg-0, #0a0a0a);
 }
 
 .app-splash--media .splash-media-stage::after {

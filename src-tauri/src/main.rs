@@ -4,6 +4,7 @@ mod serial;
 mod system_stats;
 mod desk_weather;
 mod sky_weather;
+mod titlebar;
 mod tts;
 
 use tauri::Manager;
@@ -33,6 +34,7 @@ fn main() {
             desk_weather::release_desk_weather_watch,
             sky_weather::fetch_open_meteo_weather,
             sky_weather::fetch_client_geo,
+            titlebar::set_window_border_color,
             tts::list_edge_tts_voices,
             tts::synthesize_edge_tts,
         ])

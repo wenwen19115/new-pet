@@ -1,0 +1,4 @@
+[[permission]]
+identifier = "allow-set-window-border-color"
+description = "Allows coloring the undecorated main window border to match Theme Pack"
+commands.allow = ["set_window_border_color"]

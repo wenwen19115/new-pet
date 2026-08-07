@@ -1,6 +1,7 @@
 import "./themeBase.css";
 import "./themePicker.css";
 import "./bubbleTheme.css";
+import "./titlebar.css";
 import "./packs/ukiyo.css";
 import "./packs/construct.css";
 import "./packs/arcade.css";
@@ -111,6 +112,7 @@ export {
 } from "./media";
 export { default as ThemeMediaLayer } from "./ThemeMediaLayer.vue";
 export { default as BootSplashBar } from "./BootSplashBar.vue";
+export { default as ThemeTitleBar } from "./ThemeTitleBar.vue";
 export { usePetWindowTheme } from "./usePetWindowTheme";
 export {
   validateThemeMediaPath,

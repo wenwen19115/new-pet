@@ -38,6 +38,11 @@
   z-index: 0;
 }
 
+.theme-stage > .app-titlebar {
+  position: relative;
+  z-index: 40;
+}
+
 .theme-shell {
   min-height: 0;
 }
