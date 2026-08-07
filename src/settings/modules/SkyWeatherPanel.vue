@@ -146,7 +146,15 @@ const hideEffectOptions = computed(() =>
 
 function onSkyWeather(next: SkyWeatherConfig) {
   if (!ctx.skyWeather) return;
-  ctx.skyWeather.value = next;
+  // 天色/总闸包不得冲掉投射字段（防整包替换丢 enableOnPet）
+  const cur = normalizeSkyWeather(ctx.skyWeather.value);
+  ctx.skyWeather.value = normalizeSkyWeather({
+    ...next,
+    enableOnPet: cur.enableOnPet,
+    bgOpacity: cur.bgOpacity,
+    hideableOnPet: cur.hideableOnPet,
+    hideEffectOnPet: cur.hideEffectOnPet,
+  });
 }
 
 function patch(partial: Partial<ReturnType<typeof normalizeSkyWeather>>) {

@@ -11,6 +11,10 @@ import {
 } from "@/theme/types";
 import { syncPetWindow } from "@/pet/windows/pet";
 import { isSettingsStorageKey } from "@/pet/data/storageKeys";
+import {
+  normalizeSkyWeather,
+  type SkyWeatherConfig,
+} from "@/pet/data/skyWeather";
 
 export function usePetSettingsPersist(deps: {
   settingsBag: Ref<PetSettings>;
@@ -20,6 +24,10 @@ export function usePetSettingsPersist(deps: {
   settingsAlwaysOnTop: Ref<boolean>;
   sysStatsDefaultExpanded: Ref<boolean>;
   theme: Ref<PetThemeSettings>;
+  /** 窗外天气表单 SoT；桌宠 leader 落盘后跟盘，避免预览脱节 */
+  skyWeather?: Ref<SkyWeatherConfig>;
+  /** 本页天气防抖未落盘时，勿用桌宠包盖掉总闸草稿 */
+  skyPersistPending?: () => boolean;
   applyLocalFromSettings: (s: PetSettings) => void;
   refreshVrmPreview: () => void | Promise<void>;
 }) {
@@ -52,11 +60,55 @@ export function usePetSettingsPersist(deps: {
   function applyPartialIncoming(incoming: PetSettings) {
     deps.enabled.value = Boolean(incoming.enabled);
     deps.settingsAlwaysOnTop.value = Boolean(incoming.settingsAlwaysOnTop);
-    deps.sysStatsDefaultExpanded.value = Boolean(incoming.sysStatsDefaultExpanded);
+    deps.sysStatsDefaultExpanded.value = Boolean(
+      incoming.sysStatsDefaultExpanded
+    );
     if (incoming.theme) {
       deps.theme.value = clonePetThemeSettings(incoming.theme);
     }
     deps.settingsBag.value = incoming;
+    syncSkyWeatherFromIncoming(incoming);
+  }
+
+  /** 桌宠 leader 落盘后，预览跟 runtime/实况；本页有未落盘草稿则只跟 geo 徽章 */
+  function syncSkyWeatherFromIncoming(incoming: PetSettings) {
+    if (!deps.skyWeather || !incoming.skyWeather) return;
+    const next = normalizeSkyWeather(incoming.skyWeather);
+    if (!next.enableOnPet) return;
+    const cur = normalizeSkyWeather(deps.skyWeather.value);
+    if (deps.skyPersistPending?.()) {
+      if (
+        cur.runtime.geoOnline === next.runtime.geoOnline &&
+        cur.runtime.locatedRegionId === next.runtime.locatedRegionId
+      ) {
+        return;
+      }
+      deps.skyWeather.value = normalizeSkyWeather({
+        ...cur,
+        runtime: {
+          ...cur.runtime,
+          geoOnline: next.runtime.geoOnline,
+          locatedRegionId: next.runtime.locatedRegionId,
+        },
+      });
+      return;
+    }
+    if (
+      cur.linkMode !== next.linkMode ||
+      cur.todMode !== next.todMode ||
+      cur.weatherMode !== next.weatherMode ||
+      cur.regionId !== next.regionId
+    ) {
+      // 总闸/模式本地已改、桌宠包尚旧：只并显示相关字段
+      deps.skyWeather.value = normalizeSkyWeather({
+        ...cur,
+        manualTod: next.manualTod,
+        manualWeather: next.manualWeather,
+        runtime: next.runtime,
+      });
+      return;
+    }
+    deps.skyWeather.value = next;
   }
 
   function onIncomingSettings(incoming: PetSettings) {

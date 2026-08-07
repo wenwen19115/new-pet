@@ -33,7 +33,6 @@ export function usePetSettingsHydrate(deps: {
   usbWatchEnabled: Ref<boolean>;
   randomIdleEnabled: Ref<boolean>;
   playfulModeEnabled: Ref<boolean>;
-  hitBoundsEnabled: Ref<boolean>;
   deskWeather: Ref<import("@/pet/data/deskWeather").DeskWeatherConfig>;
   skyWeather: Ref<import("@/pet/data/skyWeather").SkyWeatherConfig>;
   catchphrases: Ref<string[]>;
@@ -76,7 +75,6 @@ export function usePetSettingsHydrate(deps: {
     deps.usbWatchEnabled.value = s.usbWatchEnabled;
     deps.randomIdleEnabled.value = s.randomIdleEnabled;
     deps.playfulModeEnabled.value = s.playfulModeEnabled;
-    deps.hitBoundsEnabled.value = s.hitBoundsEnabled;
     deps.deskWeather.value = normalizeDeskWeather(s.deskWeather);
     deps.skyWeather.value = normalizeSkyWeather(s.skyWeather);
     deps.catchphrases.value = [...(s.catchphrases ?? [])];

@@ -32,7 +32,8 @@ export const characterToon: CharacterDef = {
   },
   lookIds: STANDARD_LOOK_IDS,
   size: {
-    bubbleOffsetYFactor: -0.06,
+    bubbleOffsetYFactor: -0.1,
+    bubbleClearanceFactor: 0.42,
     bodyBox: (scale, screen) => {
       const short = Math.min(screen.availW, screen.availH);
       const side = Math.round(

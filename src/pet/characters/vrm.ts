@@ -32,18 +32,20 @@ export const characterVrm: CharacterDef = {
   },
   lookIds: [],
   size: {
-    bubbleOffsetYFactor: -0.18,
+    bubbleOffsetYFactor: -0.28,
+    bubbleClearanceFactor: 0.36,
     bodyBox: (scale, screen) => {
       const short = Math.min(screen.availW, screen.availH);
       const h = Math.round(
         Math.min(320, Math.max(210, short * 0.24)) * scale
       );
-      const w = Math.round(h * 0.55);
+      // 双马尾等横向溢出：略加宽，避免画布左右裁发
+      const w = Math.round(h * 0.62);
       return { w, h };
     },
-    previewBaseScale: 0.86,
+    previewBaseScale: 0.82,
     previewMaxBoost: 16,
-    previewActor: { w: 200, h: 290, bottom: "8%", z: 40 },
+    previewActor: { w: 220, h: 300, bottom: "8%", z: 40 },
   },
   previewHintKey: "pet.previewVrmHint",
   appearance: {

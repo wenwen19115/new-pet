@@ -13,6 +13,7 @@
           <span>{{ displayText }}</span>
           <span v-if="typing" class="caret">▌</span>
         </p>
+        <i class="bubble-tail" aria-hidden="true" />
       </div>
     </div>
   </div>
@@ -240,23 +241,22 @@ body,
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  padding: 8px;
+  padding: 10px 12px 10px 14px;
   position: relative;
   background: transparent;
-  animation: pop 0.2s cubic-bezier(0.22, 1.2, 0.36, 1);
+  animation: pop 0.28s cubic-bezier(0.22, 1.35, 0.36, 1);
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
 }
 
 .bubble-inner {
-  /* 外观见 theme/bubbleTheme.css，此处只留布局 */
   position: relative;
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  padding: 9px 11px;
-  overflow: hidden;
+  padding: 12px 14px 13px;
+  overflow: visible;
   display: flex;
   align-items: center;
   transform-origin: center center;
@@ -275,36 +275,58 @@ body,
   --bubble-glow: rgba(255, 140, 80, 0.35);
 }
 
-.bubble::after {
+/* 尖角朝向角色 */
+.bubble-tail,
+.bubble-tail::before {
   content: "";
   position: absolute;
   top: 50%;
-  width: 8px;
-  height: 8px;
-  background: var(--bubble-fill);
-  border-left: 2px solid var(--bubble-line);
-  border-bottom: 2px solid var(--bubble-line);
-  transform: translateY(-50%) rotate(45deg);
+  width: 0;
+  height: 0;
+  transform: translateY(-50%);
+  pointer-events: none;
+  border-style: solid;
 }
 
-.bubble[data-tone="snarky"]::after {
-  border-left-color: var(--bubble-line);
-  border-bottom-color: var(--bubble-line);
+.bubble-tail {
+  z-index: 1;
 }
 
-.bubble[data-side="right"]::after {
-  left: 2px;
+.bubble-tail::before {
+  z-index: 0;
 }
 
-.bubble[data-side="left"]::after {
-  right: 2px;
-  transform: translateY(-50%) rotate(-135deg);
+.bubble[data-side="right"] .bubble-tail {
+  left: -9px;
+  border-width: 7px 9px 7px 0;
+  border-color: transparent var(--bubble-fill, #0c1016) transparent transparent;
+}
+
+.bubble[data-side="right"] .bubble-tail::before {
+  left: -2px;
+  top: 50%;
+  border-width: 9px 11px 9px 0;
+  border-color: transparent var(--bubble-line, #7ec8ff) transparent transparent;
+}
+
+.bubble[data-side="left"] .bubble-tail {
+  right: -9px;
+  border-width: 7px 0 7px 9px;
+  border-color: transparent transparent transparent var(--bubble-fill, #0c1016);
+}
+
+.bubble[data-side="left"] .bubble-tail::before {
+  right: -2px;
+  left: auto;
+  top: 50%;
+  border-width: 9px 0 9px 11px;
+  border-color: transparent transparent transparent var(--bubble-line, #7ec8ff);
 }
 
 .text {
   margin: 0;
-  font-size: 12.5px;
-  line-height: 1.5;
+  font-size: 13px;
+  line-height: 1.55;
   color: var(--ui-text, rgba(220, 245, 255, 0.95));
   word-break: break-word;
   white-space: pre-wrap;
@@ -343,11 +365,11 @@ body,
 @keyframes pop {
   from {
     opacity: 0;
-    transform: scale(0.97);
+    transform: translateY(6px) scale(0.88);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 

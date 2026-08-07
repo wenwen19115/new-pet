@@ -35,7 +35,8 @@ export const characterChip: CharacterDef = {
   },
   lookIds: STANDARD_LOOK_IDS,
   size: {
-    bubbleOffsetYFactor: 0,
+    bubbleOffsetYFactor: -0.02,
+    bubbleClearanceFactor: 0.7,
     bodyBox: (scale, screen) => {
       const short = Math.min(screen.availW, screen.availH);
       const side = Math.round(

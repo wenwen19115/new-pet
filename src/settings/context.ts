@@ -28,7 +28,6 @@ export type PetSettingsPageCtx = {
   usbWatchEnabled: Ref<boolean>;
   randomIdleEnabled: Ref<boolean>;
   playfulModeEnabled: Ref<boolean>;
-  hitBoundsEnabled: Ref<boolean>;
   deskWeather: Ref<import("@/pet/data/deskWeather").DeskWeatherConfig>;
   skyWeather: Ref<import("@/pet/data/skyWeather").SkyWeatherConfig>;
   catchphrases: Ref<string[]>;
@@ -71,6 +70,7 @@ export type PetSettingsPageCtx = {
   capabilities: ComputedRef<Set<import("@/pet/characters").PetCapability>>;
   lookLabel: (look: { nameKey: string; toonNameKey?: string }) => string;
   onEnabled: (v: boolean) => void | Promise<void>;
+  onResetPetPosition: () => void | Promise<void>;
   onModel: (v: string | number) => void | Promise<void>;
   onLook: (id: string) => void | Promise<void>;
   onSaveNickname: () => void | Promise<void>;
@@ -98,7 +98,6 @@ export type PetSettingsPageCtx = {
   onUsbWatch: (v: boolean) => void | Promise<void>;
   onRandomIdle: (v: boolean) => void | Promise<void>;
   onPlayfulMode: (v: boolean) => void | Promise<void>;
-  onHitBounds: (v: boolean) => void | Promise<void>;
   onDeskWeatherChange: () => void | Promise<void>;
   onSkyWeatherChange: () => void | Promise<void>;
   /** 窗景 tab 与预览旁芯片共用 */
@@ -108,7 +107,7 @@ export type PetSettingsPageCtx = {
   onSkyEnableOnPet: (on: boolean) => void;
   onSkyBgOpacity: (v: number) => void;
   resetSkyBgOpacity: () => void;
-  /** 与预览旁芯片同一计算源 */
+  /** 与预览旁芯片同一计算值 */
   skyBgOpacityPercent: ComputedRef<number>;
   /** 跟随系统解析城；探测/同步 busy；联网探测是否成功 */
   skyNetCityId: Ref<string>;

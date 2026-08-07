@@ -42,8 +42,18 @@ export function petBubbleAnchor(
   zoomPercent = 0
 ): { halfW: number; offsetY: number } {
   const box = petBodyBox(model, zoomPercent);
-  const factor = getCharacter(model).size.bubbleOffsetYFactor;
-  return { halfW: box.w / 2, offsetY: box.h * factor };
+  const size = getCharacter(model).size;
+  const factor = size.bubbleOffsetYFactor;
+  const clear = Math.min(1, Math.max(0.28, size.bubbleClearanceFactor ?? 0.5));
+  return { halfW: (box.w / 2) * clear, offsetY: box.h * factor };
+}
+
+/** 右键菜单等壳外浮层：相对角色可视半宽（同气泡贴靠系数） */
+export function petInteractHalfW(
+  model: PetModelKind,
+  zoomPercent = 0
+): number {
+  return petBubbleAnchor(model, zoomPercent).halfW;
 }
 
 /** 桌宠窗景画布基准（约设置 hero 缩小版）；随 zoom 缩放 */
@@ -51,15 +61,22 @@ const SKY_PET_BACKDROP_W = 280;
 const SKY_PET_BACKDROP_H = 360;
 
 export function petWindowSize(
-  _model: PetModelKind,
-  zoomPercent = 0
+  model: PetModelKind,
+  zoomPercent = 0,
+  screen: PetScreenMetrics = readPetScreenMetrics()
 ): { w: number; h: number } {
-  // 桌宠 HWND 固定窗景画布（开关投射只显隐，不改尺寸）
   const scale = petScaleFromZoom(zoomPercent);
   const k = Math.max(0.85, Math.min(1.25, scale));
+  const skyW = Math.round(SKY_PET_BACKDROP_W * k);
+  const skyH = Math.round(SKY_PET_BACKDROP_H * k);
+  // 角色盒随 zoom 可大于窗景基准；HWND 须盖住角色，否则 html overflow 裁头脚
+  const body = getCharacter(model).size.bodyBox(scale, screen);
+  // 壳层 rocket-jump 峰值约 -56px；pad 须盖住行程，否则 html overflow 裁头脚
+  const padX = 28;
+  const padY = 72;
   return {
-    w: Math.round(SKY_PET_BACKDROP_W * k),
-    h: Math.round(SKY_PET_BACKDROP_H * k),
+    w: Math.max(skyW, body.w + padX),
+    h: Math.max(skyH, body.h + padY),
   };
 }
 
@@ -67,4 +84,4 @@ export const PET_BUBBLE_W = 220;
 export const PET_BUBBLE_H = 96;
 export const PET_BUBBLE_W_WIDE = 280;
 export const PET_BUBBLE_H_TALL = 200;
-export const PET_BUBBLE_GAP = 12;
+export const PET_BUBBLE_GAP = 6;

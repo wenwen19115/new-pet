@@ -140,6 +140,11 @@ export function useSkyWeatherSession(deps: {
   }
 
   function start() {
+    // 已在跑：只恢复 markRunning，避免 applyTickOwner 重入再 bootProbe
+    if (!stopped && timer) {
+      link.markRunning();
+      return;
+    }
     stopped = false;
     link.markRunning();
     ensureSeeded();
@@ -151,7 +156,7 @@ export function useSkyWeatherSession(deps: {
     syncTimer = setInterval(() => void link.maybeSync(), 60_000);
   }
 
-  function stop() {
+  function stop(opts?: { flush?: boolean }) {
     // 父级显式 stop + onUnmounted(stop) 会叠一次；只 flush 首趟
     if (stopped) return;
     stopped = true;
@@ -165,6 +170,7 @@ export function useSkyWeatherSession(deps: {
       syncTimer = null;
     }
     clearPendingTimeouts();
+    if (opts?.flush === false) return;
     // 离开页即时落盘（含 pity），避免防抖未到就卸载
     deps.commit(normalizeSkyWeather(deps.config.value), {
       persist: true,
@@ -181,6 +187,8 @@ export function useSkyWeatherSession(deps: {
     ],
     (curr, prev) => {
       refreshDisplay(normalizeSkyWeather(deps.config.value));
+      // 已 stop（设置页镜像桌宠）时不拉网，避免与桌宠 leader 双通道
+      if (stopped) return;
       const linkBecameOnline =
         curr[3] === "online" && (prev?.[3] ?? "") !== "online";
       link.scheduleModeWatchSync({ forceProbe: linkBecameOnline });

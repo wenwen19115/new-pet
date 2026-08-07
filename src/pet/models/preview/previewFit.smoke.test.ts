@@ -4,6 +4,7 @@ import {
   previewCombinedScale,
 } from "./previewScale";
 import { getCharacter } from "@/pet/characters";
+import { petBodyBox, petWindowSize } from "@/pet/bridge/sizes";
 
 describe("preview fit per character", () => {
   it("clampPreviewBoost 尊重角色上限", () => {
@@ -31,5 +32,18 @@ describe("preview fit per character", () => {
     expect(
       (fig.previewBaseScale ?? 1) * (1 + (fig.previewMaxBoost ?? 0) / 100)
     ).toBeLessThanOrEqual(1.001);
+    const vrm = getCharacter("vrm").size;
+    expect(
+      (vrm.previewBaseScale ?? 1) * (1 + (vrm.previewMaxBoost ?? 0) / 100)
+    ).toBeLessThanOrEqual(1.001);
+  });
+
+  it("最大 zoom 时 HWND 盖住 VRM 角色盒", () => {
+    const screen = { availW: 1920, availH: 1080 };
+    const zoom = 100;
+    const body = petBodyBox("vrm", zoom, screen);
+    const win = petWindowSize("vrm", zoom, screen);
+    expect(win.w).toBeGreaterThanOrEqual(body.w);
+    expect(win.h).toBeGreaterThanOrEqual(body.h);
   });
 });

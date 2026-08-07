@@ -88,7 +88,6 @@ export function usePetHostLifecycle(deps: {
   speakBubblePong: () => void;
   isMotionLocked: () => boolean;
   playMotionOnce: (motion: string) => void;
-  showHitBounds: Ref<boolean>;
   onStorage: (ev: StorageEvent) => void;
   onCtxMenuAction: (action: PetMenuAction) => void;
 }) {
@@ -331,7 +330,6 @@ export function usePetHostLifecycle(deps: {
     unlistenBubblePong?.();
     unlistenLocale?.();
     window.removeEventListener("storage", deps.onStorage);
-    deps.showHitBounds.value = false;
   }
 
   return { mount, dispose, resizePetWindow, suspendHost, resumeHost, clearHostTimers };

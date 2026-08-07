@@ -469,6 +469,34 @@ describe("sky weather mode ops", () => {
     expect(on.weatherMode).toBe("sync");
     expect(on.runtime.everSynced).toBe(false);
   });
+
+  it("总闸在线↔离线保留投射字段", async () => {
+    const { applySkyLinkMode } = await import(
+      "@/pet/runtime/skyWeatherModeOps"
+    );
+    const base = normalizeSkyWeather({
+      linkMode: "online",
+      regionId: "system",
+      todMode: "sync",
+      weatherMode: "sync",
+      enableOnPet: true,
+      bgOpacity: 0.55,
+      hideableOnPet: false,
+      hideEffectOnPet: "fade",
+      linkBootstrapped: true,
+    });
+    const off = applySkyLinkMode(base, "offline");
+    expect(off.enableOnPet).toBe(true);
+    expect(off.bgOpacity).toBe(0.55);
+    expect(off.hideableOnPet).toBe(false);
+    expect(off.hideEffectOnPet).toBe("fade");
+
+    const back = applySkyLinkMode(off, "online");
+    expect(back.enableOnPet).toBe(true);
+    expect(back.bgOpacity).toBe(0.55);
+    expect(back.hideableOnPet).toBe(false);
+    expect(back.hideEffectOnPet).toBe("fade");
+  });
 });
 
 describe("sky weather session lifecycle", () => {
@@ -642,6 +670,89 @@ describe("sky weather session lifecycle", () => {
     expect(config.value.regionId).toBe(FALLBACK_REGION_ID);
     expect(config.value.todMode).toBe("offline");
     expect(config.value.weatherMode).toBe("offline");
+
+    stopFn?.();
+    app.unmount();
+  });
+
+  it("徽章刷新默认不强制拉实况；syncWeather:true 才换天气", async () => {
+    clearSystemRegionCache();
+    fetchClientGeo.mockResolvedValue({
+      ok: true,
+      lat: 22.54,
+      lon: 114.06,
+      city: "Shenzhen",
+      source: "test",
+    });
+    fetchOpenMeteoWeather.mockResolvedValue({
+      ok: true,
+      weather: "rain-mid",
+      source: "test",
+      sunRiseAt: Date.UTC(2026, 0, 1, 6),
+      sunSetAt: Date.UTC(2026, 0, 1, 18),
+    });
+    const { useSkyWeatherSession } = await import(
+      "@/pet/runtime/useSkyWeatherSession"
+    );
+    const config = ref(
+      normalizeSkyWeather({
+        linkMode: "online",
+        linkBootstrapped: true,
+        regionId: "system",
+        todMode: "sync",
+        weatherMode: "sync",
+        manualTod: "noon",
+        manualWeather: "clear",
+        runtime: {
+          ...normalizeSkyWeather({}).runtime,
+          everSynced: true,
+          lastSyncAt: Date.now(),
+          snapWeather: "clear",
+          snapTod: "noon",
+          wxOnline: true,
+          geoOnline: true,
+          locatedRegionId: "shenzhen",
+        },
+      })
+    );
+
+    let refreshFn:
+      | ((opts?: { syncWeather?: boolean }) => Promise<void>)
+      | null = null;
+    let stopFn: (() => void) | null = null;
+    const app = createApp(
+      defineComponent({
+        setup() {
+          const session = useSkyWeatherSession({
+            config,
+            autoStart: false,
+            commit: (next) => {
+              config.value = next;
+            },
+          });
+          session.start();
+          refreshFn = session.refreshLinks;
+          stopFn = session.stop;
+          return () => h("div");
+        },
+      })
+    );
+    app.mount(document.createElement("div"));
+    await nextTick();
+
+    const meteoCallsBefore = fetchOpenMeteoWeather.mock.calls.length;
+    await refreshFn?.();
+    await nextTick();
+    expect(fetchOpenMeteoWeather.mock.calls.length).toBe(meteoCallsBefore);
+    expect(config.value.manualWeather).toBe("clear");
+
+    await refreshFn?.({ syncWeather: true });
+    await nextTick();
+    await new Promise((r) => setTimeout(r, 50));
+    expect(fetchOpenMeteoWeather.mock.calls.length).toBeGreaterThan(
+      meteoCallsBefore
+    );
+    expect(config.value.manualWeather).toBe("rain-mid");
 
     stopFn?.();
     app.unmount();
@@ -1137,6 +1248,60 @@ describe("pet sky surface phase", () => {
     await vi.advanceTimersByTimeAsync(0);
     expect(surface!.skySurfaceOn.value).toBe(true);
     expect(finishSkyDismiss).not.toHaveBeenCalled();
+
+    app.unmount();
+  });
+
+  it("投射仍开却停在 held 时，空闲会自动放出", async () => {
+    vi.useFakeTimers();
+    const { usePetSkySurface } = await import("./usePetSkySurface");
+
+    const skyBackdropEnabled = ref(true);
+    const skyHideableOnPet = ref(true);
+    const skyHideEffectOnPet = ref("vortexHalo" as const);
+    const skyBackdropStyle = ref<Record<string, string>>({});
+    const bodyBox = ref({ w: 80, h: 100 });
+    const isDragging = ref(false);
+    const isPeeking = ref(false);
+    const flyVisualX = ref(0);
+    const flyVisualY = ref(0);
+    const skyVisualHold = ref(false);
+    const finishSkyDismiss = vi.fn();
+
+    let surface: ReturnType<typeof usePetSkySurface> | null = null;
+    const app = createApp(
+      defineComponent({
+        setup() {
+          surface = usePetSkySurface({
+            skyBackdropEnabled,
+            skyHideableOnPet,
+            skyHideEffectOnPet,
+            skyBackdropStyle,
+            bodyBox,
+            isDragging,
+            isPeeking,
+            flyVisualX,
+            flyVisualY,
+            skyVisualHold,
+            finishSkyDismiss,
+          });
+          return () => h("div");
+        },
+      })
+    );
+    app.mount(document.createElement("div"));
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(0);
+    await vi.advanceTimersByTimeAsync(720);
+    expect(surface!.skyVortexPhase.value).toBe("");
+
+    // 模拟竞态卡在 held（投射仍开、未 busy）
+    surface!.skyVortexPhase.value = "held";
+    await nextTick();
+    expect(surface!.skyVortexPhase.value).toBe("out");
+    await vi.advanceTimersByTimeAsync(720);
+    expect(surface!.skyVortexPhase.value).toBe("");
+    expect(surface!.skySurfaceOn.value).toBe(true);
 
     app.unmount();
   });

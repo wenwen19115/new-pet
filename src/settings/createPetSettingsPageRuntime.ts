@@ -42,7 +42,6 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     usbWatchEnabled,
     randomIdleEnabled,
     playfulModeEnabled,
-    hitBoundsEnabled,
     deskWeather,
     skyWeather,
     catchphrases,
@@ -67,6 +66,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
 
   let applyLocalFromSettingsImpl = (_s: PetSettings) => {};
   let refreshVrmPreviewImpl: () => void | Promise<void> = async () => {};
+  let skyPersistPendingImpl = () => false;
 
   function getCurrentSettings() {
     return buildCurrentSettings({
@@ -86,6 +86,8 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     settingsAlwaysOnTop,
     sysStatsDefaultExpanded,
     theme,
+    skyWeather,
+    skyPersistPending: () => skyPersistPendingImpl(),
     applyLocalFromSettings: (s) => applyLocalFromSettingsImpl(s),
     refreshVrmPreview: () => refreshVrmPreviewImpl(),
   });
@@ -157,7 +159,6 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     usbWatchEnabled,
     randomIdleEnabled,
     playfulModeEnabled,
-    hitBoundsEnabled,
     deskWeather,
     skyWeather,
     catchphrases,
@@ -205,7 +206,6 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     usbWatchEnabled,
     randomIdleEnabled,
     playfulModeEnabled,
-    hitBoundsEnabled,
     theme,
     sysStatsDefaultExpanded,
     customVrmMotions,
@@ -244,6 +244,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     model: computed(() => vm.activeLook.value.model),
     heroPanelStyle: vm.heroPanelStyle,
   });
+  skyPersistPendingImpl = () => skyPreview.skyPersistPending();
 
   function onSettingsTab(id: string) {
     settingsTab.value = id;
@@ -282,7 +283,6 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     usbWatchEnabled,
     randomIdleEnabled,
     playfulModeEnabled,
-    hitBoundsEnabled,
     deskWeather,
     skyWeather,
     catchphrases,
@@ -317,6 +317,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     lookLabel: vm.lookLabel,
     capabilities: computed(() => characterCapabilities(modelKind.value)),
     onEnabled: actions.onEnabled,
+    onResetPetPosition: actions.onResetPetPosition,
     onModel: actions.onModel,
     onLook: actions.onLook,
     onSaveNickname: actions.onSaveNickname,
@@ -344,7 +345,6 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     onUsbWatch: actions.onUsbWatch,
     onRandomIdle: actions.onRandomIdle,
     onPlayfulMode: actions.onPlayfulMode,
-    onHitBounds: actions.onHitBounds,
     onDeskWeatherChange: () => persist.persistOnly(),
     onSkyWeatherChange: skyPreview.schedulePersist,
     patchSkyWeather: skyPreview.patchSkyWeather,

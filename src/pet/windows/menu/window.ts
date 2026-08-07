@@ -2,7 +2,7 @@ import { LogicalPosition, LogicalSize } from "@tauri-apps/api/dpi";
 import { emit, emitTo, listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { currentMonitor, getCurrentWindow } from "@tauri-apps/api/window";
 import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { petBodyBox } from "@/pet/bridge/sizes";
+import { petBodyBox, petInteractHalfW } from "@/pet/bridge/sizes";
 import { loadPetSettings } from "@/pet/data/settings";
 import { resolveAppearance } from "@/pet/skins";
 import {
@@ -21,6 +21,12 @@ import {
   type PetMenuPayload,
 } from "./types";
 import { waitWebviewReady } from "@/pet/windows/shared/waitWebviewReady";
+import {
+  getBubbleOverlayRect,
+  nudgeAwayFromObstacle,
+  setMenuOverlayRect,
+} from "@/pet/windows/shared/floatOverlayRects";
+import { syncPetBubbleToPet } from "@/pet/windows/bubble";
 
 function menuUrl(): string {
   if (import.meta.env.DEV) {
@@ -72,11 +78,15 @@ async function resolveMenuPlacement(menuH: number): Promise<{
   const s = loadPetSettings();
   const model = resolveAppearance(s.modelKind, s.lookId).model;
   const body = petBodyBox(model, s.zoomPercent);
+  const halfW = petInteractHalfW(model, s.zoomPercent);
   const petCenterX = outer.x + size.width / 2;
   const petCenterY = outer.y + size.height / 2;
-  const bodyLeft = petCenterX - body.w / 2;
-  const bodyRight = petCenterX + body.w / 2;
-  const bodyBottom = petCenterY + body.h / 2;
+  const bodyLeft = petCenterX - halfW;
+  const bodyRight = petCenterX + halfW;
+  // 窗景开时清到整窗外缘，避免压在窗景上
+  const skyOnPet = Boolean(s.skyWeather.enableOnPet);
+  const clearLeft = skyOnPet ? outer.x : bodyLeft;
+  const clearRight = skyOnPet ? outer.x + size.width : bodyRight;
 
   let workLeft = 0;
   let workTop = 0;
@@ -91,10 +101,11 @@ async function resolveMenuPlacement(menuH: number): Promise<{
     workBottom = (wp.y + ws.height) / scale;
   }
 
+  // 身旁小缝，贴角色可视半宽（窗景开则贴整窗外）
   const gap = PET_MENU_GAP;
-  const need = PET_MENU_W + Math.max(0, gap);
-  const spaceRight = workRight - bodyRight;
-  const spaceLeft = bodyLeft - workLeft;
+  const need = PET_MENU_W + gap;
+  const spaceRight = workRight - clearRight;
+  const spaceLeft = clearLeft - workLeft;
 
   let side: "left" | "right";
   if (spaceRight >= need) {
@@ -106,8 +117,9 @@ async function resolveMenuPlacement(menuH: number): Promise<{
   }
 
   let x =
-    side === "right" ? bodyRight + gap : bodyLeft - gap - PET_MENU_W;
-  let y = bodyBottom + gap;
+    side === "right" ? clearRight + gap : clearLeft - gap - PET_MENU_W;
+  // 竖直对齐角色中部偏上，菜单挂在身旁而不是脚下
+  let y = petCenterY - menuH * 0.32;
 
   const minX = workLeft + 4;
   const maxX = Math.max(minX, workRight - PET_MENU_W - 4);
@@ -117,20 +129,40 @@ async function resolveMenuPlacement(menuH: number): Promise<{
   x = clamp(x, minX, maxX);
   y = clamp(y, minY, maxY);
 
-  const overlapsBody =
-    (side === "right" && x < bodyRight + gap - 0.5) ||
-    (side === "left" && x + PET_MENU_W > bodyLeft - gap + 0.5);
-  if (overlapsBody) {
+  const overlapsClear =
+    (side === "right" && x < clearRight + gap - 0.5) ||
+    (side === "left" && x + PET_MENU_W > clearLeft - gap + 0.5);
+  if (overlapsClear) {
     if (side === "right" && spaceLeft >= need) {
       side = "left";
-      x = clamp(bodyLeft - gap - PET_MENU_W, minX, maxX);
+      x = clamp(clearLeft - gap - PET_MENU_W, minX, maxX);
     } else if (side === "left" && spaceRight >= need) {
       side = "right";
-      x = clamp(bodyRight + gap, minX, maxX);
+      x = clamp(clearRight + gap, minX, maxX);
+    } else {
+      // 左右都挤：退到角色下方
+      const bodyBottom = skyOnPet
+        ? outer.y + size.height
+        : petCenterY + body.h * 0.42;
+      x = clamp(petCenterX - PET_MENU_W / 2, minX, maxX);
+      y = clamp(bodyBottom + gap, minY, maxY);
     }
   }
 
-  return { x: Math.round(x), y: Math.round(y) };
+  const nudged = nudgeAwayFromObstacle(
+    { x, y },
+    { w: PET_MENU_W, h: menuH },
+    getBubbleOverlayRect(),
+    { minX, maxX, minY, maxY },
+    {
+      centerX: petCenterX,
+      bodyLeft: clearLeft,
+      bodyRight: clearRight,
+      gap,
+    }
+  );
+
+  return { x: Math.round(nudged.x), y: Math.round(nudged.y) };
 }
 
 async function applyMenuGeometry(
@@ -186,7 +218,17 @@ async function ensureMenuListeners() {
         const w = await win;
         if (!w || !menuPlace) return;
         try {
-          await applyMenuGeometry(w, menuPlace.x, menuPlace.y, h);
+          // 展开后高度变了，重新避让气泡
+          const place = await resolveMenuPlacement(Math.max(h, PET_MENU_H));
+          menuPlace = place;
+          setMenuOverlayRect({
+            x: place.x,
+            y: place.y,
+            w: PET_MENU_W,
+            h: Math.max(h, PET_MENU_H),
+          });
+          await applyMenuGeometry(w, place.x, place.y, h);
+          void syncPetBubbleToPet();
         } catch {
           // ignore
         }
@@ -211,10 +253,16 @@ export async function showPetMenu(options: {
 
   menuExpanded = Boolean(options.statsExpandDefault);
   const h = petMenuHeight(menuExpanded);
-  // Place against expanded height so expanding later stays on-screen
+  // 按展开高度占位，避免展开后压住气泡
   const place = await resolveMenuPlacement(PET_MENU_H);
   menuPlace = place;
   menuOpen = true;
+  setMenuOverlayRect({
+    x: place.x,
+    y: place.y,
+    w: PET_MENU_W,
+    h: PET_MENU_H,
+  });
   bumpIdleTimer();
 
   try {
@@ -239,6 +287,9 @@ export async function showPetMenu(options: {
     console.warn("[pet] menu place failed", err);
   }
 
+  // 菜单落位后让气泡躲开，两边都留着
+  void syncPetBubbleToPet();
+
   const payload: PetMenuPayload = {
     chatEnabled: Boolean(options.chatEnabled),
     statsExpandDefault: menuExpanded,
@@ -261,6 +312,7 @@ export async function showPetMenu(options: {
 async function hideMenuWindow(): Promise<void> {
   menuOpen = false;
   menuPlace = null;
+  setMenuOverlayRect(null);
   clearIdleTimer();
   let existing: Awaited<ReturnType<typeof WebviewWindow.getByLabel>> = null;
   try {
@@ -274,6 +326,7 @@ async function hideMenuWindow(): Promise<void> {
   } catch {
     // ignore
   }
+  void syncPetBubbleToPet();
 }
 
 export async function hidePetMenu(): Promise<void> {
@@ -293,6 +346,7 @@ export async function hidePetMenu(): Promise<void> {
 export async function destroyMenuWindow(): Promise<void> {
   menuOpen = false;
   menuPlace = null;
+  setMenuOverlayRect(null);
   clearIdleTimer();
   unlistenActivity?.();
   unlistenLayout?.();

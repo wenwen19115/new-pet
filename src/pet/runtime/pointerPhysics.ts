@@ -177,6 +177,21 @@ export function winCenterFromOuter(
   return { x: outer.x + winW / 2, y: outer.y + winH / 2 };
 }
 
+/** 光标相对身体盒中心 → 画布 NDC（Y 向上为正，对齐 WebGL）。 */
+export function cursorToBodyNdc(
+  cursor: { x: number; y: number },
+  winCenter: { x: number; y: number },
+  bodyW: number,
+  bodyH: number
+): { x: number; y: number } {
+  const halfW = Math.max(1, bodyW / 2);
+  const halfH = Math.max(1, bodyH / 2);
+  return {
+    x: (cursor.x - winCenter.x) / halfW,
+    y: -(cursor.y - winCenter.y) / halfH,
+  };
+}
+
 export function isCursorOverPet(
   cursor: { x: number; y: number },
   winCenter: { x: number; y: number },

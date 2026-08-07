@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <!--
     狐青青：像素神话小兽（狐火精灵）
     40×40 像素格 + 分层动画（耳/尾/狐火独立），铺满父级本体框。
@@ -237,12 +237,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 import type { PetIdleMotion } from "../../content/motion/motions";
 import type { PetMood } from "../../data/types";
 import type { PetSkinVisual } from "../../skins";
 import type { PetToonDecorId } from "../../skins/looks";
 import { resolveToonAnimState } from "../../content/motion/toonAnim";
+import { registerPetHitTester } from "@/pet/runtime/petHitBridge";
+import { isPetHitHostWindow } from "@/pet/runtime/isPetHitHostWindow";
 import { buildToonBreathPixels, buildToonFloatParticles } from "./aura";
 import {
   buildToonBodyPixels,
@@ -255,6 +257,7 @@ import { buildToonPortalPixels } from "./portal";
 import { resolveToonPupil } from "./pupil";
 import { buildToonScenePixels } from "./scene";
 import { buildToonLightWing } from "./wings";
+import { buildToonHitMask, testToonHitMask } from "./toonHit";
 import "./toonModel.css";
 
 const props = withDefaults(
@@ -328,4 +331,29 @@ const scenePixels = computed(() =>
     props.visual.accentSoft
   )
 );
+
+const hitMask = computed(() =>
+  buildToonHitMask([
+    earPixels.value,
+    bodyPixels.value,
+    tailPixels.value,
+    leftWingPixels.value,
+    rightWingPixels.value,
+    decorPixels.value,
+  ])
+);
+
+function hitTestNdc(ndcX: number, ndcY: number): boolean {
+  return testToonHitMask(hitMask.value, ndcX, ndcY);
+}
+
+const hostHit = isPetHitHostWindow();
+
+onMounted(() => {
+  if (hostHit) registerPetHitTester(hitTestNdc);
+});
+
+onUnmounted(() => {
+  if (hostHit) registerPetHitTester(null);
+});
 </script>

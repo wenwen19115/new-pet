@@ -28,7 +28,8 @@ export const characterFig: CharacterDef = {
   },
   lookIds: FIG_LOOK_IDS,
   size: {
-    bubbleOffsetYFactor: -0.12,
+    bubbleOffsetYFactor: -0.16,
+    bubbleClearanceFactor: 0.48,
     bodyBox: (scale, screen) => {
       const h = Math.round(
         Math.min(400, Math.max(240, screen.availH * 0.3)) * scale

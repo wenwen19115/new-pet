@@ -228,7 +228,11 @@ export function createDebouncedPersist(
     queued = false;
   }
 
-  return { schedule, flush, discard };
+  function isPending() {
+    return queued || timer != null;
+  }
+
+  return { schedule, flush, discard, isPending };
 }
 
 export type SkyWeatherFirePayload = {

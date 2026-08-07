@@ -57,7 +57,6 @@ export interface PetModelProfile {
   randomIdleEnabled: boolean;
   /** 调皮：靠近躲开，倒计时内点中算抓到 */
   playfulModeEnabled: boolean;
-  hitBoundsEnabled: boolean;
   catchphrases: string[];
   catchphraseChance: number;
   customLines: PetCustomLine[];
@@ -97,7 +96,6 @@ export interface PetSettings {
   randomIdleEnabled: boolean;
   /** 调皮：靠近躲开，倒计时内点中算抓到 */
   playfulModeEnabled: boolean;
-  hitBoundsEnabled: boolean;
   deskWeather: DeskWeatherConfig;
   /** 窗外天色/天气（非工位气象） */
   skyWeather: SkyWeatherConfig;

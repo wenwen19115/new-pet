@@ -3,6 +3,7 @@ import { hidePetChat } from "@/pet/windows/chat";
 import { petStore } from "@/pet/data/store";
 import { isSettingsStorageKey, writeSettingsRaw } from "@/pet/data/storageKeys";
 import { normalizePetSettings, publishPetSettings } from "@/pet/data/settings";
+import { normalizeSkyWeather } from "@/pet/data/skyWeather";
 import { cancelPetTts } from "@/pet/bridge/tts";
 import { resolveAppearance } from "@/pet/skins";
 import {
@@ -54,11 +55,25 @@ export function usePetSettingsSync(deps: {
     const prevZoom = deps.settings.value.zoomPercent;
     const prevUsb = deps.settings.value.usbWatchEnabled;
     const prevDesk = JSON.stringify(deps.settings.value.deskWeather);
-    const prevSky = JSON.stringify(deps.settings.value.skyWeather);
-    const prevRandomIdle = deps.settings.value.randomIdleEnabled;
-    const prevVrmName = deps.settings.value.vrmModelName;
-    const prevVrmRev = deps.settings.value.vrmModelRev;
-    deps.settings.value = normalizePetSettings(next);
+    const prev = deps.settings.value;
+    const prevSky = JSON.stringify(prev.skyWeather);
+    const prevRandomIdle = prev.randomIdleEnabled;
+    const prevVrmName = prev.vrmModelName;
+    const prevVrmRev = prev.vrmModelRev;
+    // 缺 skyWeather 的局部 patch 不得把 enableOnPet 归一成默认 false
+    const patch = next && typeof next === "object" ? next : {};
+    const skyWeather =
+      "skyWeather" in patch
+        ? normalizeSkyWeather({
+            ...normalizeSkyWeather(prev.skyWeather),
+            ...(patch.skyWeather as object),
+          })
+        : prev.skyWeather;
+    deps.settings.value = normalizePetSettings({
+      ...prev,
+      ...patch,
+      skyWeather,
+    });
     petStore.setSettings(deps.settings.value);
     try {
       writeSettingsRaw(JSON.stringify(deps.settings.value));

@@ -257,8 +257,8 @@
 }
 
 .orbit-stage[data-bg="0"] .vrm-orbit-zoom {
-  width: min(300px, 78%);
-  height: min(460px, 94%);
+  width: min(300px, 82%);
+  height: min(440px, 92%);
 }
 
 .orbit-rig .chip-slab {
@@ -363,7 +363,7 @@
 .vrm-orbit-zoom {
   width: min(280px, 70%);
   height: min(420px, 90%);
-  transform-origin: 50% 60%;
+  transform-origin: 50% 55%;
 }
 
 .vrm-orbit-zoom .vrm-wrap {

@@ -6,9 +6,11 @@ import {
 } from "@tauri-apps/api/window";
 import type { PetMood } from "@/pet/data/types";
 import type { ApplyPetMood } from "./petHostMood";
+import { testPetPreciseHit } from "@/pet/runtime/petHitBridge";
 import {
   buildPhysicsStyle,
   computeReleaseImpulses,
+  cursorToBodyNdc,
   isCursorOverPet,
   isPhysicsActive,
   resetPhysicsVelocities,
@@ -26,7 +28,6 @@ export function usePetPointerHost(deps: {
   bodyBox: Ref<{ w: number; h: number }> | { value: { w: number; h: number } };
   mood: Ref<PetMood>;
   applyMood: ApplyPetMood;
-  hitBoundsEnabled: () => boolean;
   isMenuOpen: () => boolean;
   gaze: { x: number; y: number };
   gazeConfig: () => { max: number; range: number; follow: number };
@@ -46,7 +47,6 @@ export function usePetPointerHost(deps: {
   const HIT_PAD = 2;
 
   const isDragging = ref(false);
-  const showHitBounds = ref(false);
   const swingAngle = ref(0);
   const tiltY = ref(0);
   const tiltX = ref(0);
@@ -69,6 +69,14 @@ export function usePetPointerHost(deps: {
   let wantPos: { x: number; y: number } | null = null;
   let posWriting = false;
   let ignoreCursor = false;
+  /** 上一帧精检结果；节流复用，避免每帧射线 */
+  let lastPreciseOver = false;
+  let lastPreciseFrame = -999;
+  /** 穿透切换迟滞，减少边缘来回打 IPC */
+  let passDesire: boolean | null = null;
+  let passDesireStreak = 0;
+  let sampleBusy = false;
+  let passSyncing = false;
 
   const physicsSnap = () => ({
     swingAngle: swingAngle.value,
@@ -96,12 +104,34 @@ export function usePetPointerHost(deps: {
     if (!deps.hostAlive()) return;
     const shouldIgnore = !overPet && !isDragging.value;
     if (shouldIgnore === ignoreCursor) return;
+    if (passSyncing) return;
     ignoreCursor = shouldIgnore;
+    passSyncing = true;
     try {
       await getCurrentWindow().setIgnoreCursorEvents(shouldIgnore);
     } catch {
       // ignore
+    } finally {
+      passSyncing = false;
     }
+  }
+
+  /** 命中要灵敏；离开要粘一点，避免轮廓边缘狂切穿透 */
+  function applyPassThroughHysteresis(overPet: boolean) {
+    if (isDragging.value || deps.isMenuOpen()) {
+      passDesire = null;
+      passDesireStreak = 0;
+      void syncCursorPassThrough(true);
+      return;
+    }
+    if (passDesire === overPet) {
+      passDesireStreak += 1;
+    } else {
+      passDesire = overPet;
+      passDesireStreak = 1;
+    }
+    const need = overPet ? 1 : 3;
+    if (passDesireStreak >= need) void syncCursorPassThrough(overPet);
   }
 
   async function pumpWindowPos() {
@@ -244,7 +274,8 @@ export function usePetPointerHost(deps: {
   }
 
   async function sampleCursor(frame: number) {
-    if (!deps.hostAlive()) return;
+    if (!deps.hostAlive() || sampleBusy) return;
+    sampleBusy = true;
     try {
       const scale = cachedScale || (await getCurrentWindow().scaleFactor());
       cachedScale = scale;
@@ -277,7 +308,7 @@ export function usePetPointerHost(deps: {
         );
       }
 
-      const overPet = isCursorOverPet(
+      let overPet = isCursorOverPet(
         cursor,
         winCenter,
         deps.bodyBox.value.w,
@@ -286,17 +317,36 @@ export function usePetPointerHost(deps: {
         isDragging.value,
         deps.isMenuOpen()
       );
-      showHitBounds.value =
-        deps.hitBoundsEnabled() &&
+      if (
         overPet &&
         !isDragging.value &&
-        !deps.isMenuOpen();
-      void syncCursorPassThrough(overPet);
+        !deps.isMenuOpen()
+      ) {
+        // 每 3 帧精检一次；中间复用，减轻射线与穿透抖动
+        if (frame - lastPreciseFrame >= 3) {
+          const ndc = cursorToBodyNdc(
+            cursor,
+            winCenter,
+            deps.bodyBox.value.w,
+            deps.bodyBox.value.h
+          );
+          const precise = testPetPreciseHit(ndc.x, ndc.y);
+          lastPreciseOver = precise === null ? true : precise;
+          lastPreciseFrame = frame;
+        }
+        overPet = lastPreciseOver;
+      } else {
+        lastPreciseOver = false;
+        lastPreciseFrame = frame;
+      }
+      applyPassThroughHysteresis(overPet);
 
       updateGaze(deps.gaze, cursor, winCenter, deps.mood.value, deps.gazeConfig());
       deps.onCursorSample?.(cursor, winCenter);
     } catch {
       // ignore
+    } finally {
+      sampleBusy = false;
     }
   }
 
@@ -306,6 +356,8 @@ export function usePetPointerHost(deps: {
     dragStarted = false;
     isDragging.value = false;
     ignoreCursor = false;
+    passDesire = null;
+    passDesireStreak = 0;
   }
 
   async function syncWindowCenter() {
@@ -343,7 +395,6 @@ export function usePetPointerHost(deps: {
 
   return {
     isDragging,
-    showHitBounds,
     dragTrailAngle,
     dragTrailSpeed,
     physicsActive,

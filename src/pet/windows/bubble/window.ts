@@ -22,6 +22,11 @@ import { resolveAppearance } from "@/pet/skins";
 import type { PetTone } from "@/pet/data/types";
 import { writeBubblePayloadRaw } from "@/pet/data/storageKeys";
 import { waitWebviewReady } from "@/pet/windows/shared/waitWebviewReady";
+import {
+  getMenuOverlayRect,
+  nudgeAwayFromObstacle,
+  setBubbleOverlayRect,
+} from "@/pet/windows/shared/floatOverlayRects";
 
 function bubbleUrl(): string {
   if (import.meta.env.DEV) {
@@ -36,6 +41,7 @@ let activeBubble:
 
 async function hideBubbleWindow(): Promise<void> {
   activeBubble = null;
+  setBubbleOverlayRect(null);
   let existing: Awaited<ReturnType<typeof WebviewWindow.getByLabel>> = null;
   try {
     existing = await WebviewWindow.getByLabel(PET_BUBBLE_LABEL);
@@ -52,6 +58,7 @@ async function hideBubbleWindow(): Promise<void> {
 
 export async function destroyBubbleWindow(): Promise<void> {
   activeBubble = null;
+  setBubbleOverlayRect(null);
   let existing: Awaited<ReturnType<typeof WebviewWindow.getByLabel>> = null;
   try {
     existing = await WebviewWindow.getByLabel(PET_BUBBLE_LABEL);
@@ -127,16 +134,20 @@ async function resolveBubblePlacement(
   const model = resolveAppearance(s.modelKind, s.lookId).model;
   const body = petBodyBox(model, s.zoomPercent);
   const anchor = petBubbleAnchor(model, s.zoomPercent);
-  // 投射窗景时墙面铺满主窗：避让整窗外缘，别只按角色 body（否则气泡叠在墙上被挡）
-  const skyOn = Boolean(s.skyWeather?.enableOnPet);
-  const halfW = skyOn ? size.width / 2 : body.w / 2;
-  const halfH = skyOn ? size.height / 2 : body.h / 2;
+  const halfW = anchor.halfW;
+  const halfH = body.h * 0.42;
   const petCenterX = outer.x + size.width / 2;
   const petCenterY = outer.y + size.height / 2;
   const bodyLeft = petCenterX - halfW;
   const bodyRight = petCenterX + halfW;
   const bodyTop = petCenterY - halfH;
   const bubbleAnchorY = petCenterY + anchor.offsetY;
+
+  // 窗景开时主窗大块不透明；贴角色会压在窗景上。清到整窗外缘。
+  const skyOnPet = Boolean(s.skyWeather.enableOnPet);
+  const clearLeft = skyOnPet ? outer.x : bodyLeft;
+  const clearRight = skyOnPet ? outer.x + size.width : bodyRight;
+  const clearTop = skyOnPet ? outer.y : bodyTop;
 
   let workLeft = 0;
   let workTop = 0;
@@ -152,8 +163,8 @@ async function resolveBubblePlacement(
     workBottom = (wp.y + ws.height) / scale;
   }
 
-  const spaceRight = workRight - bodyRight;
-  const spaceLeft = bodyLeft - workLeft;
+  const spaceRight = workRight - clearRight;
+  const spaceLeft = clearLeft - workLeft;
   const need = bubbleW + gap;
   let side: "left" | "right";
   if (spaceRight >= need) {
@@ -164,7 +175,7 @@ async function resolveBubblePlacement(
     side = spaceRight >= spaceLeft ? "right" : "left";
   }
 
-  let x = side === "right" ? bodyRight + gap : bodyLeft - gap - bubbleW;
+  let x = side === "right" ? clearRight + gap : clearLeft - gap - bubbleW;
   let y = bubbleAnchorY - bubbleH / 2;
 
   const minX = workLeft + 4;
@@ -173,23 +184,23 @@ async function resolveBubblePlacement(
   const maxY = Math.max(minY, workBottom - bubbleH - 4);
 
   const clampedX = clamp(x, minX, maxX);
-  const overlapsBody =
-    (side === "right" && clampedX < bodyRight + gap - 0.5) ||
-    (side === "left" && clampedX + bubbleW > bodyLeft - gap + 0.5);
+  const overlapsClear =
+    (side === "right" && clampedX < clearRight + gap - 0.5) ||
+    (side === "left" && clampedX + bubbleW > clearLeft - gap + 0.5);
 
-  if (overlapsBody) {
+  if (overlapsClear) {
     if (side === "left" && spaceRight >= need) {
       side = "right";
-      x = clamp(bodyRight + gap, minX, maxX);
+      x = clamp(clearRight + gap, minX, maxX);
       y = clamp(bubbleAnchorY - bubbleH / 2, minY, maxY);
     } else if (side === "right" && spaceLeft >= need) {
       side = "left";
-      x = clamp(bodyLeft - gap - bubbleW, minX, maxX);
+      x = clamp(clearLeft - gap - bubbleW, minX, maxX);
       y = clamp(bubbleAnchorY - bubbleH / 2, minY, maxY);
     } else {
       side = "right";
       x = clamp(petCenterX - bubbleW / 2, minX, maxX);
-      y = clamp(bodyTop - gap - bubbleH, minY, maxY);
+      y = clamp(clearTop - gap - bubbleH, minY, maxY);
     }
   } else {
     x = clampedX;
@@ -197,9 +208,29 @@ async function resolveBubblePlacement(
   }
 
   if (!Number.isFinite(x) || !Number.isFinite(y)) {
-    x = bodyRight + gap;
+    x = clearRight + gap;
     y = bubbleAnchorY - bubbleH / 2;
   }
+
+  // 菜单开着时躲开，两边都显示
+  const nudged = nudgeAwayFromObstacle(
+    { x, y },
+    { w: bubbleW, h: bubbleH },
+    getMenuOverlayRect(),
+    { minX, maxX, minY, maxY },
+    {
+      centerX: petCenterX,
+      bodyLeft: clearLeft,
+      bodyRight: clearRight,
+      gap,
+    }
+  );
+  x = nudged.x;
+  y = nudged.y;
+
+  // 对侧后 side 可能变了，尖角朝向跟着改
+  const mid = x + bubbleW / 2;
+  side = mid >= petCenterX ? "right" : "left";
 
   return { x: Math.round(x), y: Math.round(y), side };
 }
@@ -248,6 +279,12 @@ export async function syncPetBubbleToPet(): Promise<void> {
       activeBubble.w,
       activeBubble.h
     );
+    setBubbleOverlayRect({
+      x: place.x,
+      y: place.y,
+      w: activeBubble.w,
+      h: activeBubble.h,
+    });
     await existing.setPosition(new LogicalPosition(place.x, place.y));
   } catch {
     // ignore
@@ -270,6 +307,12 @@ export async function showPetBubble(options: {
     h: box.h,
     until: Date.now() + durationMs + 400,
   };
+  setBubbleOverlayRect({
+    x: place.x,
+    y: place.y,
+    w: box.w,
+    h: box.h,
+  });
 
   try {
     await applyBubbleGeometry(win, box.w, box.h, place.x, place.y);
@@ -287,6 +330,12 @@ export async function showPetBubble(options: {
     await win.show();
     // 透明窗在 Windows 上偶发首次定位落到左上角，show 后再钉一次
     await applyBubbleGeometry(win, box.w, box.h, place.x, place.y);
+    // 再顶一次，避免桌宠主窗 alwaysOnTop 把气泡压到窗景下面
+    try {
+      await win.setAlwaysOnTop(true);
+    } catch {
+      // ignore
+    }
     window.setTimeout(() => {
       void applyBubbleGeometry(win, box.w, box.h, place.x, place.y);
     }, 48);

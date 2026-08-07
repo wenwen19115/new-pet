@@ -146,10 +146,6 @@ export function normalizeOneProfile(
       raw?.playfulModeEnabled === undefined
         ? base.playfulModeEnabled
         : Boolean(raw.playfulModeEnabled),
-    hitBoundsEnabled:
-      raw?.hitBoundsEnabled === undefined
-        ? base.hitBoundsEnabled
-        : Boolean(raw.hitBoundsEnabled),
     catchphrases: normalizeCatchphrases(
       raw?.catchphrases ?? base.catchphrases,
       model
@@ -202,7 +198,6 @@ export function applyActiveProfile(
   | "opacity"
   | "usbWatchEnabled"
   | "randomIdleEnabled"
-  | "hitBoundsEnabled"
   | "playfulModeEnabled"
   | "catchphrases"
   | "catchphraseChance"
@@ -227,7 +222,6 @@ export function applyActiveProfile(
     usbWatchEnabled: p.usbWatchEnabled,
     randomIdleEnabled: p.randomIdleEnabled,
     playfulModeEnabled: p.playfulModeEnabled,
-    hitBoundsEnabled: p.hitBoundsEnabled,
     catchphrases: p.catchphrases,
     catchphraseChance: p.catchphraseChance,
     vrmModelName: vrm.modelName,

@@ -68,7 +68,6 @@ function wirePetHost(s: PetHostShared) {
     bodyBox,
     mood,
     applyMood,
-    hitBoundsEnabled: () => settings.value.hitBoundsEnabled,
     isMenuOpen: () => isPetMenuOpen(),
     gaze,
     gazeConfig: () => activeCharacter.value.runtime.gaze,
@@ -396,7 +395,6 @@ function wirePetHost(s: PetHostShared) {
     speakBubblePong: speech.speakBubblePong,
     isMotionLocked: motionHost.isMotionLocked,
     playMotionOnce: motionHost.playMotionOnce,
-    showHitBounds: pointerHost.showHitBounds,
     onStorage: settingsSync.onStorage,
     onCtxMenuAction: shell.onCtxMenuAction,
   });
@@ -416,7 +414,6 @@ function wirePetHost(s: PetHostShared) {
     bodyBox,
     isDragging: pointerHost.isDragging,
     isPeeking,
-    showHitBounds: pointerHost.showHitBounds,
     dragTrailAngle: pointerHost.dragTrailAngle,
     dragTrailSpeed: pointerHost.dragTrailSpeed,
     physicsActive: pointerHost.physicsActive,

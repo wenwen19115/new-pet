@@ -50,6 +50,11 @@ interface CharacterPreviewActor {
 interface CharacterSizeSpec {
   /** Bubble Y offset as a fraction of body height (negative = upward) */
   bubbleOffsetYFactor: number;
+  /**
+   * 气泡水平避让半宽系数（相对 bodyBox）。
+   * 小于 1：按角色可视占地贴靠，而不是整块体积框。
+   */
+  bubbleClearanceFactor?: number;
   bodyBox: (
     scale: number,
     screen: CharacterScreenMetrics

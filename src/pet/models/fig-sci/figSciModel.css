@@ -6,7 +6,7 @@
   place-items: center;
   box-sizing: border-box;
   padding: 2% 3% 4%;
-  overflow: hidden;
+  overflow: visible;
   pointer-events: none;
   user-select: none;
 }

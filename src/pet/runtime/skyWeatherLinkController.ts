@@ -169,11 +169,12 @@ export function createSkyWeatherLinkController(deps: {
     }
   }
 
-  /** 手动刷新：打断进行中的换城，只认这一次 */
-  async function refreshLinks() {
+  /** 手动刷新联网；默认不强制拉实况（徽章刷新≠换天气） */
+  async function refreshLinks(opts?: { syncWeather?: boolean }) {
     if (stopped) return;
     clearWatchTimer();
     const gen = ++netGen;
+    const syncWeather = opts?.syncWeather === true;
     holdBusy();
     try {
       await probeNet(true, gen);
@@ -181,7 +182,9 @@ export function createSkyWeatherLinkController(deps: {
       fallbackOfflineIfNeeded();
       if (isStale(gen)) return;
       if (normalizeSkyWeather(deps.getConfig()).linkMode !== "online") return;
-      await maybeSync({ force: true, gen });
+      if (syncWeather) {
+        await maybeSync({ force: true, gen });
+      }
       if (gen === netGen) {
         deps.onRefreshDisplay(normalizeSkyWeather(deps.getConfig()));
       }

@@ -14,7 +14,7 @@
   z-index: 1;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .pix-shadow {

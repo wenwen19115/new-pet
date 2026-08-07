@@ -42,7 +42,6 @@ export function usePetSettingsFormState() {
   const usbWatchEnabled = ref(true);
   const randomIdleEnabled = ref(true);
   const playfulModeEnabled = ref(false);
-  const hitBoundsEnabled = ref(true);
   const deskWeather = ref<DeskWeatherConfig>(
     normalizeDeskWeather(DEFAULT_DESK_WEATHER)
   );
@@ -102,7 +101,6 @@ export function usePetSettingsFormState() {
       usbWatchEnabled: usbWatchEnabled.value,
       randomIdleEnabled: randomIdleEnabled.value,
       playfulModeEnabled: playfulModeEnabled.value,
-      hitBoundsEnabled: hitBoundsEnabled.value,
       deskWeather: normalizeDeskWeather(deskWeather.value),
       skyWeather: normalizeSkyWeather(skyWeather.value),
       catchphrases: catchphrases.value.map((t) => t.trim()).filter(Boolean),
@@ -137,7 +135,6 @@ export function usePetSettingsFormState() {
     usbWatchEnabled,
     randomIdleEnabled,
     playfulModeEnabled,
-    hitBoundsEnabled,
     deskWeather,
     skyWeather,
     catchphrases,

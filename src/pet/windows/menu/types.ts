@@ -39,7 +39,7 @@ export const PET_MENU_H_COLLAPSED = 372;
 export const PET_MENU_H_EXPANDED = 448;
 /** 摆位按展开高度算，靠屏幕边也能展开 */
 export const PET_MENU_H = PET_MENU_H_EXPANDED;
-export const PET_MENU_GAP = -6;
+export const PET_MENU_GAP = 4;
 
 export function petMenuHeight(expanded: boolean): number {
   return expanded ? PET_MENU_H_EXPANDED : PET_MENU_H_COLLAPSED;

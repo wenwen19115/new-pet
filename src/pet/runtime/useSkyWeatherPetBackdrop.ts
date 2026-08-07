@@ -107,7 +107,8 @@ export function useSkyWeatherPetBackdrop(deps: {
       const gen = ++refreshListenGen;
       void listen(SKY_WEATHER_REFRESH_EVENT, () => {
         if (!running) return;
-        void session.refreshLinks();
+        // 徽章刷新：只探测联网，不强制换实况天气
+        void session.refreshLinks({ syncWeather: false });
       }).then((un) => {
         if (gen !== refreshListenGen || !running) {
           un();

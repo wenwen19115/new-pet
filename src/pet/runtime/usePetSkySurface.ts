@@ -113,6 +113,17 @@ export function usePetSkySurface(deps: {
     beginBusyIn();
   }
 
+  function finishAppearOut(gen: number) {
+    skyVortexPhase.value = "out";
+    skyVortexTimer = setTimeout(() => {
+      if (gen !== skyToggleGen) return;
+      skyVortexPhase.value = "";
+      skyVortexTimer = null;
+      deps.skyVisualHold.value = false;
+      syncBusyAfterToggle();
+    }, SKY_HIDE_OUT_MS);
+  }
+
   function playSkyAppear(gen: number) {
     deps.skyVisualHold.value = true;
     skySurfaceOn.value = true;
@@ -120,14 +131,7 @@ export function usePetSkySurface(deps: {
     scheduleRaf(() => {
       scheduleRaf(() => {
         if (gen !== skyToggleGen) return;
-        skyVortexPhase.value = "out";
-        skyVortexTimer = setTimeout(() => {
-          if (gen !== skyToggleGen) return;
-          skyVortexPhase.value = "";
-          skyVortexTimer = null;
-          deps.skyVisualHold.value = false;
-          syncBusyAfterToggle();
-        }, SKY_HIDE_OUT_MS);
+        finishAppearOut(gen);
       });
     });
   }
@@ -155,9 +159,22 @@ export function usePetSkySurface(deps: {
     }, SKY_HIDE_IN_MS);
   }
 
+  /** 从 held/in 放出：走 out，避免直接清 phase 留下 animation forwards 残影 */
+  function releaseSkyBusy(gen: number) {
+    if (!skyVortexPhase.value || skyVortexPhase.value === "out") return;
+    skyVortexPhase.value = "out";
+    skyVortexTimer = setTimeout(() => {
+      if (gen !== skyToggleGen) return;
+      skyVortexPhase.value = "";
+      skyVortexTimer = null;
+    }, SKY_HIDE_OUT_MS);
+  }
+
   watch(
     () => deps.skyBackdropEnabled.value,
-    (on) => {
+    (on, was) => {
+      // 仅边沿触发；避免同值重入把可见窗景又打成 held
+      if (on === was) return;
       const gen = ++skyToggleGen;
       clearSkyVortexTimer();
       clearSkyRafs();
@@ -180,7 +197,11 @@ export function usePetSkySurface(deps: {
         !deps.skyBackdropEnabled.value ||
         !deps.skyHideableOnPet.value
       ) {
-        if (skyVortexPhase.value) skyVortexPhase.value = "";
+        if (skyVortexPhase.value === "in" || skyVortexPhase.value === "held") {
+          releaseSkyBusy(++skyToggleGen);
+        } else if (skyVortexPhase.value) {
+          skyVortexPhase.value = "";
+        }
         return;
       }
       if (want) {
@@ -190,14 +211,27 @@ export function usePetSkySurface(deps: {
         beginBusyIn();
         return;
       }
-      if (!skyVortexPhase.value || skyVortexPhase.value === "out") return;
-      skyVortexPhase.value = "out";
-      skyVortexTimer = setTimeout(() => {
-        skyVortexPhase.value = "";
-        skyVortexTimer = null;
-      }, SKY_HIDE_OUT_MS);
+      releaseSkyBusy(++skyToggleGen);
     },
     { immediate: true }
+  );
+
+  // 投射仍开却停在 held（竞态/残影）：空闲时放出
+  watch(
+    [
+      skyBusyWant,
+      () => deps.skyBackdropEnabled.value,
+      () => deps.skyVisualHold.value,
+      skyVortexPhase,
+    ],
+    () => {
+      if (deps.skyVisualHold.value || skyDismissing.value) return;
+      if (!deps.skyBackdropEnabled.value || !skySurfaceOn.value) return;
+      if (skyBusyWant.value) return;
+      if (skyVortexPhase.value !== "held") return;
+      clearSkyVortexTimer();
+      releaseSkyBusy(++skyToggleGen);
+    }
   );
 
   watch(
@@ -206,11 +240,7 @@ export function usePetSkySurface(deps: {
       if (on || skyDismissing.value || deps.skyVisualHold.value) return;
       if (skyVortexPhase.value === "in" || skyVortexPhase.value === "held") {
         clearSkyVortexTimer();
-        skyVortexPhase.value = "out";
-        skyVortexTimer = setTimeout(() => {
-          skyVortexPhase.value = "";
-          skyVortexTimer = null;
-        }, SKY_HIDE_OUT_MS);
+        releaseSkyBusy(++skyToggleGen);
       }
     }
   );
@@ -220,7 +250,11 @@ export function usePetSkySurface(deps: {
     () => {
       if (skyDismissing.value || deps.skyVisualHold.value) return;
       clearSkyVortexTimer();
-      skyVortexPhase.value = "";
+      if (skyVortexPhase.value === "in" || skyVortexPhase.value === "held") {
+        releaseSkyBusy(++skyToggleGen);
+      } else {
+        skyVortexPhase.value = "";
+      }
       if (!skyBusyWant.value) return;
       beginBusyIn();
     }

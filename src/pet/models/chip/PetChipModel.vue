@@ -275,10 +275,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 import type { PetMood } from "../../data/types";
 import type { PetSkinVisual } from "../../skins/types";
+import { registerPetHitTester } from "@/pet/runtime/petHitBridge";
+import { isPetHitHostWindow } from "@/pet/runtime/isPetHitHostWindow";
 import { CHIP_PINS, chipSideLedStyle } from "./chipPins";
+import { testChipHit } from "./chipHit";
 
 const props = defineProps<{
   visual: PetSkinVisual;
@@ -298,10 +301,19 @@ const gid = computed(() => ({
 }));
 
 const pins = CHIP_PINS;
+const hostHit = isPetHitHostWindow();
 
 function sideLedStyle(index: number) {
   return chipSideLedStyle(props.pinColors, index);
 }
+
+onMounted(() => {
+  if (hostHit) registerPetHitTester(testChipHit);
+});
+
+onUnmounted(() => {
+  if (hostHit) registerPetHitTester(null);
+});
 </script>
 
 <style scoped src="./chipModel.css"></style>

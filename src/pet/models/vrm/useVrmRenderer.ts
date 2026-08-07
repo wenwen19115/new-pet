@@ -16,6 +16,8 @@ import {
   type CustomVrmMotion,
 } from "../../content/motion/customVrmMotions";
 import { getPetLocale } from "../../bridge/locale";
+import { registerPetHitTester } from "@/pet/runtime/petHitBridge";
+import { isPetHitHostWindow } from "@/pet/runtime/isPetHitHostWindow";
 
 function defaultVrmLoadFailText(): string {
   return getPetLocale() === "en" ? "Failed to load model" : "模型加载失败";
@@ -86,6 +88,8 @@ export function useVrmRenderer(
   const targetQ = new THREE.Quaternion();
   const targetE = new THREE.Euler(0, 0, 0, "XYZ");
   const lookTarget = new THREE.Vector3();
+  const hitRaycaster = new THREE.Raycaster();
+  const hitPointer = new THREE.Vector2();
 
   function boneNode(name: VrmBoneName) {
     return vrm?.humanoid?.getNormalizedBoneNode(name) ?? null;
@@ -109,7 +113,9 @@ export function useVrmRenderer(
     if (!camera) return;
     const yaw = ((props.orbitYaw ?? 0) * Math.PI) / 180;
     const pitch = ((props.orbitPitch ?? 8) * Math.PI) / 180;
-    const lookY = modelHeight * 0.48;
+    // 跟随 rootY（跳/升降），避免模型上移后头顶被相机裁掉
+    const lift = modelRoot ? modelRoot.position.y - baseRootY : 0;
+    const lookY = modelHeight * 0.5 + lift;
     const dist = cameraDist;
     const cp = Math.cos(pitch);
     camera.position.set(
@@ -141,12 +147,37 @@ export function useVrmRenderer(
     const height = Math.max(0.2, size.y);
     const width = Math.max(0.1, size.x);
     modelHeight = height;
-    cameraDist = Math.max(height * 2.35, width * 2.9);
+    // 取景略放宽：跳/双马尾/裙摆易超出静态 AABB
+    cameraDist = Math.max(height * 3.05, width * 3.55);
 
-    camera.fov = 32;
+    camera.fov = 30;
     camera.near = Math.max(0.05, cameraDist / 100);
     camera.far = cameraDist * 40;
     updateOrbitCamera();
+  }
+
+  function hitTestNdc(ndcX: number, ndcY: number): boolean {
+    // 模型未就绪时退回外层 AABB，避免加载期整窗穿透
+    if (!camera || !vrm?.scene) return true;
+    hitPointer.set(ndcX, ndcY);
+    hitRaycaster.setFromCamera(hitPointer, camera);
+    // 命中即停，避免整树收集全部交点
+    const hits: THREE.Intersection[] = [];
+    const stack: THREE.Object3D[] = [vrm.scene];
+    while (stack.length) {
+      const obj = stack.pop()!;
+      if (!obj.visible) continue;
+      const mesh = obj as THREE.Mesh;
+      if (mesh.isMesh) {
+        mesh.raycast(hitRaycaster, hits);
+        if (hits.length > 0) return true;
+      }
+      const kids = obj.children;
+      for (let i = kids.length - 1; i >= 0; i--) {
+        stack.push(kids[i]!);
+      }
+    }
+    return false;
   }
 
   function applyPose(dt: number) {
@@ -227,6 +258,8 @@ export function useVrmRenderer(
       applyBlink();
       vrm.update(dt);
     }
+    // 姿态改完再对一次相机，跳起时头顶才跟得上
+    updateOrbitCamera();
     if (renderer && scene && camera) {
       renderer.render(scene, camera);
     }
@@ -331,7 +364,7 @@ export function useVrmRenderer(
     renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(32, width / height, 0.1, 100);
+    camera = new THREE.PerspectiveCamera(30, width / height, 0.1, 100);
 
     const hemi = new THREE.HemisphereLight(0xffffff, 0x556688, 1.05);
     scene.add(hemi);
@@ -351,6 +384,7 @@ export function useVrmRenderer(
 
   onMounted(async () => {
     ensureScene();
+    if (isPetHitHostWindow()) registerPetHitTester(hitTestNdc);
     await nextTick();
     resizeToCanvas();
     void loadModel(props.src);
@@ -366,6 +400,7 @@ export function useVrmRenderer(
   onUnmounted(() => {
     disposed = true;
     loadGen += 1;
+    if (isPetHitHostWindow()) registerPetHitTester(null);
     document.removeEventListener("visibilitychange", onVisibilityChange);
     ro?.disconnect();
     ro = null;

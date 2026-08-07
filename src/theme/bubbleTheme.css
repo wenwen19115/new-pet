@@ -1,4 +1,4 @@
-/* 桌宠对话框：跟 Theme Pack 挂钩（不止换底色） */
+/* 桌宠对话框：冒泡形 + Theme Pack 口音 */
 
 .theme-root[data-style] .bubble-inner {
   --bubble-fill: color-mix(
@@ -13,32 +13,25 @@
     var(--ui-border, rgba(255, 255, 255, 0.2))
   );
   --bubble-glow: color-mix(in srgb, var(--ui-primary, #7ec8ff) 28%, transparent);
-  border-radius: 12px;
+  border-radius: 18px;
   border: 2px solid var(--bubble-line);
   background:
     radial-gradient(
-      130% 90% at 10% 0%,
-      color-mix(in srgb, var(--ui-primary, #7ec8ff) 24%, transparent),
-      transparent 58%
+      120% 80% at 18% 0%,
+      color-mix(in srgb, var(--ui-primary, #7ec8ff) 22%, transparent),
+      transparent 55%
     ),
     linear-gradient(
-      165deg,
-      color-mix(in srgb, var(--ui-bg-1, #fff) 28%, transparent),
-      transparent 62%
+      168deg,
+      color-mix(in srgb, var(--ui-bg-1, #fff) 32%, transparent),
+      transparent 58%
     ),
     var(--bubble-fill);
   box-shadow:
     0 0 0 1px var(--bubble-glow),
-    0 8px 22px color-mix(in srgb, var(--ui-bg-0, #000) 32%, transparent),
-    inset 0 1px 0 color-mix(in srgb, #fff 16%, transparent);
-  backdrop-filter: blur(8px);
-}
-
-.theme-root[data-style] .bubble::after {
-  background: var(--bubble-fill);
-  border-left-color: var(--bubble-line);
-  border-bottom-color: var(--bubble-line);
-  box-shadow: -1px 1px 0 var(--bubble-glow);
+    0 10px 26px color-mix(in srgb, var(--ui-bg-0, #000) 36%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 20%, transparent);
+  backdrop-filter: blur(10px);
 }
 
 .theme-root[data-style] .bubble .text {
@@ -53,7 +46,7 @@
 /* —— 各包口音：圆角 / 硬边 / 厚描边 / 硬投影 —— */
 
 .theme-root[data-style="comic"] .bubble-inner {
-  border-radius: 6px;
+  border-radius: 10px;
   border: 3px solid #0d1b2a;
   --bubble-line: #0d1b2a;
   --bubble-fill: color-mix(
@@ -68,11 +61,6 @@
   color: #0d1b2a;
   font-weight: 700;
   text-shadow: none;
-}
-.theme-root[data-style="comic"] .bubble::after {
-  border-left-color: #0d1b2a;
-  border-bottom-color: #0d1b2a;
-  box-shadow: -1px 1px 0 #c23a2b;
 }
 
 .theme-root[data-style="manga"] .bubble-inner {

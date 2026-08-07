@@ -94,9 +94,18 @@ export function applySkyLinkMode(
 ): SkyWeatherConfig {
   if (cfg.linkMode === linkMode) return normalizeSkyWeather(cfg);
 
+  // 总闸只改联网/地区/天色天气模式；投射相关字段保持原样
+  const keepPet = {
+    enableOnPet: cfg.enableOnPet,
+    bgOpacity: cfg.bgOpacity,
+    hideableOnPet: cfg.hideableOnPet,
+    hideEffectOnPet: cfg.hideEffectOnPet,
+  };
+
   if (linkMode === "offline") {
     let next = normalizeSkyWeather({
       ...cfg,
+      ...keepPet,
       linkMode: "offline",
       regionId: FALLBACK_REGION_ID,
       todMode: "offline",
@@ -105,6 +114,7 @@ export function applySkyLinkMode(
     const seeded = seedOfflineBoot(next);
     next = normalizeSkyWeather({
       ...next,
+      ...keepPet,
       manualTod: seeded.manualTod,
       manualWeather: seeded.manualWeather,
       runtime: {
@@ -123,6 +133,7 @@ export function applySkyLinkMode(
 
   return normalizeSkyWeather({
     ...cfg,
+    ...keepPet,
     linkMode: "online",
     regionId: "system",
     todMode: "sync",

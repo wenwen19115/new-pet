@@ -39,7 +39,7 @@ import {
   type ThemeMediaFailReason,
 } from "@/theme/validateMedia";
 import { characterHas, getCharacter } from "@/pet/characters";
-import { syncPetWindow } from "@/pet/windows/pet";
+import { syncPetWindow, resetPetWindowToDefaultPosition } from "@/pet/windows/pet";
 import { createMaintenanceLog } from "./createMaintenanceLog";
 
 export function usePetSettingsActions(deps: {
@@ -56,7 +56,6 @@ export function usePetSettingsActions(deps: {
   usbWatchEnabled: Ref<boolean>;
   randomIdleEnabled: Ref<boolean>;
   playfulModeEnabled: Ref<boolean>;
-  hitBoundsEnabled: Ref<boolean>;
   theme: Ref<PetThemeSettings>;
   sysStatsDefaultExpanded: Ref<boolean>;
   customVrmMotions: Ref<CustomVrmMotion[]>;
@@ -86,6 +85,16 @@ export function usePetSettingsActions(deps: {
     if (!value) cancelPetIntroRequest();
     await deps.persistAndSync();
     if (value) await requestPetIntro();
+  }
+
+  async function onResetPetPosition() {
+    if (!deps.enabled.value) return;
+    const ok = await resetPetWindowToDefaultPosition();
+    if (!ok) {
+      message.warning(t("pet.resetPositionFailed"));
+      return;
+    }
+    message.success(t("pet.resetPositionDone"));
   }
 
   async function onModel(value: string | number) {
@@ -217,11 +226,6 @@ export function usePetSettingsActions(deps: {
         log.fail(t("pet.clearCacheFail"));
       }
     })();
-  }
-
-  async function onHitBounds(value: boolean) {
-    deps.hitBoundsEnabled.value = value;
-    await deps.persistOnly();
   }
 
   async function onSaveNickname() {
@@ -578,12 +582,12 @@ export function usePetSettingsActions(deps: {
 
   return {
     onEnabled,
+    onResetPetPosition,
     onModel,
     onLook,
     onResetProfile,
     onFactoryReset,
     onClearCache,
-    onHitBounds,
     onSaveNickname,
     onPersonality,
     onMuted,

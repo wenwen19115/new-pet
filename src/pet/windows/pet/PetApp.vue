@@ -65,7 +65,6 @@
         @pointercancel="onPointerUp"
         @contextmenu.prevent="onContextMenu"
       >
-        <i v-show="showHitBounds" class="pet-hit-bounds" aria-hidden="true" />
         <template v-if="activeCharacter.view.shell === 'vrm'">
           <template v-if="vrmSrc">
             <i class="vrm-ground-shadow" aria-hidden="true" />
@@ -123,7 +122,6 @@ const {
   bodyBox,
   isDragging,
   isPeeking,
-  showHitBounds,
   dragTrailAngle,
   dragTrailSpeed,
   physicsActive,
@@ -306,10 +304,6 @@ onUnmounted(() => {
   backface-visibility: visible;
 }
 
-.pet-stage[data-sky="1"] {
-  overflow: hidden;
-}
-
 .pet-avatar {
   position: relative;
   z-index: 2;
@@ -319,17 +313,6 @@ onUnmounted(() => {
   transform-style: preserve-3d;
   pointer-events: auto;
   cursor: grab;
-}
-
-.pet-hit-bounds {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  box-sizing: border-box;
-  border: 1px solid rgba(120, 120, 120, 0.55);
-  background: rgba(128, 128, 128, 0.28);
-  border-radius: 4px;
-  pointer-events: none;
 }
 
 .pet-avatar:active {

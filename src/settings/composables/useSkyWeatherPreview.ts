@@ -189,9 +189,10 @@ export function useSkyWeatherPreview(opts: {
     mirrorEvents.value = [];
   }
 
-  function applyTickOwner() {
-    if (petOwnsTick.value) {
-      session.stop();
+  function applyTickOwner(owns: boolean, wasLeader: boolean) {
+    if (owns) {
+      // 从本页 leader 交出时才 flush；开局镜像免写盘
+      session.stop({ flush: wasLeader });
       startMirror();
     } else {
       stopMirror();
@@ -199,11 +200,13 @@ export function useSkyWeatherPreview(opts: {
     }
   }
 
-  watch(petOwnsTick, () => {
-    applyTickOwner();
+  // 开局即交接：投射开时必须 stop 本页 session，避免未 stop 仍跑联网表双写
+  if (petOwnsTick.value) {
+    applyTickOwner(true, false);
+  }
+  watch(petOwnsTick, (owns, prev) => {
+    applyTickOwner(owns, prev === false);
   });
-
-  if (petOwnsTick.value) startMirror();
 
   watch(
     () => opts.skyWeather.value,
@@ -334,8 +337,8 @@ export function useSkyWeatherPreview(opts: {
         return ok;
       }
 
-      // 本页 leader：只走 linkController（applyNetStatus 写 geoOnline）
-      await session.refreshLinks();
+      // 本页 leader：只探测联网（徽章），不强制换实况
+      await session.refreshLinks({ syncWeather: false });
       const ok = session.netOnline.value;
       probeFailed.value = !ok;
       return ok;
@@ -387,6 +390,7 @@ export function useSkyWeatherPreview(opts: {
     refreshSkyNet,
     probeSkyNet,
     schedulePersist,
+    skyPersistPending: persist.isPending,
     patchSkyWeather,
     bgOpacityPercent,
     onEnableOnPet,

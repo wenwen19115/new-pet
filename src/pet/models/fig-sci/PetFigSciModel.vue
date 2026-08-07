@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="rootEl"
     class="fig-root"
     :data-mood="mood"
     :data-motion="motion"
@@ -20,10 +21,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import type { PetIdleMotion } from "../../content/motion/motions";
 import type { PetMood } from "../../data/types";
 import type { PetFigArtId, PetSkinVisual } from "../../skins";
+import { registerPetHitTester } from "@/pet/runtime/petHitBridge";
+import { isPetHitHostWindow } from "@/pet/runtime/isPetHitHostWindow";
+import { loadFigAlphaMap, testFigAlphaHit, type FigAlphaMap } from "./figHit";
 
 import artCool from "../../assets/fig/cool.png";
 import artSunny from "../../assets/fig/sunny.png";
@@ -61,6 +65,13 @@ const props = withDefaults(
   }
 );
 
+const rootEl = ref<HTMLElement | null>(null);
+const alphaMap = ref<FigAlphaMap | null>(null);
+const bodyAspect = ref(2 / 3);
+const hostHit = isPetHitHostWindow();
+let loadGen = 0;
+let ro: ResizeObserver | null = null;
+
 const figArtKey = computed(() => props.figArtId || "sunny");
 const artSrc = computed(
   () => ART_BY_FIG_THEME[figArtKey.value] ?? artSunny
@@ -75,6 +86,48 @@ const rootVars = computed(
       "--fig-gaze-y": `${props.gaze.y * 0.25}px`,
     }) as Record<string, string>
 );
+
+function syncBodyAspect() {
+  const el = rootEl.value;
+  if (!el) return;
+  const w = el.clientWidth;
+  const h = el.clientHeight;
+  if (w > 0 && h > 0) bodyAspect.value = w / h;
+}
+
+function hitTestNdc(ndcX: number, ndcY: number): boolean {
+  const map = alphaMap.value;
+  if (!map) return true;
+  return testFigAlphaHit(map, ndcX, ndcY, bodyAspect.value);
+}
+
+async function refreshAlpha(src: string) {
+  const gen = ++loadGen;
+  const map = await loadFigAlphaMap(src);
+  if (gen !== loadGen) return;
+  alphaMap.value = map;
+}
+
+onMounted(() => {
+  syncBodyAspect();
+  if (typeof ResizeObserver !== "undefined" && rootEl.value) {
+    ro = new ResizeObserver(() => syncBodyAspect());
+    ro.observe(rootEl.value);
+  }
+  void refreshAlpha(artSrc.value);
+  if (hostHit) registerPetHitTester(hitTestNdc);
+});
+
+onUnmounted(() => {
+  loadGen += 1;
+  ro?.disconnect();
+  ro = null;
+  if (hostHit) registerPetHitTester(null);
+});
+
+watch(artSrc, (src) => {
+  void refreshAlpha(src);
+});
 </script>
 
 <style scoped src="./figSciModel.css"></style>

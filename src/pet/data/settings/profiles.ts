@@ -43,7 +43,6 @@ export function syncActiveProfileIntoProfiles(
     usbWatchEnabled: settings.usbWatchEnabled,
     randomIdleEnabled: settings.randomIdleEnabled,
     playfulModeEnabled: settings.playfulModeEnabled,
-    hitBoundsEnabled: settings.hitBoundsEnabled,
     catchphrases: settings.catchphrases,
     catchphraseChance: settings.catchphraseChance,
     customLines: prev.customLines,

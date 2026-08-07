@@ -461,7 +461,6 @@ describe("host regression smokes", () => {
     const lastLine = ref<string | null>("hi");
     const speaking = ref(true);
     const isDragging = ref(false);
-    const showHitBounds = ref(true);
     const clearLifeTimers = vi.fn();
     const clearUsbFollowUpTimer = vi.fn();
     const clearMotionTimers = vi.fn();
@@ -534,7 +533,6 @@ describe("host regression smokes", () => {
       speakBubblePong: vi.fn(),
       isMotionLocked: () => false,
       playMotionOnce: vi.fn(),
-      showHitBounds,
       onStorage,
       onCtxMenuAction: vi.fn(),
     });
@@ -552,7 +550,6 @@ describe("host regression smokes", () => {
     expect(speaking.value).toBe(false);
     expect(vrmSrc.value).toBeNull();
     expect(lastLine.value).toBeNull();
-    expect(showHitBounds.value).toBe(false);
     expect(clearLifeTimers).toHaveBeenCalled();
     expect(clearUsbFollowUpTimer).toHaveBeenCalled();
     expect(clearMotionTimers).toHaveBeenCalled();
@@ -577,7 +574,6 @@ describe("host regression smokes", () => {
     const lastLine = ref<string | null>(null);
     const speaking = ref(false);
     const isDragging = ref(false);
-    const showHitBounds = ref(false);
     const applyMood = createApplyPetMood({
       getMood: () => mood.value,
       setMood: (m) => {
@@ -643,7 +639,6 @@ describe("host regression smokes", () => {
       speakBubblePong: vi.fn(),
       isMotionLocked: () => false,
       playMotionOnce: vi.fn(),
-      showHitBounds,
       onStorage: vi.fn(),
       onCtxMenuAction: vi.fn(),
     });

@@ -134,16 +134,6 @@
         @update:model-value="onDeskWeatherModel"
         @change="ctx.onDeskWeatherChange"
       />
-      <SettingsItemRow
-        :title="$t('pet.hitBoundsTitle')"
-        :description="$t('pet.hitBoundsDesc')"
-        tone="pet"
-      >
-        <ThemeSwitch
-          :checked="ctx.hitBoundsEnabled.value"
-          @update:checked="(v) => ctx.onHitBounds(v)"
-        />
-      </SettingsItemRow>
     </ThemeSection>
 
     <ThemeSection :label="$t('pet.secLines')">

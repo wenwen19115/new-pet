@@ -10,6 +10,21 @@
   backface-visibility: hidden;
 }
 
+/* 空闲相位：清掉 in/out 的 animation forwards 残影，避免窗景「消失」 */
+.pet-sky-vortex:not([data-vortex="in"]):not([data-vortex="held"]):not([data-vortex="out"]) {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  filter: none;
+  border-radius: 0;
+}
+
+.pet-sky-vortex:not([data-vortex="in"]):not([data-vortex="held"]):not([data-vortex="out"])
+  .pet-sky-vortex-spin {
+  transform: none;
+  filter: none;
+}
+
 .pet-sky-vortex-spin {
   position: absolute;
   inset: 0;
