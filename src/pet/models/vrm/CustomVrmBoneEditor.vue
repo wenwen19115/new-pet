@@ -14,7 +14,7 @@
     </div>
 
     <div class="bone-meta">
-      <label>
+      <label @dblclick.prevent="onRootY(0)">
         <span>{{ $t("pet.customMotionRootY") }}</span>
         <a-slider
           :value="rootYMm"
@@ -24,7 +24,7 @@
           @change="onRootY"
         />
       </label>
-      <label>
+      <label @dblclick.prevent="onRootYaw(0)">
         <span>{{ $t("pet.customMotionRootYaw") }}</span>
         <a-slider
           :value="rootYawDeg"
@@ -49,7 +49,11 @@
         >
           <div class="bone-name">{{ $t(`pet.customMotionBone.${bone}`) }}</div>
           <div class="bone-axes">
-            <label v-for="axis in axes" :key="axis">
+            <label
+              v-for="axis in axes"
+              :key="axis"
+              @dblclick.prevent="onAxis(bone, axis, 0)"
+            >
               <span>{{ axis.toUpperCase() }}</span>
               <a-slider
                 :value="axisDeg(bone, axis)"

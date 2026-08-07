@@ -8,8 +8,23 @@
       >
         <ThemeSwitch
           :checked="ctx.enabled.value"
+          :aria-label="$t('pet.enableTitle')"
           @update:checked="(v) => ctx.onEnabled(v)"
         />
+      </SettingsItemRow>
+      <SettingsItemRow
+        :title="$t('pet.resetPosition')"
+        :description="$t('pet.resetPositionDesc')"
+        tone="pet"
+      >
+        <button
+          type="button"
+          class="theme-btn"
+          :disabled="!ctx.enabled.value"
+          @click="ctx.onResetPetPosition"
+        >
+          {{ $t("pet.resetPositionAction") }}
+        </button>
       </SettingsItemRow>
     </ThemeSection>
 

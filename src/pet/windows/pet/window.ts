@@ -1,4 +1,4 @@
-import { LogicalSize } from "@tauri-apps/api/dpi";
+import { LogicalPosition, LogicalSize } from "@tauri-apps/api/dpi";
 import { emit, emitTo } from "@tauri-apps/api/event";
 import { WebviewWindow, getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { currentMonitor } from "@tauri-apps/api/window";
@@ -63,6 +63,28 @@ async function resolveDefaultPetPosition(): Promise<{ x: number; y: number }> {
     x: Math.max(marginX, Math.round(availW - w - marginX)),
     y: marginY,
   };
+}
+
+/** 回到首次召唤的默认起始位（工作区右上） */
+export async function resetPetWindowToDefaultPosition(): Promise<boolean> {
+  const pos = await resolveDefaultPetPosition();
+  try {
+    const self = getCurrentWebviewWindow();
+    if (self.label === PET_WINDOW_LABEL) {
+      await self.setPosition(new LogicalPosition(pos.x, pos.y));
+      return true;
+    }
+  } catch {
+    // ignore
+  }
+  const pet = await getPetWindow();
+  if (!pet) return false;
+  try {
+    await pet.setPosition(new LogicalPosition(pos.x, pos.y));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function sleep(ms: number): Promise<void> {

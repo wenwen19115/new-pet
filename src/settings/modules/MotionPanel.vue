@@ -74,7 +74,10 @@
             }}
           </a-button>
         </div>
-        <label class="custom-motion-duration">
+        <label
+          class="custom-motion-duration"
+          @dblclick.prevent="resetDuration(item)"
+        >
           <span>{{ $t("pet.customMotionDuration") }}</span>
           <a-slider
             v-model:value="item.durationMs"
@@ -122,10 +125,18 @@ import SettingsItemRow from "@/components/SettingsItemRow.vue";
 import ThemeSection from "@/settings/components/ThemeSection.vue";
 import ThemeSwitch from "@/settings/components/ThemeSwitch.vue";
 import { CustomVrmBoneEditor } from "@/pet/models/vrm";
+import type { CustomVrmMotion } from "@/pet/content/motion/customVrmMotions";
 import BuiltInIdToggles from "./BuiltInIdToggles.vue";
 import { PET_SETTINGS_PAGE_KEY } from "@/settings/context";
 
 const ctx = inject(PET_SETTINGS_PAGE_KEY)!;
+
+const DEFAULT_CUSTOM_DURATION_MS = 2800;
+
+function resetDuration(item: CustomVrmMotion) {
+  item.durationMs = DEFAULT_CUSTOM_DURATION_MS;
+  ctx.persistCustomMotions();
+}
 </script>
 
 <style scoped>

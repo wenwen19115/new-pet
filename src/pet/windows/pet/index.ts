@@ -1,1 +1,1 @@
-export { initPetHost, syncPetWindow } from "./window";
+export { initPetHost, syncPetWindow, resetPetWindowToDefaultPosition } from "./window";
