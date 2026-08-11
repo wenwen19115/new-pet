@@ -59,6 +59,8 @@ const { loadError, displayError } = useVrmRenderer(canvasRef, props);
   height: 100%;
   display: block;
   overflow: visible;
+  /* 避免浏览器在缩放时改成 nearest-neighbor 加重锯齿 */
+  image-rendering: auto;
 }
 
 .vrm-fallback {

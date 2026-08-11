@@ -20,3 +20,21 @@ export function previewCombinedScale(
     Number.isFinite(baseScale) && baseScale > 0 ? baseScale : 1;
   return base * previewBoostScale(boostPercent, maxBoost);
 }
+
+/** chip 设计稿边长（.orbit-rig） */
+const CHIP_PREVIEW_DESIGN_PX = 120;
+
+/**
+ * 芯片预览贴合演员框：把 120px 设计稿放大到 pad 短边的 fill 比例。
+ * 不用 CSS `scale: calc(cqmin/…)`——WebView 里常被丢掉。
+ * fill 不宜过高：芯片是方块+引脚，0.9 会盖住大半窗景。
+ */
+export function chipPreviewFitScale(
+  padMinSidePx: number,
+  fill = 0.52,
+  designPx = CHIP_PREVIEW_DESIGN_PX
+): number {
+  if (!(padMinSidePx > 0) || !(designPx > 0)) return 1;
+  const f = Number.isFinite(fill) && fill > 0 ? fill : 0.52;
+  return (padMinSidePx * f) / designPx;
+}

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  chipPreviewFitScale,
   clampPreviewBoost,
   previewCombinedScale,
 } from "./previewScale";
@@ -18,24 +19,29 @@ describe("preview fit per character", () => {
     expect(previewCombinedScale(0.84, 19, 19)).toBeCloseTo(0.84 * 1.19);
   });
 
+  it("chipPreviewFitScale 随演员框短边变大", () => {
+    expect(chipPreviewFitScale(0)).toBe(1);
+    expect(chipPreviewFitScale(120, 0.52)).toBeCloseTo(0.52);
+    expect(chipPreviewFitScale(400, 0.52)).toBeCloseTo((400 * 0.52) / 120);
+    expect(chipPreviewFitScale(400)).toBeGreaterThan(chipPreviewFitScale(168));
+  });
+
   it("各角色有预览演员框与放大上限", () => {
     for (const id of ["chip", "fig-sci", "toon", "vrm"] as const) {
       const size = getCharacter(id).size;
       expect(size.previewActor?.w).toBeGreaterThan(100);
       expect(size.previewActor?.h).toBeGreaterThan(100);
-      expect(size.previewMaxBoost).toBeLessThanOrEqual(40);
+      expect(size.previewMaxBoost).toBeGreaterThan(0);
+      expect(size.previewMaxBoost).toBeLessThanOrEqual(80);
     }
     const fig = getCharacter("fig-sci").size;
     const chip = getCharacter("chip").size;
     expect(fig.previewActor!.h).toBeGreaterThan(chip.previewActor!.h);
-    // 立绘贴合上限：base×maxBoost ≤ 1，放大不裁头
-    expect(
-      (fig.previewBaseScale ?? 1) * (1 + (fig.previewMaxBoost ?? 0) / 100)
-    ).toBeLessThanOrEqual(1.001);
     const vrm = getCharacter("vrm").size;
+    // VRM 允许滚轮放大超过 1（舞台裁切）
     expect(
       (vrm.previewBaseScale ?? 1) * (1 + (vrm.previewMaxBoost ?? 0) / 100)
-    ).toBeLessThanOrEqual(1.001);
+    ).toBeGreaterThan(1);
   });
 
   it("最大 zoom 时 HWND 盖住 VRM 角色盒", () => {

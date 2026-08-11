@@ -1,5 +1,6 @@
 ﻿<template>
   <div
+    ref="stageRef"
     class="orbit-stage"
     :data-model="model"
     :data-bg="showBg ? '1' : '0'"
@@ -116,6 +117,7 @@ const props = withDefaults(
 
 const {
   character,
+  stageRef,
   stageStyle,
   previewModelProps,
   zoomStyle,

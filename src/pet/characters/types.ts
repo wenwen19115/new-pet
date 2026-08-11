@@ -39,6 +39,7 @@ interface CharacterScreenMetrics {
 }
 
 interface CharacterPreviewActor {
+  /** 宽高比参考（实际框随 hero 舞台 cq 缩放，不写死为 px） */
   w: number;
   h: number;
   /** hero 演员层 bottom，如 `10%` */

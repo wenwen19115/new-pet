@@ -4,6 +4,7 @@ import type { PetIdleMotion } from "@/pet/content/motion/motions";
 import type { CustomVrmMotion } from "@/pet/content/motion/customVrmMotions";
 import type { PetFigArtId, PetModelKind, PetSkinVisual } from "@/pet/skins";
 import {
+  chipPreviewFitScale,
   clampPreviewBoost,
   previewCombinedScale,
 } from "./previewScale";
@@ -53,6 +54,11 @@ export function usePreviewOrbit(props: PreviewOrbitProps) {
   );
   const previewGaze = ref({ x: 0.2, y: 0.05 });
   const pinColors = ref<string[]>(Array.from({ length: 14 }, () => "#1a6b78"));
+
+  /** 测量演员框，驱动 chip 贴合缩放 */
+  const stageRef = ref<HTMLElement | null>(null);
+  const chipFitScale = ref(1);
+  let padRo: ResizeObserver | null = null;
 
   const previewModelProps = computed(() =>
     character.value.view.bindPreview({
@@ -106,29 +112,40 @@ export function usePreviewOrbit(props: PreviewOrbitProps) {
     )
   );
 
-  // flat/vrm 以垫子为上限，禁止 scale>1 裁头；orbit 仍可用略超（靠演员框）
-  const fitScale = computed(() => {
-    const s = combinedScale.value;
-    if (character.value.view.previewPad === "orbit") return s;
-    return Math.min(1, s);
-  });
+  function measureChipFit() {
+    if (character.value.view.previewPad !== "orbit") {
+      chipFitScale.value = 1;
+      return;
+    }
+    const el = stageRef.value;
+    if (!el) {
+      chipFitScale.value = 1;
+      return;
+    }
+    const side = Math.min(el.clientWidth, el.clientHeight);
+    chipFitScale.value = chipPreviewFitScale(side);
+  }
 
-  // 缩放与 3D 旋转拆开，避免 AABB 膨胀后难裁切
-  const zoomStyle = computed(() => ({
-    transform: `scale(${combinedScale.value})`,
-  }));
+  // 缩放与 3D 旋转拆开；chip 再叠一层贴合演员框的 fit（JS 测，不靠 CSS scale+cq）
+  const zoomStyle = computed(() => {
+    const fit =
+      character.value.view.previewPad === "orbit" ? chipFitScale.value : 1;
+    return {
+      transform: `scale(${combinedScale.value * fit})`,
+    };
+  });
 
   const rigStyle = computed(() => ({
     transform: `rotateX(${pitch.value}deg) rotateY(${yaw.value}deg)`,
   }));
 
-  // 立绘用尺寸倍率而非 transform，脚底对齐且不撑破 max-height
+  // 立绘：尺寸倍率改布局宽高。VRM：用 transform，避免布局放大撑爆 WebGL 缓冲变成灰块
   const figZoomStyle = computed(() => {
     if (character.value.view.previewPad === "vrm") {
-      return { transform: `scale(${fitScale.value})` };
+      return { transform: `scale(${combinedScale.value})` };
     }
     return {
-      "--preview-scale": String(fitScale.value),
+      "--preview-scale": String(combinedScale.value),
     } as Record<string, string>;
   });
 
@@ -258,6 +275,7 @@ export function usePreviewOrbit(props: PreviewOrbitProps) {
     () => {
       resetOrbit();
       previewMotion.value = "idle-float";
+      measureChipFit();
     },
     { immediate: true }
   );
@@ -282,20 +300,36 @@ export function usePreviewOrbit(props: PreviewOrbitProps) {
     }
   );
 
+  watch(stageRef, (el) => {
+    padRo?.disconnect();
+    padRo = null;
+    if (!el || typeof ResizeObserver === "undefined") {
+      measureChipFit();
+      return;
+    }
+    padRo = new ResizeObserver(() => measureChipFit());
+    padRo.observe(el);
+    measureChipFit();
+  });
+
   onMounted(() => {
     document.addEventListener("visibilitychange", onVisibilityChange);
     startOrbitLoop();
     scheduleIdleClip();
+    measureChipFit();
   });
 
   onUnmounted(() => {
     document.removeEventListener("visibilitychange", onVisibilityChange);
     stopOrbitLoop();
     window.clearTimeout(idleCycleTimer);
+    padRo?.disconnect();
+    padRo = null;
   });
 
   return {
     character,
+    stageRef,
     stageStyle,
     previewModelProps,
     zoomStyle,

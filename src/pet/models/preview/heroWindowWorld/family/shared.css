@@ -66,8 +66,8 @@
   position: absolute;
   left: 50%;
   bottom: var(--actor-bottom, 12%);
-  width: var(--actor-w, 200px);
-  height: var(--actor-h, 220px);
+  width: var(--actor-w, min(42cqw, 36cqh));
+  height: var(--actor-h, min(58cqh, 55cqw));
   transform: translateX(-50%) translateZ(var(--actor-z, 40px));
   z-index: 8;
   /* 阴影交给 actor-shadow；此处裁切滚轮放大，避免盖住窗景 */
@@ -78,8 +78,8 @@
   position: absolute;
   left: 50%;
   bottom: calc(var(--actor-bottom, 12%) + 2%);
-  width: min(110px, calc(var(--actor-w, 200px) * 0.55));
-  height: 18px;
+  width: min(42%, 28cqw);
+  height: max(14px, 2.2cqh);
   transform: translateX(-50%) translateZ(calc(var(--actor-z, 40px) - 20px)) rotateX(70deg);
   background: radial-gradient(ellipse, rgba(0,0,0,.4), transparent 70%);
   z-index: 7; filter: blur(2px); pointer-events: none;

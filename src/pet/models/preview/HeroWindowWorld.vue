@@ -217,8 +217,10 @@ const stageStyle = computed(() => {
   const actor = props.previewActor;
   const actorVars: Record<string, string> = {};
   if (actor) {
-    actorVars["--actor-w"] = `${actor.w}px`;
-    actorVars["--actor-h"] = `${actor.h}px`;
+    // 演员框跟窗景舞台相对缩放（cq），勿写死 px，否则全屏人物仍豆大
+    const aspect = actor.w / Math.max(1, actor.h);
+    actorVars["--actor-h"] = "min(68cqh, 90cqw)";
+    actorVars["--actor-w"] = `min(calc(min(68cqh, 90cqw) * ${aspect}), 58cqw)`;
     if (actor.bottom) actorVars["--actor-bottom"] = actor.bottom;
     if (actor.z != null) actorVars["--actor-z"] = `${actor.z}px`;
   }
@@ -286,6 +288,7 @@ onUnmounted(() => {
   overflow: hidden;
   pointer-events: none;
   opacity: var(--sky-bg-opacity, 1);
+  container-type: size;
 }
 .hero-window-world :deep(.world) {
   pointer-events: none;

@@ -81,6 +81,8 @@ describe("preview orbit CSS", () => {
     expect(css).not.toContain(":deep(");
     expect(css).toContain(".fig-stage .pix");
     expect(css).toContain(".orbit-rig .chip-slab");
+    // chip 贴合改走 JS fit，勿再依赖易丢的 CSS scale+cq
+    expect(css).not.toMatch(/\.orbit-rig\s*\{[^}]*\bscale\s*:/s);
   });
 });
 
