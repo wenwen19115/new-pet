@@ -79,6 +79,9 @@ export const PET_VRM_DEMO_MOTIONS: PetIdleMotion[] = [
   "happy-bounce",
   "sway-step",
   "bow-nod",
+  "stretch-up",
+  "peekaboo",
+  "victory-burst",
   "vrm-scratch",
   "vrm-walk",
 ];
@@ -142,7 +145,6 @@ export function motionHoldMs(motion: PetIdleMotion): number {
     case "fly-orbit":
       return 3250;
     case "figure-eight":
-    case "sway-step":
     case "toon-sway":
     case "toon-read":
     case "toon-tea":
@@ -162,17 +164,24 @@ export function motionHoldMs(motion: PetIdleMotion): number {
       return 2850;
     case "barrel-roll":
     case "cartwheel":
-    case "bow-nod":
-    case "stretch-up":
-    case "vrm-scratch":
       return 2650;
+    case "bow-nod":
+      return 5600;
+    case "stretch-up":
+      return 4800;
+    case "sway-step":
+      return 4200;
+    case "vrm-scratch":
+      return 4200;
     case "rocket-jump":
+      return 2350;
     case "victory-burst":
     case "peekaboo":
+      return 4200;
     case "tap-frenzy":
-      return 2350;
+      return 2800;
     case "happy-bounce":
-      return 700;
+      return 4200;
     default:
       return 1200;
   }

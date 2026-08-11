@@ -22,6 +22,9 @@ export const characterVrm: CharacterDef = {
     "happy-bounce",
     "sway-step",
     "bow-nod",
+    "stretch-up",
+    "peekaboo",
+    "victory-burst",
     "vrm-scratch",
     "vrm-walk",
   ],
@@ -43,8 +46,8 @@ export const characterVrm: CharacterDef = {
       const w = Math.round(h * 0.62);
       return { w, h };
     },
-    previewBaseScale: 0.82,
-    previewMaxBoost: 16,
+    previewBaseScale: 1,
+    previewMaxBoost: 55,
     previewActor: { w: 220, h: 300, bottom: "8%", z: 40 },
   },
   previewHintKey: "pet.previewVrmHint",

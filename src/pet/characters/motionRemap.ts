@@ -73,7 +73,6 @@ export function remapVrmMotion(motion: PetIdleMotion): PetIdleMotion {
     case "toon-read":
     case "toon-tea":
     case "toon-tilt":
-    case "peekaboo":
       return "bow-nod";
     case "vrm-scratch":
       return "vrm-scratch";
@@ -83,8 +82,8 @@ export function remapVrmMotion(motion: PetIdleMotion): PetIdleMotion {
     case "toon-splash":
     case "toon-thunder":
     case "toon-dodge":
-    case "victory-burst":
       return "happy-bounce";
+    // peekaboo / victory-burst / stretch-up 等已有专用姿态，勿再折叠
     default:
       return motion;
   }

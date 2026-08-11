@@ -1,7 +1,12 @@
+/**
+ * VRM 骨骼姿态（Normalized Humanoid）。
+ * 轴向以 docs/VRM_MOTION.md §2 实测表为准（勿用纸面「X=屈肘」常识）。
+ * 站姿 REST / restArms；屈肘=前臂 Z；体前抬=上臂 X+；躯干前倾=FWD(-1)。
+ */
 import type { PetIdleMotion } from "../content/motion/motions";
 import type { PetMood } from "./types";
 
-/** Euler XYZ in radians，相对 VRM normalized T-pose */
+/** Euler XYZ（弧度），相对 normalized T-pose */
 export type BoneEuler = { x?: number; y?: number; z?: number };
 
 export type VrmBoneName =
@@ -32,13 +37,31 @@ export interface VrmPoseFrame {
   rootYaw?: number;
 }
 
+/** 躯干前倾：预览正面朝相机时实测 X- ≈ 鞠躬前倾（非世界轴纸面符号） */
 const FWD = -1;
 
+/** 上臂 T-pose→体侧的基准 Z（弧度）；左 +、右 − */
 const ZL = Math.PI * 0.34;
 const ZR = -Math.PI * 0.34;
 
+/**
+ * A-pose 相对 T-pose 的站姿量（度）。与设置页滑条、docs/VRM_MOTION.md 一致。
+ */
+const REST = {
+  shoulder: { x: 3.4, y: 6.9, z: 21 },
+  upper: { x: 3.4, y: 16, zExtra: 10.3 },
+  elbowL: { x: 35.5, y: 6.9, z: 25 },
+  elbowR: { x: 15, y: 6.9, z: 25 },
+  handL: { x: -5, y: 3.4, z: 4.6 },
+  handR: { x: 10, y: 3.4, z: 10 },
+} as const;
+
 function e(x = 0, y = 0, z = 0): BoneEuler {
   return { x, y, z };
+}
+
+function deg(n: number): number {
+  return (n * Math.PI) / 180;
 }
 
 function mergePose(...parts: VrmPoseMap[]): VrmPoseMap {
@@ -52,19 +75,105 @@ function mergePose(...parts: VrmPoseMap[]): VrmPoseMap {
   return out;
 }
 
+/** 站姿手臂；swingL/R 只推上臂 X，肩 Z 不动 */
 function restArms(opts?: { swingL?: number; swingR?: number }): VrmPoseMap {
   const sL = opts?.swingL ?? 0;
   const sR = opts?.swingR ?? 0;
+  const sh = REST.shoulder;
+  const up = REST.upper;
+  const eL = REST.elbowL;
+  const eR = REST.elbowR;
+  const hL = REST.handL;
+  const hR = REST.handR;
   return {
-    leftShoulder: e(0.06, 0.12, 0.22),
-    rightShoulder: e(0.06, -0.12, -0.22),
-    leftUpperArm: e(0.06 + sL, 0.28, ZL + 0.18),
-    leftLowerArm: e(0.62 + Math.max(0, -sL) * 0.4, 0.12, 0.22),
-    leftHand: e(0.12, 0.06, 0.08),
-    rightUpperArm: e(0.06 + sR, -0.28, ZR - 0.18),
-    rightLowerArm: e(0.62 + Math.max(0, -sR) * 0.4, -0.12, -0.22),
-    rightHand: e(0.12, -0.06, -0.08),
+    leftShoulder: e(deg(sh.x), deg(sh.y), deg(-sh.z)),
+    rightShoulder: e(deg(sh.x), deg(-sh.y), deg(sh.z)),
+    leftUpperArm: e(deg(up.x) + sL, deg(up.y), ZL + deg(up.zExtra)),
+    rightUpperArm: e(deg(up.x) + sR, deg(-up.y), ZR - deg(up.zExtra)),
+    leftLowerArm: e(
+      deg(eL.x) + Math.max(0, -sL) * 0.35,
+      deg(eL.y),
+      deg(eL.z)
+    ),
+    rightLowerArm: e(
+      deg(eR.x) + Math.max(0, -sR) * 0.35,
+      deg(-eR.y),
+      deg(-eR.z)
+    ),
+    leftHand: e(deg(hL.x), deg(hL.y), deg(hL.z)),
+    rightHand: e(deg(hR.x), deg(-hR.y), deg(hR.z)),
   };
+}
+
+function restLegs(weight = 0): VrmPoseMap {
+  return {
+    // upperLeg X- ≈ 大腿朝前；此处微负为自然站姿
+    leftUpperLeg: e(-0.03 + weight * 0.04, 0, 0.03),
+    rightUpperLeg: e(-0.03 - weight * 0.04, 0, -0.03),
+    leftLowerLeg: knee(3),
+    rightLowerLeg: knee(3),
+  };
+}
+
+/** 正常屈膝（度→弧度）。normalized：lowerLeg X- = 屈膝，X+ = 反关节 */
+function knee(flexDeg: number): BoneEuler {
+  return e(deg(-Math.max(0, flexDeg)));
+}
+
+/**
+ * 双臂上抬（直臂/欢呼类）。raise 0..1：0=体侧，1=高举。
+ * 抬起主轴：上臂 Z。屈臂伸懒腰勿用本函数，用 stretchArmChain（前臂 Z 屈肘 + 上臂 X+）。
+ */
+function raiseBothArms(
+  raise: number,
+  opts?: { openDeg?: number; elbowDeg?: number; overhead?: boolean }
+): VrmPoseMap {
+  const a = Math.min(1, Math.max(0, raise));
+  const open = deg(opts?.openDeg ?? 14) * a;
+  const restZL = ZL + deg(REST.upper.zExtra);
+  const restZR = ZR - deg(REST.upper.zExtra);
+  const zRaisedL = deg(opts?.overhead ? -45 : 18);
+  const zRaisedR = deg(opts?.overhead ? 45 : -18);
+  const zL = restZL * (1 - a) + zRaisedL * a;
+  const zR = restZR * (1 - a) + zRaisedR * a;
+  const pitch = deg(opts?.overhead ? -55 : -28) * a;
+  const elbowL = deg(opts?.elbowDeg ?? 28) + deg(REST.elbowL.x) * (1 - a) * 0.35;
+  const elbowR = deg(opts?.elbowDeg ?? 24) + deg(REST.elbowR.x) * (1 - a) * 0.35;
+
+  return {
+    leftShoulder: e(
+      deg(REST.shoulder.x + 4 * a),
+      deg(REST.shoulder.y + 6 * a),
+      deg(-REST.shoulder.z + 6 * a)
+    ),
+    rightShoulder: e(
+      deg(REST.shoulder.x + 4 * a),
+      deg(-(REST.shoulder.y + 6 * a)),
+      deg(REST.shoulder.z - 6 * a)
+    ),
+    leftUpperArm: e(deg(REST.upper.x) + pitch, deg(REST.upper.y) + open, zL),
+    rightUpperArm: e(deg(REST.upper.x) + pitch, deg(-REST.upper.y) - open, zR),
+    leftLowerArm: e(elbowL, deg(REST.elbowL.y), deg(REST.elbowL.z - 4 * a)),
+    rightLowerArm: e(elbowR, deg(-REST.elbowR.y), deg(-(REST.elbowR.z - 4 * a))),
+    leftHand: e(deg(REST.handL.x - 4 * a), deg(REST.handL.y), deg(REST.handL.z + 4 * a)),
+    rightHand: e(deg(REST.handR.x + 4 * a), deg(-REST.handR.y), deg(REST.handR.z + 4 * a)),
+  };
+}
+
+/** 0..1：起势 → 停住 → 缓回 */
+function holdEnvelope(t: number, periodSec: number, hold = 0.4): number {
+  const period = Math.max(0.6, periodSec);
+  const u = (((t % period) + period) % period) / period;
+  const downEnd = Math.max(0.12, (1 - hold) * 0.45);
+  const holdEnd = downEnd + hold;
+  if (u < downEnd) {
+    const x = u / downEnd;
+    return x * x * (3 - 2 * x);
+  }
+  if (u < holdEnd) return 1;
+  const x = (u - holdEnd) / Math.max(0.08, 1 - holdEnd);
+  const s = x * x * (3 - 2 * x);
+  return 1 - s;
 }
 
 function applySoftHeadGaze(
@@ -93,200 +202,392 @@ function applySoftHeadGaze(
   };
 }
 
+/** 待机：呼吸 + 轻移重；臂只小摆 */
 export function poseIdle(t: number): VrmPoseFrame {
   const breath = Math.sin(t * 1.35) * 0.03;
   const sway = Math.sin(t * 0.62) * 0.035;
   const weight = Math.sin(t * 0.48) * 0.04;
-  const armSway = Math.sin(t * 0.85) * 0.22;
+  const armSway = Math.sin(t * 0.85) * deg(7);
 
   return {
     rootY: Math.sin(t * 1.1) * 0.004,
     rootYaw: sway * 0.3,
     bones: mergePose(
       restArms({ swingL: armSway, swingR: -armSway * 0.9 }),
+      restLegs(weight),
       {
         hips: e(FWD * 0.02, sway * 0.4, weight * 0.18),
         spine: e(FWD * (breath * 0.65 + 0.02), sway * 0.55, 0),
         chest: e(FWD * breath * 0.4, sway * 0.35, 0),
         upperChest: e(FWD * breath * 0.2, sway * 0.12, 0),
         neck: e(FWD * (-breath * 0.12), sway * 0.15, 0),
-        head: e(0.02 + Math.sin(t * 0.8) * 0.02, sway * 0.12, Math.sin(t * 0.65) * 0.025),
-        leftUpperLeg: e(-0.03 + weight * 0.04, 0, 0.03),
-        rightUpperLeg: e(-0.03 - weight * 0.04, 0, -0.03),
-        leftLowerLeg: e(0.05),
-        rightLowerLeg: e(0.05),
+        head: e(
+          FWD * (0.02 + Math.sin(t * 0.8) * 0.02),
+          sway * 0.12,
+          Math.sin(t * 0.65) * 0.025
+        ),
       }
     ),
   };
 }
 
+/** 走路：臂腿对侧；upperLeg X- = 前迈；knee = 正常屈膝 */
 function poseWalk(t: number): VrmPoseFrame {
-  const g = t * 4.0;
+  const g = t * 3.2;
   const swing = Math.sin(g);
   const opp = Math.sin(g + Math.PI);
-  const harm = Math.sin(g * 2) * 0.1;
-  const bob = Math.abs(Math.sin(g)) * 0.01;
-
-  const armAmp = 0.36;
-  const lUpper = 0.08 + opp * armAmp + harm * 0.06;
-  const rUpper = 0.08 + swing * armAmp - harm * 0.06;
-  const lElbow = 0.5 + Math.max(0, -opp) * 0.38 + Math.max(0, opp) * 0.08;
-  const rElbow = 0.5 + Math.max(0, -swing) * 0.38 + Math.max(0, swing) * 0.08;
-  const legAmp = 0.32;
+  const bob = Math.abs(Math.sin(g)) * 0.014;
+  const arm = deg(22);
+  const leg = deg(28);
+  // swing>0：左腿前迈 → 屈膝加大
+  const leftFlex = 8 + Math.max(0, swing) * 48 + Math.max(0, -swing) * 14;
+  const rightFlex = 8 + Math.max(0, opp) * 48 + Math.max(0, -opp) * 14;
 
   return {
     rootY: bob,
-    rootYaw: swing * 0.04,
-    bones: mergePose({
-      hips: e(FWD * 0.03, swing * 0.08, swing * 0.02),
-      spine: e(FWD * 0.02, swing * 0.06, 0),
-      chest: e(FWD * 0.01, swing * 0.05, 0),
-      upperChest: e(0, swing * 0.025, 0),
-      neck: e(0.02, -swing * 0.03, 0),
-      head: e(0.03, -swing * 0.04, 0),
-      leftShoulder: e(0.05, 0.1, 0.18),
-      rightShoulder: e(0.05, -0.1, -0.18),
-      leftUpperArm: e(lUpper, 0.24, ZL + 0.14),
-      leftLowerArm: e(lElbow, 0.1, 0.18),
-      leftHand: e(0.08, 0, opp * 0.05),
-      rightUpperArm: e(rUpper, -0.24, ZR - 0.14),
-      rightLowerArm: e(rElbow, -0.1, -0.18),
-      rightHand: e(0.08, 0, swing * 0.05),
-      leftUpperLeg: e(swing * legAmp - 0.02, 0, 0.02),
-      leftLowerLeg: e(0.1 + Math.max(0, -swing) * 0.5),
-      rightUpperLeg: e(opp * legAmp - 0.02, 0, -0.02),
-      rightLowerLeg: e(0.1 + Math.max(0, -opp) * 0.5),
-    }),
+    rootYaw: swing * deg(2.5),
+    bones: mergePose(
+      restArms({ swingL: opp * arm, swingR: swing * arm }),
+      {
+        hips: e(FWD * deg(2), swing * deg(5), swing * deg(1.2)),
+        spine: e(FWD * deg(1.5), swing * deg(3.5), 0),
+        chest: e(FWD * deg(1), swing * deg(2.5), 0),
+        upperChest: e(0, swing * deg(1.2), 0),
+        neck: e(deg(1), -swing * deg(2), 0),
+        head: e(deg(1.5), -swing * deg(2.5), 0),
+        leftUpperLeg: e(-swing * leg - deg(2), 0, deg(1.5)),
+        leftLowerLeg: knee(leftFlex),
+        rightUpperLeg: e(-opp * leg - deg(2), 0, deg(-1.5)),
+        rightLowerLeg: knee(rightFlex),
+      }
+    ),
   };
 }
 
 function poseLifted(t: number): VrmPoseFrame {
-  const d1 = Math.sin(t * 5.0) * 0.14;
-  const d2 = Math.sin(t * 5.0 + 1.2) * 0.12;
+  const d1 = Math.sin(t * 4.5) * 0.1;
+  const d2 = Math.sin(t * 4.5 + 1.1) * 0.09;
   return {
-    rootY: 0.05,
-    rootYaw: Math.sin(t * 2.2) * 0.035,
-    bones: mergePose(restArms({ swingL: d1 * 0.25, swingR: d2 * 0.25 }), {
-      hips: e(FWD * 0.06, 0, 0),
-      spine: e(FWD * 0.05, 0, 0),
-      chest: e(FWD * 0.03, 0, 0),
-      upperChest: e(FWD * 0.015, 0, 0),
-      neck: e(FWD * 0.08, Math.sin(t * 2) * 0.06, 0),
-      head: e(FWD * 0.12 + Math.sin(t * 2.5) * 0.03, Math.sin(t * 1.6) * 0.08, 0),
-      leftShoulder: e(0.05, 0.1, 0.2),
-      rightShoulder: e(0.05, -0.1, -0.2),
-      leftUpperLeg: e(0.22 + d1 * 0.5, 0.04, 0.07),
-      leftLowerLeg: e(0.5 + Math.max(0, d1) * 0.4),
-      rightUpperLeg: e(0.2 + d2 * 0.5, -0.04, -0.07),
-      rightLowerLeg: e(0.48 + Math.max(0, d2) * 0.4),
+    rootY: 0.04,
+    rootYaw: Math.sin(t * 2) * deg(2),
+    bones: mergePose(restArms({ swingL: d1 * 0.15, swingR: d2 * 0.15 }), {
+      hips: e(FWD * deg(4), 0, 0),
+      spine: e(FWD * deg(3), 0, 0),
+      chest: e(FWD * deg(2), 0, 0),
+      neck: e(FWD * deg(5), Math.sin(t * 1.8) * deg(3), 0),
+      head: e(FWD * deg(8) + Math.sin(t * 2.2) * deg(2), Math.sin(t * 1.5) * deg(4), 0),
+      // 腿蜷：髋屈 = upperLeg X-
+      leftUpperLeg: e(-(deg(14) + d1 * 0.4), deg(2), deg(4)),
+      leftLowerLeg: knee(32 + Math.max(0, d1) * 18),
+      rightUpperLeg: e(-(deg(13) + d2 * 0.4), deg(-2), deg(-4)),
+      rightLowerLeg: knee(30 + Math.max(0, d2) * 18),
     }),
   };
 }
 
+/** 欢快跳：连续蹲跳，腾空扬臂 */
 function poseHappy(t: number): VrmPoseFrame {
-  const hop = Math.abs(Math.sin(t * 5.6));
-  const pump = Math.sin(t * 5.6);
+  const phase = t * 5.5;
+  const s = Math.sin(phase);
+  const crouch = Math.pow(Math.max(0, -s), 1.2);
+  const air = Math.pow(Math.max(0, s), 0.85);
+  const raise = 0.15 + air * 0.65;
   return {
-    rootY: hop * 0.04,
-    bones: mergePose(restArms(), {
-      hips: e(FWD * 0.08, 0, 0),
-      spine: e(FWD * 0.06, 0, 0),
-      chest: e(FWD * 0.04, 0, 0),
-      neck: e(FWD * -0.04, 0, 0),
-      head: e(FWD * -0.06, Math.sin(t * 3.5) * 0.08, pump * 0.04),
-      leftShoulder: e(0.08, 0.28, 0.18),
-      rightShoulder: e(0.08, -0.28, -0.18),
-      leftUpperArm: e(0.4, 0.55, 0.28 + pump * 0.12),
-      rightUpperArm: e(0.4, -0.55, -0.28 - pump * 0.12),
-      leftLowerArm: e(0.45, 0.1, 0.12),
-      rightLowerArm: e(0.45, -0.1, -0.12),
-      leftUpperLeg: e(-0.06 + hop * 0.08),
-      rightUpperLeg: e(-0.06 + hop * 0.08),
-      leftLowerLeg: e(0.12),
-      rightLowerLeg: e(0.12),
+    rootY: air * 0.14 - crouch * 0.035,
+    bones: mergePose(restArms(), raiseBothArms(raise, { openDeg: 18, elbowDeg: 34 }), {
+      hips: e(FWD * deg(2 + crouch * 8), 0, 0),
+      spine: e(FWD * deg(1 + crouch * 5 - air * 3), 0, 0),
+      chest: e(FWD * deg(crouch * 3), 0, 0),
+      neck: e(FWD * deg(-3 * air), 0, 0),
+      head: e(FWD * deg(-5 * air), Math.sin(phase * 0.5) * deg(4), air * deg(3)),
+      // 蹲：髋屈 X-；腾空微伸
+      leftUpperLeg: e(deg(-1) - air * deg(6) - crouch * deg(22)),
+      rightUpperLeg: e(deg(-1) - air * deg(6) - crouch * deg(22)),
+      leftLowerLeg: knee(6 + crouch * 50 + air * 8),
+      rightLowerLeg: knee(6 + crouch * 50 + air * 8),
     }),
   };
 }
 
+/** 鞠躬：躯干 X+ 前倾；下俯 → 停住 → 缓起 */
 function poseBow(t: number): VrmPoseFrame {
-  const nod = 0.5 + Math.sin(t * 2.2) * 0.08;
+  const nod = 0.15 + holdEnvelope(t, 5.2, 0.48) * 0.82;
   return {
-    rootY: -0.02,
-    bones: mergePose(restArms({ swingL: 0.05, swingR: 0.05 }), {
-      hips: e(FWD * 0.22 * nod, 0, 0),
-      spine: e(FWD * 0.48 * nod, 0, 0),
-      chest: e(FWD * 0.28 * nod, 0, 0),
-      upperChest: e(FWD * 0.12 * nod, 0, 0),
-      neck: e(FWD * 0.22 * nod, 0, 0),
-      head: e(FWD * 0.35 * nod, 0, 0),
-      leftUpperArm: e(0.15, 0.2, ZL + 0.1),
-      rightUpperArm: e(0.15, -0.2, ZR - 0.1),
-      leftLowerArm: e(0.45, 0.1, 0.18),
-      rightLowerArm: e(0.45, -0.1, -0.18),
+    rootY: -0.012 * nod,
+    bones: mergePose(restArms({ swingL: deg(2), swingR: deg(2) }), restLegs(), {
+      hips: e(FWD * deg(16) * nod, 0, 0),
+      spine: e(FWD * deg(32) * nod, 0, 0),
+      chest: e(FWD * deg(18) * nod, 0, 0),
+      upperChest: e(FWD * deg(10) * nod, 0, 0),
+      neck: e(FWD * deg(16) * nod, 0, 0),
+      head: e(FWD * deg(22) * nod, 0, 0),
+      leftUpperArm: e(deg(REST.upper.x + 4 * nod), deg(REST.upper.y), ZL + deg(REST.upper.zExtra)),
+      rightUpperArm: e(deg(REST.upper.x + 4 * nod), deg(-REST.upper.y), ZR - deg(REST.upper.zExtra)),
     }),
   };
 }
 
 function poseSway(t: number): VrmPoseFrame {
-  const s = Math.sin(t * 1.65);
+  const s = Math.sin(t * 1.35);
   return {
-    rootY: Math.abs(s) * 0.007,
-    rootYaw: s * 0.12,
-    bones: mergePose(
-      restArms({ swingL: s * 0.4, swingR: s * 0.4 }),
-      {
-        hips: e(FWD * 0.02, s * 0.09, s * 0.025),
-        spine: e(FWD * 0.02, s * 0.14, 0),
-        chest: e(0, s * 0.1, 0),
-        neck: e(0.02, s * 0.07, 0),
-        head: e(0.03, s * 0.15, -s * 0.04),
-        leftUpperLeg: e(-0.04 + s * 0.09, 0, 0.03),
-        rightUpperLeg: e(-0.04 - s * 0.09, 0, -0.03),
-        leftLowerLeg: e(0.07),
-        rightLowerLeg: e(0.07),
-      }
-    ),
+    rootY: Math.abs(s) * 0.004,
+    rootYaw: s * deg(7),
+    bones: mergePose(restArms({ swingL: s * deg(5), swingR: -s * deg(5) }), {
+      hips: e(FWD * deg(1), s * deg(6), s * deg(2)),
+      spine: e(FWD * deg(1), s * deg(9), 0),
+      chest: e(0, s * deg(7), 0),
+      neck: e(deg(1), s * deg(5), 0),
+      head: e(deg(1.5), s * deg(9), -s * deg(2)),
+      leftUpperLeg: e(deg(-2) - s * deg(6), 0, deg(2)),
+      rightUpperLeg: e(deg(-2) + s * deg(6), 0, deg(-2)),
+      leftLowerLeg: knee(6 + Math.max(0, s) * 4),
+      rightLowerLeg: knee(6 + Math.max(0, -s) * 4),
+    }),
   };
 }
 
 function poseSleep(_t: number): VrmPoseFrame {
   return {
-    rootY: -0.01,
-    bones: mergePose(restArms(), {
-      hips: e(FWD * 0.05, 0, 0.05),
-      spine: e(FWD * 0.12, 0, 0.08),
-      chest: e(FWD * 0.08),
-      neck: e(FWD * 0.25, 0, 0.18),
-      head: e(FWD * 0.4, 0, 0.3),
-      leftUpperArm: e(0.22, 0.22, ZL + 0.18),
-      rightUpperArm: e(0.22, -0.22, ZR - 0.18),
-      leftLowerArm: e(0.55, 0.1, 0.18),
-      rightLowerArm: e(0.55, -0.1, -0.18),
+    rootY: -0.008,
+    bones: mergePose(restArms({ swingL: deg(4), swingR: deg(4) }), restLegs(0.02), {
+      hips: e(FWD * deg(3), 0, deg(2)),
+      spine: e(FWD * deg(8), 0, deg(4)),
+      chest: e(FWD * deg(5)),
+      neck: e(FWD * deg(16), 0, deg(8)),
+      head: e(FWD * deg(24), 0, deg(12)),
+      leftUpperArm: e(deg(REST.upper.x + 8), deg(REST.upper.y - 2), ZL + deg(REST.upper.zExtra + 2)),
+      rightUpperArm: e(deg(REST.upper.x + 8), deg(-(REST.upper.y - 2)), ZR - deg(REST.upper.zExtra + 2)),
+      leftLowerArm: e(deg(REST.elbowL.x + 8), deg(REST.elbowL.y), deg(REST.elbowL.z)),
+      rightLowerArm: e(deg(REST.elbowR.x + 6), deg(-REST.elbowR.y), deg(-REST.elbowR.z)),
     }),
   };
 }
 
+/** 挠头：屈肘 → 体前抬起 → 伸向头侧轻刮 */
 function poseScratch(t: number): VrmPoseFrame {
-  const cycle = (Math.sin(t * 5.2) + 1) * 0.5;
-  const scratch = cycle * 0.35;
-  const tilt = 0.18 + Math.sin(t * 1.8) * 0.06;
+  const period = 2.8;
+  const u = (((t % period) + period) % period) / period;
+  const restZR = ZR - deg(REST.upper.zExtra);
+  let elbow = REST.elbowR.x;
+  let raise = 0;
+  let reachY = 0;
+  let scratch = 0;
+  if (u < 0.22) {
+    const x = u / 0.22;
+    elbow = REST.elbowR.x + 55 * x;
+  } else if (u < 0.5) {
+    const x = (u - 0.22) / 0.28;
+    elbow = REST.elbowR.x + 55;
+    raise = x;
+    reachY = 25 * x;
+  } else if (u < 0.78) {
+    const x = (u - 0.5) / 0.28;
+    elbow = REST.elbowR.x + 55 + 35 * x;
+    raise = 1;
+    reachY = 25 + 40 * x;
+    scratch = Math.sin(t * 10) * 0.5 + 0.5;
+  } else {
+    const x = (u - 0.78) / 0.22;
+    const keep = 1 - x;
+    elbow = REST.elbowR.x + 90 * keep;
+    raise = keep;
+    reachY = 65 * keep;
+  }
+  const z = restZR * (1 - raise * 0.85) + deg(-8) * raise;
+  const tilt = deg(8) * raise;
   return {
-    rootY: -0.005,
-    bones: mergePose(restArms({ swingL: 0.08, swingR: -0.15 }), {
-      hips: e(FWD * 0.04, 0.04, 0),
-      spine: e(FWD * 0.06, 0.08, 0),
-      chest: e(FWD * 0.04, 0.1, 0),
-      neck: e(FWD * 0.12 + tilt * 0.35, 0.22, -0.08),
-      head: e(FWD * 0.18 + tilt * 0.5, 0.28, -0.12),
-      rightShoulder: e(0.2, -0.35, -0.4),
-      rightUpperArm: e(-0.55 - scratch * 0.4, -0.85, ZR - 0.55),
-      rightLowerArm: e(1.35 + scratch * 0.55, -0.2, -0.35),
-      rightHand: e(0.35, -0.15, -0.25 + scratch * 0.2),
-      leftUpperArm: e(0.12, 0.25, ZL + 0.12),
-      leftLowerArm: e(0.5, 0.1, 0.15),
+    rootY: -0.002,
+    bones: mergePose(restArms({ swingL: deg(2), swingR: 0 }), restLegs(), {
+      hips: e(FWD * deg(1), deg(2) * raise, 0),
+      spine: e(FWD * deg(2), deg(4) * raise, 0),
+      chest: e(FWD * deg(1), deg(5) * raise, 0),
+      neck: e(FWD * deg(8) * raise + tilt * 0.3, deg(14) * raise, deg(-4) * raise),
+      head: e(FWD * deg(10) * raise + tilt * 0.5, deg(18) * raise, deg(-6) * raise),
+      rightShoulder: e(deg(8 + 6 * raise), deg(-12 - 10 * raise), deg(12 - 4 * raise)),
+      rightUpperArm: e(deg(REST.upper.x - 8 * raise - scratch * 6), deg(-REST.upper.y - reachY), z),
+      rightLowerArm: e(deg(elbow + scratch * 10), deg(-8), deg(-18)),
+      rightHand: e(deg(10 + scratch * 8), deg(-8), deg(8 + scratch * 6)),
     }),
   };
 }
+
+/**
+ * 伸懒腰手臂链：肩→上臂→前臂→手联动。
+ * 屈肘：本模型 A-pose 下前臂 **Z** 才是弯肘（X 无效，已实测）；左右 Z 镜像。
+ * 上臂 Y 锁站姿；上举靠上臂 X；伸展才改上臂 Z 过头。
+ */
+function stretchArmChain(bend: number, raise: number, extend: number): VrmPoseMap {
+  const b = Math.min(1, Math.max(0, bend));
+  const r = Math.min(1, Math.max(0, raise));
+  const x = Math.min(1, Math.max(0, extend));
+  const prep = b * (1 - r);
+
+  const restZL = ZL + deg(REST.upper.zExtra);
+  const restZR = ZR - deg(REST.upper.zExtra);
+  const zL = restZL * (1 - x) + deg(-38) * x;
+  const zR = restZR * (1 - x) + deg(38) * x;
+
+  // 屈肘段不上抬；上举/伸展体前抬（正 X）
+  const pitch = deg(6) * prep + deg(48) * r * (1 - x) + deg(62) * r * x;
+
+  // 屈肘走前臂 Z：站姿 z≈25 → 深屈；伸展略收回
+  const zDeep = 100;
+  const zStretch = 35;
+  const elbowZL =
+    REST.elbowL.z * (1 - b) + (zDeep * (1 - x) + zStretch * x) * b;
+  const elbowZR =
+    REST.elbowR.z * (1 - b) + (zDeep * (1 - x) + zStretch * x) * b;
+
+  const shX = REST.shoulder.x + 8 * prep + 6 * r + 4 * x;
+  const shY = REST.shoulder.y + 2 * r + 4 * x;
+  const shZ = REST.shoulder.z - 4 * r - 6 * x;
+
+  return {
+    leftShoulder: e(deg(shX), deg(shY), deg(-shZ)),
+    rightShoulder: e(deg(shX), deg(-shY), deg(shZ)),
+    leftUpperArm: e(deg(REST.upper.x) + pitch, deg(REST.upper.y), zL),
+    rightUpperArm: e(deg(REST.upper.x) + pitch, deg(-REST.upper.y), zR),
+    // X/Y 保持站姿；Z 弯肘（右臂 Z 取反）
+    leftLowerArm: e(deg(REST.elbowL.x), deg(REST.elbowL.y), deg(elbowZL)),
+    rightLowerArm: e(deg(REST.elbowR.x), deg(-REST.elbowR.y), deg(-elbowZR)),
+    // 腕/掌：屈肘微收掌 → 上举打开 → 伸展掌心略翻上
+    leftHand: e(
+      deg(REST.handL.x - 22 * prep - 10 * r + 28 * x),
+      deg(REST.handL.y + 8 * prep - 6 * r + 14 * x),
+      deg(REST.handL.z + 16 * prep + 12 * r + 10 * x)
+    ),
+    rightHand: e(
+      deg(REST.handR.x + 22 * prep + 10 * r - 28 * x),
+      deg(-(REST.handR.y + 8 * prep - 6 * r + 14 * x)),
+      deg(REST.handR.z + 16 * prep + 12 * r + 10 * x)
+    ),
+  };
+}
+
+/** 伸懒腰：屈肘 → 屈臂上举 → 过头伸展后仰 → 收回（停顿短；腕掌随动） */
+function poseStretch(t: number): VrmPoseFrame {
+  const period = 4.6;
+  const u = (((t % period) + period) % period) / period;
+  const smooth = (x: number) => {
+    const c = Math.min(1, Math.max(0, x));
+    return c * c * (3 - 2 * c);
+  };
+
+  let bend = 0;
+  let raise = 0;
+  let extend = 0;
+  let back = 0;
+  if (u < 0.14) {
+    // 屈肘起势（几乎不停）
+    bend = smooth(u / 0.14);
+  } else if (u < 0.2) {
+    // 极短确认弯肘
+    bend = 1;
+  } else if (u < 0.48) {
+    bend = 1;
+    raise = smooth((u - 0.2) / 0.28);
+  } else if (u < 0.72) {
+    bend = 1;
+    raise = 1;
+    extend = smooth((u - 0.48) / 0.24);
+    back = extend;
+  } else {
+    const keep = 1 - smooth((u - 0.72) / 0.28);
+    bend = keep;
+    raise = keep;
+    extend = keep;
+    back = keep;
+  }
+
+  // 抬手时头颈跟上：微仰 + 轻晃，避免只动手臂
+  const lookUp = raise * (0.55 + 0.45 * extend);
+  const headSway = Math.sin(t * 2.4) * deg(4) * raise + Math.sin(t * 1.1) * deg(2) * back;
+
+  return {
+    rootY: 0.004 + raise * 0.012 + back * 0.008,
+    bones: mergePose(restArms(), restLegs(), stretchArmChain(bend, raise, extend), {
+      hips: e(-FWD * deg(3) * back, 0, 0),
+      spine: e(-FWD * deg(3) * raise - FWD * deg(6) * back, 0, 0),
+      chest: e(-FWD * deg(2) * raise - FWD * deg(4) * back, headSway * 0.25, 0),
+      upperChest: e(-FWD * deg(2) * raise - FWD * deg(3) * back, headSway * 0.35, 0),
+      neck: e(
+        FWD * deg(3) * bend * (1 - raise) - FWD * deg(8) * lookUp - FWD * deg(4) * back,
+        headSway * 0.6,
+        0
+      ),
+      head: e(
+        FWD * deg(4) * bend * (1 - raise) - FWD * deg(10) * lookUp - FWD * deg(5) * back,
+        headSway,
+        headSway * 0.2
+      ),
+      leftUpperLeg: e(deg(2) * back),
+      rightUpperLeg: e(deg(2) * back),
+      leftLowerLeg: knee(6),
+      rightLowerLeg: knee(6),
+    }),
+  };
+}
+
+/** 开心晃：单脚支撑点踏，另一脚抬起；高举手晃腕 */
+function poseVictory(t: number): VrmPoseFrame {
+  const env = holdEnvelope(t, 3.2, 0.36);
+  const shake = Math.sin(t * 7.2) * env;
+  const step = Math.sin(t * 4.0);
+  const raise = 0.55 + env * 0.4;
+  const leftSupport = step >= 0;
+  const liftAmt = Math.abs(step) * env;
+  return {
+    rootY: liftAmt * 0.028,
+    bones: mergePose(
+      restArms(),
+      raiseBothArms(raise, { openDeg: 20, elbowDeg: 28, overhead: true }),
+      {
+        hips: e(FWD * deg(1), shake * deg(2), (leftSupport ? 1 : -1) * deg(3) * liftAmt),
+        spine: e(FWD * deg(1), shake * deg(3), 0),
+        chest: e(0, shake * deg(4), 0),
+        neck: e(FWD * deg(-3) * env, shake * deg(4), 0),
+        head: e(FWD * deg(-5) * env, shake * deg(6), 0),
+        leftHand: e(deg(REST.handL.x - 8) + shake * deg(12), deg(REST.handL.y), deg(REST.handL.z + 8)),
+        rightHand: e(deg(REST.handR.x + 8) - shake * deg(12), deg(-REST.handR.y), deg(REST.handR.z + 8)),
+        // 抬脚：髋屈 X-；支撑腿近站姿
+        leftUpperLeg: e(leftSupport ? deg(-1) : deg(-8) - liftAmt * deg(22), 0, deg(2)),
+        rightUpperLeg: e(leftSupport ? deg(-8) - liftAmt * deg(22) : deg(-1), 0, deg(-2)),
+        leftLowerLeg: knee(leftSupport ? 8 + liftAmt * 6 : 18 + liftAmt * 36),
+        rightLowerLeg: knee(leftSupport ? 18 + liftAmt * 36 : 8 + liftAmt * 6),
+      }
+    ),
+  };
+}
+
+/** 躲猫猫：侧身偏转 + 左手捂脸（无前倾，与鞠躬区分） */
+function posePeek(t: number): VrmPoseFrame {
+  const env = holdEnvelope(t, 3.4, 0.42);
+  const peek = 0.7 + Math.sin(t * 2.0) * 0.15;
+  const a = env * peek;
+  const restZL = ZL + deg(REST.upper.zExtra);
+  const coverZL = restZL * (1 - 0.88 * a);
+  return {
+    rootY: 0,
+    rootYaw: -deg(28) * a,
+    bones: mergePose(restArms(), restLegs(), {
+      hips: e(deg(1) * a, -deg(12) * a, deg(8) * a),
+      spine: e(deg(1) * a, -deg(18) * a, deg(10) * a),
+      chest: e(0, -deg(16) * a, deg(8) * a),
+      upperChest: e(0, -deg(10) * a, 0),
+      neck: e(deg(10) * a, -deg(36) * a, deg(12) * a),
+      head: e(deg(12) * a, -deg(40) * a, deg(14) * a),
+      leftShoulder: e(deg(14), deg(28), deg(-10)),
+      leftUpperArm: e(deg(-48) * a, deg(70) * a, coverZL),
+      leftLowerArm: e(deg(105) * a + deg(REST.elbowL.x) * (1 - a), deg(14), deg(24)),
+      leftHand: e(deg(28) * a, deg(12), deg(16)),
+      rightShoulder: e(deg(REST.shoulder.x), deg(-REST.shoulder.y), deg(REST.shoulder.z)),
+      rightUpperArm: e(deg(REST.upper.x), deg(-REST.upper.y), ZR - deg(REST.upper.zExtra)),
+      rightLowerArm: e(deg(REST.elbowR.x), deg(-REST.elbowR.y), deg(-REST.elbowR.z)),
+      rightHand: e(deg(REST.handR.x), deg(-REST.handR.y), deg(REST.handR.z)),
+    }),
+  };
+}
+
 
 export function resolveVrmPose(
   motion: PetIdleMotion | string | undefined,
@@ -330,10 +631,14 @@ export function resolveVrmPose(
       case "tip-toe":
         pose = poseSway(t);
         break;
-      case "peekaboo":
-      case "victory-burst":
       case "stretch-up":
-        pose = motion === "stretch-up" ? poseHappy(t * 0.5) : poseIdle(t);
+        pose = poseStretch(t);
+        break;
+      case "victory-burst":
+        pose = poseVictory(t);
+        break;
+      case "peekaboo":
+        pose = posePeek(t);
         break;
       default:
         pose = poseIdle(t);
