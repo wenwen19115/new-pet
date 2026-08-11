@@ -1,6 +1,6 @@
 # Desktop Pet 架构
 
-本文说明模块划分与代码落点，供开发查阅。运行时状态约定见 [`STATE.md`](./STATE.md)；发版前手测见 [`GOLDEN_PATHS.md`](./GOLDEN_PATHS.md)。
+本文说明模块划分与代码落点，供开发查阅。运行时状态约定见 [`STATE.md`](./STATE.md)；发版前手测见 [`GOLDEN_PATHS.md`](./GOLDEN_PATHS.md)；VRM 骨骼动作编写见 [`VRM_MOTION.md`](./VRM_MOTION.md)。
 
 ## 概述
 
