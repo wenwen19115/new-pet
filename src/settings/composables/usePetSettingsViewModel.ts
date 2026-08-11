@@ -8,7 +8,10 @@ import {
 } from "@/pet/skins";
 import type { PetModelKind } from "@/pet/skins/types";
 import type { PetPersonality } from "@/pet/content/dialogue/personality";
-import type { CustomVrmMotion } from "@/pet/content/motion/customVrmMotions";
+import {
+  holdCustomVrmMotionFrame,
+  type CustomVrmMotion,
+} from "@/pet/content/motion/customVrmMotions";
 import { getThemePack } from "@/theme/registry";
 import type { PetThemeSettings } from "@/theme/types";
 import { listCharacters, characterCapabilities, getCharacter, characterHas, characterSupportsVrmAssets } from "@/pet/characters";
@@ -27,6 +30,8 @@ export function usePetSettingsViewModel(deps: {
   theme: Ref<PetThemeSettings>;
   settingsTab: Ref<string>;
   editingCustomId: Ref<string | null>;
+  editingCustomFrame: Ref<number>;
+  previewPlayMotion: Ref<string | null>;
   customVrmMotions: Ref<CustomVrmMotion[]>;
   vrmModelName: Ref<string>;
   vrmSrc: Ref<string | null>;
@@ -89,12 +94,35 @@ export function usePetSettingsViewModel(deps: {
     return `${base} · ${t(provider.labelKey)}`;
   });
 
-  const previewMotionOverride = computed(() =>
-    deps.editingCustomId.value &&
-    characterHas(deps.modelKind.value, "vrm-bone-editor")
-      ? deps.editingCustomId.value
-      : null
-  );
+  const previewMotionOverride = computed(() => {
+    // 「做一下」优先于骨骼编辑冻帧
+    if (deps.previewPlayMotion.value) return deps.previewPlayMotion.value;
+    if (
+      deps.editingCustomId.value &&
+      characterHas(deps.modelKind.value, "vrm-bone-editor")
+    ) {
+      return deps.editingCustomId.value;
+    }
+    return null;
+  });
+
+  /** 编辑自定义动作时冻结当前关键帧；播放预览时不冻结 */
+  const previewCustomMotions = computed(() => {
+    const id = deps.editingCustomId.value;
+    const list = deps.customVrmMotions.value;
+    if (
+      !id ||
+      deps.previewPlayMotion.value ||
+      !characterHas(deps.modelKind.value, "vrm-bone-editor")
+    ) {
+      return list;
+    }
+    return list.map((m) =>
+      m.id === id
+        ? holdCustomVrmMotionFrame(m, deps.editingCustomFrame.value)
+        : m
+    );
+  });
 
   const previewAutoIdleClips = computed(
     () =>
@@ -196,6 +224,7 @@ export function usePetSettingsViewModel(deps: {
     activeModule,
     activeTabTitle,
     previewMotionOverride,
+    previewCustomMotions,
     previewAutoIdleClips,
     looks,
     lookLabel,

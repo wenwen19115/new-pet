@@ -77,6 +77,7 @@
 </template>
 
 <script setup lang="ts">
+/** 滑条单位：度；语义 = normalized、相对 T-pose（docs/VRM_MOTION.md） */
 import { computed, ref, watch } from "vue";
 import {
   CUSTOM_VRM_BONE_GROUPS,
@@ -94,6 +95,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   change: [motion: CustomVrmMotion];
+  frameChange: [frameIndex: number];
 }>();
 
 const axes = ["x", "y", "z"] as const;
@@ -113,6 +115,14 @@ watch(
   (n) => {
     if (frameIndex.value >= n) frameIndex.value = Math.max(0, n - 1);
   }
+);
+
+watch(
+  frameIndex,
+  (n) => {
+    emit("frameChange", n);
+  },
+  { immediate: true }
 );
 
 const activeFrame = computed(

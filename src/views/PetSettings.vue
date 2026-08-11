@@ -25,7 +25,7 @@
               :fig-art-id="activeLook.figArtId"
               :toon-decor="activeLook.toonDecor"
               :vrm-src="vrmSrc"
-              :custom-motions="customVrmMotions"
+              :custom-motions="previewCustomMotions"
               :motion-override="previewMotionOverride"
               :auto-orbit="effectivePreviewAutoOrbit"
               :auto-idle-clips="previewAutoIdleClips"
@@ -135,7 +135,7 @@ const {
   v,
   vrmModelRev,
   vrmSrc,
-  customVrmMotions,
+  previewCustomMotions,
   previewMotionOverride,
   previewAutoIdleClips,
   previewHint,

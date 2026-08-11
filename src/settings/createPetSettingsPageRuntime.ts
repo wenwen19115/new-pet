@@ -55,6 +55,8 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     disabledMotions,
     disabledBuiltInLines,
     editingCustomId,
+    editingCustomFrame,
+    previewPlayMotion,
     previewAutoOrbit,
     settingsBag,
     canPreviewOrbit,
@@ -185,6 +187,8 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
   function resetEphemeralUi() {
     previewAutoOrbit.value = false;
     editingCustomId.value = null;
+    editingCustomFrame.value = 0;
+    previewPlayMotion.value = null;
     settingsTab.value = "buddy";
     vrmSrc.value = null;
     void nextTick(() => {
@@ -210,6 +214,8 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     sysStatsDefaultExpanded,
     customVrmMotions,
     editingCustomId,
+    editingCustomFrame,
+    previewPlayMotion,
     settingsBag,
     getCurrentSettings,
     applyLocalFromSettings,
@@ -231,6 +237,8 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     theme,
     settingsTab,
     editingCustomId,
+    editingCustomFrame,
+    previewPlayMotion,
     customVrmMotions,
     vrmModelName,
     vrmSrc,
@@ -248,7 +256,11 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
 
   function onSettingsTab(id: string) {
     settingsTab.value = id;
-    if (id !== "motion") editingCustomId.value = null;
+    if (id !== "motion") {
+      editingCustomId.value = null;
+      editingCustomFrame.value = 0;
+      actions.clearPreviewPlay();
+    }
   }
 
   function mountPage() {
@@ -380,12 +392,18 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     onSettingsPin: persist.onSettingsPin,
     onSysStatsDefaultExpanded: actions.onSysStatsDefaultExpanded,
     persistOnly: persist.persistOnly,
+    customMotionDirty: actions.customMotionDirty,
     persistCustomMotions: actions.persistCustomMotions,
+    onCustomMotionReset: actions.onCustomMotionReset,
     onAddCustomMotion: actions.onAddCustomMotion,
     toggleEditCustom: actions.toggleEditCustom,
+    onCustomMotionFrameChange: actions.onCustomMotionFrameChange,
     onCustomMotionBoneChange: actions.onCustomMotionBoneChange,
     onRemoveCustomMotion: actions.onRemoveCustomMotion,
     onPlayCustomMotion: actions.onPlayCustomMotion,
+    onExportCustomMotions: actions.onExportCustomMotions,
+    onExportCustomMotion: actions.onExportCustomMotion,
+    onImportCustomMotions: actions.onImportCustomMotions,
   });
 
   return {
@@ -406,6 +424,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
       vrmModelRev,
       vrmSrc,
       customVrmMotions,
+      previewCustomMotions: vm.previewCustomMotions,
       previewMotionOverride: vm.previewMotionOverride,
       previewAutoIdleClips: vm.previewAutoIdleClips,
       previewHint: vm.previewHint,

@@ -1,6 +1,7 @@
 import type { BoneEuler, VrmBoneName, VrmPoseFrame, VrmPoseMap } from "../../data/vrmPoses";
 import { poseIdle } from "../../data/vrmPoses";
 
+/** 自定义关键帧：度制欧拉 = normalized、相对 T-pose（约定纠正后旧草稿可能需重调） */
 const CUSTOM_VRM_MOTION_PREFIX = "custom:";
 
 const EDITABLE_VRM_BONES: VrmBoneName[] = [
@@ -125,6 +126,7 @@ function normalizeKeyFrame(
 
 export function createDefaultKeyframes(): CustomVrmKeyFrame[] {
   const idle = poseIdle(0);
+  const d = (n: number) => (n * Math.PI) / 180;
   return [
     {
       t: 0,
@@ -134,15 +136,17 @@ export function createDefaultKeyframes(): CustomVrmKeyFrame[] {
     },
     {
       t: 0.5,
+      // 站姿上右手小幅挥手（见 docs/VRM_MOTION.md）
       bones: {
         ...idle.bones,
-        rightUpperArm: { x: -0.35, y: -0.7, z: -0.15 },
-        rightLowerArm: { x: 0.25, y: -0.1, z: -0.25 },
-        leftUpperArm: { x: 0.05, y: 0.28, z: 0.5 },
-        head: { x: -0.08, y: 0.12, z: 0 },
+        rightShoulder: { x: d(5), y: d(-12), z: d(16) },
+        rightUpperArm: { x: d(-22), y: d(-28), z: -Math.PI * 0.34 - d(4) },
+        rightLowerArm: { x: d(28), y: d(-6), z: d(-18) },
+        rightHand: { x: d(12), y: d(-4), z: d(12) },
+        head: { x: d(-4), y: d(6), z: 0 },
       },
-      rootY: 0.01,
-      rootYaw: 0.08,
+      rootY: 0.006,
+      rootYaw: d(3),
     },
   ];
 }
@@ -284,6 +288,218 @@ export function findCustomVrmMotion(
   id: string
 ): CustomVrmMotion | undefined {
   return list.find((m) => m.id === id);
+}
+
+/** 预览用：压成单关键帧，避免编辑时循环播动作 */
+export function holdCustomVrmMotionFrame(
+  motion: CustomVrmMotion,
+  frameIndex: number
+): CustomVrmMotion {
+  const frames = motion.keyframes;
+  if (!frames.length) return motion;
+  const idx = Math.min(Math.max(0, Math.floor(frameIndex)), frames.length - 1);
+  const f = frames[idx]!;
+  return {
+    ...motion,
+    keyframes: [
+      {
+        t: 0,
+        bones: { ...f.bones },
+        rootY: f.rootY,
+        rootYaw: f.rootYaw,
+      },
+    ],
+  };
+}
+
+export const CUSTOM_VRM_MOTION_EXPORT_KIND =
+  "desktop-pet-custom-vrm-motions" as const;
+
+export interface CustomVrmMotionExportFile {
+  version: 1;
+  kind: typeof CUSTOM_VRM_MOTION_EXPORT_KIND;
+  /** 骨骼角为度，便于手改调试 */
+  unit: "deg";
+  motions: CustomVrmMotionExportItem[];
+}
+
+interface CustomVrmMotionExportItem {
+  id?: string;
+  name: string;
+  durationMs: number;
+  includeInRandom: boolean;
+  keyframes: Array<{
+    t: number;
+    rootY?: number;
+    rootYawDeg?: number;
+    bones: Record<string, { x: number; y: number; z: number }>;
+  }>;
+}
+
+function boneToDeg(bones: VrmPoseMap): Record<string, { x: number; y: number; z: number }> {
+  const out: Record<string, { x: number; y: number; z: number }> = {};
+  for (const name of EDITABLE_VRM_BONES) {
+    const b = bones[name];
+    if (!b) continue;
+    out[name] = {
+      x: radToDeg(b.x ?? 0),
+      y: radToDeg(b.y ?? 0),
+      z: radToDeg(b.z ?? 0),
+    };
+  }
+  return out;
+}
+
+function boneFromDeg(raw: unknown): VrmPoseMap {
+  if (!raw || typeof raw !== "object") return {};
+  const src = raw as Record<string, unknown>;
+  const out: VrmPoseMap = {};
+  for (const name of EDITABLE_VRM_BONES) {
+    const b = src[name];
+    if (!b || typeof b !== "object") continue;
+    const o = b as { x?: unknown; y?: unknown; z?: unknown };
+    out[name] = {
+      x: degToRad(Number(o.x ?? 0)),
+      y: degToRad(Number(o.y ?? 0)),
+      z: degToRad(Number(o.z ?? 0)),
+    };
+  }
+  return out;
+}
+
+export function serializeCustomVrmMotionsExport(
+  motions: CustomVrmMotion[]
+): string {
+  const payload: CustomVrmMotionExportFile = {
+    version: 1,
+    kind: CUSTOM_VRM_MOTION_EXPORT_KIND,
+    unit: "deg",
+    motions: normalizeCustomVrmMotions(motions).map((m) => ({
+      id: m.id,
+      name: m.name,
+      durationMs: m.durationMs,
+      includeInRandom: m.includeInRandom,
+      keyframes: m.keyframes.map((kf) => ({
+        t: kf.t,
+        rootY: kf.rootY,
+        rootYawDeg: radToDeg(kf.rootYaw ?? 0),
+        bones: boneToDeg(kf.bones),
+      })),
+    })),
+  };
+  return `${JSON.stringify(payload, null, 2)}\n`;
+}
+
+/** 解析导入包；失败返回 null */
+export function parseCustomVrmMotionsImport(
+  rawText: string
+): CustomVrmMotion[] | null {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(rawText);
+  } catch {
+    return null;
+  }
+
+  // 裸数组：按弧度旧格式
+  if (Array.isArray(parsed)) {
+    const list = normalizeCustomVrmMotions(parsed);
+    return list.length ? list : null;
+  }
+
+  if (!parsed || typeof parsed !== "object") return null;
+  const o = parsed as Record<string, unknown>;
+
+  // 单条动作（度或弧度）
+  if (typeof o.name === "string" && Array.isArray(o.keyframes) && !("motions" in o)) {
+    const one = importOneMotion(o);
+    return one ? [one] : null;
+  }
+
+  const motionsRaw = o.motions;
+  if (!Array.isArray(motionsRaw)) return null;
+  const asDeg = o.unit === "deg" || o.kind === CUSTOM_VRM_MOTION_EXPORT_KIND;
+  const out: CustomVrmMotion[] = [];
+  for (const item of motionsRaw) {
+    if (!item || typeof item !== "object") continue;
+    const m = asDeg
+      ? importOneMotion(item as Record<string, unknown>)
+      : normalizeCustomVrmMotion(item as Partial<CustomVrmMotion>);
+    if (m) out.push(m);
+  }
+  return out.length ? normalizeCustomVrmMotions(out) : null;
+}
+
+function importOneMotion(raw: Record<string, unknown>): CustomVrmMotion | null {
+  const name = typeof raw.name === "string" ? raw.name.trim().slice(0, 24) : "";
+  if (!name) return null;
+  const framesRaw = Array.isArray(raw.keyframes) ? raw.keyframes : [];
+  const useDeg = framesRaw.some(
+    (f) => f && typeof f === "object" && "rootYawDeg" in (f as object)
+  );
+  const keyframes = framesRaw.map((f, i) => {
+    const frame =
+      f && typeof f === "object" ? (f as Record<string, unknown>) : {};
+    const rootYaw = useDeg
+      ? degToRad(Number(frame.rootYawDeg ?? 0))
+      : clampAxis(frame.rootYaw);
+    return normalizeKeyFrame(
+      {
+        t: Number(frame.t ?? (i === 0 ? 0 : 0.5)),
+        rootY: frame.rootY as number | undefined,
+        rootYaw,
+        bones: useDeg ? boneFromDeg(frame.bones) : normalizePoseMap(frame.bones),
+      },
+      i === 0 ? 0 : 0.5
+    );
+  });
+  return normalizeCustomVrmMotion({
+    id: typeof raw.id === "string" ? raw.id : undefined,
+    name,
+    durationMs: Number(raw.durationMs ?? 2800),
+    includeInRandom: raw.includeInRandom !== false,
+    keyframes,
+  });
+}
+
+export function downloadCustomVrmMotionsExport(
+  motions: CustomVrmMotion[],
+  fileName?: string
+): void {
+  const text = serializeCustomVrmMotionsExport(motions);
+  const blob = new Blob([text], { type: "application/json;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download =
+    fileName ||
+    `desktop-pet-vrm-motions-${new Date().toISOString().slice(0, 10)}.json`;
+  a.rel = "noopener";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+export function pickCustomVrmMotionsImportFile(): Promise<string | null> {
+  return new Promise((resolve) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json,.json";
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) {
+        resolve(null);
+        return;
+      }
+      void file.text().then(
+        (text) => resolve(text),
+        () => resolve(null)
+      );
+    };
+    input.oncancel = () => resolve(null);
+    input.click();
+  });
 }
 
 export function radToDeg(rad: number): number {

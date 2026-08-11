@@ -70,23 +70,35 @@ export function usePetSettingsPersist(deps: {
     syncSkyWeatherFromIncoming(incoming);
   }
 
-  /** 桌宠 leader 落盘后，预览跟 runtime/实况；本页有未落盘草稿则只跟 geo 徽章 */
+  /** 桌宠落盘 → 设置页 sky 表单。投射开关始终跟盘，避免本页旧 true 被其它 persist 写回。 */
   function syncSkyWeatherFromIncoming(incoming: PetSettings) {
     if (!deps.skyWeather || !incoming.skyWeather) return;
     const next = normalizeSkyWeather(incoming.skyWeather);
-    if (!next.enableOnPet) return;
     const cur = normalizeSkyWeather(deps.skyWeather.value);
+    // 投射字段跟盘；关投射后本页仍是 tick leader，不再用桌宠 runtime 盖表单
+    const base = normalizeSkyWeather({
+      ...cur,
+      enableOnPet: next.enableOnPet,
+      bgOpacity: next.bgOpacity,
+      hideableOnPet: next.hideableOnPet,
+      hideEffectOnPet: next.hideEffectOnPet,
+    });
+    if (!next.enableOnPet) {
+      deps.skyWeather.value = base;
+      return;
+    }
     if (deps.skyPersistPending?.()) {
       if (
-        cur.runtime.geoOnline === next.runtime.geoOnline &&
-        cur.runtime.locatedRegionId === next.runtime.locatedRegionId
+        base.runtime.geoOnline === next.runtime.geoOnline &&
+        base.runtime.locatedRegionId === next.runtime.locatedRegionId
       ) {
+        deps.skyWeather.value = base;
         return;
       }
       deps.skyWeather.value = normalizeSkyWeather({
-        ...cur,
+        ...base,
         runtime: {
-          ...cur.runtime,
+          ...base.runtime,
           geoOnline: next.runtime.geoOnline,
           locatedRegionId: next.runtime.locatedRegionId,
         },
@@ -94,14 +106,14 @@ export function usePetSettingsPersist(deps: {
       return;
     }
     if (
-      cur.linkMode !== next.linkMode ||
-      cur.todMode !== next.todMode ||
-      cur.weatherMode !== next.weatherMode ||
-      cur.regionId !== next.regionId
+      base.linkMode !== next.linkMode ||
+      base.todMode !== next.todMode ||
+      base.weatherMode !== next.weatherMode ||
+      base.regionId !== next.regionId
     ) {
       // 总闸/模式本地已改、桌宠包尚旧：只并显示相关字段
       deps.skyWeather.value = normalizeSkyWeather({
-        ...cur,
+        ...base,
         manualTod: next.manualTod,
         manualWeather: next.manualWeather,
         runtime: next.runtime,

@@ -1,7 +1,8 @@
 import { message, Modal } from "ant-design-vue";
 import { useI18n } from "vue-i18n";
-import type { ComputedRef, Ref } from "vue";
+import { computed, nextTick, type ComputedRef, type Ref } from "vue";
 import { isPetIdleMotion } from "@/pet/content/motion/motions";
+import { resolveMotionPlay } from "@/pet/content/motion/motionPlayer";
 import {
   applySettingsWindowPin,
   cancelPetIntroRequest,
@@ -19,7 +20,11 @@ import { isPetModelKind, type PetModelKind } from "@/pet/skins";
 import { isPetPersonality, type PetPersonality } from "@/pet/content/dialogue/personality";
 import {
   createEmptyCustomVrmMotion,
+  downloadCustomVrmMotionsExport,
   isCustomVrmMotionId,
+  normalizeCustomVrmMotions,
+  parseCustomVrmMotionsImport,
+  pickCustomVrmMotionsImportFile,
   type CustomVrmMotion,
 } from "@/pet/content/motion/customVrmMotions";
 import type { PetSettings, PetTone } from "@/pet/data/types";
@@ -60,6 +65,8 @@ export function usePetSettingsActions(deps: {
   sysStatsDefaultExpanded: Ref<boolean>;
   customVrmMotions: Ref<CustomVrmMotion[]>;
   editingCustomId: Ref<string | null>;
+  editingCustomFrame: Ref<number>;
+  previewPlayMotion: Ref<string | null>;
   settingsBag: Ref<PetSettings>;
   getCurrentSettings: () => PetSettings;
   applyLocalFromSettings: (s: PetSettings) => void;
@@ -73,6 +80,13 @@ export function usePetSettingsActions(deps: {
   onThemeChange?: (theme: PetThemeSettings) => void;
 }) {
   const { t } = useI18n();
+  let previewPlayTimer = 0;
+
+  function clearPreviewPlay() {
+    window.clearTimeout(previewPlayTimer);
+    previewPlayTimer = 0;
+    deps.previewPlayMotion.value = null;
+  }
 
   async function onEnabled(value: boolean) {
     deps.enabled.value = value;
@@ -310,8 +324,20 @@ export function usePetSettingsActions(deps: {
       message.warning(t("pet.motionNeedEnable"));
       return;
     }
+    const id = deps.demoMotion.value;
+    const play = resolveMotionPlay(id, deps.customVrmMotions.value);
+    // 同动作连点：先清空再设，让预览与 VRM 时钟能重开
+    clearPreviewPlay();
+    await nextTick();
+    deps.previewPlayMotion.value = id;
+    previewPlayTimer = window.setTimeout(() => {
+      if (deps.previewPlayMotion.value === id) {
+        deps.previewPlayMotion.value = null;
+      }
+      previewPlayTimer = 0;
+    }, play.durationMs);
     try {
-      await requestPetMotion(deps.demoMotion.value);
+      await requestPetMotion(id);
     } catch {
       message.error(t("pet.motionPlayFailed"));
     }
@@ -528,11 +554,59 @@ export function usePetSettingsActions(deps: {
     await deps.persistOnly();
   }
 
-  async function persistCustomMotions() {
-    await deps.persistOnly();
+  function savedCustomVrmMotions() {
+    return normalizeCustomVrmMotions(deps.settingsBag.value.customVrmMotions);
   }
 
-  async function onAddCustomMotion() {
+  function cloneCustomMotions(list: CustomVrmMotion[]) {
+    return normalizeCustomVrmMotions(list).map((m) => ({
+      ...m,
+      keyframes: m.keyframes.map((f) => ({
+        ...f,
+        bones: { ...f.bones },
+      })),
+    }));
+  }
+
+  const customMotionDirty = computed(
+    () =>
+      JSON.stringify(normalizeCustomVrmMotions(deps.customVrmMotions.value)) !==
+      JSON.stringify(savedCustomVrmMotions())
+  );
+
+  /** 显式保存草稿；其它设置项 persist 不会带上未确认的动作 */
+  async function persistCustomMotions() {
+    const motions = cloneCustomMotions(deps.customVrmMotions.value);
+    const next = await publishPetSettings({
+      ...deps.getCurrentSettings(),
+      customVrmMotions: motions,
+      // 预览里选中的新建动作一并落盘，避免仍指向旧 demoMotion
+      demoMotion: deps.demoMotion.value,
+    });
+    deps.settingsBag.value = next;
+    deps.customVrmMotions.value = cloneCustomMotions(next.customVrmMotions);
+    message.success(t("pet.customMotionSaved"));
+  }
+
+  function onCustomMotionReset() {
+    if (!customMotionDirty.value) {
+      message.info(t("pet.customMotionResetClean"));
+      return;
+    }
+    deps.customVrmMotions.value = cloneCustomMotions(savedCustomVrmMotions());
+    const ids = new Set(deps.customVrmMotions.value.map((m) => m.id));
+    if (deps.editingCustomId.value && !ids.has(deps.editingCustomId.value)) {
+      deps.editingCustomId.value = null;
+      deps.editingCustomFrame.value = 0;
+    }
+    if (isCustomVrmMotionId(deps.demoMotion.value) && !ids.has(deps.demoMotion.value)) {
+      deps.demoMotion.value =
+        getCharacter("vrm").demoMotions[0] ?? "happy-bounce";
+    }
+    message.success(t("pet.customMotionResetOk"));
+  }
+
+  function onAddCustomMotion() {
     const next = createEmptyCustomVrmMotion(
       t("pet.customMotionDefaultName", {
         n: deps.customVrmMotions.value.length + 1,
@@ -541,31 +615,37 @@ export function usePetSettingsActions(deps: {
     deps.customVrmMotions.value = [...deps.customVrmMotions.value, next];
     deps.demoMotion.value = next.id;
     deps.editingCustomId.value = next.id;
-    await deps.persistOnly();
+    deps.editingCustomFrame.value = 0;
   }
 
   function toggleEditCustom(id: string) {
-    deps.editingCustomId.value =
-      deps.editingCustomId.value === id ? null : id;
+    const next = deps.editingCustomId.value === id ? null : id;
+    deps.editingCustomId.value = next;
+    deps.editingCustomFrame.value = 0;
+  }
+
+  function onCustomMotionFrameChange(frameIndex: number) {
+    deps.editingCustomFrame.value = Math.max(0, Math.floor(frameIndex));
   }
 
   function onCustomMotionBoneChange(next: CustomVrmMotion) {
     deps.customVrmMotions.value = deps.customVrmMotions.value.map((m) =>
       m.id === next.id ? next : m
     );
-    void persistCustomMotions();
   }
 
-  async function onRemoveCustomMotion(id: string) {
+  function onRemoveCustomMotion(id: string) {
     deps.customVrmMotions.value = deps.customVrmMotions.value.filter(
       (m) => m.id !== id
     );
-    if (deps.editingCustomId.value === id) deps.editingCustomId.value = null;
+    if (deps.editingCustomId.value === id) {
+      deps.editingCustomId.value = null;
+      deps.editingCustomFrame.value = 0;
+    }
     if (deps.demoMotion.value === id) {
       deps.demoMotion.value =
         getCharacter("vrm").demoMotions[0] ?? "happy-bounce";
     }
-    await deps.persistOnly();
   }
 
   async function onPlayCustomMotion(id: string) {
@@ -578,6 +658,54 @@ export function usePetSettingsActions(deps: {
     } catch {
       message.error(t("pet.motionPlayFailed"));
     }
+  }
+
+  function onExportCustomMotions() {
+    const list = normalizeCustomVrmMotions(deps.customVrmMotions.value);
+    if (!list.length) {
+      message.info(t("pet.customMotionExportEmpty"));
+      return;
+    }
+    downloadCustomVrmMotionsExport(list);
+    message.success(t("pet.customMotionExported", { n: list.length }));
+  }
+
+  function onExportCustomMotion(id: string) {
+    const m = deps.customVrmMotions.value.find((x) => x.id === id);
+    if (!m) return;
+    const safe = m.name.replace(/[\\/:*?"<>|]+/g, "_").slice(0, 24) || "motion";
+    downloadCustomVrmMotionsExport([m], `desktop-pet-vrm-motion-${safe}.json`);
+    message.success(t("pet.customMotionExported", { n: 1 }));
+  }
+
+  async function onImportCustomMotions() {
+    const text = await pickCustomVrmMotionsImportFile();
+    if (text == null) return;
+    const imported = parseCustomVrmMotionsImport(text);
+    if (!imported?.length) {
+      message.error(t("pet.customMotionImportFailed"));
+      return;
+    }
+    const existing = new Map(
+      deps.customVrmMotions.value.map((m) => [m.id, m] as const)
+    );
+    let added = 0;
+    let replaced = 0;
+    for (const m of imported) {
+      if (existing.has(m.id)) {
+        existing.set(m.id, m);
+        replaced += 1;
+      } else {
+        existing.set(m.id, m);
+        added += 1;
+      }
+    }
+    deps.customVrmMotions.value = normalizeCustomVrmMotions([
+      ...existing.values(),
+    ]);
+    message.success(
+      t("pet.customMotionImported", { added, replaced, n: imported.length })
+    );
   }
 
   return {
@@ -602,6 +730,7 @@ export function usePetSettingsActions(deps: {
     onPlayfulMode,
     onDemoMotion,
     onPlayMotion,
+    clearPreviewPlay,
     onThemeStyle,
     onThemeStageMode,
     onThemeWallpaperDim,
@@ -618,11 +747,17 @@ export function usePetSettingsActions(deps: {
     onBootAnimationDurationMode,
     onBootAnimationDurationSec,
     onSysStatsDefaultExpanded,
+    customMotionDirty,
     persistCustomMotions,
+    onCustomMotionReset,
     onAddCustomMotion,
     toggleEditCustom,
+    onCustomMotionFrameChange,
     onCustomMotionBoneChange,
     onRemoveCustomMotion,
     onPlayCustomMotion,
+    onExportCustomMotions,
+    onExportCustomMotion,
+    onImportCustomMotions,
   };
 }

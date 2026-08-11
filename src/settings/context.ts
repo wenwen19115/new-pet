@@ -140,12 +140,18 @@ export type PetSettingsPageCtx = {
   onSettingsPin: (v: unknown) => void | Promise<void>;
   onSysStatsDefaultExpanded: (v: unknown) => void | Promise<void>;
   persistOnly: () => void | Promise<void>;
+  customMotionDirty: ComputedRef<boolean>;
   persistCustomMotions: () => void | Promise<void>;
-  onAddCustomMotion: () => void | Promise<void>;
+  onCustomMotionReset: () => void;
+  onAddCustomMotion: () => void;
   toggleEditCustom: (id: string) => void;
+  onCustomMotionFrameChange: (frameIndex: number) => void;
   onCustomMotionBoneChange: (m: CustomVrmMotion) => void;
-  onRemoveCustomMotion: (id: string) => void | Promise<void>;
+  onRemoveCustomMotion: (id: string) => void;
   onPlayCustomMotion: (id: string) => void | Promise<void>;
+  onExportCustomMotions: () => void;
+  onExportCustomMotion: (id: string) => void;
+  onImportCustomMotions: () => void | Promise<void>;
 };
 
 export const PET_SETTINGS_PAGE_KEY: InjectionKey<PetSettingsPageCtx> =

@@ -37,13 +37,27 @@
 
     <div v-if="ctx.capabilities.value.has('vrm-bone-editor')" class="custom-motion-panel">
       <header class="custom-motion-head">
-        <div>
+        <div class="custom-motion-head-text">
           <div class="custom-motion-title">{{ $t("pet.customMotionTitle") }}</div>
           <div class="custom-motion-desc">{{ $t("pet.customMotionDesc") }}</div>
         </div>
-        <button type="button" class="theme-btn pri" @click="ctx.onAddCustomMotion">
-          {{ $t("pet.customMotionAdd") }}
-        </button>
+        <div class="custom-motion-head-actions">
+          <button type="button" class="theme-btn" @click="ctx.onImportCustomMotions">
+            {{ $t("pet.customMotionImport") }}
+          </button>
+          <button type="button" class="theme-btn" @click="ctx.onExportCustomMotions">
+            {{ $t("pet.customMotionExport") }}
+          </button>
+          <button type="button" class="theme-btn" @click="ctx.onAddCustomMotion">
+            {{ $t("pet.customMotionAdd") }}
+          </button>
+          <button type="button" class="theme-btn pri" @click="ctx.persistCustomMotions">
+            {{ $t("pet.customMotionSave") }}
+          </button>
+          <button type="button" class="theme-btn" @click="ctx.onCustomMotionReset">
+            {{ $t("pet.customMotionReset") }}
+          </button>
+        </div>
       </header>
       <div v-if="!ctx.customVrmMotions.value.length" class="custom-motion-empty">
         {{ $t("pet.customMotionEmpty") }}
@@ -60,7 +74,6 @@
             size="small"
             :maxlength="24"
             :placeholder="$t('pet.customMotionName')"
-            @change="ctx.persistCustomMotions"
           />
           <a-button
             size="small"
@@ -84,30 +97,28 @@
             :min="800"
             :max="8000"
             :step="100"
-            @change="ctx.persistCustomMotions"
           />
         </label>
         <CustomVrmBoneEditor
           v-if="ctx.editingCustomId.value === item.id"
           :motion="item"
           @change="ctx.onCustomMotionBoneChange"
+          @frame-change="ctx.onCustomMotionFrameChange"
         />
         <div class="custom-motion-actions">
           <label class="custom-motion-random">
             <ThemeSwitch
               :checked="item.includeInRandom"
-              @update:checked="
-                (v) => {
-                  item.includeInRandom = v;
-                  void ctx.persistCustomMotions();
-                }
-              "
+              @update:checked="(v) => (item.includeInRandom = v)"
             />
             <span>{{ $t("pet.customMotionEnabled") }}</span>
           </label>
           <div class="custom-motion-btns">
             <button type="button" class="theme-btn" @click="ctx.onPlayCustomMotion(item.id)">
               {{ $t("pet.motionPlay") }}
+            </button>
+            <button type="button" class="theme-btn" @click="ctx.onExportCustomMotion(item.id)">
+              {{ $t("pet.customMotionExportOne") }}
             </button>
             <button type="button" class="theme-btn" @click="ctx.onRemoveCustomMotion(item.id)">
               {{ $t("pet.customMotionRemove") }}
@@ -135,7 +146,6 @@ const DEFAULT_CUSTOM_DURATION_MS = 2800;
 
 function resetDuration(item: CustomVrmMotion) {
   item.durationMs = DEFAULT_CUSTOM_DURATION_MS;
-  ctx.persistCustomMotions();
 }
 </script>
 
@@ -190,9 +200,26 @@ function resetDuration(item: CustomVrmMotion) {
 
 .custom-motion-head {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.custom-motion-head-text {
+  min-width: 0;
+}
+
+.custom-motion-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.custom-motion-head-actions .theme-btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .custom-motion-title {

@@ -91,6 +91,7 @@ export function useVrmRenderer(
   const hitRaycaster = new THREE.Raycaster();
   const hitPointer = new THREE.Vector2();
 
+  /** 只写 normalized；欧拉语义 = 相对 T-pose（见 docs/VRM_MOTION.md） */
   function boneNode(name: VrmBoneName) {
     return vrm?.humanoid?.getNormalizedBoneNode(name) ?? null;
   }
@@ -193,13 +194,20 @@ export function useVrmRenderer(
       gaze: props.gaze,
       customPose: custom ? resolveCustomVrmPose(custom, clockT) : null,
     });
-    const rate = props.lifting ? 14 : motion === "vrm-walk" ? 7.5 : 10;
+    const rate = props.lifting
+      ? 14
+      : motion === "vrm-walk"
+        ? 7.5
+        : motion === "idle-float"
+          ? 4.2
+          : 7;
     const alpha = 1 - Math.exp(-dt * rate);
 
     for (const name of BONE_NAMES) {
       lerpBone(name, pose.bones[name], alpha);
     }
 
+    // normalized → raw
     vrm.humanoid.update();
 
     const targetY = baseRootY + (pose.rootY ?? 0);
@@ -286,8 +294,19 @@ export function useVrmRenderer(
   function resizeToCanvas() {
     const canvas = canvasRef.value;
     if (!canvas || !renderer || !camera) return;
-    const width = Math.max(1, canvas.clientWidth || 180);
-    const height = Math.max(1, canvas.clientHeight || 180);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // 限制绘制缓冲，防止极端尺寸丢上下文（预览变灰块）
+    const maxBuf = 2048;
+    let width = Math.max(1, canvas.clientWidth || 180);
+    let height = Math.max(1, canvas.clientHeight || 180);
+    const bufW = width * dpr;
+    const bufH = height * dpr;
+    if (bufW > maxBuf || bufH > maxBuf) {
+      const s = Math.min(maxBuf / bufW, maxBuf / bufH);
+      width = Math.max(1, Math.floor(width * s));
+      height = Math.max(1, Math.floor(height * s));
+    }
+    renderer.setPixelRatio(dpr);
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
@@ -424,6 +443,13 @@ export function useVrmRenderer(
     () => [props.orbitYaw, props.orbitPitch],
     () => {
       updateOrbitCamera();
+    }
+  );
+
+  watch(
+    () => props.motion,
+    () => {
+      clockT = 0;
     }
   );
 

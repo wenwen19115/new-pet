@@ -3,7 +3,11 @@ import { loadPetSettings, patchActiveProfile } from "@/pet/data/settings";
 import type { PetSettings, PetTone } from "@/pet/data/types";
 import type { PetModelKind } from "@/pet/skins";
 import type { PetPersonality } from "@/pet/content/dialogue/personality";
-import type { CustomVrmMotion } from "@/pet/content/motion/customVrmMotions";
+import {
+  isCustomVrmMotionId,
+  normalizeCustomVrmMotions,
+  type CustomVrmMotion,
+} from "@/pet/content/motion/customVrmMotions";
 import type { PetCustomLine } from "@/pet/content/dialogue/customLines";
 import {
   DEFAULT_PET_THEME_SETTINGS,
@@ -61,6 +65,10 @@ export function usePetSettingsFormState() {
   const disabledMotions = ref<string[]>([]);
   const disabledBuiltInLines = ref<string[]>([]);
   const editingCustomId = ref<string | null>(null);
+  /** 调骨骼时预览冻结的关键帧下标 */
+  const editingCustomFrame = ref(0);
+  /** 「做一下」时设置页预览临时播放的动作 id */
+  const previewPlayMotion = ref<string | null>(null);
   const previewAutoOrbit = ref(false);
   const settingsBag = ref<PetSettings>(loadPetSettings());
 
@@ -82,6 +90,18 @@ export function usePetSettingsFormState() {
     vrmModelName: Ref<string>;
     vrmModelRev: Ref<number>;
   }): PetSettings {
+    const savedMotions = normalizeCustomVrmMotions(
+      settingsBag.value.customVrmMotions
+    );
+    const savedMotionIds = new Set(savedMotions.map((m) => m.id));
+    // 未保存的自定义动作 id 不要写进其它设置的落盘包
+    let persistedDemo = demoMotion.value;
+    if (
+      isCustomVrmMotionId(persistedDemo) &&
+      !savedMotionIds.has(persistedDemo)
+    ) {
+      persistedDemo = settingsBag.value.demoMotion;
+    }
     const base: PetSettings = {
       ...settingsBag.value,
       enabled: enabled.value,
@@ -92,7 +112,7 @@ export function usePetSettingsFormState() {
       chatAi: deps.savedChatAi(),
       opacity: opacityPercent.value / 100,
       tone: tone.value,
-      demoMotion: demoMotion.value,
+      demoMotion: persistedDemo,
       modelKind: modelKind.value,
       lookId: lookId.value,
       nickname: nickname.value.trim(),
@@ -108,7 +128,8 @@ export function usePetSettingsFormState() {
       theme: clonePetThemeSettings(theme.value),
       settingsAlwaysOnTop: settingsAlwaysOnTop.value,
       sysStatsDefaultExpanded: sysStatsDefaultExpanded.value,
-      customVrmMotions: customVrmMotions.value.map((m) => ({ ...m })),
+      // 自定义动作与陪聊 AI 一样：表单是草稿，其它 persist 只用已保存值
+      customVrmMotions: savedMotions,
       vrmModelName: deps.vrmModelName.value,
       vrmModelRev: deps.vrmModelRev.value,
     };
@@ -148,6 +169,8 @@ export function usePetSettingsFormState() {
     disabledMotions,
     disabledBuiltInLines,
     editingCustomId,
+    editingCustomFrame,
+    previewPlayMotion,
     previewAutoOrbit,
     settingsBag,
     canPreviewOrbit,
