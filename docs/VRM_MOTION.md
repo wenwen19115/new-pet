@@ -79,7 +79,21 @@
 4. 屈臂类走 `stretchArmChain` 同类写法；直臂欢呼类才优先 `raiseBothArms`。
 5. 相位：走跑臂腿对侧；伸懒腰屈肘→停→上举→伸展→收。
 6. 自检：鞠躬朝相机；膝非鸟腿；屈肘看前臂 Z；体前抬看上臂 X+；无拥抱外展。
-7. `remapVrmMotion` 勿把 `peekaboo` / `victory-burst` / `stretch-up` 折成别的动作。
+7. `remapVrmMotion` 勿把 `victory-burst` / `stretch-up` 折成别的动作。
+
+## 5.1 活人感（当前首要目标）
+
+姿态优化**以预览能一眼读出生命感为准**，禁止「相位差几毫秒」式保守微调当交差。
+
+| 要 | 不要 |
+| --- | --- |
+| 左右承重/关节权重差可读；接触时间线合理 | 半拍错相装不同步 |
+| 髋膝**不同曲线**（蓄力/蹬地/落地职责可读） | 整条腿同一包络 |
+| 重量感：落地缓冲、移重、先着地侧 | 匀速木偶、整机同步 |
+| 克制：一般动作约 0.4 幅（`MILD_MOTION_AMP`）；摆头/伸懒腰全幅 | 把克制理解成「改了但看不出」 |
+| 改完用「做一下」验收：闭眼也能听出节奏差 | 只改系数不敢动结构 |
+
+相机：有垂直位移的动作勿让相机 1:1 跟 `rootY`（会把高度对消）；见 `useVrmRenderer.updateOrbitCamera`。
 
 ## 6. 动作意图表
 
@@ -88,12 +102,9 @@
 | `poseIdle` | `idle-float` | 呼吸+轻移重 | 躯干/腿；臂小摆 |
 | `poseWalk` | `vrm-walk` | 原地走 | 腿 X- 前迈 + `knee` + 对侧臂 X |
 | `poseSway` | `sway-step` | 左右晃 | 髋/脊 Y |
-| `poseHappy` | `happy-bounce` | 蹲跳 | rootY + `raiseBothArms` |
-| `poseVictory` | `victory-burst` | 单脚欢呼 | 单支撑 + 举手 |
+| `poseVictory` | `victory-burst` | 单脚欢呼（含原欢快跳/连点在 VRM 上的 remap） | 单支撑 + 举手 |
 | `poseBow` | `bow-nod` | 鞠躬 | `FWD` 前倾 + `holdEnvelope` |
 | `poseStretch` | `stretch-up` | 伸懒腰 | `stretchArmChain`：前臂 Z 屈肘、上臂 X+ 体前、腕掌随动；屈肘停顿短 |
-| `poseScratch` | `vrm-scratch` | 挠头 | 右臂链；左臂近站姿 |
-| `posePeek` | `peekaboo` | 躲猫猫 | yaw + 捂脸；无鞠躬前倾 |
 | `poseSleep` / `poseLifted` | mood / drag | 瞌睡 / 拎起 | 见代码 |
 
 ## 7. 禁止事项
@@ -107,10 +118,12 @@
 - `lowerLeg` 正 X 当屈膝（鸟腿）
 - 抬臂肘完全伸直；整段覆盖肩回旧硬编码
 - 自定义草稿未保存当已入库
+- 为避风险把动作改成「看不出变化」（违背 §5.1）
 
 ## 8. 改完怎么验
 
 1. 设置页 → 酥酥 →「做一下」（预览与桌宠同步播）。
 2. 伸懒腰：先弯肘停住 → 身前屈臂上抬 → 再伸展；不得平举外展、不得体后抡。
 3. 鞠躬朝相机；走路屈膝人向。
-4. `yarn vue-tsc --noEmit`。
+4. 欢乐跳：双脚一起起落；能感到承重左右略偏与落地缓冲，不能像瘸腿错相。
+5. `yarn vue-tsc --noEmit`。

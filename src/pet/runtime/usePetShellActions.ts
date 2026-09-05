@@ -68,8 +68,7 @@ export function usePetShellActions(deps: {
           isScreenFlightMotion(r) ||
           r.startsWith("toon") ||
           r === "tap-frenzy" ||
-          r === "victory-burst" ||
-          r === "peekaboo"
+          r === "victory-burst"
         );
       }),
       profile?.disabledMotions

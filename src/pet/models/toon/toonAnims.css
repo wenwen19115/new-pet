@@ -51,12 +51,6 @@
 .pix[data-anim="happy"] .pix-ears {
   animation: ear-twitch 0.28s ease-in-out infinite;
 }
-.pix[data-anim="peek"] .pix-stage {
-  animation: peek 1.05s ease-in-out 1;
-}
-.pix[data-anim="peek"] .pix-scene {
-  animation: peek-fade 1.05s ease-in-out 1;
-}
 .pix[data-anim="sleep"] .pix-stage {
   animation: sleep 2.2s ease-in-out infinite;
 }
@@ -305,16 +299,6 @@
   50% {
     opacity: 0.45;
     transform: translateX(-6%);
-  }
-}
-@keyframes peek-fade {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  35%,
-  65% {
-    opacity: 0.28;
   }
 }
 @keyframes wormhole-sink {

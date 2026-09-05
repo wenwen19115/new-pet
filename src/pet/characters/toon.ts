@@ -23,7 +23,6 @@ export const characterToon: CharacterDef = {
     "toon-tilt",
     "toon-sway",
     "happy-bounce",
-    "peekaboo",
     "screen-wormhole",
   ],
   defaults: {

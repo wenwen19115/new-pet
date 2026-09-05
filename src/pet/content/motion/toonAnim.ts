@@ -5,7 +5,6 @@ export type ToonAnimState =
   | "walk"
   | "wave"
   | "happy"
-  | "peek"
   | "sleep"
   | "read"
   | "tea"
@@ -66,8 +65,6 @@ export function resolveToonAnimState(
     case "rocket-jump":
     case "tap-frenzy":
       return "happy";
-    case "peekaboo":
-      return "peek";
     default:
       return "idle";
   }

@@ -338,10 +338,6 @@
       "victory-burst": [
         "胜利姿势！喝到水也算～",
         "小庆祝启动～"
-      ],
-      "peekaboo": [
-        "躲猫猫——找到你了！",
-        "嘿，我在这儿呢。"
       ]
     },
     "en": {
@@ -380,10 +376,6 @@
       "victory-burst": [
         "Victory pose! Water counts~",
         "Mini celebration on~"
-      ],
-      "peekaboo": [
-        "Peekaboo—found you!",
-        "Hey, I'm right here."
       ]
     }
   },

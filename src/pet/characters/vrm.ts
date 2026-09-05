@@ -19,17 +19,14 @@ export const characterVrm: CharacterDef = {
   demoMotions: PET_VRM_DEMO_MOTIONS,
   idleMotions: [
     "idle-float",
-    "happy-bounce",
     "sway-step",
     "bow-nod",
     "stretch-up",
-    "peekaboo",
     "victory-burst",
-    "vrm-scratch",
     "vrm-walk",
   ],
   defaults: {
-    demoMotion: "happy-bounce",
+    demoMotion: "sway-step",
     lookId: "cyan",
     buildExtensions: () => ({ vrm: emptyVrmExtension() }),
   },
@@ -58,13 +55,11 @@ export const characterVrm: CharacterDef = {
   resolveMotion: remapVrmMotion,
   runtime: {
     gaze: { max: 1.8, range: 90, follow: 0.55 },
-    tapFallbackMotion: "tap-frenzy",
+    tapFallbackMotion: "victory-burst",
     screenFlight: "none",
     dragLandMotions: [
-      "vrm-scratch",
       "bow-nod",
       "sway-step",
-      "happy-bounce",
       "stretch-up",
     ],
     accents: {

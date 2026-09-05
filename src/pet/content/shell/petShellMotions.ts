@@ -77,12 +77,6 @@ export const PET_SHELL_IDLE_ANIMS: Partial<
     easing: "cubic-bezier(0.34, 1.15, 0.64, 1)",
     onlyModels: CHIP_ONLY,
   },
-  peekaboo: {
-    name: "pet-shell-peekaboo",
-    duration: "2.3s",
-    easing: "cubic-bezier(0.4, 0.05, 0.2, 1)",
-    onlyModels: CHIP_ONLY,
-  },
   "screen-dash": {
     name: "pet-shell-screen-lean",
     duration: "0.95s",

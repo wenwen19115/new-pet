@@ -27,7 +27,6 @@ export const characterChip: CharacterDef = {
     "figure-eight",
     "barrel-roll",
     "victory-burst",
-    "peekaboo",
   ],
   defaults: {
     demoMotion: "screen-dash",

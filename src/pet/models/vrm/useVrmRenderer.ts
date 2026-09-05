@@ -114,9 +114,10 @@ export function useVrmRenderer(
     if (!camera) return;
     const yaw = ((props.orbitYaw ?? 0) * Math.PI) / 180;
     const pitch = ((props.orbitPitch ?? 8) * Math.PI) / 180;
-    // 跟随 rootY（跳/升降），避免模型上移后头顶被相机裁掉
     const lift = modelRoot ? modelRoot.position.y - baseRootY : 0;
-    const lookY = modelHeight * 0.5 + lift;
+    // 下蹲跟满防裁脚；上跳只跟一小部分，否则 1:1 跟拍把跳高对消掉
+    const camLift = lift >= 0 ? lift * 0.22 : lift;
+    const lookY = modelHeight * 0.5 + camLift;
     const dist = cameraDist;
     const cp = Math.cos(pitch);
     camera.position.set(

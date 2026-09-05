@@ -8,7 +8,6 @@ export type PetIdleMotion =
   | "cartwheel"
   | "figure-eight"
   | "victory-burst"
-  | "peekaboo"
   | "sway-step"
   | "side-hop"
   | "bow-nod"
@@ -34,8 +33,7 @@ export type PetIdleMotion =
   | "toon-splash"
   | "toon-thunder"
   | "toon-dodge"
-  | "vrm-walk"
-  | "vrm-scratch";
+  | "vrm-walk";
 
 export const PET_CHIP_DEMO_MOTIONS: PetIdleMotion[] = [
   "screen-dash",
@@ -47,7 +45,6 @@ export const PET_CHIP_DEMO_MOTIONS: PetIdleMotion[] = [
   "figure-eight",
   "barrel-roll",
   "victory-burst",
-  "peekaboo",
 ];
 
 export const PET_FIG_DEMO_MOTIONS: PetIdleMotion[] = [
@@ -59,7 +56,6 @@ export const PET_FIG_DEMO_MOTIONS: PetIdleMotion[] = [
   "stretch-up",
   "rocket-jump",
   "victory-burst",
-  "peekaboo",
   "screen-glide",
 ];
 
@@ -70,19 +66,15 @@ export const PET_TOON_DEMO_MOTIONS: PetIdleMotion[] = [
   "toon-tilt",
   "toon-sway",
   "happy-bounce",
-  "peekaboo",
   "screen-wormhole",
 ];
 
 export const PET_VRM_DEMO_MOTIONS: PetIdleMotion[] = [
   "idle-float",
-  "happy-bounce",
   "sway-step",
   "bow-nod",
   "stretch-up",
-  "peekaboo",
   "victory-burst",
-  "vrm-scratch",
   "vrm-walk",
 ];
 
@@ -121,7 +113,6 @@ const ALL_MOTIONS: PetIdleMotion[] = [
     "cartwheel",
     "toon-spin",
     "vrm-walk",
-    "vrm-scratch",
   ]),
 ];
 
@@ -171,17 +162,14 @@ export function motionHoldMs(motion: PetIdleMotion): number {
       return 4800;
     case "sway-step":
       return 4200;
-    case "vrm-scratch":
-      return 4200;
     case "rocket-jump":
       return 2350;
     case "victory-burst":
-    case "peekaboo":
       return 4200;
     case "tap-frenzy":
       return 2800;
     case "happy-bounce":
-      return 4200;
+      return 4800;
     default:
       return 1200;
   }
@@ -191,7 +179,6 @@ export const PET_TAP_EGG_MOTIONS: PetIdleMotion[] = [
   "tap-frenzy",
   "screen-zip",
   "victory-burst",
-  "peekaboo",
   "toon-thunder",
   "screen-wormhole",
 ];

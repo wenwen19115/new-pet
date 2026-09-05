@@ -2,6 +2,7 @@
  * VRM 骨骼姿态（Normalized Humanoid）。
  * 轴向以 docs/VRM_MOTION.md §2 实测表为准（勿用纸面「X=屈肘」常识）。
  * 站姿 REST / restArms；屈肘=前臂 Z；体前抬=上臂 X+；躯干前倾=FWD(-1)。
+ * 动作优化首要目标：活人感（§5.1）——可见节拍差与关节连锁，禁止微差交差。
  */
 import type { PetIdleMotion } from "../content/motion/motions";
 import type { PetMood } from "./types";
@@ -105,11 +106,15 @@ function restArms(opts?: { swingL?: number; swingR?: number }): VrmPoseMap {
   };
 }
 
+/** 站姿外展：左 Z- / 右 Z+；约 3°——略宽于贴腿，避免 A 字过开 */
+const STANCE_ZL = deg(-3.2);
+const STANCE_ZR = deg(3.2);
+
 function restLegs(weight = 0): VrmPoseMap {
   return {
-    // upperLeg X- ≈ 大腿朝前；此处微负为自然站姿
-    leftUpperLeg: e(-0.03 + weight * 0.04, 0, 0.03),
-    rightUpperLeg: e(-0.03 - weight * 0.04, 0, -0.03),
+    // upperLeg X- ≈ 大腿朝前
+    leftUpperLeg: e(-0.03 + weight * 0.04, 0, STANCE_ZL),
+    rightUpperLeg: e(-0.03 - weight * 0.04, 0, STANCE_ZR),
     leftLowerLeg: knee(3),
     rightLowerLeg: knee(3),
   };
@@ -285,30 +290,6 @@ function poseLifted(t: number): VrmPoseFrame {
   };
 }
 
-/** 欢快跳：连续蹲跳，腾空扬臂 */
-function poseHappy(t: number): VrmPoseFrame {
-  const phase = t * 5.5;
-  const s = Math.sin(phase);
-  const crouch = Math.pow(Math.max(0, -s), 1.2);
-  const air = Math.pow(Math.max(0, s), 0.85);
-  const raise = 0.15 + air * 0.65;
-  return {
-    rootY: air * 0.14 - crouch * 0.035,
-    bones: mergePose(restArms(), raiseBothArms(raise, { openDeg: 18, elbowDeg: 34 }), {
-      hips: e(FWD * deg(2 + crouch * 8), 0, 0),
-      spine: e(FWD * deg(1 + crouch * 5 - air * 3), 0, 0),
-      chest: e(FWD * deg(crouch * 3), 0, 0),
-      neck: e(FWD * deg(-3 * air), 0, 0),
-      head: e(FWD * deg(-5 * air), Math.sin(phase * 0.5) * deg(4), air * deg(3)),
-      // 蹲：髋屈 X-；腾空微伸
-      leftUpperLeg: e(deg(-1) - air * deg(6) - crouch * deg(22)),
-      rightUpperLeg: e(deg(-1) - air * deg(6) - crouch * deg(22)),
-      leftLowerLeg: knee(6 + crouch * 50 + air * 8),
-      rightLowerLeg: knee(6 + crouch * 50 + air * 8),
-    }),
-  };
-}
-
 /** 鞠躬：躯干 X+ 前倾；下俯 → 停住 → 缓起 */
 function poseBow(t: number): VrmPoseFrame {
   const nod = 0.15 + holdEnvelope(t, 5.2, 0.48) * 0.82;
@@ -359,54 +340,6 @@ function poseSleep(_t: number): VrmPoseFrame {
       rightUpperArm: e(deg(REST.upper.x + 8), deg(-(REST.upper.y - 2)), ZR - deg(REST.upper.zExtra + 2)),
       leftLowerArm: e(deg(REST.elbowL.x + 8), deg(REST.elbowL.y), deg(REST.elbowL.z)),
       rightLowerArm: e(deg(REST.elbowR.x + 6), deg(-REST.elbowR.y), deg(-REST.elbowR.z)),
-    }),
-  };
-}
-
-/** 挠头：屈肘 → 体前抬起 → 伸向头侧轻刮 */
-function poseScratch(t: number): VrmPoseFrame {
-  const period = 2.8;
-  const u = (((t % period) + period) % period) / period;
-  const restZR = ZR - deg(REST.upper.zExtra);
-  let elbow = REST.elbowR.x;
-  let raise = 0;
-  let reachY = 0;
-  let scratch = 0;
-  if (u < 0.22) {
-    const x = u / 0.22;
-    elbow = REST.elbowR.x + 55 * x;
-  } else if (u < 0.5) {
-    const x = (u - 0.22) / 0.28;
-    elbow = REST.elbowR.x + 55;
-    raise = x;
-    reachY = 25 * x;
-  } else if (u < 0.78) {
-    const x = (u - 0.5) / 0.28;
-    elbow = REST.elbowR.x + 55 + 35 * x;
-    raise = 1;
-    reachY = 25 + 40 * x;
-    scratch = Math.sin(t * 10) * 0.5 + 0.5;
-  } else {
-    const x = (u - 0.78) / 0.22;
-    const keep = 1 - x;
-    elbow = REST.elbowR.x + 90 * keep;
-    raise = keep;
-    reachY = 65 * keep;
-  }
-  const z = restZR * (1 - raise * 0.85) + deg(-8) * raise;
-  const tilt = deg(8) * raise;
-  return {
-    rootY: -0.002,
-    bones: mergePose(restArms({ swingL: deg(2), swingR: 0 }), restLegs(), {
-      hips: e(FWD * deg(1), deg(2) * raise, 0),
-      spine: e(FWD * deg(2), deg(4) * raise, 0),
-      chest: e(FWD * deg(1), deg(5) * raise, 0),
-      neck: e(FWD * deg(8) * raise + tilt * 0.3, deg(14) * raise, deg(-4) * raise),
-      head: e(FWD * deg(10) * raise + tilt * 0.5, deg(18) * raise, deg(-6) * raise),
-      rightShoulder: e(deg(8 + 6 * raise), deg(-12 - 10 * raise), deg(12 - 4 * raise)),
-      rightUpperArm: e(deg(REST.upper.x - 8 * raise - scratch * 6), deg(-REST.upper.y - reachY), z),
-      rightLowerArm: e(deg(elbow + scratch * 10), deg(-8), deg(-18)),
-      rightHand: e(deg(10 + scratch * 8), deg(-8), deg(8 + scratch * 6)),
     }),
   };
 }
@@ -559,35 +492,68 @@ function poseVictory(t: number): VrmPoseFrame {
   };
 }
 
-/** 躲猫猫：侧身偏转 + 左手捂脸（无前倾，与鞠躬区分） */
-function posePeek(t: number): VrmPoseFrame {
-  const env = holdEnvelope(t, 3.4, 0.42);
-  const peek = 0.7 + Math.sin(t * 2.0) * 0.15;
-  const a = env * peek;
-  const restZL = ZL + deg(REST.upper.zExtra);
-  const coverZL = restZL * (1 - 0.88 * a);
+/**
+ * 一般动作相对站姿的幅度倍率（轻微）。
+ * 左右摆头（poseSway）与伸懒腰（poseStretch）不走此缩放。
+ */
+const MILD_MOTION_AMP = 0.4;
+
+function restNeutralBones(): VrmPoseMap {
+  return mergePose(restArms(), restLegs(), {
+    hips: e(),
+    spine: e(),
+    chest: e(),
+    upperChest: e(),
+    neck: e(),
+    head: e(),
+  });
+}
+
+/** 相对 A-pose 站姿缩放增量，站姿本身不塌向 T-pose */
+function softenPoseFrame(pose: VrmPoseFrame, amp: number): VrmPoseFrame {
+  const base = restNeutralBones();
+  const bones: VrmPoseMap = {};
+  const names = new Set<VrmBoneName>([
+    ...(Object.keys(base) as VrmBoneName[]),
+    ...(Object.keys(pose.bones) as VrmBoneName[]),
+  ]);
+  for (const name of names) {
+    const b = base[name] || e();
+    const p = pose.bones[name] || e();
+    bones[name] = e(
+      (b.x ?? 0) + ((p.x ?? 0) - (b.x ?? 0)) * amp,
+      (b.y ?? 0) + ((p.y ?? 0) - (b.y ?? 0)) * amp,
+      (b.z ?? 0) + ((p.z ?? 0) - (b.z ?? 0)) * amp
+    );
+  }
   return {
-    rootY: 0,
-    rootYaw: -deg(28) * a,
-    bones: mergePose(restArms(), restLegs(), {
-      hips: e(deg(1) * a, -deg(12) * a, deg(8) * a),
-      spine: e(deg(1) * a, -deg(18) * a, deg(10) * a),
-      chest: e(0, -deg(16) * a, deg(8) * a),
-      upperChest: e(0, -deg(10) * a, 0),
-      neck: e(deg(10) * a, -deg(36) * a, deg(12) * a),
-      head: e(deg(12) * a, -deg(40) * a, deg(14) * a),
-      leftShoulder: e(deg(14), deg(28), deg(-10)),
-      leftUpperArm: e(deg(-48) * a, deg(70) * a, coverZL),
-      leftLowerArm: e(deg(105) * a + deg(REST.elbowL.x) * (1 - a), deg(14), deg(24)),
-      leftHand: e(deg(28) * a, deg(12), deg(16)),
-      rightShoulder: e(deg(REST.shoulder.x), deg(-REST.shoulder.y), deg(REST.shoulder.z)),
-      rightUpperArm: e(deg(REST.upper.x), deg(-REST.upper.y), ZR - deg(REST.upper.zExtra)),
-      rightLowerArm: e(deg(REST.elbowR.x), deg(-REST.elbowR.y), deg(-REST.elbowR.z)),
-      rightHand: e(deg(REST.handR.x), deg(-REST.handR.y), deg(REST.handR.z)),
-    }),
+    rootY: (pose.rootY ?? 0) * amp,
+    rootYaw: (pose.rootYaw ?? 0) * amp,
+    bones,
   };
 }
 
+/** 摆头 / 伸懒腰 / 待机（本就轻）保持全幅 */
+function keepFullMotionAmp(motion: PetIdleMotion | string | undefined): boolean {
+  switch (motion) {
+    case "sway-step":
+    case "side-hop":
+    case "tip-toe":
+    case "stretch-up":
+      return true;
+    case "bow-nod":
+    case "victory-burst":
+    case "vrm-walk":
+    case "toon-walk":
+    case "screen-glide":
+    case "screen-dash":
+    case "screen-hop":
+    case "screen-zip":
+      return false;
+    default:
+      return true;
+  }
+}
 
 export function resolveVrmPose(
   motion: PetIdleMotion | string | undefined,
@@ -601,9 +567,9 @@ export function resolveVrmPose(
 ): VrmPoseFrame {
   let pose: VrmPoseFrame;
   if (options?.lifting) {
-    pose = poseLifted(t);
+    pose = softenPoseFrame(poseLifted(t), MILD_MOTION_AMP);
   } else if (mood === "sleep") {
-    pose = poseSleep(t);
+    pose = softenPoseFrame(poseSleep(t), MILD_MOTION_AMP);
   } else if (options?.customPose) {
     pose = options.customPose;
   } else {
@@ -616,15 +582,8 @@ export function resolveVrmPose(
       case "screen-zip":
         pose = poseWalk(t);
         break;
-      case "happy-bounce":
-      case "tap-frenzy":
-        pose = poseHappy(t);
-        break;
       case "bow-nod":
         pose = poseBow(t);
-        break;
-      case "vrm-scratch":
-        pose = poseScratch(t);
         break;
       case "sway-step":
       case "side-hop":
@@ -637,11 +596,11 @@ export function resolveVrmPose(
       case "victory-burst":
         pose = poseVictory(t);
         break;
-      case "peekaboo":
-        pose = posePeek(t);
-        break;
       default:
         pose = poseIdle(t);
+    }
+    if (!keepFullMotionAmp(motion)) {
+      pose = softenPoseFrame(pose, MILD_MOTION_AMP);
     }
   }
 

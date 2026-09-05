@@ -75,7 +75,6 @@ export function moodForMotion(motion: PetIdleMotion): PetMood {
       return "excited";
     case "toon-dodge":
     case "toon-spin":
-    case "peekaboo":
     case "toon-read":
       return "curious";
     default:

@@ -109,8 +109,7 @@ describe("architecture smoke", () => {
         m.startsWith("fly-") ||
         m === "figure-eight" ||
         m === "barrel-roll" ||
-        m === "victory-burst" ||
-        m === "peekaboo"
+        m === "victory-burst"
     );
     for (const m of shellDemo) {
       expect(covered.has(m)).toBe(true);
@@ -171,11 +170,10 @@ describe("architecture smoke", () => {
     }
   });
 
-  it("toon demo motions resolve to non-idle anim states (except happy-bounce/peek)", () => {
+  it("toon demo motions resolve to non-idle anim states (except happy-bounce)", () => {
     for (const m of PET_TOON_DEMO_MOTIONS) {
       const anim = resolveToonAnimState(m, "idle");
       if (m === "happy-bounce") expect(anim).toBe("happy");
-      else if (m === "peekaboo") expect(anim).toBe("peek");
       else expect(anim).not.toBe("idle");
     }
   });

@@ -74,16 +74,16 @@ export function remapVrmMotion(motion: PetIdleMotion): PetIdleMotion {
     case "toon-tea":
     case "toon-tilt":
       return "bow-nod";
-    case "vrm-scratch":
-      return "vrm-scratch";
     case "toon-water":
     case "toon-grass":
     case "toon-fire":
     case "toon-splash":
     case "toon-thunder":
     case "toon-dodge":
-      return "happy-bounce";
-    // peekaboo / victory-burst / stretch-up 等已有专用姿态，勿再折叠
+    case "happy-bounce":
+    case "tap-frenzy":
+      return "victory-burst";
+    // victory-burst / stretch-up 等已有专用姿态，勿再折叠
     default:
       return motion;
   }
@@ -115,7 +115,7 @@ export function remapFigMotion(motion: PetIdleMotion): PetIdleMotion {
       return "stretch-up";
     case "toon-tilt":
     case "toon-dodge":
-      return "peekaboo";
+      return "tip-toe";
     case "toon-splash":
       return "side-hop";
     case "toon-thunder":

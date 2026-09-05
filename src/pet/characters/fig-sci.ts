@@ -20,7 +20,6 @@ export const characterFig: CharacterDef = {
     "happy-bounce",
     "screen-glide",
     "victory-burst",
-    "peekaboo",
   ],
   defaults: {
     demoMotion: "happy-bounce",
