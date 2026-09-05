@@ -1,6 +1,6 @@
 <template>
-  <div v-if="!ctx.enabled.value || ctx.isVrmPending.value" class="tab-empty">
-    {{ !ctx.enabled.value ? $t("pet.tabNeedEnable") : $t("pet.vrmNeedUploadFirst") }}
+  <div v-if="ctx.isVrmPending.value" class="tab-empty">
+    {{ $t("pet.vrmNeedUploadFirst") }}
   </div>
   <div v-else class="behavior-panel">
     <ThemeSection :label="$t('pet.secVoice')">

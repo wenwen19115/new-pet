@@ -1,8 +1,5 @@
 <template>
-  <div v-if="!ctx.enabled.value" class="tab-empty">
-    {{ $t("pet.tabNeedEnable") }}
-  </div>
-  <div v-else class="chat-panel">
+  <div class="chat-panel">
     <ThemeSection :label="$t('pet.tabChat')">
       <SettingsItemRow
         :title="$t('pet.chatProviderTitle')"
