@@ -160,16 +160,29 @@ export function usePetSettingsViewModel(deps: {
     }))
   );
 
-  const motionOptions = computed(() =>
-    demoMotionOptions(
+  const motionOptions = computed(() => {
+    const allowVrm = characterSupportsVrmAssets(deps.modelKind.value);
+    return demoMotionOptions(
       getCharacter(deps.modelKind.value).demoMotions,
       deps.customVrmMotions.value,
-      characterSupportsVrmAssets(deps.modelKind.value)
-    ).map((o) => ({
-      value: o.value,
-      label: o.label ?? (o.labelKey ? t(o.labelKey) : o.value),
-    }))
-  );
+      allowVrm,
+      allowVrm ? { groupByKind: true } : undefined
+    ).map((o) => {
+      if (o.options) {
+        return {
+          label: o.labelKey ? t(o.labelKey) : o.label ?? "",
+          options: o.options.map((c) => ({
+            value: c.value,
+            label: c.label ?? (c.labelKey ? t(c.labelKey) : c.value),
+          })),
+        };
+      }
+      return {
+        value: o.value!,
+        label: o.label ?? (o.labelKey ? t(o.labelKey) : o.value!),
+      };
+    });
+  });
 
   const motionPoolIds = computed(
     () => [...getCharacter(deps.modelKind.value).demoMotions] as string[]

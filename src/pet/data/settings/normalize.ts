@@ -65,6 +65,12 @@ function normalizeTone(value: unknown): PetTone {
   return value === "snarky" ? "snarky" : "cute";
 }
 
+function migrateLegacyMotionId(value: string): string {
+  // 曾误标 VRMA_04 Shoot 为 stretch
+  if (value === "vrm-stretch") return "vrm-shoot";
+  return value;
+}
+
 function normalizeDemoMotion(
   value: unknown,
   model: PetModelKind,
@@ -77,9 +83,12 @@ function normalizeDemoMotion(
   ) {
     if (!customVrmIds || customVrmIds.has(value)) return value;
   }
-  if (isPetIdleMotion(value)) {
-    const allowed = getCharacter(model).demoMotions;
-    if ((allowed as readonly string[]).includes(value)) return value;
+  if (typeof value === "string") {
+    const migrated = migrateLegacyMotionId(value);
+    if (isPetIdleMotion(migrated)) {
+      const allowed = getCharacter(model).demoMotions;
+      if ((allowed as readonly string[]).includes(migrated)) return migrated;
+    }
   }
   return defaultProfileForModel(model).demoMotion;
 }
@@ -156,7 +165,9 @@ export function normalizeOneProfile(
     customLines: normalizeCustomLines(raw?.customLines ?? base.customLines),
     customLinesOnly: Boolean(raw?.customLinesOnly ?? base.customLinesOnly),
     disabledMotions: normalizeDisabledMotions(
-      raw?.disabledMotions ?? base.disabledMotions
+      (raw?.disabledMotions ?? base.disabledMotions).map((id) =>
+        typeof id === "string" ? migrateLegacyMotionId(id) : id
+      )
     ),
     disabledBuiltInLines: normalizeDisabledMotions(
       raw?.disabledBuiltInLines ?? base.disabledBuiltInLines

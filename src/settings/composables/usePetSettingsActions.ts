@@ -319,14 +319,14 @@ export function usePetSettingsActions(deps: {
     await deps.persistOnly();
   }
 
-  async function onPlayMotion() {
-    if (!deps.enabled.value) {
-      message.warning(t("pet.motionNeedEnable"));
-      return;
+  async function onPlayMotion(motionId?: string) {
+    const id = typeof motionId === "string" ? motionId : deps.demoMotion.value;
+    if (!isPetIdleMotion(id) && !isCustomVrmMotionId(id)) return;
+    if (id !== deps.demoMotion.value) {
+      deps.demoMotion.value = id;
     }
-    const id = deps.demoMotion.value;
     const play = resolveMotionPlay(id, deps.customVrmMotions.value);
-    // 同动作连点：先清空再设，让预览与 VRM 时钟能重开
+    // 同动作连点：先清空再设，让设置页预览与 VRM 时钟能重开
     clearPreviewPlay();
     await nextTick();
     deps.previewPlayMotion.value = id;
@@ -336,6 +336,8 @@ export function usePetSettingsActions(deps: {
       }
       previewPlayTimer = 0;
     }, play.durationMs);
+    // 已召唤时顺带同步桌宠；未召唤只播设置页里的角色
+    if (!deps.enabled.value) return;
     try {
       await requestPetMotion(id);
     } catch {
@@ -651,10 +653,18 @@ export function usePetSettingsActions(deps: {
   }
 
   async function onPlayCustomMotion(id: string) {
-    if (!deps.enabled.value) {
-      message.warning(t("pet.motionNeedEnable"));
-      return;
-    }
+    if (!isCustomVrmMotionId(id)) return;
+    const play = resolveMotionPlay(id, deps.customVrmMotions.value);
+    clearPreviewPlay();
+    await nextTick();
+    deps.previewPlayMotion.value = id;
+    previewPlayTimer = window.setTimeout(() => {
+      if (deps.previewPlayMotion.value === id) {
+        deps.previewPlayMotion.value = null;
+      }
+      previewPlayTimer = 0;
+    }, play.durationMs);
+    if (!deps.enabled.value) return;
     try {
       await requestPetMotion(id);
     } catch {

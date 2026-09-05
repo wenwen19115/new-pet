@@ -5,6 +5,7 @@
   <div v-else class="motion-panel">
     <ThemeSection :label="$t('pet.secMotion')">
       <SettingsItemRow
+        v-if="!ctx.capabilities.value.has('vrm-upload')"
         :title="$t('pet.motionTitle')"
         :description="$t('pet.motionDesc')"
         tone="pet"
@@ -16,9 +17,10 @@
             class="ctrl-select"
             :options="ctx.motionOptions.value"
             :list-height="360"
+            :dropdown-match-select-width="false"
             @change="ctx.onDemoMotion"
           />
-          <button type="button" class="theme-btn pri" @click="ctx.onPlayMotion">
+          <button type="button" class="theme-btn pri" @click="() => ctx.onPlayMotion()">
             {{ $t("pet.motionPlay") }}
           </button>
         </div>
@@ -28,9 +30,22 @@
         v-if="ctx.capabilities.value.has('motion-toggle')"
         :ids="ctx.motionPoolIds.value"
         v-model:disabled-ids="ctx.disabledMotions.value"
-        title-key="pet.motionPoolTitle"
-        desc-key="pet.motionPoolDesc"
+        :title-key="
+          ctx.capabilities.value.has('vrm-upload')
+            ? 'pet.motionPoolTitleVrm'
+            : 'pet.motionPoolTitle'
+        "
+        :desc-key="
+          ctx.capabilities.value.has('vrm-upload')
+            ? 'pet.motionPoolDescVrm'
+            : 'pet.motionPoolDesc'
+        "
         label-key-prefix="pet.motion."
+        :motion-meta="ctx.capabilities.value.has('vrm-upload')"
+        :selectable="ctx.capabilities.value.has('vrm-upload')"
+        :selected-id="ctx.demoMotion.value"
+        @update:selected-id="(id) => ctx.onDemoMotion(id)"
+        @play="(id) => ctx.onPlayMotion(id)"
         @change="ctx.persistOnly"
       />
     </ThemeSection>
@@ -167,14 +182,14 @@ function resetDuration(item: CustomVrmMotion) {
   gap: 8px;
   flex-wrap: nowrap;
   width: 100%;
-  max-width: 220px;
+  max-width: 100%;
   min-width: 0;
 }
 
 .motion-row .ctrl-select {
   flex: 1 1 auto;
   width: auto;
-  min-width: 0;
+  min-width: 140px;
   max-width: none;
 }
 
@@ -183,9 +198,8 @@ function resetDuration(item: CustomVrmMotion) {
 }
 
 .ctrl-select {
-  width: 148px;
+  width: 100%;
   max-width: 100%;
-  flex: 0 1 148px;
 }
 
 .custom-motion-panel {

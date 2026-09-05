@@ -64,7 +64,12 @@ export type PetSettingsPageCtx = {
   themeStageModeOptions: ComputedRef<Array<{ label: string; value: string }>>;
   themeWallpaperFitOptions: ComputedRef<Array<{ label: string; value: string }>>;
   bootDurationModeOptions: ComputedRef<Array<{ label: string; value: string }>>;
-  motionOptions: ComputedRef<Array<{ label: string; value: string }>>;
+  motionOptions: ComputedRef<
+    Array<
+      | { label: string; value: string }
+      | { label: string; options: Array<{ label: string; value: string }> }
+    >
+  >;
   motionPoolIds: ComputedRef<string[]>;
   skinDefaultNickname: ComputedRef<string>;
   capabilities: ComputedRef<Set<import("@/pet/characters").PetCapability>>;
@@ -121,7 +126,7 @@ export type PetSettingsPageCtx = {
   onPickVrm: () => void | Promise<void>;
   onClearVrm: () => void | Promise<void>;
   onDemoMotion: (v: unknown) => void | Promise<void>;
-  onPlayMotion: () => void | Promise<void>;
+  onPlayMotion: (motionId?: string) => void | Promise<void>;
   onThemeStyle: (v: unknown) => void | Promise<void>;
   onThemeStageMode: (v: unknown) => void | Promise<void>;
   onThemeWallpaperDim: (v: unknown) => void | Promise<void>;
