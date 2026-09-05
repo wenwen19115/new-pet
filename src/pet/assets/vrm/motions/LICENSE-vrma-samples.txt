@@ -1,0 +1,25 @@
+VRMA sample attributions
+
+1) aikeya `static/animations` 全量（MIT）
+   https://github.com/aikeyaorg/aikeya/tree/main/static/animations
+   - idle / idle_2–5 / talking
+   - VRMA_01–07（VRoid Project 免费 7 种套，经 aikeya 树）：
+     01 Show full body → showcase
+     02 Greeting → greet
+     03 Peace sign → peace
+     04 Shoot → shoot
+     05 Spin → twirl
+     06 Model pose → pose
+     07 Squat → squat
+   官方说明：https://vroid.com/en/news/6HozzBIV0KkcKf9dc1fZGW
+   BOOTH：https://booth.pm/ja/items/5512385
+
+2) Gesture / emotion 补充（wave, clap, jump, think, look, surprise, relax, angry, blush, sad, sleepy）
+   https://github.com/tk256ailab/vrm-viewer — MIT, Copyright (c) 2025 TK256
+
+See upstream LICENSE files for full terms.
+
+3) ACCAD / Open Motion Project Female1 BVH → VRMA（CC BY 3.0）
+   https://accad.osu.edu/research/motion-lab/mocap-system-and-data
+   Converted via bvh2vrma (MIT); in-place subset only (`accad_*.vrma`).
+   See LICENSE-accad-vrma.txt.

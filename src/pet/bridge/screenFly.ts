@@ -95,8 +95,7 @@ async function animatePetWindowTo(
   toY: number,
   durationMs: number,
   signal?: { cancelled: boolean },
-  onFrame?: (info: FlyFrameInfo) => void,
-  ease: "smooth" | "walk" = "smooth"
+  onFrame?: (info: FlyFrameInfo) => void
 ): Promise<void> {
   const win = getCurrentWindow();
   const scale = await win.scaleFactor();
@@ -106,14 +105,6 @@ async function animatePetWindowTo(
   let committed = { x: from.x, y: from.y };
   let pending: { x: number; y: number } | null = null;
   let writing = false;
-
-  const easeFn = (t: number) => {
-    if (ease === "walk") {
-      const s = t * t * (3 - 2 * t);
-      return s * 0.35 + t * 0.65;
-    }
-    return easeSmooth(t);
-  };
 
   const flushWrite = () => {
     if (writing || !pending || signal?.cancelled) return;
@@ -143,7 +134,7 @@ async function animatePetWindowTo(
       }
 
       const t = clamp((now - start) / Math.max(1, durationMs), 0, 1);
-      const e = easeFn(t);
+      const e = easeSmooth(t);
       const x = from.x + (toX - from.x) * e;
       const y = from.y + (toY - from.y) * e;
 
@@ -298,56 +289,6 @@ export async function pickPeekRevealOuterPosition(
   } catch {
     return null;
   }
-}
-
-interface WalkFrameInfo extends FlyFrameInfo {
-  dirX: number;
-  progress: number;
-}
-
-export async function walkPetWindowRandom(
-  winW: number,
-  winH: number,
-  signal?: { cancelled: boolean },
-  onFrame?: (info: WalkFrameInfo) => void,
-  speedPxPerSec = 62
-): Promise<boolean> {
-  const dest = await pickRandomWorkPoint(winW, winH);
-  if (!dest) return false;
-
-  const win = getCurrentWindow();
-  const scale = await win.scaleFactor();
-  const from = (await win.outerPosition()).toLogical(scale);
-  const toX = dest.x;
-  const toY = from.y;
-  const dist = Math.abs(toX - from.x);
-  if (dist < 24) return false;
-
-  const durationMs = clamp(
-    (dist / Math.max(36, speedPxPerSec)) * 1000,
-    2800,
-    12000
-  );
-  const dirSign = toX >= from.x ? 1 : -1;
-  let lastX = from.x;
-
-  await animatePetWindowTo(
-    toX,
-    toY,
-    durationMs,
-    signal,
-    (info) => {
-      const dx = info.x - lastX;
-      lastX = info.x;
-      onFrame?.({
-        ...info,
-        dirX: Math.abs(dx) > 0.05 ? Math.sign(dx) : dirSign,
-        progress: 0,
-      });
-    },
-    "walk"
-  );
-  return !signal?.cancelled;
 }
 
 function sleep(ms: number, signal?: { cancelled: boolean }): Promise<void> {

@@ -18,6 +18,7 @@ const props = withDefaults(
     mood: PetMood;
     gaze: { x: number; y: number };
     motion?: PetIdleMotion | string;
+    motionPlayId?: number;
     customMotions?: CustomVrmMotion[];
     blinking?: boolean;
     lifting?: boolean;
@@ -29,6 +30,7 @@ const props = withDefaults(
   {
     src: null,
     motion: "idle-float",
+    motionPlayId: 0,
     customMotions: () => [],
     blinking: false,
     lifting: false,

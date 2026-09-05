@@ -57,6 +57,38 @@ export function remapToonMotion(motion: PetIdleMotion): PetIdleMotion {
 
 export function remapVrmMotion(motion: PetIdleMotion): PetIdleMotion {
   switch (motion) {
+    case "toon-wave":
+      return "vrm-wave";
+    case "bow-nod":
+    case "toon-read":
+    case "toon-tea":
+    case "toon-tilt":
+      return "vrm-greet";
+    case "stretch-up":
+      return "vrm-pose";
+    case "victory-burst":
+    case "happy-bounce":
+    case "tap-frenzy":
+    case "toon-water":
+    case "toon-grass":
+    case "toon-fire":
+    case "toon-splash":
+    case "toon-thunder":
+    case "toon-dodge":
+      return "vrm-peace";
+    case "rocket-jump":
+      return "vrm-jump";
+    case "cartwheel":
+      return "vrm-twirl";
+    case "side-hop":
+    case "tip-toe":
+      return "vrm-squat";
+    case "sway-step":
+    case "toon-sway":
+    case "toon-spin":
+      return "vrm-look";
+    case "idle-float":
+      return "vrm-idle";
     case "screen-dash":
     case "screen-hop":
     case "screen-zip":
@@ -65,25 +97,10 @@ export function remapVrmMotion(motion: PetIdleMotion): PetIdleMotion {
     case "toon-walk":
     case "fly-dash":
     case "fly-orbit":
-      return "vrm-walk";
-    case "toon-wave":
-    case "toon-sway":
-    case "toon-spin":
-      return "sway-step";
-    case "toon-read":
-    case "toon-tea":
-    case "toon-tilt":
-      return "bow-nod";
-    case "toon-water":
-    case "toon-grass":
-    case "toon-fire":
-    case "toon-splash":
-    case "toon-thunder":
-    case "toon-dodge":
-    case "happy-bounce":
-    case "tap-frenzy":
-      return "victory-burst";
-    // victory-burst / stretch-up 等已有专用姿态，勿再折叠
+    case "figure-eight":
+    case "barrel-roll":
+    case "vrm-walk":
+      return "vrm-look";
     default:
       return motion;
   }

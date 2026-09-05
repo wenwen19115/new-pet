@@ -10,7 +10,6 @@ import {
 import {
   isPetIdleMotion,
   isScreenFlightMotion,
-  isVrmWalkMotion,
   motionHoldMs,
   type PetIdleMotion,
 } from "@/pet/content/motion/motions";
@@ -19,7 +18,6 @@ import {
   flyPetWindowRandom,
   teleportPetWindowWormhole,
   teleportPetWindowWormholeAway,
-  walkPetWindowRandom,
 } from "@/pet/bridge/screenFly";
 import type { CharacterRuntimeSpec } from "@/pet/characters/types";
 import type { PetMood, PetSettings } from "@/pet/data/types";
@@ -161,9 +159,7 @@ export function usePetMotionHost(deps: {
           motion as PetIdleMotion,
           deps.activeSkin.value.model
         );
-    if (!isVrmWalkMotion(resolved as PetIdleMotion)) {
-      vrmFaceYaw.value = 0;
-    }
+    vrmFaceYaw.value = 0;
     const custom = isCustom
       ? findCustomVrmMotion(deps.settings.value.customVrmMotions, resolved)
       : undefined;
@@ -174,38 +170,8 @@ export function usePetMotionHost(deps: {
     if (!isCustom) applyMoodForMotion(resolved as PetIdleMotion);
     else deps.applyMood("happy", "motion");
 
-    if (isVrmWalkMotion(resolved as PetIdleMotion) && !deps.isDragging.value) {
-      void walkPetWindowRandom(
-        deps.winSize.value.w,
-        deps.winSize.value.h,
-        flight,
-        (info) => {
-          flyVisualX.value = info.visualDx;
-          flyVisualY.value = info.visualDy;
-          const target = info.dirX >= 0 ? Math.PI * 0.5 : -Math.PI * 0.5;
-          vrmFaceYaw.value += (target - vrmFaceYaw.value) * 0.28;
-          if (deps.speaking.value) void syncPetBubbleToPet();
-        }
-      ).finally(() => {
-        if (!flight.cancelled) {
-          flyVisualX.value = 0;
-          flyVisualY.value = 0;
-          vrmFaceYaw.value = 0;
-        }
-        if (
-          gen === motionGen &&
-          !deps.isDragging.value &&
-          deps.mood.value !== "sleep"
-        ) {
-          deps.idleMotion.value = "idle-float";
-          deps.applyMood("idle", "motion-end");
-        }
-        if (gen === motionGen) {
-          motionLockUntil = 0;
-          if (manual) deps.scheduleIdleAction();
-        }
-      });
-    } else if (
+    // VRM 只播原地片，不挪窗
+    if (
       !isCustom &&
       isPetIdleMotion(resolved) &&
       isScreenFlightMotion(resolved) &&
@@ -278,7 +244,6 @@ export function usePetMotionHost(deps: {
 
     idleHoldTimer = window.setTimeout(() => {
       if (gen !== motionGen) return;
-      if (isVrmWalkMotion(resolved as PetIdleMotion)) return;
       if (!deps.isDragging.value && deps.mood.value !== "sleep") {
         deps.idleMotion.value = "idle-float";
         deps.applyMood("idle", "motion-end");

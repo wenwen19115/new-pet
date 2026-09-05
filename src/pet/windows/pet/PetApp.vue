@@ -236,6 +236,7 @@ const runtimeModelProps = computed(() =>
     gaze: gaze,
     blinking: blinking.value,
     motion: idleMotion.value,
+    motionPlayId: motionPlayId.value,
     pinColors: pinColors.value,
     figArtId: activeSkin.value.figArtId,
     toonDecor: activeSkin.value.toonDecor,

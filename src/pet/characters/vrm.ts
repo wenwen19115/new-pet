@@ -18,15 +18,23 @@ export const characterVrm: CharacterDef = {
   ],
   demoMotions: PET_VRM_DEMO_MOTIONS,
   idleMotions: [
-    "idle-float",
-    "sway-step",
-    "bow-nod",
-    "stretch-up",
-    "victory-burst",
-    "vrm-walk",
+    "vrm-idle",
+    "vrm-idle2",
+    "vrm-idle3",
+    "vrm-idle4",
+    "vrm-idle5",
+    "vrm-look",
+    "vrm-relax",
+    "vrm-think",
+    "vrm-wave",
+    "vrm-greet",
+    "vrm-peace",
+    "vrm-pose",
+    "vrm-blush",
+    "vrm-talk",
   ],
   defaults: {
-    demoMotion: "sway-step",
+    demoMotion: "vrm-idle",
     lookId: "cyan",
     buildExtensions: () => ({ vrm: emptyVrmExtension() }),
   },
@@ -39,7 +47,7 @@ export const characterVrm: CharacterDef = {
       const h = Math.round(
         Math.min(320, Math.max(210, short * 0.24)) * scale
       );
-      // 双马尾等横向溢出：略加宽，避免画布左右裁发
+      // 双马尾等横向溢出：略加宽，避免画布左右裁切
       const w = Math.round(h * 0.62);
       return { w, h };
     },
@@ -55,21 +63,17 @@ export const characterVrm: CharacterDef = {
   resolveMotion: remapVrmMotion,
   runtime: {
     gaze: { max: 1.8, range: 90, follow: 0.55 },
-    tapFallbackMotion: "victory-burst",
+    tapFallbackMotion: "vrm-wave",
     screenFlight: "none",
-    dragLandMotions: [
-      "bow-nod",
-      "sway-step",
-      "stretch-up",
-    ],
+    dragLandMotions: ["vrm-wave", "vrm-blush", "vrm-relax"],
     accents: {
       deskWeather: {
-        appsUp: "stretch-up",
-        appsDown: "bow-nod",
-        switchBurst: "sway-step",
+        appsUp: "vrm-surprise",
+        appsDown: "vrm-sleepy",
+        switchBurst: "vrm-clap",
         maxDwell: {
-          "30s": null,
-          "3m": "vrm-walk",
+          "30s": "vrm-look",
+          "3m": "vrm-relax",
         },
       },
     },
@@ -84,6 +88,7 @@ export const characterVrm: CharacterDef = {
       mood: ctx.mood,
       gaze: ctx.gaze,
       motion: ctx.motion,
+      motionPlayId: ctx.motionPlayId ?? 0,
       customMotions: ctx.customVrmMotions,
       blinking: ctx.blinking,
       lifting: ctx.lifting,

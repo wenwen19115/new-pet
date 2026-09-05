@@ -77,6 +77,38 @@ export function moodForMotion(motion: PetIdleMotion): PetMood {
     case "toon-spin":
     case "toon-read":
       return "curious";
+    case "vrm-wave":
+    case "vrm-clap":
+    case "vrm-jump":
+    case "vrm-twirl":
+    case "vrm-surprise":
+    case "vrm-blush":
+    case "vrm-greet":
+    case "vrm-peace":
+    case "vrm-pose":
+    case "vrm-showcase":
+    case "vrm-shoot":
+    case "vrm-squat":
+      return "happy";
+    case "vrm-think":
+    case "vrm-look":
+    case "vrm-talk":
+      return "curious";
+    case "vrm-angry":
+      return "excited";
+    case "vrm-sad":
+    case "vrm-sleepy":
+    case "vrm-relax":
+    case "vrm-idle":
+    case "vrm-idle2":
+    case "vrm-idle3":
+    case "vrm-idle4":
+    case "vrm-idle5":
+    case "vrm-idle6":
+    case "vrm-accad-stand":
+    case "vrm-accad-sway":
+    case "vrm-accad-wait":
+      return "idle";
     default:
       return "idle";
   }

@@ -170,6 +170,26 @@ describe("architecture smoke", () => {
     }
   });
 
+  it("built-in VRMA registry covers VRM demo clip ids", async () => {
+    const { BUILT_IN_VRMA_MOTIONS, isVrmaClipMotion, resolveVrmRestMotion } =
+      await import("./content/motion/vrmaMotions");
+    expect(BUILT_IN_VRMA_MOTIONS.length).toBeGreaterThanOrEqual(30);
+    for (const m of BUILT_IN_VRMA_MOTIONS) {
+      expect(isPetIdleMotion(m.id), m.id).toBe(true);
+      expect(isVrmaClipMotion(m.id)).toBe(true);
+      expect(m.url).toMatch(/\.vrma/);
+      expect(m.durationMs).toBeGreaterThan(0);
+      expect(["idle", "talk", "gesture", "emotion"]).toContain(m.kind);
+      expect(["soft", "lively", "bold"]).toContain(m.vibe);
+    }
+    expect(isVrmaClipMotion("vrm-walk")).toBe(false);
+    expect(isVrmaClipMotion("idle-float")).toBe(false);
+    expect(resolveVrmRestMotion("idle-float")).toBe("vrm-idle");
+    const softOnly = BUILT_IN_VRMA_MOTIONS.filter((m) => m.vibe === "soft");
+    expect(softOnly.some((m) => m.id === "vrm-greet")).toBe(true);
+    expect(softOnly.some((m) => m.id === "vrm-angry")).toBe(false);
+  });
+
   it("toon demo motions resolve to non-idle anim states (except happy-bounce)", () => {
     for (const m of PET_TOON_DEMO_MOTIONS) {
       const anim = resolveToonAnimState(m, "idle");

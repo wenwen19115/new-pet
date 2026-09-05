@@ -213,6 +213,15 @@
   resolved "https://registry.yarnpkg.com/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.5.5.tgz#6912b00d2c631c0d15ce1a7ab57cd657f2a8f8ba"
   integrity sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==
 
+"@pixiv/three-vrm-animation@^3.5.5":
+  version "3.5.5"
+  resolved "https://registry.npmmirror.com/@pixiv/three-vrm-animation/-/three-vrm-animation-3.5.5.tgz#7e65c3572673ac9c0fd9bc561194f9413494be99"
+  integrity sha512-Q0kEtmftxfv0iCUHQkJH2jAr1zmT9ywYXnAzhxnLPMYCsx0Kken3J3U2GJF9PdGZmLlKpoK0LFEXVdD/L7ZA4Q==
+  dependencies:
+    "@pixiv/three-vrm-core" "3.5.5"
+    "@pixiv/types-vrmc-vrm-1.0" "3.5.5"
+    "@pixiv/types-vrmc-vrm-animation-1.0" "3.5.5"
+
 "@pixiv/three-vrm-core@3.5.5":
   version "3.5.5"
   resolved "https://registry.yarnpkg.com/@pixiv/three-vrm-core/-/three-vrm-core-3.5.5.tgz#0d0ea8a1582121d77f48a7e26c31d62f28b6aae5"
@@ -306,6 +315,13 @@
   version "3.5.5"
   resolved "https://registry.yarnpkg.com/@pixiv/types-vrmc-vrm-1.0/-/types-vrmc-vrm-1.0-3.5.5.tgz#fffb29caa52f1a50e4baf98074168e4a43446a1b"
   integrity sha512-WnemHHo2375BcBdumEhvrupZzsMSzTfdWlokmV9sUX2oC+OAQqJFfBjLF8ppkOhzHpl4MAPJqEfuhBJtNPm9ww==
+
+"@pixiv/types-vrmc-vrm-animation-1.0@3.5.5":
+  version "3.5.5"
+  resolved "https://registry.npmmirror.com/@pixiv/types-vrmc-vrm-animation-1.0/-/types-vrmc-vrm-animation-1.0-3.5.5.tgz#cc7b4a0d8d96afcdaf224458da45dd1487788770"
+  integrity sha512-pyow6wBLdRZbLQbtHqu8uvYG+NXJbwIiLVK6pM6UvtaYotecOv43t6qIdMLYuieV+F+bEJcdfOLFZZVolrOOcQ==
+  dependencies:
+    "@pixiv/types-vrmc-vrm-1.0" "3.5.5"
 
 "@rollup/rollup-android-arm-eabi@4.62.3":
   version "4.62.3"

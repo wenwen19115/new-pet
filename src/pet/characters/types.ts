@@ -126,6 +126,8 @@ interface CharacterRuntimeBindCtx {
   gaze: { x: number; y: number };
   blinking: boolean;
   motion: string;
+  /** 同 motion 再播时递增，供 VRM clip 重开 */
+  motionPlayId?: number;
   pinColors: string[];
   figArtId?: string | null;
   toonDecor?: string | null;

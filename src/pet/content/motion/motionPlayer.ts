@@ -6,6 +6,7 @@ import {
 } from "./customVrmMotions";
 import type { PetIdleMotion } from "./motions";
 import { motionHoldMs } from "./motions";
+import { groupVrmaMotionIdsByKind } from "./vrmaMotions";
 
 interface MotionPlayRequest {
   id: string;
@@ -60,9 +61,42 @@ export function resolveMotionPlay(
 export function demoMotionOptions(
   demoMotions: readonly string[],
   customVrmMotions: CustomVrmMotion[] = [],
-  allowCustomVrm = false
-): Array<{ value: string; labelKey?: string; label?: string }> {
-  const builtIn = demoMotions.map((value) => ({
+  allowCustomVrm = false,
+  opts?: {
+    /** 按 kind 分组（设置页 Select） */
+    groupByKind?: boolean;
+  }
+): Array<{
+  value?: string;
+  labelKey?: string;
+  label?: string;
+  options?: Array<{ value: string; labelKey?: string; label?: string }>;
+}> {
+  const ids = [...demoMotions];
+
+  if (opts?.groupByKind && allowCustomVrm) {
+    type Opt = { value: string; labelKey?: string; label?: string };
+    type Group = { labelKey: string; options: Opt[] };
+    const groups: Group[] = groupVrmaMotionIdsByKind(ids).map((g) => ({
+      labelKey: `pet.motionKind.${g.kind}`,
+      options: g.ids.map((value) => ({
+        value,
+        labelKey: `pet.motion.${value}`,
+      })),
+    }));
+    if (customVrmMotions.length) {
+      groups.push({
+        labelKey: "pet.motionKind.custom",
+        options: customVrmMotions.map((m) => ({
+          value: m.id,
+          label: m.name,
+        })),
+      });
+    }
+    return groups;
+  }
+
+  const builtIn = ids.map((value) => ({
     value,
     labelKey: `pet.motion.${value}`,
   }));

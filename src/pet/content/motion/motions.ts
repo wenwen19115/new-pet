@@ -1,3 +1,5 @@
+import { findVrmaMotion } from "./vrmaMotions";
+
 export type PetIdleMotion =
   | "idle-float"
   | "happy-bounce"
@@ -33,7 +35,42 @@ export type PetIdleMotion =
   | "toon-splash"
   | "toon-thunder"
   | "toon-dodge"
-  | "vrm-walk";
+  | "vrm-walk"
+  | "vrm-idle"
+  | "vrm-idle2"
+  | "vrm-idle3"
+  | "vrm-idle4"
+  | "vrm-idle5"
+  | "vrm-idle6"
+  | "vrm-talk"
+  | "vrm-wave"
+  | "vrm-greet"
+  | "vrm-peace"
+  | "vrm-pose"
+  | "vrm-showcase"
+  | "vrm-shoot"
+  | "vrm-squat"
+  | "vrm-twirl"
+  | "vrm-clap"
+  | "vrm-jump"
+  | "vrm-think"
+  | "vrm-look"
+  | "vrm-surprise"
+  | "vrm-relax"
+  | "vrm-angry"
+  | "vrm-blush"
+  | "vrm-sad"
+  | "vrm-sleepy"
+  | "vrm-accad-conversation-gestures"
+  | "vrm-accad-crouch"
+  | "vrm-accad-lift-box"
+  | "vrm-accad-look"
+  | "vrm-accad-pick-up-box"
+  | "vrm-accad-random-gestures"
+  | "vrm-accad-stand"
+  | "vrm-accad-sway"
+  | "vrm-accad-swing-arms"
+  | "vrm-accad-wait";
 
 export const PET_CHIP_DEMO_MOTIONS: PetIdleMotion[] = [
   "screen-dash",
@@ -70,12 +107,45 @@ export const PET_TOON_DEMO_MOTIONS: PetIdleMotion[] = [
 ];
 
 export const PET_VRM_DEMO_MOTIONS: PetIdleMotion[] = [
-  "idle-float",
-  "sway-step",
-  "bow-nod",
-  "stretch-up",
-  "victory-burst",
-  "vrm-walk",
+  // aikeya idle / talk
+  "vrm-idle",
+  "vrm-idle2",
+  "vrm-idle3",
+  "vrm-idle4",
+  "vrm-idle5",
+  "vrm-idle6",
+  "vrm-talk",
+  // VRoid VRMA_01–07（经 aikeya）
+  "vrm-showcase",
+  "vrm-greet",
+  "vrm-peace",
+  "vrm-shoot",
+  "vrm-twirl",
+  "vrm-pose",
+  "vrm-squat",
+  // vrm-viewer 补充
+  "vrm-wave",
+  "vrm-think",
+  "vrm-look",
+  "vrm-blush",
+  "vrm-relax",
+  "vrm-sleepy",
+  "vrm-sad",
+  "vrm-clap",
+  "vrm-jump",
+  "vrm-surprise",
+  "vrm-angry",
+  // ACCAD Female1 原地子集
+  "vrm-accad-conversation-gestures",
+  "vrm-accad-crouch",
+  "vrm-accad-lift-box",
+  "vrm-accad-look",
+  "vrm-accad-pick-up-box",
+  "vrm-accad-random-gestures",
+  "vrm-accad-stand",
+  "vrm-accad-sway",
+  "vrm-accad-swing-arms",
+  "vrm-accad-wait",
 ];
 
 export function isScreenFlightMotion(motion: PetIdleMotion): boolean {
@@ -121,6 +191,9 @@ export function isPetIdleMotion(value: unknown): value is PetIdleMotion {
 }
 
 export function motionHoldMs(motion: PetIdleMotion): number {
+  // VRMA 时长以 vrmaMotions 为 SoT，避免双写
+  const vrma = findVrmaMotion(motion);
+  if (vrma) return vrma.durationMs;
   switch (motion) {
     case "screen-wormhole":
       return 1300;
