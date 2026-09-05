@@ -1,6 +1,16 @@
 # VRM 动作编写规则
 
-代码 SoT：`src/pet/data/vrmPoses.ts`。自定义骨骼编辑与导入导出：`src/pet/content/motion/customVrmMotions.ts`（导出 JSON 用**度**）。
+代码 SoT：
+- **VRMA 主库（酥酥默认）**：`src/pet/content/motion/vrmaMotions.ts` + `src/pet/assets/vrm/motions/*.vrma`
+  - 自标 `kind`（类型：idle/talk/gesture/emotion）与 `vibe`（风格：soft/lively/bold）；样例文件本身无官方类型
+  - 设置「动作列表」点行即播；随机池仍由各开关控制（关掉即不进随机）
+  - aikeya 全量：`idle`×5 + `talk` + VRoid `VRMA_01–07`（showcase/greet/peace/shoot/twirl/pose/squat）
+  - 另附 vrm-viewer 手势情绪（wave / blush…）
+  - 来源：https://github.com/aikeyaorg/aikeya/tree/main/static/animations + vrm-viewer；见 `assets/vrm/motions/LICENSE-vrma-samples.txt`
+- 程序姿态（仅睡眠 / 拎起 / 自定义骨骼）：`src/pet/data/vrmPoses.ts`
+- 自定义关键帧：`src/pet/content/motion/customVrmMotions.ts`（导出 JSON 用**度**）
+
+播放：`useVrmRenderer` 对 VRMA id（含 `idle-float`→`vrm-idle`）走 `AnimationMixer`；睡眠与拎起仍 `resolveVrmPose`。
 
 姿态写在 **Normalized Humanoid**（`getNormalizedBoneNode`）。零姿态 = T-pose；数值 = **相对 T-pose** 的本地旋转。  
 规范提供的是 T-pose / 归一化空间，**不是**「每骨欧拉 X/Y/Z 拧多少 = 什么观感」的滑条说明书。下表以**本项目预览实测**为准（酥酥 + 设置页「做一下」），勿用纸面世界轴推断覆盖实测。
@@ -99,13 +109,10 @@
 
 | 函数 | motion id | 意图 | 主驱动 |
 | --- | --- | --- | --- |
-| `poseIdle` | `idle-float` | 呼吸+轻移重 | 躯干/腿；臂小摆 |
-| `poseWalk` | `vrm-walk` | 原地走 | 腿 X- 前迈 + `knee` + 对侧臂 X |
-| `poseSway` | `sway-step` | 左右晃 | 髋/脊 Y |
-| `poseVictory` | `victory-burst` | 单脚欢呼（含原欢快跳/连点在 VRM 上的 remap） | 单支撑 + 举手 |
-| `poseBow` | `bow-nod` | 鞠躬 | `FWD` 前倾 + `holdEnvelope` |
-| `poseStretch` | `stretch-up` | 伸懒腰 | `stretchArmChain`：前臂 Z 屈肘、上臂 X+ 体前、腕掌随动；屈肘停顿短 |
+| `poseIdle` | `idle-float`（睡眠时） | 呼吸+轻移重 | 躯干/腿；臂小摆 |
 | `poseSleep` / `poseLifted` | mood / drag | 瞌睡 / 拎起 | 见代码 |
+| VRMA loop | `vrm-idle` / `vrm-idle2` | 待机 | aikeya idle clips，`LoopRepeat` |
+| VRMA once | `vrm-wave` / `vrm-clap` / `vrm-jump` / `vrm-think` / `vrm-look` / `vrm-surprise` / `vrm-relax` / `vrm-talk` / `vrm-angry` / `vrm-blush` / `vrm-sad` / `vrm-sleepy` | 手势库 | `@pixiv/three-vrm-animation` |
 
 ## 7. 禁止事项
 
