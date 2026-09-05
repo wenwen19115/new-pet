@@ -16,7 +16,13 @@
       </button>
     </div>
     <p class="theme-pack-meta theme-d">{{ statusText }}</p>
-    <div class="theme-pack-picker" role="listbox" :aria-label="ariaLabel">
+    <div
+      ref="pickerEl"
+      class="theme-pack-picker"
+      :class="{ 'is-browse': browsing }"
+      role="listbox"
+      :aria-label="ariaLabel"
+    >
       <button
         v-for="pack in visiblePacks"
         :key="pack.id"
@@ -35,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, nextTick, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { listThemePacks } from "@/theme";
 import type { ThemePack, ThemePackId } from "@/theme";
@@ -53,8 +59,9 @@ const allPacks = listThemePacks();
 const indexById = new Map(allPacks.map((p, i) => [p.id, i + 1]));
 
 const query = ref("");
-/** 默认收起，只露当前选中 */
+/** 默认收起，只露当前选中；展开后在固定高度窗口内滚动浏览 */
 const expanded = ref(false);
+const pickerEl = ref<HTMLElement | null>(null);
 
 function packIndex(id: ThemePackId): number {
   return indexById.get(id) ?? 0;
@@ -73,9 +80,14 @@ const filteredPacks = computed(() => {
   });
 });
 
+/** 展开或搜索：列表在可滚动窗口里，不把整页撑开 */
+const browsing = computed(
+  () => expanded.value || Boolean(query.value.trim())
+);
+
 const visiblePacks = computed((): ThemePack[] => {
   const list = filteredPacks.value;
-  if (query.value.trim() || expanded.value) return list;
+  if (browsing.value) return list;
   const selected =
     allPacks.find((p) => p.id === props.modelValue) ?? allPacks[0];
   return selected ? [selected] : [];
@@ -93,8 +105,17 @@ const statusText = computed(() => {
   return t("pet.themePackStatusCollapsed", { total });
 });
 
+async function scrollSelectedIntoView() {
+  await nextTick();
+  const root = pickerEl.value;
+  if (!root) return;
+  const on = root.querySelector<HTMLElement>("button.on");
+  on?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+}
+
 function expandAll() {
   expanded.value = true;
+  void scrollSelectedIntoView();
 }
 
 function collapseAll() {
@@ -143,5 +164,18 @@ function collapseAll() {
 
 .theme-pack-picker-wrap :deep(.theme-pack-picker) {
   margin-top: 8px;
+}
+
+/* 展开/搜索：固定高度窗口内滚动，避免把下方控件顶出视口 */
+.theme-pack-picker-wrap :deep(.theme-pack-picker.is-browse) {
+  max-height: min(42vh, 340px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid var(--ui-border, rgba(255, 255, 255, 0.12));
+  border-radius: 12px;
+  background: var(--ui-surface, rgba(0, 0, 0, 0.18));
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 </style>

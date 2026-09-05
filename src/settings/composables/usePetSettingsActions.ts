@@ -634,7 +634,7 @@ export function usePetSettingsActions(deps: {
     );
   }
 
-  function onRemoveCustomMotion(id: string) {
+  async function onRemoveCustomMotion(id: string) {
     deps.customVrmMotions.value = deps.customVrmMotions.value.filter(
       (m) => m.id !== id
     );
@@ -644,8 +644,10 @@ export function usePetSettingsActions(deps: {
     }
     if (deps.demoMotion.value === id) {
       deps.demoMotion.value =
-        getCharacter("vrm").demoMotions[0] ?? "happy-bounce";
+        getCharacter("vrm").demoMotions[0] ?? "idle-float";
     }
+    // 删除即落盘，避免只改草稿、刷新后又冒出来
+    await persistCustomMotions();
   }
 
   async function onPlayCustomMotion(id: string) {
