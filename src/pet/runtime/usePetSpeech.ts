@@ -6,7 +6,7 @@ import { applyCatchphrase } from "../content/dialogue/catchphrases";
 import type { PetMood, PetSettings, PetUsbAnnouncePayload } from "../data/types";
 import type { DeskWeatherKind } from "../data/deskWeather";
 import type { PetModelKind } from "../skins/types";
-import { getCharacter } from "../characters";
+import { getCharacter, resolveMotionForModel } from "../characters";
 import type { PetIdleMotion } from "../content/motion/motions";
 import { linePickOptsFromSettings } from "./usePetLines";
 import { cancelPetTts, speakPetTts } from "../bridge/tts";
@@ -108,7 +108,10 @@ export function usePetSpeech(deps: {
       );
     }
     if (!options.keepMotion && !deps.isMotionLocked()) {
-      deps.idleMotion.value = "happy-bounce";
+      deps.idleMotion.value = resolveMotionForModel(
+        "happy-bounce",
+        deps.model.value
+      );
     }
 
     const estimateMs = Math.max(BUBBLE_MS, 1200 + text.length * 42);
@@ -182,6 +185,8 @@ export function usePetSpeech(deps: {
   }
 
   function speakIntro() {
+    // 未召唤时切角色也会 sync settings → introIfSkinChanged；勿在默认位弹气泡
+    if (!deps.settings.value.enabled) return;
     const line = buildSkinIntro(deps.settings.value);
     void speakText(line, false);
   }

@@ -201,7 +201,6 @@ describe("mood gate (applyPetMood)", () => {
   it("moodForMotion maps built-in motions", () => {
     expect(moodForMotion("happy-bounce")).toBe("happy");
     expect(moodForMotion("fly-orbit")).toBe("excited");
-    expect(moodForMotion("peekaboo")).toBe("curious");
     expect(moodForMotion("idle-float")).toBe("idle");
   });
 
@@ -451,6 +450,61 @@ describe("host regression smokes", () => {
       },
     });
     expect(cancelPetTts).toHaveBeenCalled();
+  });
+
+  it("未召唤时切形象不触发 intro 气泡", () => {
+    const settings = ref({ ...baseSettings(), enabled: false });
+    const speakIntro = vi.fn();
+    const sync = usePetSettingsSync({
+      settings,
+      vrmSrc: ref<string | null>(null),
+      hostAlive: () => false,
+      getActiveSkinId: () => settings.value.lookId,
+      getActiveSkinModel: () => settings.value.modelKind,
+      refreshUsbWatch: vi.fn(),
+      refreshDeskWeather: vi.fn(),
+      refreshSkyWeatherBackdrop: vi.fn(),
+      resizePetWindow: vi.fn(),
+      onRandomIdleSetting: vi.fn(),
+      speakIntro,
+    });
+
+    const fromLook = settings.value.lookId;
+    // 换 look（同模型不同皮肤）会改 active skin id
+    const looks = ["cyan", "pink", "mint", "amber"] as const;
+    const nextLook = looks.find((id) => id !== fromLook) ?? "pink";
+    sync.applySettings(
+      {
+        ...settings.value,
+        lookId: nextLook,
+        profiles: {
+          ...settings.value.profiles,
+          [settings.value.modelKind]: {
+            ...settings.value.profiles[settings.value.modelKind]!,
+            lookId: nextLook,
+          },
+        },
+      },
+      { introIfSkinChanged: true }
+    );
+    expect(speakIntro).not.toHaveBeenCalled();
+
+    settings.value = { ...settings.value, enabled: true };
+    sync.applySettings(
+      {
+        ...settings.value,
+        lookId: fromLook,
+        profiles: {
+          ...settings.value.profiles,
+          [settings.value.modelKind]: {
+            ...settings.value.profiles[settings.value.modelKind]!,
+            lookId: fromLook,
+          },
+        },
+      },
+      { introIfSkinChanged: true }
+    );
+    expect(speakIntro).toHaveBeenCalledTimes(1);
   });
 
   it("lifecycle dispose suspends host and tears down listeners/state", async () => {

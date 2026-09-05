@@ -90,7 +90,11 @@ export function usePetSettingsSync(deps: {
       deps.settings.value.modelKind,
       deps.settings.value.lookId
     );
-    if (options?.introIfSkinChanged && nextLook.id !== prevId) {
+    if (
+      options?.introIfSkinChanged &&
+      nextLook.id !== prevId &&
+      deps.settings.value.enabled
+    ) {
       void deps.speakIntro();
     }
     if (deps.hostAlive() && deps.settings.value.usbWatchEnabled !== prevUsb) {
