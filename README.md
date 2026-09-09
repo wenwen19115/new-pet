@@ -1,6 +1,6 @@
-# Desktop Pet
+# 新宠 / new-pet
 
-独立桌宠工程（芯宠 / Chip Pet）。
+独立桌宠工程（品牌名：新宠；技术标识：new-pet）。
 
 ## 功能
 

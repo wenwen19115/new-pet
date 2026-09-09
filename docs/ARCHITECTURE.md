@@ -1,4 +1,4 @@
-# Desktop Pet 架构
+# 新宠 / new-pet 架构
 
 本文说明模块划分与代码落点，供开发查阅。运行时状态约定见 [`STATE.md`](./STATE.md)；发版前手测见 [`GOLDEN_PATHS.md`](./GOLDEN_PATHS.md)；VRM 骨骼动作编写见 [`VRM_MOTION.md`](./VRM_MOTION.md)。
 
@@ -153,7 +153,7 @@ mood、idle、暂停位等写入约定见 [`STATE.md`](./STATE.md)。跨 host �
 
 ## 存储
 
-- 键：`desktop-pet-settings`
+- 键：`new-pet-settings`（旧键 `desktop-pet-settings` 读一次迁移）
 - 形象字段：`lookId`
 
 ## 验证
