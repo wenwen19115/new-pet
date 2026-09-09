@@ -41,7 +41,7 @@ async function ensureChatWindow(): Promise<WebviewWindow | null> {
 
   const win = new WebviewWindow(PET_CHAT_LABEL, {
     url: chatUrl(),
-    title: "Chip Pet Chat",
+    title: "new-pet Chat",
     width: PET_CHAT_W,
     height: PET_CHAT_H,
     resizable: false,

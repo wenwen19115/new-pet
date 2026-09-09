@@ -77,9 +77,9 @@ function buildSystemPrompt(persona: PetChatPersona): string {
         : "cute";
 
   if (persona.lang === "en") {
-    return `You are ${persona.petName}, a desktop pet. Personality: ${hint}. Tone: ${toneHint}. Reply in 1-2 short spoken sentences. No markdown.`;
+    return `You are ${persona.petName}, a new-pet companion. Personality: ${hint}. Tone: ${toneHint}. Reply in 1-2 short spoken sentences. No markdown.`;
   }
-  return `你是桌宠「${persona.petName}」。性格：${hint}；语气：${toneHint}。用一两句口头中文回复，约 60 字内，不要 markdown。`;
+  return `你是新宠「${persona.petName}」。性格：${hint}；语气：${toneHint}。用一两句口头中文回复，约 60 字内，不要 markdown。`;
 }
 
 function buildMessages(persona: PetChatPersona, turns: ChatTurn[]) {

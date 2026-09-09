@@ -24,10 +24,10 @@
       }
     }
   },
-  "productName": "Desktop Pet",
-  "mainBinaryName": "Desktop Pet",
+  "productName": "新宠",
+  "mainBinaryName": "new-pet",
   "version": "0.1.0",
-  "identifier": "com.wen.desktop.pet",
+  "identifier": "com.wen.newpet",
   "app": {
     "withGlobalTauri": false,
     "windows": [
@@ -41,7 +41,7 @@
         "decorations": false,
         "height": 818,
         "minHeight": 658,
-        "title": "Desktop Pet",
+        "title": "新宠",
         "width": 1100,
         "minWidth": 1000,
         "useHttpsScheme": true

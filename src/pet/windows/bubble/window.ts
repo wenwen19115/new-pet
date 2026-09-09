@@ -79,7 +79,7 @@ async function ensureBubbleWindow(): Promise<WebviewWindow | null> {
 
   const win = new WebviewWindow(PET_BUBBLE_LABEL, {
     url: bubbleUrl(),
-    title: "Chip Pet Bubble",
+    title: "new-pet Bubble",
     width: PET_BUBBLE_W,
     height: PET_BUBBLE_H,
     resizable: false,

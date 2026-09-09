@@ -650,24 +650,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "desktop-pet"
-version = "0.1.0"
-dependencies = [
- "base64 0.23.0",
- "msedge-tts",
- "serde",
- "serde_json",
- "serialport",
- "sysinfo",
- "tauri",
- "tauri-build",
- "tauri-plugin-dialog",
- "tauri-plugin-fs",
- "ureq 2.12.1",
- "windows 0.62.2",
-]
-
-[[package]]
 name = "digest"
 version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2038,6 +2020,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ee6cda3051665f1fb8d9e08fc35c96d5a244fb1be711a03b71118828afc9a873"
 dependencies = [
  "jni-sys 0.3.1",
+]
+
+[[package]]
+name = "new-pet"
+version = "0.1.0"
+dependencies = [
+ "base64 0.23.0",
+ "msedge-tts",
+ "serde",
+ "serde_json",
+ "serialport",
+ "sysinfo",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-dialog",
+ "tauri-plugin-fs",
+ "ureq 2.12.1",
+ "windows 0.62.2",
 ]
 
 [[package]]

@@ -8,7 +8,7 @@ export function localPetChatReply(
   persona: PetChatPersona,
   userText: string
 ): string {
-  const name = persona.petName || (persona.lang === "en" ? "Pet" : "桌宠");
+  const name = persona.petName || (persona.lang === "en" ? "new-pet" : "新宠");
   const zh = persona.lang === "zh";
   const snarky = persona.tone === "snarky";
   const t = userText.trim();
@@ -32,7 +32,7 @@ export function localPetChatReply(
       zh
         ? [
             `我是${name}呀，就在桌面上陪着你。`,
-            `嗯，我叫${name}，你的小桌宠～`,
+            `嗯，我叫${name}，你的新宠～`,
             `${name}报到！专陪你摸鱼的那种。`,
           ]
         : [
@@ -42,12 +42,12 @@ export function localPetChatReply(
           ],
       zh
         ? [
-            `${name}。桌宠。别问太多。`,
+            `${name}。新宠。别问太多。`,
             `我是${name}。看名字就懂了吧。`,
             `${name}。还用介绍？`,
           ]
         : [
-            `${name}. Desktop pet. Next question.`,
+            `${name}. new-pet. Next question.`,
             `I'm ${name}. The name's the resume.`,
             `${name}. Obvious, no?`,
           ]

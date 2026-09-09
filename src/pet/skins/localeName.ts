@@ -5,8 +5,8 @@ import { getPetLocale } from "@/pet/bridge/locale";
 export type LocaleName = { zh: string; en: string };
 
 export const FALLBACK_DEFAULT_NICKNAME: LocaleName = {
-  zh: "桌宠",
-  en: "Desktop Pet",
+  zh: "新宠",
+  en: "new-pet",
 };
 
 export function pickLocaleName(

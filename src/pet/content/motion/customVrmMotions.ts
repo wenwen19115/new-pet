@@ -313,6 +313,8 @@ export function holdCustomVrmMotionFrame(
 }
 
 export const CUSTOM_VRM_MOTION_EXPORT_KIND =
+  "new-pet-custom-vrm-motions" as const;
+const CUSTOM_VRM_MOTION_EXPORT_KIND_LEGACY =
   "desktop-pet-custom-vrm-motions" as const;
 
 export interface CustomVrmMotionExportFile {
@@ -418,7 +420,10 @@ export function parseCustomVrmMotionsImport(
 
   const motionsRaw = o.motions;
   if (!Array.isArray(motionsRaw)) return null;
-  const asDeg = o.unit === "deg" || o.kind === CUSTOM_VRM_MOTION_EXPORT_KIND;
+  const asDeg =
+    o.unit === "deg" ||
+    o.kind === CUSTOM_VRM_MOTION_EXPORT_KIND ||
+    o.kind === CUSTOM_VRM_MOTION_EXPORT_KIND_LEGACY;
   const out: CustomVrmMotion[] = [];
   for (const item of motionsRaw) {
     if (!item || typeof item !== "object") continue;
@@ -473,7 +478,7 @@ export function downloadCustomVrmMotionsExport(
   a.href = url;
   a.download =
     fileName ||
-    `desktop-pet-vrm-motions-${new Date().toISOString().slice(0, 10)}.json`;
+    `new-pet-vrm-motions-${new Date().toISOString().slice(0, 10)}.json`;
   a.rel = "noopener";
   document.body.appendChild(a);
   a.click();

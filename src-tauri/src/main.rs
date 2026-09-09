@@ -51,5 +51,5 @@ fn main() {
             Ok(())
         })
         .run(tauri::generate_context!())
-        .expect("error while running desktop-pet");
+        .expect("error while running new-pet");
 }

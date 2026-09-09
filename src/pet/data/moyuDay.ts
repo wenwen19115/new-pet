@@ -1,6 +1,7 @@
 /** 今日摸鱼轻量计数；localStorage，按本地日切。 */
 
-export const PET_MOYU_DAY_KEY = "desktop-pet-moyu-day";
+export const PET_MOYU_DAY_KEY = "new-pet-moyu-day";
+const PET_MOYU_DAY_KEY_LEGACY = "desktop-pet-moyu-day";
 
 export type MoyuDayStats = {
   day: string;
@@ -44,7 +45,14 @@ function clampNonNeg(n: number): number {
 export function loadMoyuDayStats(now = new Date()): MoyuDayStats {
   const today = localDayId(now);
   try {
-    const raw = localStorage.getItem(PET_MOYU_DAY_KEY);
+    let raw = localStorage.getItem(PET_MOYU_DAY_KEY);
+    if (!raw) {
+      raw = localStorage.getItem(PET_MOYU_DAY_KEY_LEGACY);
+      if (raw) {
+        localStorage.setItem(PET_MOYU_DAY_KEY, raw);
+        localStorage.removeItem(PET_MOYU_DAY_KEY_LEGACY);
+      }
+    }
     if (!raw) return emptyStats(today);
     const parsed = JSON.parse(raw) as Partial<MoyuDayStats>;
     if (typeof parsed.day !== "string" || parsed.day !== today) {
@@ -78,8 +86,12 @@ function writeMoyuDayStats(stats: MoyuDayStats): void {
 /** 清缓存 / 出厂：去掉今日摸鱼战绩；有键才算清到 */
 export function clearMoyuDayStats(): boolean {
   try {
-    if (localStorage.getItem(PET_MOYU_DAY_KEY) == null) return false;
+    const has =
+      localStorage.getItem(PET_MOYU_DAY_KEY) != null ||
+      localStorage.getItem(PET_MOYU_DAY_KEY_LEGACY) != null;
+    if (!has) return false;
     localStorage.removeItem(PET_MOYU_DAY_KEY);
+    localStorage.removeItem(PET_MOYU_DAY_KEY_LEGACY);
     return true;
   } catch {
     return false;

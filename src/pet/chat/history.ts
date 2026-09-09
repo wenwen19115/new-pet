@@ -1,6 +1,7 @@
 /** Per-character chat transcript (separate from settings blob). Frontend-only. */
 
-const PET_CHAT_HISTORY_KEY = "desktop-pet-chat-history";
+const PET_CHAT_HISTORY_KEY = "new-pet-chat-history";
+const PET_CHAT_HISTORY_KEY_LEGACY = "desktop-pet-chat-history";
 /** Soft cap per character archive */
 export const PET_CHAT_HISTORY_MAX = 2000;
 /** Floating chat window loads at most this many messages */
@@ -66,7 +67,14 @@ function emptyStore(): HistoryStoreV2 {
 
 function readStore(): HistoryStoreV2 {
   try {
-    const raw = localStorage.getItem(PET_CHAT_HISTORY_KEY);
+    let raw = localStorage.getItem(PET_CHAT_HISTORY_KEY);
+    if (!raw) {
+      raw = localStorage.getItem(PET_CHAT_HISTORY_KEY_LEGACY);
+      if (raw) {
+        localStorage.setItem(PET_CHAT_HISTORY_KEY, raw);
+        localStorage.removeItem(PET_CHAT_HISTORY_KEY_LEGACY);
+      }
+    }
     if (!raw) return emptyStore();
     const parsed = JSON.parse(raw) as unknown;
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
@@ -232,7 +240,7 @@ export function downloadChatHistoryExport(
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `desktop-pet-chat-${id}-${dayKey(Date.now())}.json`;
+  a.download = `new-pet-chat-${id}-${dayKey(Date.now())}.json`;
   a.rel = "noopener";
   document.body.appendChild(a);
   a.click();
@@ -290,7 +298,7 @@ export function filterChatHistory(
 }
 
 export function isChatHistoryStorageKey(key: string | null): boolean {
-  return key === PET_CHAT_HISTORY_KEY;
+  return key === PET_CHAT_HISTORY_KEY || key === PET_CHAT_HISTORY_KEY_LEGACY;
 }
 
 export function historyEventCharacterId(detail: unknown): string | null {

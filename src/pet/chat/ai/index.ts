@@ -79,7 +79,7 @@ export async function testPetChatConnection(
   const cfg = normalizePetChatAi(chatAi ?? DEFAULT_PET_CHAT_AI);
   const { baseUrl, model, apiKey } = requireRemoteEndpoint(cfg, lang);
   const persona: PetChatPersona = {
-    petName: lang === "en" ? "Pet" : "桌宠",
+    petName: lang === "en" ? "new-pet" : "新宠",
     personality: "sunny",
     tone: "cute",
     lang,

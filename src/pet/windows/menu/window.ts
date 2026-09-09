@@ -46,7 +46,7 @@ async function ensureMenuWindow(): Promise<WebviewWindow | null> {
 
   const win = new WebviewWindow(PET_MENU_LABEL, {
     url: menuUrl(),
-    title: "Chip Pet Menu",
+    title: "new-pet Menu",
     width: PET_MENU_W,
     height: PET_MENU_H_COLLAPSED,
     resizable: false,

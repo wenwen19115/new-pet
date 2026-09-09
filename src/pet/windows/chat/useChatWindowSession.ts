@@ -39,7 +39,7 @@ export function useChatWindowSession() {
   const listEl = ref<HTMLElement | null>(null);
   const inputEl = ref<HTMLTextAreaElement | null>(null);
 
-  const petName = ref("桌宠");
+  const petName = ref("新宠");
   const personality = ref<PetPersonality>("sunny");
   const tone = ref<PetTone>("cute");
   const muted = ref(false);
@@ -131,7 +131,7 @@ export function useChatWindowSession() {
     streamText.value = "";
     cancelPetTts();
 
-    petName.value = payload.petName?.trim() || (payload.lang === "en" ? "Pet" : "桌宠");
+    petName.value = payload.petName?.trim() || (payload.lang === "en" ? "new-pet" : "新宠");
     personality.value = isPetPersonality(payload.personality)
       ? payload.personality
       : "sunny";

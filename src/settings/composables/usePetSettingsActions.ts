@@ -686,7 +686,7 @@ export function usePetSettingsActions(deps: {
     const m = deps.customVrmMotions.value.find((x) => x.id === id);
     if (!m) return;
     const safe = m.name.replace(/[\\/:*?"<>|]+/g, "_").slice(0, 24) || "motion";
-    downloadCustomVrmMotionsExport([m], `desktop-pet-vrm-motion-${safe}.json`);
+    downloadCustomVrmMotionsExport([m], `new-pet-vrm-motion-${safe}.json`);
     message.success(t("pet.customMotionExported", { n: 1 }));
   }
 

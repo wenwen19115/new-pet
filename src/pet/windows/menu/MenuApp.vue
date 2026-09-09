@@ -158,7 +158,7 @@ const peekLabel = computed(() => {
 const sectionInteract = computed(() => (en.value ? "Interact" : "互动"));
 const sectionApp = computed(() => (en.value ? "App" : "应用"));
 const skyOnPetTitle = computed(() =>
-  en.value ? "Project to pet" : "投射到桌宠"
+  en.value ? "Project to pet" : "投射到新宠"
 );
 
 const toggleTitle = computed(() =>

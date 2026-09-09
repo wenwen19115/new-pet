@@ -52,7 +52,7 @@
         <template v-else>
           <div class="splash-glow" />
           <img class="splash-logo" src="/app-icon.png" alt="" />
-          <p class="splash-title">Desktop Pet</p>
+          <p class="splash-title">{{ t("pet.pageTitle") }}</p>
         </template>
       </div>
       <div

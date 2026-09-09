@@ -6,7 +6,7 @@
     <div class="app-titlebar__brand" data-tauri-drag-region>
       <img class="app-titlebar__icon" src="/app-icon.png" alt="" draggable="false" />
       <div class="app-titlebar__titles" data-tauri-drag-region>
-        <span class="app-titlebar__name">Desktop Pet</span>
+        <span class="app-titlebar__name">{{ t("pet.pageTitle") }}</span>
         <span class="app-titlebar__pack">{{ packTitle }}</span>
       </div>
     </div>

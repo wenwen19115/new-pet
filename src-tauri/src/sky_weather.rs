@@ -64,7 +64,7 @@ fn fetch_open_meteo_weather_blocking(lat: f64, lon: f64) -> Result<SkyWeatherFet
         "https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=weather_code&daily=sunrise,sunset&timezone=auto&forecast_days=1"
     );
     let body = ureq::get(&url)
-        .set("User-Agent", "desktop-pet/1.0")
+        .set("User-Agent", "new-pet/1.0")
         .set("Accept", "application/json")
         .timeout(std::time::Duration::from_secs(12))
         .call()
@@ -154,7 +154,7 @@ fn geo_from_json(body: &str, source: &str) -> Option<SkyClientGeo> {
 
 fn try_geo_url(url: &str, source: &str) -> Option<SkyClientGeo> {
     match ureq::get(url)
-        .set("User-Agent", "desktop-pet/1.0")
+        .set("User-Agent", "new-pet/1.0")
         .set("Accept", "application/json")
         .timeout(std::time::Duration::from_secs(8))
         .call()
@@ -194,7 +194,7 @@ fn fetch_client_geo_blocking() -> Result<SkyClientGeo, String> {
 
 fn try_geo_ipinfo() -> Option<SkyClientGeo> {
     let body = ureq::get("https://ipinfo.io/json")
-        .set("User-Agent", "desktop-pet/1.0")
+        .set("User-Agent", "new-pet/1.0")
         .set("Accept", "application/json")
         .timeout(std::time::Duration::from_secs(8))
         .call()
