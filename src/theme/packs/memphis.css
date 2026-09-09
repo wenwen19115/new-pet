@@ -28,7 +28,7 @@
     [data-style="memphis"] .theme-sw.on::after { left:23px; }
     [data-style="memphis"] .theme-seg { background:#eee;border:3px solid #111;border-radius:999px; }
     [data-style="memphis"] .theme-seg-opt.on { background:#ff8fab;color:#111;font-weight:900; }
-    [data-style="memphis"] .theme-btn { border-radius:0;background:#fff;color:#111;border:3px solid #111;font-weight:900;box-shadow:3px 3px 0 #111; }
+    [data-style="memphis"] .theme-btn { border-radius: var(--ui-radius);background:#fff;color:#111;border:3px solid #111;font-weight:900;box-shadow:3px 3px 0 #111; }
     [data-style="memphis"] .theme-btn.pri { background:#ff5a5a;color:#fff; }
     [data-style="memphis"] .theme-bar { background:#eee;border:3px solid #111;border-radius:0; }
     [data-style="memphis"] .theme-bar i { background:repeating-linear-gradient(90deg,#ff5a5a 0 8px,#3d8bfd 8px 16px,#ffde59 16px 24px); }

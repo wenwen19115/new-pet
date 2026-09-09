@@ -82,6 +82,7 @@ import {
   bootScheduleDelayMs,
   clonePetThemeSettings,
   detectThemeMediaKind,
+  getThemeControlShape,
   getThemePack,
   paintDocumentBackdrop,
   themeRootStyle,
@@ -128,12 +129,16 @@ const bootMediaLoop = computed(
 const skipHint = computed(() => t("pet.bootAnimSkip"));
 const antdTheme = computed(() => {
   const tokens = getThemePack(theme.value.style).tokens;
+  const shape = getThemeControlShape(theme.value.style);
   return {
     algorithm:
       tokens.antAlgorithm === "dark"
         ? antTheme.darkAlgorithm
         : antTheme.defaultAlgorithm,
-    token: { colorPrimary: tokens.colorPrimary },
+    token: {
+      colorPrimary: tokens.colorPrimary,
+      borderRadius: shape.antRadius,
+    },
   };
 });
 

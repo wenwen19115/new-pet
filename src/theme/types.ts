@@ -130,6 +130,8 @@ export interface ThemePackTokens {
   scrollbarThumb: string;
   scrollbarTrack: string;
   heroOverlay: string;
+  /** 控件圆角 SoT；经 --ui-radius 喂给通用控件与 .theme-btn */
+  controlRadius: string;
   antAlgorithm: "dark" | "default";
 }
 

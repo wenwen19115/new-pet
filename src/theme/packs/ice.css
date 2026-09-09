@@ -21,7 +21,7 @@
     [data-style="ice"] .theme-sw.on { background:linear-gradient(90deg,#50a0d8,#80d0f0); }
     [data-style="ice"] .theme-seg { background:rgba(180,210,235,0.5);border:1px solid #a0d0f0;border-radius:999px; }
     [data-style="ice"] .theme-seg-opt.on { background:#fff;color:#1a4a70; }
-    [data-style="ice"] .theme-btn { border-radius:999px;background:rgba(255,255,255,0.8);color:#1a4a70;border:1px solid #90c0e0;font-weight:700; }
+    [data-style="ice"] .theme-btn { border-radius: var(--ui-radius);background:rgba(255,255,255,0.8);color:#1a4a70;border:1px solid #90c0e0;font-weight:700; }
     [data-style="ice"] .theme-btn.pri { background:linear-gradient(135deg,#50a0d8,#80d0f0);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(80,160,220,0.3); }
     [data-style="ice"] .theme-bar { background:#c8e0f0;border:1px solid #a0d0f0;border-radius:99px; }
     [data-style="ice"] .theme-bar i { background:linear-gradient(90deg,#50a0d8,#c0e8ff); }

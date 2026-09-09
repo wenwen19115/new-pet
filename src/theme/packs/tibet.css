@@ -42,7 +42,7 @@
     [data-style="tibet"] .theme-sw::after{background:#e8d080;}
     [data-style="tibet"] .theme-seg{background:#100818;border:1px solid #3a2848;border-radius:0;}
     [data-style="tibet"] .theme-seg-opt.on{background:#c8a040;color:#120818;}
-    [data-style="tibet"] .theme-btn{border-radius:0;background:#100818;color:#e8d080;border:1px solid #c8a040;font-weight:900;}
+    [data-style="tibet"] .theme-btn{border-radius: var(--ui-radius);background:#100818;color:#e8d080;border:1px solid #c8a040;font-weight:900;}
     [data-style="tibet"] .theme-btn.pri{background:#c8a040;color:#120818;border-color:#e8d080;}
     [data-style="tibet"] .theme-bar{background:#100818;border:1px solid #3a2848;border-radius:0;height:8px;}
     [data-style="tibet"] .theme-bar i{background:linear-gradient(90deg,#6a1828,#c8a040,#1a4a38);}

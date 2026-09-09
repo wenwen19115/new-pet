@@ -46,7 +46,7 @@
     [data-style="thai"] .theme-sw::after{background:#160820;}
     [data-style="thai"] .theme-seg{background:#100618;border:1px solid #4a2860;border-radius:2px;}
     [data-style="thai"] .theme-seg-opt.on{background:#a01848;color:#f0d080;}
-    [data-style="thai"] .theme-btn{border-radius:2px;background:#100618;color:#f0d080;border:1px solid #d4a040;font-weight:900;}
+    [data-style="thai"] .theme-btn{border-radius: var(--ui-radius);background:#100618;color:#f0d080;border:1px solid #d4a040;font-weight:900;}
     [data-style="thai"] .theme-btn.pri{background:linear-gradient(135deg,#f0d080,#d4a040);color:#160820;border-color:#f0d080;}
     [data-style="thai"] .theme-bar{background:#100618;border:1px solid #4a2860;border-radius:2px;height:8px;}
     [data-style="thai"] .theme-bar i{background:linear-gradient(90deg,#a01848,#d4a040,#f0d080);}

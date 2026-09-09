@@ -58,7 +58,7 @@
     [data-style="academia"] .theme-sw::after{background:#e8dcc8;}
     [data-style="academia"] .theme-seg{background:#1a140e;border:1px solid #4a3a28;border-radius:0;}
     [data-style="academia"] .theme-seg-opt.on{background:#5a4030;color:#e8dcc8;}
-    [data-style="academia"] .theme-btn{border-radius:0;background:#1a140e;color:#d4b080;border:1px solid #6a5040;font-weight:700;}
+    [data-style="academia"] .theme-btn{border-radius: var(--ui-radius);background:#1a140e;color:#d4b080;border:1px solid #6a5040;font-weight:700;}
     [data-style="academia"] .theme-btn.pri{background:#6a4830;color:#e8dcc8;border-color:#d4b080;}
     [data-style="academia"] .theme-bar{background:#1a140e;border:1px solid #4a3a28;border-radius:0;}
     [data-style="academia"] .theme-bar i{background:linear-gradient(90deg,#6a4830,#d4b080);}

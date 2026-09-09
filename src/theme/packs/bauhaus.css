@@ -78,7 +78,7 @@
     [data-style="bauhaus"] .theme-seg-opt { color: #666; border-radius: 0; font-weight: 700; }
     [data-style="bauhaus"] .theme-seg-opt.on { background: #111; color: #fff; }
     [data-style="bauhaus"] .theme-btn {
-      border-radius: 0; background: #fff; color: #111; border: 2px solid #111; font-weight: 700;
+      border-radius: var(--ui-radius); background: #fff; color: #111; border: 2px solid #111; font-weight: 700;
     }
     [data-style="bauhaus"] .theme-btn.pri { background: #e31c23; color: #fff; }
     [data-style="bauhaus"] .theme-bar { background: #ddd; border: 2px solid #111; border-radius: 0; height: 10px; }

@@ -86,7 +86,7 @@
     [data-style="pixel"] .theme-seg-opt { color: #738091; border-radius: 0; font-size: 10px; }
     [data-style="pixel"] .theme-seg-opt.on { background: #41a6f6; color: #1a1c2c; }
     [data-style="pixel"] .theme-btn {
-      border-radius: 0; background: #738091; color: #1a1c2c; border: 2px solid #111; font-size: 10px;
+      border-radius: var(--ui-radius); background: #738091; color: #1a1c2c; border: 2px solid #111; font-size: 10px;
       box-shadow: inset -2px -2px 0 #3a4050, inset 2px 2px 0 #a0a8b8;
     }
     [data-style="pixel"] .theme-btn.pri {

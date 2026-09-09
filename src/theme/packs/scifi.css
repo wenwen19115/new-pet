@@ -181,7 +181,7 @@
       color: #f4f6ff;
     }
     [data-style="scifi"] .theme-btn {
-      border-radius: 999px;
+      border-radius: var(--ui-radius);
       background: rgba(255,255,255,0.04);
       color: #d8dcf0;
       border: 1px solid rgba(220,225,255,0.16);

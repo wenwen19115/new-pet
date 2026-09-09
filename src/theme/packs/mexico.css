@@ -22,7 +22,7 @@
     [data-style="mexico"] .theme-seg { background:#ffe8a0;border:3px solid #1a0a28;border-radius:0; }
     [data-style="mexico"] .theme-seg-opt { color:#1a0a28; font-weight:800; }
     [data-style="mexico"] .theme-seg-opt.on { background:#e8206a;color:#fff; }
-    [data-style="mexico"] .theme-btn { border-radius:0;background:#fff;color:#1a0a28;border:3px solid #1a0a28;font-weight:900; }
+    [data-style="mexico"] .theme-btn { border-radius: var(--ui-radius);background:#fff;color:#1a0a28;border:3px solid #1a0a28;font-weight:900; }
     [data-style="mexico"] .theme-btn.pri { background:#ffd000;color:#1a0a28; }
     [data-style="mexico"] .theme-bar { background:#eee;border:3px solid #1a0a28;border-radius:0; }
     [data-style="mexico"] .theme-bar i { background:linear-gradient(90deg,#e8206a,#ffd000,#00b4a0); }

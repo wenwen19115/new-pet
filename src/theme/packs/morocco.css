@@ -22,7 +22,7 @@
     [data-style="morocco"] .theme-seg { background:#d8e8e0;border:2px solid #0d4a4a;border-radius:6px; }
     [data-style="morocco"] .theme-seg-opt { color:#1a3030; font-weight:700; }
     [data-style="morocco"] .theme-seg-opt.on { background:#0d4a4a;color:#f4efe6; }
-    [data-style="morocco"] .theme-btn { border-radius:6px;background:#fffaf2;color:#0d4a4a;border:2px solid #0d4a4a;font-weight:800; }
+    [data-style="morocco"] .theme-btn { border-radius: var(--ui-radius);background:#fffaf2;color:#0d4a4a;border:2px solid #0d4a4a;font-weight:800; }
     [data-style="morocco"] .theme-btn.pri { background:#c45a3a;color:#f4efe6;border-color:#d4a040; }
     [data-style="morocco"] .theme-bar { background:#d0e0d8;border:2px solid #0d4a4a;border-radius:4px; }
     [data-style="morocco"] .theme-bar i { background:linear-gradient(90deg,#0d4a4a,#c45a3a,#d4a040); }

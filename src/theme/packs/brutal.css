@@ -21,7 +21,7 @@
     [data-style="brutal"] .theme-sw.on { background:#111; }
     [data-style="brutal"] .theme-seg { background:#aaa;border:0;border-radius:0; }
     [data-style="brutal"] .theme-seg-opt.on { background:#111;color:#eee; }
-    [data-style="brutal"] .theme-btn { border-radius:0;background:#aaa;color:#111;border:0;font-weight:700;text-transform:uppercase;letter-spacing:0.08em; }
+    [data-style="brutal"] .theme-btn { border-radius: var(--ui-radius);background:#aaa;color:#111;border:0;font-weight:700;text-transform:uppercase;letter-spacing:0.08em; }
     [data-style="brutal"] .theme-btn.pri { background:#111;color:#eee; }
     [data-style="brutal"] .theme-bar { background:#888;border:0;border-radius:0; }
     [data-style="brutal"] .theme-bar i { background:#111; }

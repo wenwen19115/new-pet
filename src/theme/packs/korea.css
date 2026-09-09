@@ -22,7 +22,7 @@
     [data-style="korea"] .theme-seg { background:#e8eef0;border:2px solid #1a3a6a;border-radius:4px; }
     [data-style="korea"] .theme-seg-opt { color:#1a2a28; font-weight:700; }
     [data-style="korea"] .theme-seg-opt.on { background:#1a3a6a;color:#fff; }
-    [data-style="korea"] .theme-btn { border-radius:4px;background:#fffdf6;color:#1a3a6a;border:2px solid #1a3a6a;font-weight:800; }
+    [data-style="korea"] .theme-btn { border-radius: var(--ui-radius);background:#fffdf6;color:#1a3a6a;border:2px solid #1a3a6a;font-weight:800; }
     [data-style="korea"] .theme-btn.pri { background:#c02830;color:#fff;border-color:#1a2a28; }
     [data-style="korea"] .theme-bar { background:#e0e4e8;border:2px solid #1a3a6a;border-radius:2px; }
     [data-style="korea"] .theme-bar i { background:linear-gradient(90deg,#1a3a6a,#2a7a50,#c02830,#d4a040); }

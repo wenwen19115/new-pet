@@ -186,7 +186,7 @@
     [data-style="comic"] .theme-seg-opt { color: #2a3a4a; border-radius: 2px; font-weight: 800; }
     [data-style="comic"] .theme-seg-opt.on { background: #0d1b2a; color: #f0c84a; }
     [data-style="comic"] .theme-btn {
-      border-radius: 4px;
+      border-radius: var(--ui-radius);
       background: #fff;
       color: #0d1b2a;
       border: 3px solid #0d1b2a;

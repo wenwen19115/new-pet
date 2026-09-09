@@ -41,7 +41,7 @@
     [data-style="greece"] .theme-seg{background:#e0f0ff;border:2px solid #1a5a9a;border-radius:0;}
     [data-style="greece"] .theme-seg-opt{color:#0e3a6a;font-weight:700;}
     [data-style="greece"] .theme-seg-opt.on{background:#1a5a9a;color:#fff;}
-    [data-style="greece"] .theme-btn{border-radius:0;background:#fff;color:#1a5a9a;border:2px solid #1a5a9a;font-weight:900;}
+    [data-style="greece"] .theme-btn{border-radius: var(--ui-radius);background:#fff;color:#1a5a9a;border:2px solid #1a5a9a;font-weight:900;}
     [data-style="greece"] .theme-btn.pri{background:#1a5a9a;color:#fff;}
     [data-style="greece"] .theme-bar{background:#d0e8f8;border:2px solid #1a5a9a;border-radius:0;height:8px;}
     [data-style="greece"] .theme-bar i{background:#1a5a9a;}

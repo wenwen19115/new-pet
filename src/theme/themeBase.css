@@ -3,6 +3,11 @@
 .theme-stage {
   position: relative;
   isolation: isolate;
+  /* 外形默认；具体 pack 由 themePackCssVars / controlShape 覆盖 */
+  --ui-radius: 10px;
+  --ui-radius-sm: 8px;
+  --ui-panel-radius: 12px;
+  --ui-elev-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
 }
 
 .theme-stage::before {
@@ -123,6 +128,7 @@
   border: 1px solid var(--ui-border);
   background: var(--ui-surface);
   color: var(--ui-text-muted);
+  border-radius: var(--ui-radius, 10px);
 }
 
 .theme-seg {
@@ -132,6 +138,7 @@
   overflow: hidden;
   background: var(--ui-surface);
   border: 1px solid var(--ui-border);
+  border-radius: var(--ui-panel-radius, 12px);
 }
 
 .theme-seg-opt {
@@ -156,6 +163,7 @@
   border: 1px solid var(--ui-border);
   background: var(--ui-surface);
   color: var(--ui-text);
+  border-radius: var(--ui-radius, 10px);
 }
 
 .theme-btn:disabled {

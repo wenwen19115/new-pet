@@ -146,7 +146,7 @@ function collapseAll() {
   border: 1px solid var(--ui-border, rgba(255, 255, 255, 0.14));
   background: var(--ui-surface, rgba(0, 0, 0, 0.22));
   color: var(--ui-text, inherit);
-  border-radius: 8px;
+  border-radius: var(--ui-radius, 8px);
   padding: 7px 10px;
   font: inherit;
   font-size: 12px;
@@ -173,7 +173,7 @@ function collapseAll() {
   overflow-y: auto;
   padding: 8px;
   border: 1px solid var(--ui-border, rgba(255, 255, 255, 0.12));
-  border-radius: 12px;
+  border-radius: var(--ui-panel-radius, 12px);
   background: var(--ui-surface, rgba(0, 0, 0, 0.18));
   overscroll-behavior: contain;
   scrollbar-gutter: stable;

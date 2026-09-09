@@ -21,7 +21,7 @@
     [data-style="y2k"] .theme-sw.on { background:linear-gradient(90deg,#ff80c0,#80a0ff); }
     [data-style="y2k"] .theme-seg { background:#d8e0e8;border:2px solid #fff;border-radius:999px; }
     [data-style="y2k"] .theme-seg-opt.on { background:#fff;color:#3a4060;box-shadow:0 2px 0 #b0b8c8; }
-    [data-style="y2k"] .theme-btn { border-radius:999px;background:linear-gradient(160deg,#fff,#e0e4e8);color:#3a4060;border:2px solid #fff;font-weight:800;box-shadow:0 3px 0 #b0b8c8; }
+    [data-style="y2k"] .theme-btn { border-radius: var(--ui-radius);background:linear-gradient(160deg,#fff,#e0e4e8);color:#3a4060;border:2px solid #fff;font-weight:800;box-shadow:0 3px 0 #b0b8c8; }
     [data-style="y2k"] .theme-btn.pri { background:linear-gradient(160deg,#ff80c0,#c080ff);color:#fff; }
     [data-style="y2k"] .theme-bar { background:#d0d8e0;border:2px solid #fff;border-radius:99px; }
     [data-style="y2k"] .theme-bar i { background:linear-gradient(90deg,#ff80c0,#80c0ff,#c080ff); }

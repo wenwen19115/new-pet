@@ -71,7 +71,7 @@
     [data-style="paper"] .theme-seg-opt { color: #6a7668; border-radius: 10px; }
     [data-style="paper"] .theme-seg-opt.on { background: #fff; color: #1d2a22; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
     [data-style="paper"] .theme-btn {
-      border-radius: 10px; background: #fff; color: #243028; border: 1px solid #d2dbc8;
+      border-radius: var(--ui-radius); background: #fff; color: #243028; border: 1px solid #d2dbc8;
     }
     [data-style="paper"] .theme-btn.pri { background: #2f5d45; color: #fff; border-color: #2f5d45; }
     [data-style="paper"] .theme-bar { background: #e5ebde; border-radius: 99px; }

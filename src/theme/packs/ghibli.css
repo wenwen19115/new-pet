@@ -147,7 +147,7 @@
       box-shadow: 0 1px 4px rgba(40, 80, 50, 0.12);
     }
     [data-style="ghibli"] .theme-btn {
-      border-radius: 999px;
+      border-radius: var(--ui-radius);
       background: #f4faf2;
       color: #1e2e24;
       border: 2px solid #5a7a60;

@@ -51,7 +51,7 @@
     [data-style="aqua"] .theme-sw.on{background:#48c8e0;}
     [data-style="aqua"] .theme-seg{background:rgba(2,18,28,0.75);border:1px solid #1a5060;border-radius:999px;}
     [data-style="aqua"] .theme-seg-opt.on{background:#1a8098;color:#fff;}
-    [data-style="aqua"] .theme-btn{border-radius:999px;background:rgba(2,18,28,0.75);color:#80f0ff;border:1px solid #48c8e0;font-weight:800;}
+    [data-style="aqua"] .theme-btn{border-radius: var(--ui-radius);background:rgba(2,18,28,0.75);color:#80f0ff;border:1px solid #48c8e0;font-weight:800;}
     [data-style="aqua"] .theme-btn.pri{background:linear-gradient(135deg,#48c8e0,#a0f0ff);color:#031420;border-color:transparent;}
     [data-style="aqua"] .theme-bar{background:rgba(2,18,28,0.75);border:1px solid #1a5060;border-radius:99px;height:8px;}
     [data-style="aqua"] .theme-bar i{background:linear-gradient(90deg,#2080a0,#80f0ff);box-shadow:0 0 10px rgba(128,240,255,0.45);}

@@ -135,7 +135,7 @@ function onOnly(value: boolean) {
   flex-direction: column;
   gap: 10px;
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: var(--ui-panel-radius, 12px);
   border: 1px solid var(--ui-border);
   background: var(--ui-surface);
 }
@@ -179,7 +179,7 @@ function onOnly(value: boolean) {
   border: 1px solid var(--ui-border);
   background: transparent;
   color: var(--ui-text-muted);
-  border-radius: 999px;
+  border-radius: var(--ui-radius, 999px);
   padding: 4px 10px;
   font-size: 12px;
   cursor: pointer;
@@ -211,7 +211,7 @@ function onOnly(value: boolean) {
   flex-direction: column;
   gap: 8px;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: var(--ui-radius, 10px);
   border: 1px solid var(--ui-border);
   background: color-mix(in srgb, var(--ui-surface) 70%, transparent);
 }

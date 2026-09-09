@@ -41,7 +41,7 @@
     [data-style="viking"] .theme-sw::after{background:#e8ecf0;}
     [data-style="viking"] .theme-seg{background:#101418;border:1px solid #4a5560;border-radius:0;}
     [data-style="viking"] .theme-seg-opt.on{background:#4a5560;color:#fff;}
-    [data-style="viking"] .theme-btn{border-radius:0;background:#1e242c;color:#c0c8d0;border:1px solid #5a6570;font-weight:900;text-transform:uppercase;font-size:11px;}
+    [data-style="viking"] .theme-btn{border-radius: var(--ui-radius);background:#1e242c;color:#c0c8d0;border:1px solid #5a6570;font-weight:900;text-transform:uppercase;font-size:11px;}
     [data-style="viking"] .theme-btn.pri{background:#6a1828;color:#fff;border-color:#8a3040;}
     [data-style="viking"] .theme-bar{background:#101418;border:1px solid #4a5560;border-radius:0;height:8px;}
     [data-style="viking"] .theme-bar i{background:linear-gradient(90deg,#6a1828,#8a94a0);}

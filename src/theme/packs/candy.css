@@ -82,7 +82,7 @@
     [data-style="candy"] .theme-seg-opt { color: #6b5a70; border-radius: 12px; }
     [data-style="candy"] .theme-seg-opt.on { background: #ffe27a; color: #2b2430; }
     [data-style="candy"] .theme-btn {
-      border-radius: 14px; background: #fff; color: #2b2430;
+      border-radius: var(--ui-radius); background: #fff; color: #2b2430;
       border: 3px solid #2b2430; box-shadow: 3px 3px 0 #2b2430;
     }
     [data-style="candy"] .theme-btn.pri { background: #ff8dc7; }

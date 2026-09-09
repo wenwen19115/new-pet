@@ -207,7 +207,7 @@ function resetDuration(item: CustomVrmMotion) {
   flex-direction: column;
   gap: 10px;
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: var(--ui-panel-radius, 12px);
   border: 1px solid var(--ui-border);
   background: var(--ui-surface);
 }
@@ -259,7 +259,7 @@ function resetDuration(item: CustomVrmMotion) {
   flex-direction: column;
   gap: 8px;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: var(--ui-radius, 10px);
   border: 1px solid var(--ui-border);
   background: var(--ui-surface-strong);
 }

@@ -95,7 +95,7 @@
     [data-style="crt"] .theme-seg-opt { color: #3a7a4a; border-radius: 0; font-size: 11px; }
     [data-style="crt"] .theme-seg-opt.on { background: #7CFF9A; color: #020804; }
     [data-style="crt"] .theme-btn {
-      border-radius: 0; background: #041008; color: #7CFF9A; border: 1px solid #3a8a4a; font-size: 11px;
+      border-radius: var(--ui-radius); background: #041008; color: #7CFF9A; border: 1px solid #3a8a4a; font-size: 11px;
     }
     [data-style="crt"] .theme-btn.pri { background: #7CFF9A; color: #020804; }
     [data-style="crt"] .theme-bar { background: #041008; border: 1px solid #2a5a34; border-radius: 0; }

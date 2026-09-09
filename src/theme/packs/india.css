@@ -21,7 +21,7 @@
     [data-style="india"] .theme-sw.on { background:linear-gradient(90deg,#c02860,#d47820); }
     [data-style="india"] .theme-seg { background:#1a0818;border:1px solid #d4a040;border-radius:999px; }
     [data-style="india"] .theme-seg-opt.on { background:#c02860;color:#fff; }
-    [data-style="india"] .theme-btn { border-radius:999px;background:#2a0820;color:#ffe8c0;border:1px solid #d4a040;font-weight:800; }
+    [data-style="india"] .theme-btn { border-radius: var(--ui-radius);background:#2a0820;color:#ffe8c0;border:1px solid #d4a040;font-weight:800; }
     [data-style="india"] .theme-btn.pri { background:linear-gradient(135deg,#d4a040,#d47820);color:#1a0818;border-color:#ffe8a0; }
     [data-style="india"] .theme-bar { background:#1a0818;border:1px solid #d4a040;border-radius:99px; }
     [data-style="india"] .theme-bar i { background:linear-gradient(90deg,#6a1880,#c02860,#d47820,#d4a040); }

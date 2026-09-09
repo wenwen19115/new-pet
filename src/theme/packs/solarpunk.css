@@ -46,7 +46,7 @@
     [data-style="solarpunk"] .theme-seg{background:#062a18;border:1px solid #2a5a40;border-radius:999px;}
     [data-style="solarpunk"] .theme-seg-opt{color:#c8f0b8;font-weight:700;}
     [data-style="solarpunk"] .theme-seg-opt.on{background:#2a7a48;color:#fff;}
-    [data-style="solarpunk"] .theme-btn{border-radius:999px;background:#062a18;color:#c8e040;border:1px solid #80d040;font-weight:900;}
+    [data-style="solarpunk"] .theme-btn{border-radius: var(--ui-radius);background:#062a18;color:#c8e040;border:1px solid #80d040;font-weight:900;}
     [data-style="solarpunk"] .theme-btn.pri{background:linear-gradient(135deg,#80d040,#40c8a0);color:#062a18;border-color:#c8e040;}
     [data-style="solarpunk"] .theme-bar{background:#062a18;border:1px solid #2a5a40;border-radius:99px;height:8px;}
     [data-style="solarpunk"] .theme-bar i{background:linear-gradient(90deg,#40a060,#c8e040);}

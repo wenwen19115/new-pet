@@ -215,7 +215,7 @@ onUnmounted(() => {
   justify-content: space-between;
   gap: 8px;
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: var(--ui-radius, 8px);
   border: 1px solid var(--ui-border, rgba(255, 255, 255, 0.14));
   background: var(--ui-surface-strong, var(--ui-surface, #16120c));
   color: var(--ui-text, rgba(255, 255, 255, 0.92));
@@ -254,11 +254,11 @@ onUnmounted(() => {
 .sky-menu-select-panel {
   overflow: auto;
   overscroll-behavior: contain;
-  border-radius: 8px;
+  border-radius: var(--ui-panel-radius, 8px);
   border: 1px solid var(--ui-border, rgba(255, 255, 255, 0.14));
   background: var(--ui-surface-strong, #1a140e);
   color: var(--ui-text, rgba(255, 255, 255, 0.92));
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--ui-elev-shadow, 0 12px 32px rgba(0, 0, 0, 0.45));
   padding: 4px;
   box-sizing: border-box;
 }
@@ -273,7 +273,7 @@ onUnmounted(() => {
   font-size: 12px;
   text-align: left;
   padding: 8px 10px;
-  border-radius: 6px;
+  border-radius: var(--ui-radius-sm, 6px);
   cursor: pointer;
 }
 

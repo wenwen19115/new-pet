@@ -78,7 +78,7 @@
     [data-style="brass"] .theme-seg-opt { color: #8a7050; border-radius: 2px; }
     [data-style="brass"] .theme-seg-opt.on { background: #c9a45c; color: #1a120c; }
     [data-style="brass"] .theme-btn {
-      border-radius: 4px; background: #2a1e14; color: #e0c080; border: 1px solid #8a6230;
+      border-radius: var(--ui-radius); background: #2a1e14; color: #e0c080; border: 1px solid #8a6230;
     }
     [data-style="brass"] .theme-btn.pri {
       background: linear-gradient(180deg, #e0c080, #a07830); color: #1a120c; border-color: #e0c080;

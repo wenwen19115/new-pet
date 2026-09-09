@@ -22,7 +22,7 @@
     [data-style="italy"] .theme-seg { background:#e8d8c8;border:1px solid #a89080;border-radius:0; }
     [data-style="italy"] .theme-seg-opt { color:#2a2018; font-weight:700; }
     [data-style="italy"] .theme-seg-opt.on { background:#6a2030;color:#f4ebe0; }
-    [data-style="italy"] .theme-btn { border-radius:0;background:#fffaf4;color:#2a2018;border:1px solid #6a5040;font-weight:700; }
+    [data-style="italy"] .theme-btn { border-radius: var(--ui-radius);background:#fffaf4;color:#2a2018;border:1px solid #6a5040;font-weight:700; }
     [data-style="italy"] .theme-btn.pri { background:#6a2030;color:#f4ebe0;border-color:#d4a040; }
     [data-style="italy"] .theme-bar { background:#ddd0c0;border:1px solid #a89080;border-radius:0; }
     [data-style="italy"] .theme-bar i { background:linear-gradient(90deg,#6a2030,#d4a040); }

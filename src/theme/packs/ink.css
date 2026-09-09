@@ -95,7 +95,7 @@
     [data-style="ink"] .theme-seg-opt { color: #555; border-radius: 0; padding: 4px 0; }
     [data-style="ink"] .theme-seg-opt.on { color: #c23a2b; background: transparent; box-shadow: 0 1px 0 #c23a2b; }
     [data-style="ink"] .theme-btn {
-      border-radius: 0; background: transparent; color: #aaa; border: 1px solid #333;
+      border-radius: var(--ui-radius); background: transparent; color: #aaa; border: 1px solid #333;
       letter-spacing: 0.12em;
     }
     [data-style="ink"] .theme-btn.pri { color: #c23a2b; border-color: #c23a2b; }

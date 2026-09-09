@@ -21,7 +21,7 @@
     [data-style="brazil"] .theme-sw.on { background:linear-gradient(90deg,#0a6a30,#f0c020); }
     [data-style="brazil"] .theme-seg { background:#041810;border:1px solid #2a6040;border-radius:999px; }
     [data-style="brazil"] .theme-seg-opt.on { background:#1a4a9a;color:#fff; }
-    [data-style="brazil"] .theme-btn { border-radius:999px;background:#041810;color:#f0c020;border:2px solid #f0c020;font-weight:800; }
+    [data-style="brazil"] .theme-btn { border-radius: var(--ui-radius);background:#041810;color:#f0c020;border:2px solid #f0c020;font-weight:800; }
     [data-style="brazil"] .theme-btn.pri { background:#f0c020;color:#062818;border-color:#fff; }
     [data-style="brazil"] .theme-bar { background:#041810;border:1px solid #2a6040;border-radius:99px; }
     [data-style="brazil"] .theme-bar i { background:linear-gradient(90deg,#0a6a30,#f0c020,#1a4a9a); }

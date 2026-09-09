@@ -40,7 +40,7 @@
     [data-style="zen"] .theme-seg{background:#d8d8d0;border:1px solid #b0b0a8;border-radius:0;}
     [data-style="zen"] .theme-seg-opt{color:#222;font-weight:500;}
     [data-style="zen"] .theme-seg-opt.on{background:#222;color:#ecece4;}
-    [data-style="zen"] .theme-btn{border-radius:0;background:#f6f6f0;color:#222;border:1px solid #8a8a80;font-weight:500;letter-spacing:0.14em;}
+    [data-style="zen"] .theme-btn{border-radius: var(--ui-radius);background:#f6f6f0;color:#222;border:1px solid #8a8a80;font-weight:500;letter-spacing:0.14em;}
     [data-style="zen"] .theme-btn.pri{background:#222;color:#ecece4;}
     [data-style="zen"] .theme-bar{background:#d0d0c8;border:1px solid #b0b0a8;border-radius:0;}
     [data-style="zen"] .theme-bar i{background:#222;}

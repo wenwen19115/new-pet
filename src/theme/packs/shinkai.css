@@ -112,7 +112,7 @@
       background: rgba(255, 140, 60, 0.35); color: #fff8f0; box-shadow: 0 0 12px rgba(255, 120, 60, 0.3);
     }
     [data-style="shinkai"] .theme-btn {
-      border-radius: 4px; background: rgba(8, 16, 48, 0.55); color: #e8f0ff;
+      border-radius: var(--ui-radius); background: rgba(8, 16, 48, 0.55); color: #e8f0ff;
       border: 1px solid rgba(120, 160, 255, 0.35); font-weight: 800; font-size: 11px;
     }
     [data-style="shinkai"] .theme-btn.pri {

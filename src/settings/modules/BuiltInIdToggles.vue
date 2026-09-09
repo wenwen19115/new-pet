@@ -243,7 +243,7 @@ function setGroup(ids: string[], enabled: boolean) {
   flex-direction: column;
   gap: 10px;
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: var(--ui-panel-radius, 12px);
   border: 1px solid var(--ui-border);
   background: var(--ui-surface);
 }
@@ -305,7 +305,7 @@ function setGroup(ids: string[], enabled: boolean) {
   font-size: 12px;
   line-height: 1;
   padding: 6px 10px;
-  border-radius: 999px;
+  border-radius: var(--ui-radius, 999px);
   cursor: pointer;
 }
 
@@ -365,7 +365,7 @@ function setGroup(ids: string[], enabled: boolean) {
   justify-content: space-between;
   gap: 10px;
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: var(--ui-radius-sm, 8px);
   border: 1px solid var(--ui-border);
   cursor: pointer;
 }
@@ -398,7 +398,7 @@ function setGroup(ids: string[], enabled: boolean) {
   font-size: 11px;
   line-height: 1;
   padding: 3px 6px;
-  border-radius: 999px;
+  border-radius: var(--ui-radius, 999px);
   border: 1px solid var(--ui-border);
   color: var(--ui-text-faint);
 }

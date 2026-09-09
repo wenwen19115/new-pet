@@ -82,7 +82,7 @@
     [data-style="aurora"] .theme-seg-opt { color: #6a9aaa; border-radius: 12px; }
     [data-style="aurora"] .theme-seg-opt.on { background: rgba(122,108,255,0.35); color: #fff; }
     [data-style="aurora"] .theme-btn {
-      border-radius: 12px; background: rgba(255,255,255,0.06); color: #e8f7f4;
+      border-radius: var(--ui-radius); background: rgba(255,255,255,0.06); color: #e8f7f4;
       border: 1px solid rgba(120,220,255,0.2);
     }
     [data-style="aurora"] .theme-btn.pri {

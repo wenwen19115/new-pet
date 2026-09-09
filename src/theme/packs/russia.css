@@ -21,7 +21,7 @@
     [data-style="russia"] .theme-sw.on { background:#8a1830; }
     [data-style="russia"] .theme-seg { background:#1a0c10;border:1px solid #6a3038;border-radius:999px; }
     [data-style="russia"] .theme-seg-opt.on { background:#d4a040;color:#1a0810; }
-    [data-style="russia"] .theme-btn { border-radius:999px;background:#1a0c10;color:#f0d080;border:1px solid #d4a040;font-weight:800; }
+    [data-style="russia"] .theme-btn { border-radius: var(--ui-radius);background:#1a0c10;color:#f0d080;border:1px solid #d4a040;font-weight:800; }
     [data-style="russia"] .theme-btn.pri { background:linear-gradient(135deg,#d4a040,#8a1830);color:#fff8e8;border-color:#f0d080; }
     [data-style="russia"] .theme-bar { background:#1a0c10;border:1px solid #6a3038;border-radius:99px; }
     [data-style="russia"] .theme-bar i { background:linear-gradient(90deg,#8a1830,#d4a040,#2a6a40); }

@@ -1,60 +1,235 @@
-/* ========== 20 ???========== */
-    [data-style="ukiyo"].theme-stage { background: linear-gradient(180deg,#e8d8c0 0%,#d4c4a8 40%,#1a3a6a 40%,#0e2850 100%); }
-    [data-style="ukiyo"] .theme-shell { font-family: "Noto Sans SC", "Outfit", sans-serif; background:#f4ebe0;border:3px solid #1a2a48;border-radius:4px;color:#1a2a48;box-shadow:6px 6px 0 #1a3a6a; }
-    [data-style="ukiyo"] .theme-banner {margin:0; display: block; background:#1a3a6a;color:#f4ebe0;border:2px solid #1a2a48;border-radius:0;font-weight:800;letter-spacing:0.28em; }
-    [data-style="ukiyo"] .pet-nav { background:#c45a48;border-right:3px solid #1a2a48;gap:6px;padding:12px 8px; }
-    [data-style="ukiyo"] .pet-nav-item { color:#f4ebe0;border-radius:0;background:rgba(0,0,0,0.12);border:2px solid transparent;font-weight:700; }
-    [data-style="ukiyo"] .pet-nav-item[data-active="1"] { color:#1a2a48;background:#f4ebe0;border-color:#1a2a48; }
-    [data-style="ukiyo"] .panel-head { border-bottom:3px solid #1a2a48;background:linear-gradient(90deg,#e8d8c0,#f4ebe0); }
-    [data-style="ukiyo"] .panel-title { color:#1a2a48;font-weight:900;letter-spacing:0.2em;font-size:18px; }
-    [data-style="ukiyo"] .theme-chip { background:#1a3a6a;color:#f4ebe0;border:2px solid #1a2a48;border-radius:0;font-size:11px; }
-    [data-style="ukiyo"] .theme-chip em { font-style: normal; font-weight: 800; }
-    [data-style="ukiyo"] .theme-lab { color:#c45a48;letter-spacing:0.2em;font-weight:800; }
-    [data-style="ukiyo"] .theme-list { gap: 9px; }
-    [data-style="ukiyo"] .settings-item { background:#fff8f0;border:2px solid #1a2a48;border-radius:0; }
-    [data-style="ukiyo"] .settings-item[data-tone="pet"] { background:linear-gradient(135deg,#e8d8c0,#fff8f0 50%,#d0e0f0);border-color:#1a3a6a; }
-    [data-style="ukiyo"] .theme-t { color:#1a2a48;font-weight:800; }
-    [data-style="ukiyo"] .theme-d { color:#5a4a38; }
-    [data-style="ukiyo"] .theme-choice { border-radius:0;border:2px solid #1a2a48;background:#fff8f0;color:#1a2a48;font-weight:700; }
-    [data-style="ukiyo"] .theme-choice.on { background:#1a3a6a;color:#f4ebe0; }
-    [data-style="ukiyo"] .theme-sw {
-      --sw-radius: 0;
-      --sw-knob-radius: 0;
-      background:#c8b898;
-      border:2px solid #1a2a48;
-    }
-    [data-style="ukiyo"] .theme-sw.on { background:#c45a48; }
-    [data-style="ukiyo"] .theme-sw::after { width:14px; height:14px; top:3px; left:3px; }
-    [data-style="ukiyo"] .theme-sw.on::after { left:23px; }
-    [data-style="ukiyo"] .theme-seg { background:#e8d8c0;border:2px solid #1a2a48;border-radius:0; }
-    [data-style="ukiyo"] .theme-seg-opt.on { background:#1a3a6a;color:#f4ebe0; }
-    [data-style="ukiyo"] .theme-btn { border-radius:0;background:#fff8f0;color:#1a2a48;border:2px solid #1a2a48;font-weight:800; }
-    [data-style="ukiyo"] .theme-btn.pri { background:#c45a48;color:#f4ebe0; }
-    [data-style="ukiyo"] .theme-bar { background:#e8d8c0;border:2px solid #1a2a48;border-radius:0; }
-    [data-style="ukiyo"] .theme-bar i { background:linear-gradient(90deg,#1a3a6a,#c45a48); }
-    [data-style="ukiyo"] .theme-num { color:#1a3a6a;font-weight:800; }
-    [data-style="ukiyo"] .pet-hero {
-      background: linear-gradient(160deg,#e8d8c0,#fff8f0 55%,#d0e0f0);
-      border: 2px solid #1a2a48;
-      border-radius: 0;
-      box-shadow: 4px 4px 0 #1a3a6a;
-      color: #1a2a48;
-    }
-    [data-style="ukiyo"] .hero-stage {
-      border: 2px solid #1a2a48;
-      border-radius: 0;
-      background: #1a3a6a;
-    }
-    [data-style="ukiyo"] .hero-role { color:#c45a48; letter-spacing:0.18em; font-weight:800; }
-    [data-style="ukiyo"] .hero-name { color:#1a2a48; font-weight:900; }
-    [data-style="ukiyo"] .hero-tagline,
-    [data-style="ukiyo"] .preview-orbit-toggle { color:#5a4a38; }
-    [data-style="ukiyo"] .meta-pill {
-      border-radius: 0;
-      border: 2px solid #1a2a48;
-      background: #fff8f0;
-      color: #1a2a48;
-      font-weight: 700;
-    }
-    [data-style="ukiyo"] .meta-pill--theme { background:#1a3a6a; color:#f4ebe0; }
-    [data-style="ukiyo"] .meta-pill--on { background:#c45a48; color:#f4ebe0; border-color:#1a2a48; }
+/* 默认主题：浮世绘 — 色彩沿用原版；外形由 --ui-radius 公共变量对齐 */
+[data-style="ukiyo"].theme-stage {
+  background: linear-gradient(180deg, #e8d8c0 0%, #d4c4a8 40%, #1a3a6a 40%, #0e2850 100%);
+}
+
+[data-style="ukiyo"] .theme-shell {
+  font-family: "Noto Sans SC", "Outfit", sans-serif;
+  background: #f4ebe0;
+  border: 3px solid #1a2a48;
+  border-radius: 0;
+  color: #1a2a48;
+  box-shadow: 6px 6px 0 #1a3a6a;
+}
+
+[data-style="ukiyo"] .theme-banner {
+  margin: 0;
+  display: block;
+  background: #1a3a6a;
+  color: #f4ebe0;
+  border: 2px solid #1a2a48;
+  border-radius: 0;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+}
+
+[data-style="ukiyo"] .pet-nav {
+  background: #c45a48;
+  border-right: 3px solid #1a2a48;
+  gap: 6px;
+  padding: 12px 8px;
+}
+
+[data-style="ukiyo"] .pet-nav-item {
+  color: #f4ebe0;
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.12);
+  border: 2px solid transparent;
+  font-weight: 700;
+}
+
+[data-style="ukiyo"] .pet-nav-item[data-active="1"] {
+  color: #1a2a48;
+  background: #f4ebe0;
+  border-color: #1a2a48;
+}
+
+[data-style="ukiyo"] .panel-head {
+  border-bottom: 3px solid #1a2a48;
+  background: linear-gradient(90deg, #e8d8c0, #f4ebe0);
+}
+
+[data-style="ukiyo"] .panel-title {
+  color: #1a2a48;
+  font-weight: 900;
+  letter-spacing: 0.2em;
+  font-size: 18px;
+}
+
+[data-style="ukiyo"] .theme-chip {
+  background: #1a3a6a;
+  color: #f4ebe0;
+  border: 2px solid #1a2a48;
+  border-radius: 0;
+  font-size: 11px;
+}
+
+[data-style="ukiyo"] .theme-chip em {
+  font-style: normal;
+  font-weight: 800;
+}
+
+[data-style="ukiyo"] .theme-lab {
+  color: #c45a48;
+  letter-spacing: 0.2em;
+  font-weight: 800;
+}
+
+[data-style="ukiyo"] .theme-list {
+  gap: 9px;
+}
+
+[data-style="ukiyo"] .settings-item {
+  background: #fff8f0;
+  border: 2px solid #1a2a48;
+  border-radius: 0;
+}
+
+[data-style="ukiyo"] .settings-item[data-tone="pet"] {
+  background: linear-gradient(135deg, #e8d8c0, #fff8f0 50%, #d0e0f0);
+  border-color: #1a3a6a;
+}
+
+[data-style="ukiyo"] .theme-t {
+  color: #1a2a48;
+  font-weight: 800;
+}
+
+[data-style="ukiyo"] .theme-d {
+  color: #5a4a38;
+}
+
+[data-style="ukiyo"] .theme-choice {
+  border-radius: 0;
+  border: 2px solid #1a2a48;
+  background: #fff8f0;
+  color: #1a2a48;
+  font-weight: 700;
+}
+
+[data-style="ukiyo"] .theme-choice.on {
+  background: #1a3a6a;
+  color: #f4ebe0;
+}
+
+[data-style="ukiyo"] .theme-sw {
+  --sw-radius: 0;
+  --sw-knob-radius: 0;
+  background: #c8b898;
+  border: 2px solid #1a2a48;
+}
+
+[data-style="ukiyo"] .theme-sw.on {
+  background: #c45a48;
+}
+
+[data-style="ukiyo"] .theme-sw::after {
+  width: 14px;
+  height: 14px;
+  top: 3px;
+  left: 3px;
+}
+
+[data-style="ukiyo"] .theme-sw.on::after {
+  left: 23px;
+}
+
+[data-style="ukiyo"] .theme-seg {
+  background: #e8d8c0;
+  border: 2px solid #1a2a48;
+  border-radius: 0;
+  padding: 0;
+  gap: 0;
+}
+
+[data-style="ukiyo"] .theme-seg-opt {
+  border-radius: 0;
+  border-right: 1px solid #1a2a48;
+}
+
+[data-style="ukiyo"] .theme-seg-opt:last-child {
+  border-right: 0;
+}
+
+[data-style="ukiyo"] .theme-seg-opt.on {
+  background: #1a3a6a;
+  color: #f4ebe0;
+  box-shadow: none;
+}
+
+[data-style="ukiyo"] .theme-btn {
+  border-radius: var(--ui-radius);
+  background: #fff8f0;
+  color: #1a2a48;
+  border: 2px solid #1a2a48;
+  font-weight: 800;
+}
+
+[data-style="ukiyo"] .theme-btn.pri {
+  background: #c45a48;
+  color: #f4ebe0;
+}
+
+[data-style="ukiyo"] .theme-bar {
+  background: #e8d8c0;
+  border: 2px solid #1a2a48;
+  border-radius: 0;
+}
+
+[data-style="ukiyo"] .theme-bar i {
+  background: linear-gradient(90deg, #1a3a6a, #c45a48);
+}
+
+[data-style="ukiyo"] .theme-num {
+  color: #1a3a6a;
+  font-weight: 800;
+}
+
+[data-style="ukiyo"] .pet-hero {
+  background: linear-gradient(160deg, #e8d8c0, #fff8f0 55%, #d0e0f0);
+  border: 2px solid #1a2a48;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 #1a3a6a;
+  color: #1a2a48;
+}
+
+[data-style="ukiyo"] .hero-stage {
+  border: 2px solid #1a2a48;
+  border-radius: 0;
+  background: #1a3a6a;
+}
+
+[data-style="ukiyo"] .hero-role {
+  color: #c45a48;
+  letter-spacing: 0.18em;
+  font-weight: 800;
+}
+
+[data-style="ukiyo"] .hero-name {
+  color: #1a2a48;
+  font-weight: 900;
+}
+
+[data-style="ukiyo"] .hero-tagline,
+[data-style="ukiyo"] .preview-orbit-toggle {
+  color: #5a4a38;
+}
+
+[data-style="ukiyo"] .meta-pill {
+  border-radius: 0;
+  border: 2px solid #1a2a48;
+  background: #fff8f0;
+  color: #1a2a48;
+  font-weight: 700;
+}
+
+[data-style="ukiyo"] .meta-pill--theme {
+  background: #1a3a6a;
+  color: #f4ebe0;
+}
+
+[data-style="ukiyo"] .meta-pill--on {
+  background: #c45a48;
+  color: #f4ebe0;
+  border-color: #1a2a48;
+}

@@ -87,7 +87,7 @@
     [data-style="manga"] .theme-seg-opt { color: #666; border-radius: 0; font-weight: 700; }
     [data-style="manga"] .theme-seg-opt.on { background: #111; color: #fff; }
     [data-style="manga"] .theme-btn {
-      border-radius: 0; background: #fff; color: #111; border: 2px solid #111; font-weight: 800;
+      border-radius: var(--ui-radius); background: #fff; color: #111; border: 2px solid #111; font-weight: 800;
     }
     [data-style="manga"] .theme-btn.pri { background: #e31c23; color: #fff; border-color: #e31c23; }
     [data-style="manga"] .theme-bar { background: #eee; border: 2px solid #111; border-radius: 0; height: 10px; }

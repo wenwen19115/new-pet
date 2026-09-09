@@ -22,7 +22,7 @@
     [data-style="turkey"] .theme-seg { background:#e0eef8;border:2px solid #1a5a8a;border-radius:999px; }
     [data-style="turkey"] .theme-seg-opt { color:#0a2a40; font-weight:700; }
     [data-style="turkey"] .theme-seg-opt.on { background:#1a5a8a;color:#fff; }
-    [data-style="turkey"] .theme-btn { border-radius:999px;background:#fff;color:#1a5a8a;border:2px solid #1a5a8a;font-weight:800; }
+    [data-style="turkey"] .theme-btn { border-radius: var(--ui-radius);background:#fff;color:#1a5a8a;border:2px solid #1a5a8a;font-weight:800; }
     [data-style="turkey"] .theme-btn.pri { background:#c02840;color:#fff;border-color:#8a1830; }
     [data-style="turkey"] .theme-bar { background:#d0e4f0;border:2px solid #1a5a8a;border-radius:99px; }
     [data-style="turkey"] .theme-bar i { background:linear-gradient(90deg,#1a5a8a,#40a0c8,#c02840); }

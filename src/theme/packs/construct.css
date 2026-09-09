@@ -48,7 +48,7 @@
     [data-style="construct"] .theme-sw::after{}
     [data-style="construct"] .theme-seg{background:#222;border:0;border-radius:0;}
     [data-style="construct"] .theme-seg-opt.on{background:#c02820;color:#fff;}
-    [data-style="construct"] .theme-btn{border-radius:0;background:#333;color:#eee;border:0;font-weight:900;text-transform:uppercase;transform:skewX(-6deg);}
+    [data-style="construct"] .theme-btn{border-radius: var(--ui-radius);background:#333;color:#eee;border:0;font-weight:900;text-transform:uppercase;transform:skewX(-6deg);}
     [data-style="construct"] .theme-btn.pri{background:#c02820;color:#fff;}
     [data-style="construct"] .theme-bar{background:#333;border:0;border-radius:0;height:10px;}
     [data-style="construct"] .theme-bar i{background:#eee;}

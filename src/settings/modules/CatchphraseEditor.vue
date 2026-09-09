@@ -104,7 +104,7 @@ function onChance(value: number) {
   flex-direction: column;
   gap: 10px;
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: var(--ui-panel-radius, 12px);
   border: 1px solid var(--ui-border, rgba(255, 255, 255, 0.08));
   background: color-mix(in srgb, var(--ui-surface-strong, #12141c) 70%, transparent);
 }

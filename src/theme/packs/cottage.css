@@ -35,7 +35,7 @@
     [data-style="cottage"] .theme-sw.on{background:#d89098;}
     [data-style="cottage"] .theme-seg{background:#f8e8e0;border:1px solid #e8c8c0;border-radius:999px;}
     [data-style="cottage"] .theme-seg-opt.on{background:#fff;color:#4a3430;}
-    [data-style="cottage"] .theme-btn{border-radius:999px;background:#fff;color:#4a3430;border:1px solid #d0a0a8;font-weight:800;}
+    [data-style="cottage"] .theme-btn{border-radius: var(--ui-radius);background:#fff;color:#4a3430;border:1px solid #d0a0a8;font-weight:800;}
     [data-style="cottage"] .theme-btn.pri{background:#d89098;color:#fff;border-color:#b87078;}
     [data-style="cottage"] .theme-bar{background:#f8e8e0;border:1px solid #e8c8c0;border-radius:99px;}
     [data-style="cottage"] .theme-bar i{background:linear-gradient(90deg,#d89098,#c8d090);}

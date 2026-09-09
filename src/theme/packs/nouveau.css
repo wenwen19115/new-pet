@@ -79,7 +79,7 @@
     [data-style="nouveau"] .theme-seg{background:rgba(160,180,120,0.35);border:1.5px solid #8a9a60;border-radius:40% 60%/50%;}
     [data-style="nouveau"] .theme-seg-opt.on{background:#fff8e8;color:#24301c;border-radius:inherit;}
     [data-style="nouveau"] .theme-btn{
-      border-radius:40% 60%/55% 45%;background:#fff8e8;color:#24301c;border:1.5px solid #5a7040;font-weight:800;
+      border-radius: var(--ui-radius);background:#fff8e8;color:#24301c;border:1.5px solid #5a7040;font-weight:800;
     }
     [data-style="nouveau"] .theme-btn.pri{background:#c8a060;color:#24301c;border-color:#8a7040;}
     [data-style="nouveau"] .theme-bar{background:#d0e0b8;border:1.5px solid #8a9a60;border-radius:99px;}

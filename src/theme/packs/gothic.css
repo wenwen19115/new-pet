@@ -105,7 +105,7 @@
     [data-style="gothic"] .theme-seg{background:#120e18;border:1px solid #4a4438;border-radius:0;}
     [data-style="gothic"] .theme-seg-opt.on{background:#3a2858;color:#f0e8d8;}
     [data-style="gothic"] .theme-btn{
-      border-radius:0;background:#120e18;color:#e8c878;border:1px solid #c9a227;font-weight:800;
+      border-radius: var(--ui-radius);background:#120e18;color:#e8c878;border:1px solid #c9a227;font-weight:800;
       clip-path:polygon(10% 0,90% 0,100% 50%,90% 100%,10% 100%,0 50%);
     }
     [data-style="gothic"] .theme-btn.pri{background:#6a2038;color:#f0e8d8;border-color:#e8c878;}

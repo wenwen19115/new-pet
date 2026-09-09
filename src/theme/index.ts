@@ -103,6 +103,11 @@ export {
   listThemePacks,
   resolveThemePackId,
 } from "./registry";
+export {
+  getThemeControlShape,
+  themeControlShapeCssVars,
+  type ThemeControlShape,
+} from "./controlShape";
 export { paintDocumentBackdrop, themeRootStyle } from "./applyTheme";
 export {
   THEME_MEDIA_EXTENSIONS,

@@ -60,7 +60,7 @@
     [data-style="papercut"] .theme-seg{background:#ffe0e4;border:2px solid #8a1020;border-radius:999px;}
     [data-style="papercut"] .theme-seg-opt{border-radius:999px;}
     [data-style="papercut"] .theme-seg-opt.on{background:#8a1020;color:#fff;}
-    [data-style="papercut"] .theme-btn{border-radius:999px;background:#fff;color:#8a1020;border:2px solid #8a1020;font-weight:900;}
+    [data-style="papercut"] .theme-btn{border-radius: var(--ui-radius);background:#fff;color:#8a1020;border:2px solid #8a1020;font-weight:900;}
     [data-style="papercut"] .theme-btn.pri{background:#8a1020;color:#fff;}
     [data-style="papercut"] .theme-bar{background:#ffe0e4;border:2px solid #8a1020;border-radius:99px;}
     [data-style="papercut"] .theme-bar i{background:#8a1020;}

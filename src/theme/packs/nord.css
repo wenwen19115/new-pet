@@ -70,7 +70,7 @@
     [data-style="nord"] .theme-seg-opt { color: #6a7e94; border-radius: 12px; }
     [data-style="nord"] .theme-seg-opt.on { background: #fff; color: #1e3048; box-shadow: 0 2px 8px rgba(60,80,110,0.08); }
     [data-style="nord"] .theme-btn {
-      border-radius: 12px; background: #fff; color: #243040; border: 1px solid rgba(120,150,180,0.25);
+      border-radius: var(--ui-radius); background: #fff; color: #243040; border: 1px solid rgba(120,150,180,0.25);
     }
     [data-style="nord"] .theme-btn.pri { background: #4a7ab0; color: #fff; border-color: #4a7ab0; }
     [data-style="nord"] .theme-bar { background: #d5deea; border-radius: 99px; }

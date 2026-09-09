@@ -218,7 +218,7 @@ watch([historyQuery, historyDay, () => props.characterId], () => {
   grid-column: 1 / -1;
   margin-top: 8px;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: var(--ui-panel-radius, 12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(255, 255, 255, 0.03);
 }
@@ -246,7 +246,7 @@ watch([historyQuery, historyDay, () => props.characterId], () => {
 .hist-cap {
   margin-bottom: 10px;
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: var(--ui-radius-sm, 8px);
   font-size: 12px;
   color: rgba(255, 210, 150, 0.95);
   background: rgba(255, 160, 64, 0.12);
@@ -293,12 +293,12 @@ watch([historyQuery, historyDay, () => props.characterId], () => {
 
 .hist-list::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.04);
-  border-radius: 8px;
+  border-radius: var(--ui-radius-sm, 8px);
 }
 
 .hist-list::-webkit-scrollbar-thumb {
   background: rgba(64, 196, 255, 0.28);
-  border-radius: 8px;
+  border-radius: var(--ui-radius-sm, 8px);
   border: 2px solid transparent;
   background-clip: padding-box;
 }
@@ -309,7 +309,7 @@ watch([historyQuery, historyDay, () => props.characterId], () => {
 
 .hist-item {
   padding: 8px 10px;
-  border-radius: 8px;
+  border-radius: var(--ui-radius-sm, 8px);
   background: rgba(0, 0, 0, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }

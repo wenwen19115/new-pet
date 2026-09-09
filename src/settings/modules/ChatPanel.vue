@@ -266,7 +266,7 @@ const modelPlaceholder = computed(() => {
   gap: 4px;
   max-width: 100%;
   padding: 2px 6px 2px 8px;
-  border-radius: 999px;
+  border-radius: var(--ui-radius, 999px);
   font-size: 11px;
   color: rgba(255, 255, 255, 0.78);
   background: rgba(64, 196, 255, 0.12);
