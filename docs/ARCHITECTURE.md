@@ -10,7 +10,7 @@
 
 ```
 src/settings/          # 设置页（modules + composables + components）
-src/theme/             # Theme Pack：types / registry / packs / 壁纸与开机 / 自定义标题栏
+src/theme/             # Theme Pack：types / registry（含 controlRadius）/ packs / 壁纸与开机 / 自定义标题栏
 src/pet/
   windows/             # WebView 壳：pet / bubble / menu / chat；shared/ 浮层避让等跨壳几何
   runtime/             # createPetHost 接线与 use* 行为；精确命中桥 petHitBridge
@@ -125,7 +125,7 @@ mood、idle、暂停位等写入约定见 [`STATE.md`](./STATE.md)。跨 host �
 | 目标 | 落点 |
 | --- | --- |
 | 新角色 | `characters/<id>.ts` + lines JSON + Model + 注册表 |
-| 新 Theme Pack | `theme/packs/<id>.css` + `theme/types.ts` `THEME_PACK_IDS` + `theme/registry.ts` |
+| 新 Theme Pack | `theme/packs/<id>.css` + `theme/types.ts` `THEME_PACK_IDS` + `theme/registry.ts`（含 `tokens.controlRadius`，经 `--ui-radius` 对齐通用控件；pack 内 `.theme-btn` 用 `var(--ui-radius)`） |
 | 设置主窗 chrome | `ThemeTitleBar` / `titlebar.css`；`paintDocumentBackdrop` → 边框 `set_window_border_color` |
 | 新 look | `skins/looks.json` + 角色 `lookIds` |
 | 新子窗 | `windows/<name>/`，并接入 destroy 链 |
