@@ -136,13 +136,13 @@ function refreshMoyuLine() {
 }
 
 const performLabel = computed(() =>
-  en.value ? "Do a trick" : "表演一个"
+  en.value ? "Perform" : "随机表演"
 );
 const playfulLabel = computed(() =>
-  en.value ? "Playful" : "调皮一下"
+  en.value ? "Playful chase" : "调皮追逐"
 );
 const openLabel = computed(() =>
-  en.value ? "Settings" : "打开设置"
+  en.value ? "Settings" : "设置"
 );
 const pinLabel = computed(() => (en.value ? "Pin" : "置顶"));
 const dismissLabel = computed(() =>
@@ -152,13 +152,13 @@ const chatLabel = computed(() =>
   chatEnabled.value ? (en.value ? "Chat" : "聊天") : ""
 );
 const peekLabel = computed(() => {
-  if (peekHidden.value) return en.value ? "Come out" : "出来";
-  return en.value ? "Hide" : "躲起来";
+  if (peekHidden.value) return en.value ? "Reveal" : "现身";
+  return en.value ? "Hide" : "贴边躲藏";
 });
 const sectionInteract = computed(() => (en.value ? "Interact" : "互动"));
 const sectionApp = computed(() => (en.value ? "App" : "应用"));
 const skyOnPetTitle = computed(() =>
-  en.value ? "Project to pet" : "投射到新宠"
+  en.value ? "Project backdrop" : "窗景投射"
 );
 
 const toggleTitle = computed(() =>
@@ -166,10 +166,10 @@ const toggleTitle = computed(() =>
 );
 const toggleHint = computed(() => {
   if (!statsExpanded.value) {
-    return en.value ? "tap to expand" : "点一下展开";
+    return en.value ? "Click to expand" : "点击展开";
   }
-  if (!statsReady.value) return en.value ? "sampling…" : "采样中…";
-  return en.value ? "live · like Task Manager" : "实时 · 对齐任务管理器";
+  if (!statsReady.value) return en.value ? "Sampling…" : "采样中…";
+  return en.value ? "Live · CPU / RAM / disk / net" : "实时 · CPU / 内存 / 磁盘 / 网络";
 });
 
 const moodEmoji = computed(() => {
