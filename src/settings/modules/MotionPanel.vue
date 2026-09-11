@@ -4,8 +4,9 @@
   </div>
   <div v-else class="motion-panel">
     <ThemeSection :label="$t('pet.secMotion')">
+      <!-- 有动作列表时与 VRM 一致：点行做一下 + 右侧开关；不再另挂下拉 -->
       <SettingsItemRow
-        v-if="!ctx.capabilities.value.has('vrm-upload')"
+        v-if="!ctx.capabilities.value.has('motion-toggle')"
         :title="$t('pet.motionTitle')"
         :description="$t('pet.motionDesc')"
         tone="pet"
@@ -30,19 +31,11 @@
         v-if="ctx.capabilities.value.has('motion-toggle')"
         :ids="ctx.motionPoolIds.value"
         v-model:disabled-ids="ctx.disabledMotions.value"
-        :title-key="
-          ctx.capabilities.value.has('vrm-upload')
-            ? 'pet.motionPoolTitleVrm'
-            : 'pet.motionPoolTitle'
-        "
-        :desc-key="
-          ctx.capabilities.value.has('vrm-upload')
-            ? 'pet.motionPoolDescVrm'
-            : 'pet.motionPoolDesc'
-        "
+        title-key="pet.motionPoolTitleVrm"
+        desc-key="pet.motionPoolDescVrm"
         label-key-prefix="pet.motion."
-        :motion-meta="ctx.capabilities.value.has('vrm-upload')"
-        :selectable="ctx.capabilities.value.has('vrm-upload')"
+        :motion-meta="true"
+        :selectable="true"
         :selected-id="ctx.demoMotion.value"
         @update:selected-id="(id) => ctx.onDemoMotion(id)"
         @play="(id) => ctx.onPlayMotion(id)"

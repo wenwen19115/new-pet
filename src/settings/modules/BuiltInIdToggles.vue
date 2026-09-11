@@ -101,14 +101,25 @@
         </div>
       </template>
       <template v-else>
-        <label v-for="id in ids" :key="id" class="id-toggle-row">
+        <div
+          v-for="id in ids"
+          :key="id"
+          class="id-toggle-row"
+          :data-selected="selectable && selectedId === id ? '1' : '0'"
+          :role="selectable ? 'button' : undefined"
+          :tabindex="selectable ? 0 : undefined"
+          @click="onSelect(id)"
+          @keydown.enter.prevent="onSelect(id)"
+          @keydown.space.prevent="onSelect(id)"
+        >
           <span class="id-toggle-name">{{ labelOf(id) }}</span>
           <a-switch
             :checked="isOn(id)"
             size="small"
+            @click.stop
             @change="(v: boolean) => onToggle(id, v)"
           />
-        </label>
+        </div>
       </template>
     </div>
   </div>
@@ -119,11 +130,11 @@ import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { isCustomVrmMotionId } from "@/pet/content/motion/customVrmMotions";
 import {
-  findVrmaMotion,
-  groupVrmaMotionIdsByKind,
-  type VrmMotionKind,
-  type VrmMotionVibe,
-} from "@/pet/content/motion/vrmaMotions";
+  findMotionListMeta,
+  groupMotionIdsByKind,
+  type MotionListKind,
+  type MotionListVibe,
+} from "@/pet/content/motion/motionListMeta";
 
 const props = withDefaults(
   defineProps<{
@@ -134,7 +145,7 @@ const props = withDefaults(
     /** i18n key prefix, e.g. `pet.motion.` / `pet.lineCategory.` */
     labelKeyPrefix: string;
     customNames?: Record<string, string>;
-    /** VRM：按类型 + 风格筛选/分组 */
+    /** 按类型 + 风格筛选/分组（VRM 与壳角色共用） */
     motionMeta?: boolean;
     /** 点行选中并立即「做一下」 */
     selectable?: boolean;
@@ -157,8 +168,8 @@ const emit = defineEmits<{
 
 const { t } = useI18n();
 
-type KindFilter = "all" | VrmMotionKind;
-type VibeFilter = "all" | VrmMotionVibe;
+type KindFilter = "all" | MotionListKind;
+type VibeFilter = "all" | MotionListVibe;
 
 const kindFilter = ref<KindFilter>("all");
 const vibeFilter = ref<VibeFilter>("all");
@@ -181,7 +192,7 @@ const vibeFilterOptions = computed(() => [
 const filteredIds = computed(() => {
   if (!props.motionMeta) return props.ids;
   return props.ids.filter((id) => {
-    const meta = findVrmaMotion(id);
+    const meta = findMotionListMeta(id);
     if (!meta) return kindFilter.value === "all" && vibeFilter.value === "all";
     if (kindFilter.value !== "all" && meta.kind !== kindFilter.value) {
       return false;
@@ -193,9 +204,7 @@ const filteredIds = computed(() => {
   });
 });
 
-const filteredGroups = computed(() =>
-  groupVrmaMotionIdsByKind(filteredIds.value)
-);
+const filteredGroups = computed(() => groupMotionIdsByKind(filteredIds.value));
 
 function isOn(id: string) {
   return !props.disabledIds.includes(id);
@@ -208,8 +217,8 @@ function labelOf(id: string) {
   return t(`${props.labelKeyPrefix}${id}`);
 }
 
-function vibeOf(id: string): VrmMotionVibe | null {
-  return findVrmaMotion(id)?.vibe ?? null;
+function vibeOf(id: string): MotionListVibe | null {
+  return findMotionListMeta(id)?.vibe ?? null;
 }
 
 function onSelect(id: string) {
