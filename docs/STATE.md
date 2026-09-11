@@ -18,6 +18,7 @@
 | `chatPausesRandomIdle` | lifecycle ← `chat-open` | idle 循环只读 |
 | `playfulPausesRandomIdle` | ← `playful-chase` | 调皮追逐期间暂停随机 idle |
 | `peekPausesRandomIdle` | ← `peek-hide` | 躲起来期间暂停随机 idle |
+| 小智通话忙 | `useXiaozhiPetVoice.phase` → `isXiaozhiTalkBusyPhase` | listening / speaking / connecting 时：禁随机 idle、自动说话、点击台词；mood 仍经 `applyMood(..., "chat-reply")` |
 | `hostAlive` | `usePetHostLifecycle` | |
 | settings 镜像 | `usePetSettingsSync` | 可能再发 `random-idle-setting`；deskWeather 变更时调用 `refreshDeskWeather` |
 | 工位气象 | `usePetDeskWeather`（poll + engine） | bridge 只 invoke（快照 / acquire·release 租约）；冷却在 engine；说话成功后再 commit |
@@ -29,7 +30,7 @@ host 内请勿直接赋值 `mood.value`。
 
 | Reason | 触发方 | 说明 |
 | --- | --- | --- |
-| `speak` / `chat-reply` | speech / lifecycle | 可覆盖 motion mood |
+| `speak` / `chat-reply` | speech / lifecycle / 小智句子 | 可覆盖 motion mood；小智 Opus 字幕同走 chat-reply |
 | `motion` | motion | speaking / dragging / sleep 时拒绝 |
 | `sleep` | life timers | 唤醒前保持粘滞 |
 | `wake` / `usb-wake` | life / speech | 仅能从 sleep 转入；USB 后 chip 可按 `usbFollowUpChance` 追加一句 |

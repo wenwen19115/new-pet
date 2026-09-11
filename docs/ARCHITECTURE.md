@@ -22,12 +22,12 @@ src/pet/
   data/
     settings/          # normalize / profiles / io / defaults
     …                  # store、types、deskWeather / skyWeather 等子域、vrm 等
-  chat/                # 陪聊领域（ai / providers），不含窗口壳
-  bridge/              # Tauri invoke 薄封装；窗几何 sizes / windowAnchor；主窗边框 windowChrome
+  chat/                # 陪聊领域（ai / providers / history / xiaozhi），不含窗口壳
+  bridge/              # Tauri invoke 薄封装；窗几何 sizes / windowAnchor；主窗边框 windowChrome；小智 OTA/WS
   events/              # 跨窗事件名索引
   models/              # toon / chip / fig-sci / preview / trail / vrm
   skins/               # look 表与文案
-src-tauri/             # 窗口、托盘、USB、工位气象传感、窗外气象拉取、TTS、FS
+src-tauri/             # 窗口、托盘、USB、工位气象传感、窗外气象拉取、TTS、FS、小智 OTA/WS
 ```
 
 ## 常见入口
@@ -35,6 +35,7 @@ src-tauri/             # 窗口、托盘、USB、工位气象传感、窗外气�
 | 改动目标 | 建议入口 |
 | --- | --- |
 | 点击、拖拽、睡眠、说话 | `runtime/createPetHost.ts` → 对应 `usePet*` |
+| 小智语音（宠下对话条 / 绑定 / Opus） | `chat/xiaozhi/` + `runtime/useXiaozhiPetVoice` + `windows/pet/XiaozhiTalkBar`；聊天窗仅历史 |
 | 精确命中 / 空白穿透 | `runtime/petHitBridge` + `models/<包>/*Hit`（仅桌宠窗 `isPetHitHostWindow` 注册） |
 | 气泡 / 菜单共存避让 | `windows/shared/floatOverlayRects` ← bubble / menu `window.ts` |
 | 气泡 / 菜单 / 聊天 UI | `windows/<名>/` |
@@ -163,6 +164,6 @@ yarn test
 yarn check:pre-commit   # 提交前机械检查；目视清单见 .cursor/rules/commit.mdc
 ```
 
-手测清单见 [`GOLDEN_PATHS.md`](./GOLDEN_PATHS.md)。常用 smoke：`architecture`（目录与注册表）、`petHost`（intent / dispose）、`petHit`（各形象精检）、`floatOverlayRects`（气泡/菜单避让）、`toonPixels`、`playfulPhysics`、`bubblePong`、`deskWeather`、`skyWeather`。
+手测清单见 [`GOLDEN_PATHS.md`](./GOLDEN_PATHS.md)。常用 smoke：`architecture`（目录与注册表）、`petHost`（intent / dispose）、`petHit`（各形象精检）、`floatOverlayRects`（气泡/菜单避让）、`toonPixels`、`playfulPhysics`、`bubblePong`、`deskWeather`、`skyWeather`、`xiaozhi`。
 
 本地示意/试验稿（不入库）放 `tests/local/`，见该目录说明。

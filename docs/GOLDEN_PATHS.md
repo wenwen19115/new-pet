@@ -2,7 +2,7 @@
 
 发版前回归清单，用于覆盖关键用户路径，而非追求测试覆盖率。代码改动后应先执行 `yarn test`，再按相关条目手测。
 
-自动化对照（`yarn test`）：`architecture.smoke.test.ts`、`petHost.smoke.test.ts`、`petHit.smoke.test.ts`、`floatOverlayRects.smoke.test.ts`、`toonPixels.smoke.test.ts`、`deskWeather.smoke.test.ts`、`skyWeather.smoke.test.ts`、`previewFit.smoke.test.ts`、`playfulPhysics.smoke.test.ts`、`bubblePong.smoke.test.ts`、`moyuDay.smoke.test.ts`。
+自动化对照（`yarn test`）：`architecture.smoke.test.ts`、`petHost.smoke.test.ts`、`petHit.smoke.test.ts`、`floatOverlayRects.smoke.test.ts`、`toonPixels.smoke.test.ts`、`deskWeather.smoke.test.ts`、`skyWeather.smoke.test.ts`、`previewFit.smoke.test.ts`、`playfulPhysics.smoke.test.ts`、`bubblePong.smoke.test.ts`、`moyuDay.smoke.test.ts`、`xiaozhi.smoke.test.ts`。
 
 | # | 路径 | 手测要点 | 自动化对照 |
 | --- | --- | --- | --- |
@@ -22,8 +22,9 @@
 | 14 | Theme Pack | 设置 → 应用：切换 `theme.style` 后整页配色/边框即时变；**自定义标题栏**主色氛围与 pack 名跟包；气泡与菜单窗跟包；与 look（形象）独立、互不覆盖 | `src/theme/` + `ThemeTitleBar` + settings sync |
 | 15 | 壁纸层 | 背景模式切「壁纸」选图/GIF/视频后舞台显示；压暗与适配生效；切回「跟随风格」恢复 pack 底；**有壁纸开机**：splash 期间预加载，结束时不先白后黑 | `ThemeMediaLayer` / `App.vue` / `stageBackdrop` |
 | 16 | 开机动画 | 开启后重启设置窗见闪屏；auto / media / manual 时长符合预期；可跳过；无媒体或失败时不卡死；标题栏在 splash 期间仍可关窗 | `bootHold` / `BootAnimationSettings` / `ThemeTitleBar` |
-| 17 | 窗外天气 | 设置 → **窗景**：上半段投射；下半段**天气系统**在线/离线（切在线**先探测**，失败则保持离线）+ 天色/天气/地区；驱动行右侧值槽固定宽（固定可改 / 其它只读）；左侧预览始终联网状态；**在线探测失败回落离线** | `skyWeather.smoke.test.ts`；`previewFit.smoke.test.ts` |
+| 17 | 窗外天气 | 设置 → **窗景**：上半段投射；下半段**天气系统**在线/离线（切在线**先探测**，失败则保持离线）+ 天色/天气/地区；驱动行右侧值槽定宽（固定可改 / 其它只读）；左侧预览始终联网状态；**在线探测失败回落离线** | `skyWeather.smoke.test.ts`；`previewFit.smoke.test.ts` |
 | 18 | 右键菜单 / 摸鱼 | 展开摸鱼仪表盘见「今日摸鱼一行」；互动后计数变化；清缓存或出厂后战绩归零；「退出召唤」关 `enabled` 并软隐藏桌宠；设置「伙伴」召唤旁可「复位位置」回工作区右上默认起始位 | `moyuDay.smoke.test.ts` |
+| 19 | 小智语音 | 设置切小智：宠下对话条；绑定码 / 重绑；按住或点按聆听；通话中无随机 idle/自动说话；聊天窗只读历史；关「小智语音播报」仅字幕 | `xiaozhi.smoke.test.ts` |
 
 ## 勾选范围
 
@@ -34,5 +35,6 @@
 - 改动 Theme Pack / 壁纸 / 开机 / 主窗标题栏：追加 14–16。
 - 改动窗外天气：追加 17。
 - 改动右键菜单 / 今日摸鱼：追加 18。
+- 改动小智语音：追加 19。
 - 仅改 Toon 像素：执行 toon smoke，并手测待机与一个 `toon-*` 动作。
 - 仅改 mood / intent：执行 `yarn test` 后抽测相关条目。
