@@ -83,10 +83,10 @@
         <ThemeMeter
           :value="ctx.zoomPercent.value"
           :min="-100"
-          :max="100"
+          :max="200"
           :step="5"
           :fill-percent="
-            Math.min(100, Math.max(0, (ctx.zoomPercent.value + 100) / 2))
+            Math.min(100, Math.max(0, (ctx.zoomPercent.value + 100) / 3))
           "
           :title="$t('pet.dblClickReset')"
           :aria-label="$t('pet.zoomTitle')"
