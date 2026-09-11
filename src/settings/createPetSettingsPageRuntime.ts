@@ -67,6 +67,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
   const settingsTab = ref("buddy");
 
   let applyLocalFromSettingsImpl = (_s: PetSettings) => {};
+  let applyChatAiDraftImpl = (_raw: unknown) => {};
   let refreshVrmPreviewImpl: () => void | Promise<void> = async () => {};
   let skyPersistPendingImpl = () => false;
 
@@ -75,6 +76,10 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
       ttsEnabled,
       ttsVoiceUri,
       savedChatAi,
+      xiaozhiVoicePlayback,
+      xiaozhiClickToggleListen,
+      xiaozhiHotkey,
+      xiaozhiTalkBarHideSec,
       vrmModelName,
       vrmModelRev,
     });
@@ -91,6 +96,7 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     skyWeather,
     skyPersistPending: () => skyPersistPendingImpl(),
     applyLocalFromSettings: (s) => applyLocalFromSettingsImpl(s),
+    applyChatAiDraft: (raw) => applyChatAiDraftImpl(raw),
     refreshVrmPreview: () => refreshVrmPreviewImpl(),
   });
 
@@ -106,11 +112,21 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     onTtsVoice,
   } = tts;
 
-  const chatAi = useChatAiDraft({ settingsBag, getCurrentSettings });
+  const chatAi = useChatAiDraft({
+    settingsBag,
+    getCurrentSettings,
+    persistOnly: persist.invokePersistOnly,
+  });
+  applyChatAiDraftImpl = chatAi.applyChatAiDraft;
   const {
     chatAiProvider,
     chatAiApiKey,
     chatAiBaseUrl,
+    chatAiOtaUrl,
+    xiaozhiVoicePlayback,
+    xiaozhiClickToggleListen,
+    xiaozhiHotkey,
+    xiaozhiTalkBarHideSec,
     chatAiModel,
     chatAiCustomModels,
     chatAiDirty,
@@ -123,6 +139,11 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     onChatAiRemoveModel,
     onChatAiSave,
     onChatAiReset,
+    onXiaozhiVoicePlayback,
+    onXiaozhiClickToggleListen,
+    onXiaozhiHotkeyCommit,
+    onXiaozhiTalkBarHideSec,
+    onXiaozhiRebind,
   } = chatAi;
 
   const formPicker = useFormPicker({ modelKind, enabled, settingsTab });
@@ -282,6 +303,11 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     chatAiProvider,
     chatAiApiKey,
     chatAiBaseUrl,
+    chatAiOtaUrl,
+    xiaozhiVoicePlayback,
+    xiaozhiClickToggleListen,
+    xiaozhiHotkey,
+    xiaozhiTalkBarHideSec,
     chatAiModel,
     chatAiCustomModels,
     opacityPercent,
@@ -347,6 +373,11 @@ export function createPetSettingsPageRuntime(opts: Options = {}) {
     onChatAiRemoveModel,
     onChatAiSave,
     onChatAiReset,
+    onXiaozhiVoicePlayback,
+    onXiaozhiClickToggleListen,
+    onXiaozhiHotkeyCommit,
+    onXiaozhiTalkBarHideSec,
+    onXiaozhiRebind,
     chatAiDirty,
     canAddChatAiModel,
     onOpacity: actions.onOpacity,

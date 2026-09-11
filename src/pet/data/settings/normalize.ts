@@ -10,6 +10,7 @@ import {
   defaultProfileForModel,
 } from "./defaults";
 import { normalizePetChatAi } from "../../chat/providers";
+import { normalizeXiaozhiPrefs } from "../../chat/xiaozhi/prefs";
 import { isPetIdleMotion } from "../../content/motion/motions";
 import {
   isPetModelKind,
@@ -318,6 +319,13 @@ export function normalizePetSettings(
     : DEFAULT_PET_MODEL;
   const profiles = normalizeProfiles(raw);
   const active = applyActiveProfile(modelKind, profiles);
+  const xiaozhi = normalizeXiaozhiPrefs(
+    (raw as { xiaozhi?: unknown })?.xiaozhi as
+      | Partial<import("../../chat/xiaozhi/prefs").XiaozhiPrefs>
+      | null
+      | undefined,
+    active.chatAi
+  );
 
   return {
     enabled: Boolean(raw?.enabled),
@@ -337,6 +345,19 @@ export function normalizePetSettings(
     deskWeather: normalizeDeskWeather(raw?.deskWeather),
     skyWeather: normalizeSkyWeather(raw?.skyWeather),
     profiles,
+    xiaozhi,
     ...active,
+    // 小智凭证以顶层 xiaozhi 为准（全应用共用）
+    chatAi:
+      active.chatAi.provider === "xiaozhi"
+        ? normalizePetChatAi({
+            ...active.chatAi,
+            apiKey: xiaozhi.token,
+            baseUrl: xiaozhi.wsUrl,
+            deviceId: xiaozhi.deviceId,
+            clientId: xiaozhi.clientId,
+            otaUrl: xiaozhi.otaUrl,
+          })
+        : active.chatAi,
   };
 }

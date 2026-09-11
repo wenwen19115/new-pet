@@ -9,7 +9,6 @@ export type PetHostIntent =
 
 export type PetHostIntentEffects = {
   hostAlive: () => boolean;
-  randomIdleEnabled: () => boolean;
   chatPausesRandomIdle: () => boolean;
   setChatPausesRandomIdle: (open: boolean) => void;
   playfulPausesRandomIdle: () => boolean;
@@ -24,7 +23,6 @@ export type PetHostIntentEffects = {
 function canScheduleRandomIdle(fx: PetHostIntentEffects): boolean {
   return (
     fx.hostAlive() &&
-    fx.randomIdleEnabled() &&
     !fx.chatPausesRandomIdle() &&
     !fx.playfulPausesRandomIdle() &&
     !fx.peekPausesRandomIdle()
@@ -65,12 +63,13 @@ export function applyRandomIdleSettingGate(
   enabled: boolean,
   fx: PetHostIntentEffects
 ): void {
-  if (enabled && canScheduleRandomIdle(fx)) {
+  // off = 禁随机飞屏；原地 idle 仍排。关掉时先打断在途飞行。
+  if (!enabled) fx.cancelFlight();
+  if (canScheduleRandomIdle(fx)) {
     fx.scheduleIdleAction();
     return;
   }
   fx.setIdleActionTimer(null);
-  fx.cancelFlight();
 }
 
 export function applyPlayfulChaseIdleGate(

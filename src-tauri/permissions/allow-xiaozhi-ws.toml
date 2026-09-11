@@ -1,0 +1,10 @@
+[[permission]]
+identifier = "allow-xiaozhi-ws"
+description = "Allows Xiaozhi WebSocket connect/send/close with custom handshake headers"
+commands.allow = [
+  "xiaozhi_ws_connect",
+  "xiaozhi_ws_send_text",
+  "xiaozhi_ws_send_binary",
+  "xiaozhi_ws_close",
+  "xiaozhi_ota_check",
+]

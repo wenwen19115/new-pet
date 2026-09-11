@@ -1,7 +1,7 @@
 import type { Ref } from "vue";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { syncPetBubbleToPet } from "@/pet/windows/bubble";
+import { hidePetBubble, syncPetBubbleToPet } from "@/pet/windows/bubble";
 import { hidePetChat } from "@/pet/windows/chat";
 import { setWindowSizeKeepCenter } from "@/pet/bridge/windowAnchor";
 import { isCustomVrmMotionId } from "@/pet/content/motion/customVrmMotions";
@@ -62,6 +62,7 @@ export function usePetHostLifecycle(deps: {
   onSuspendRuntime: () => void;
   clearLifeTimers: () => void;
   clearUsbFollowUpTimer: () => void;
+  cancelSpeech: () => void;
   clearDeskWeather: () => void;
   clearSkyWeatherBackdrop: () => void;
   clearMotionTimers: () => void;
@@ -116,6 +117,7 @@ export function usePetHostLifecycle(deps: {
     clearTimer(deps.moodResetTimerRef.get());
     deps.moodResetTimerRef.set(null);
     deps.clearUsbFollowUpTimer();
+    deps.cancelSpeech();
     deps.clearDeskWeather();
     deps.clearSkyWeatherBackdrop();
     deps.clearMotionTimers();
@@ -168,6 +170,7 @@ export function usePetHostLifecycle(deps: {
     }
     clearHostTimers();
     cancelPetTts();
+    void hidePetBubble();
     void hidePetChat();
     deps.vrmSrc.value = null;
     deps.lastLine.value = null;
@@ -280,20 +283,33 @@ export function usePetHostLifecycle(deps: {
         deps.onCtxMenuAction(action);
       }
     );
-    unlistenChatReply = await listen(PET_CHAT_REPLY_EVENT, () => {
-      if (!deps.hostAliveRef.get()) return;
-      deps.applyMood(
-        deps.settings.value.tone === "snarky" ? "grumpy" : "happy",
-        "chat-reply"
-      );
-      clearTimer(deps.moodResetTimerRef.get());
-      deps.moodResetTimerRef.set(
-        window.setTimeout(() => {
-          if (!deps.hostAliveRef.get()) return;
-          deps.applyMood("idle", "chat-reply-end");
-        }, 1600)
-      );
-    });
+    unlistenChatReply = await listen<{ text?: string; mood?: string }>(
+      PET_CHAT_REPLY_EVENT,
+      (event) => {
+        if (!deps.hostAliveRef.get()) return;
+        const rawMood = event.payload?.mood;
+        const fromPayload =
+          rawMood === "happy" ||
+          rawMood === "grumpy" ||
+          rawMood === "curious" ||
+          rawMood === "excited" ||
+          rawMood === "idle" ||
+          rawMood === "sleep"
+            ? rawMood
+            : null;
+        const next =
+          fromPayload ??
+          (deps.settings.value.tone === "snarky" ? "grumpy" : "happy");
+        deps.applyMood(next, "chat-reply");
+        clearTimer(deps.moodResetTimerRef.get());
+        deps.moodResetTimerRef.set(
+          window.setTimeout(() => {
+            if (!deps.hostAliveRef.get()) return;
+            deps.applyMood("idle", "chat-reply-end");
+          }, 1600)
+        );
+      }
+    );
     unlistenChatOpen = await listen<PetChatOpenStatePayload>(
       PET_CHAT_OPEN_STATE_EVENT,
       (event) => {

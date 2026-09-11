@@ -6,6 +6,8 @@ mod desk_weather;
 mod sky_weather;
 mod titlebar;
 mod tts;
+mod xiaozhi_ws;
+mod xiaozhi_ota;
 
 use tauri::Manager;
 
@@ -23,9 +25,15 @@ fn destroy_pet_windows(app: &tauri::AppHandle) {
 }
 
 fn main() {
+    // msedge-tts 走 rustls；仓内同时有 ring / aws-lc-rs 时必须先选定 provider，
+    // 否则 Edge TTS 建连会 process panic，「语音播报」整段挂掉。
+    let _ = rustls::crypto::ring::default_provider().install_default();
+
     tauri::Builder::default()
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .manage(xiaozhi_ws::XiaozhiWsState::default())
         .invoke_handler(tauri::generate_handler![
             get_serial_port_details,
             system_stats::get_system_stats,
@@ -37,6 +45,11 @@ fn main() {
             titlebar::set_window_border_color,
             tts::list_edge_tts_voices,
             tts::synthesize_edge_tts,
+            xiaozhi_ws::xiaozhi_ws_connect,
+            xiaozhi_ws::xiaozhi_ws_send_text,
+            xiaozhi_ws::xiaozhi_ws_send_binary,
+            xiaozhi_ws::xiaozhi_ws_close,
+            xiaozhi_ota::xiaozhi_ota_check,
         ])
         .setup(|app| {
             let handle = app.handle().clone();

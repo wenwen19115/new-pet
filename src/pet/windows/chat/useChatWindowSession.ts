@@ -14,7 +14,11 @@ import {
   type PetChatHistoryItem,
 } from "@/pet/chat/history";
 import { loadPetSettings } from "@/pet/data/settings";
-import { normalizePetChatAi, type PetChatAiConfig } from "@/pet/chat/providers";
+import {
+  isXiaozhiChatProvider,
+  normalizePetChatAi,
+  type PetChatAiConfig,
+} from "@/pet/chat/providers";
 import { PET_CHAT_INPUT_MAX } from "./types";
 import {
   PET_CHAT_ACTIVITY_EVENT,
@@ -25,7 +29,7 @@ import {
   PET_SETTINGS_EVENT,
   type PetChatShowPayload,
 } from "@/pet/events";
-import { type PetSettings, type PetTone } from "@/pet/data/types";
+import { type PetMood, type PetSettings, type PetTone } from "@/pet/data/types";
 import { isPetPersonality, type PetPersonality } from "@/pet/content/dialogue/personality";
 import type { PetModelKind } from "@/pet/skins/types";
 import { speakPetTts, cancelPetTts } from "@/pet/bridge/tts";
@@ -57,18 +61,34 @@ export function useChatWindowSession() {
 
   const inputMax = PET_CHAT_INPUT_MAX;
   const en = computed(() => lang.value === "en");
+  /** 小智会话在宠侧；此窗只读历史 */
+  const isXiaozhi = computed(() => isXiaozhiChatProvider(chatAi.value.provider));
   const title = computed(() =>
     en.value ? `Chat · ${petName.value}` : `聊天 · ${petName.value}`
   );
   const providerLabel = computed(() => {
     const id = chatAi.value.provider;
     if (en.value) {
-      return id === "local" ? "Local" : "DeepSeek";
+      if (id === "local") return "Local";
+      if (id === "xiaozhi") return "Xiaozhi";
+      return "DeepSeek";
     }
-    return id === "local" ? "本地陪聊" : "DeepSeek";
+    if (id === "local") return "本地陪聊";
+    if (id === "xiaozhi") return "小智语音";
+    return "DeepSeek";
   });
-  const hint = computed(() =>
-    en.value ? "Say something…" : "打字跟我说点什么吧…"
+  const hint = computed(() => {
+    if (isXiaozhi.value) {
+      return en.value
+        ? "Talk to the pet — this window is history only."
+        : "对着宠物说话；此窗仅作历史记录。";
+    }
+    return en.value ? "Say something…" : "打字跟我说点什么吧…";
+  });
+  const xzHistoryOnly = computed(() =>
+    en.value
+      ? "Talk to the pet for Xiaozhi; this window is history only."
+      : "小智对话请对着宠物说；此窗仅作历史记录。"
   );
   const placeholder = computed(() =>
     en.value ? `Message (≤${inputMax})…` : `说点什么（≤${inputMax}字）…`
@@ -152,7 +172,7 @@ export function useChatWindowSession() {
     visible.value = true;
     void pingActivity();
     void nextTick(() => {
-      inputEl.value?.focus();
+      if (!isXiaozhi.value) inputEl.value?.focus();
       void scrollBottom();
     });
   }
@@ -172,29 +192,32 @@ export function useChatWindowSession() {
   }
 
   async function speakReply(text: string) {
-    if (muted.value || !ttsEnabled.value || !text) return;
-    try {
-      await speakPetTts(text, {
-        model: modelKind.value,
-        personality: personality.value,
-        tone: tone.value,
-        voiceUri: ttsVoiceUri.value,
-        lang: lang.value,
-      });
-    } catch (err) {
-      console.warn("[pet] chat tts failed", err);
+    if (isXiaozhi.value) return;
+    if (!muted.value && ttsEnabled.value && text) {
+      try {
+        await speakPetTts(text, {
+          model: modelKind.value,
+          personality: personality.value,
+          tone: tone.value,
+          voiceUri: ttsVoiceUri.value,
+          lang: lang.value,
+        });
+      } catch (err) {
+        console.warn("[pet] chat tts failed", err);
+      }
     }
   }
 
-  async function notifyReply(text: string) {
+  async function notifyReply(text: string, mood?: PetMood) {
     try {
-      await emit(PET_CHAT_REPLY_EVENT, { text });
+      await emit(PET_CHAT_REPLY_EVENT, { text, mood });
     } catch {
       // ignore
     }
   }
 
   function stopGeneration() {
+    if (isXiaozhi.value) return;
     abort?.abort();
   }
 
@@ -212,6 +235,7 @@ export function useChatWindowSession() {
   }
 
   async function requestAssistantReply(gen: number) {
+    if (isXiaozhi.value) return;
     busy.value = true;
     streamText.value = "";
     abort?.abort();
@@ -290,6 +314,7 @@ export function useChatWindowSession() {
   }
 
   async function send() {
+    if (isXiaozhi.value) return;
     const text = draft.value.trim().slice(0, inputMax);
     if (!text || busy.value) return;
 
@@ -303,7 +328,7 @@ export function useChatWindowSession() {
   }
 
   async function retryAt(errorIndex: number) {
-    if (busy.value) return;
+    if (isXiaozhi.value || busy.value) return;
     const errTurn = turns.value[errorIndex];
     if (!errTurn || errTurn.kind !== "error") return;
 
@@ -356,11 +381,21 @@ export function useChatWindowSession() {
       cancelPetTts();
     });
     unlistenSettings = await listen<PetSettings>(PET_SETTINGS_EVENT, (ev) => {
+      const prev = chatAi.value.provider;
       chatAi.value = normalizePetChatAi(ev.payload?.chatAi);
       const nextKind = ev.payload?.modelKind;
       if (typeof nextKind === "string" && nextKind.trim() && nextKind !== modelKind.value) {
         modelKind.value = nextKind as PetModelKind;
         if (visible.value) reloadWindowTurns();
+      }
+      if (!visible.value) return;
+      const next = chatAi.value.provider;
+      if (prev !== next) {
+        abort?.abort();
+        abort = null;
+        busy.value = false;
+        streamText.value = "";
+        cancelPetTts();
       }
     });
     window.addEventListener("storage", onStorage);
@@ -386,6 +421,8 @@ export function useChatWindowSession() {
     listEl,
     inputEl,
     inputMax,
+    isXiaozhi,
+    xzHistoryOnly,
     title,
     providerLabel,
     hint,

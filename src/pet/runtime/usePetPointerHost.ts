@@ -42,6 +42,12 @@ export function usePetPointerHost(deps: {
     cursor: { x: number; y: number },
     winCenter: { x: number; y: number }
   ) => void;
+  /** 额外可点区域（如宠下对话条）——参与穿透关闭 */
+  isOverExtra?: (
+    cursor: { x: number; y: number },
+    winCenter: { x: number; y: number },
+    winSize: { w: number; h: number }
+  ) => boolean;
 }) {
   const DRAG_THRESHOLD = deps.dragThreshold ?? 14;
   const HIT_PAD = 2;
@@ -338,6 +344,12 @@ export function usePetPointerHost(deps: {
       } else {
         lastPreciseOver = false;
         lastPreciseFrame = frame;
+      }
+      if (
+        !overPet &&
+        deps.isOverExtra?.(cursor, winCenter, deps.winSize.value)
+      ) {
+        overPet = true;
       }
       applyPassThroughHysteresis(overPet);
 

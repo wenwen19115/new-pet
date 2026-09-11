@@ -47,6 +47,11 @@ export type {
 } from "../windows/chat/types";
 
 export {
+  PET_HOTKEY_SUSPEND_EVENT,
+} from "./hotkey";
+export type { PetHotkeySuspendPayload } from "./hotkey";
+
+export {
   SKY_WEATHER_FIRE_EVENT,
   SKY_WEATHER_REFRESH_EVENT,
 } from "../data/skyWeather";
@@ -76,6 +81,7 @@ export const PET_EVENT_CATALOG = [
   "pet://chat-close-req",
   "pet://chat-reply",
   "pet://chat-open-state",
+  "pet://hotkey-suspend",
   "pet://sky-weather-fire",
   "pet://sky-weather-refresh",
 ] as const;

@@ -90,7 +90,11 @@
       </div>
     </div>
 
-    <form class="pet-chat-compose" @submit.prevent="onComposeSubmit">
+    <div v-if="isXiaozhi" class="pet-chat-compose pet-chat-compose--voice">
+      <p class="pet-chat-history-only">{{ xzHistoryOnly }}</p>
+    </div>
+
+    <form v-else class="pet-chat-compose" @submit.prevent="onComposeSubmit">
       <textarea
         ref="inputEl"
         v-model="draft"
@@ -130,6 +134,8 @@ const {
   listEl,
   inputEl,
   inputMax,
+  isXiaozhi,
+  xzHistoryOnly,
   title,
   providerLabel,
   hint,

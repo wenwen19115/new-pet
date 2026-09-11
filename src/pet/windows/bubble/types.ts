@@ -14,4 +14,6 @@ export interface PetBubblePayload {
   durationMs: number;
   /** 写入时间戳，供气泡窗去重/轮询 */
   at?: number;
+  /** 立刻整段显示（小智字幕，跟 Opus 对齐） */
+  instant?: boolean;
 }

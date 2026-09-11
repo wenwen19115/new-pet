@@ -13,6 +13,7 @@ import {
   streamLocalReply,
 } from "./remote";
 import type { ChatTurn, PetChatPersona } from "./types";
+import { PetChatAiError } from "./types";
 
 export type { ChatTurn, PetChatPersona } from "./types";
 export { PetChatAiError } from "./types";
@@ -42,6 +43,15 @@ export async function askPetChatAi(
     const reply = localPetChatReply(persona, lastUser);
     if (onDelta) return streamLocalReply(reply, onDelta, signal);
     return reply;
+  }
+
+  if (provider.id === "xiaozhi") {
+    throw new PetChatAiError(
+      "config",
+      lang === "en"
+        ? "Xiaozhi is voice-only. Use hold-to-talk in the chat window."
+        : "小智是语音模式。请在聊天窗按住说话。"
+    );
   }
 
   const remote = requireRemoteEndpoint(cfg, lang);

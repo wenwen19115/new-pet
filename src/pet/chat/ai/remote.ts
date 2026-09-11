@@ -145,6 +145,14 @@ export function requireRemoteEndpoint(
         : "请先切换到 DeepSeek 再测试连接。"
     );
   }
+  if (provider.id === "xiaozhi") {
+    throw new PetChatAiError(
+      "config",
+      lang === "en"
+        ? "Xiaozhi is voice-only. Use the chat window mic, or switch to DeepSeek for text."
+        : "小智是语音模式。请在聊天窗按住说话，或切回 DeepSeek 打字。"
+    );
+  }
   if (provider.needsKey && !apiKey) {
     throw new PetChatAiError(
       "missing_key",

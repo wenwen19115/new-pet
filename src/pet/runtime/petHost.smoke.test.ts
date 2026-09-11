@@ -31,6 +31,7 @@ vi.mock("@/pet/windows/chat", () => ({
 }));
 vi.mock("@/pet/windows/bubble", () => ({
   syncPetBubbleToPet: vi.fn(),
+  hidePetBubble: vi.fn(async () => undefined),
 }));
 vi.mock("@/pet/bridge/tts", () => ({
   cancelPetTts: (...args: unknown[]) => cancelPetTts(...args),
@@ -98,14 +99,12 @@ function makeFx(patch: Partial<PetHostIntentEffects> = {}) {
   let chatPause = false;
   let playfulPause = false;
   let peekPause = false;
-  let randomIdle = true;
   let alive = true;
   const setIdleActionTimer = vi.fn();
   const cancelFlight = vi.fn();
   const scheduleIdleAction = vi.fn();
   const fx: PetHostIntentEffects = {
     hostAlive: () => alive,
-    randomIdleEnabled: () => randomIdle,
     chatPausesRandomIdle: () => chatPause,
     setChatPausesRandomIdle: (open) => {
       chatPause = open;
@@ -130,9 +129,6 @@ function makeFx(patch: Partial<PetHostIntentEffects> = {}) {
     scheduleIdleAction,
     setAlive: (v: boolean) => {
       alive = v;
-    },
-    setRandomIdle: (v: boolean) => {
-      randomIdle = v;
     },
     getChatPause: () => chatPause,
     getPlayfulPause: () => playfulPause,
@@ -254,14 +250,14 @@ describe("host intent dispatch", () => {
     expect(bag.scheduleIdleAction).toHaveBeenCalledTimes(1);
   });
 
-  it("random-idle-setting off clears idle timer and cancels flight", () => {
+  it("random-idle-setting off cancels flight but keeps idle scheduling", () => {
     const bag = makeFx();
     bag.setIdleActionTimer.mockClear();
     bag.cancelFlight.mockClear();
+    bag.scheduleIdleAction.mockClear();
     dispatchPetHostIntent({ type: "random-idle-setting", enabled: false }, bag.fx);
-    expect(bag.setIdleActionTimer).toHaveBeenCalledWith(null);
     expect(bag.cancelFlight).toHaveBeenCalledTimes(1);
-    expect(bag.scheduleIdleAction).not.toHaveBeenCalled();
+    expect(bag.scheduleIdleAction).toHaveBeenCalledTimes(1);
   });
 
   it("random-idle-setting respects chat pause", () => {
@@ -564,6 +560,7 @@ describe("host regression smokes", () => {
       onSuspendRuntime,
       clearLifeTimers,
       clearUsbFollowUpTimer,
+      cancelSpeech: vi.fn(),
       clearDeskWeather: vi.fn(),
       clearSkyWeatherBackdrop: vi.fn(),
       clearMotionTimers,
@@ -670,6 +667,7 @@ describe("host regression smokes", () => {
       onSuspendRuntime: vi.fn(),
       clearLifeTimers: vi.fn(),
       clearUsbFollowUpTimer: vi.fn(),
+      cancelSpeech: vi.fn(),
       clearDeskWeather: vi.fn(),
       clearSkyWeatherBackdrop: vi.fn(),
       clearMotionTimers: vi.fn(),

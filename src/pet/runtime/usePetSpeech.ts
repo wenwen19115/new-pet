@@ -82,6 +82,8 @@ export function usePetSpeech(deps: {
     options: SpeakOptions = {}
   ) {
     if (!line) return;
+    // 退出召唤后勿再弹随机/事件台词
+    if (!deps.settings.value.enabled) return;
     if (deps.speaking.value && fromAuto && !options.force) return;
     if (deps.isDragging.value && !options.force) return;
     if (
@@ -130,6 +132,11 @@ export function usePetSpeech(deps: {
         })
       : Promise.resolve(0);
 
+    if (!deps.settings.value.enabled || gen !== speakGen) {
+      deps.speaking.value = false;
+      return;
+    }
+
     try {
       await showPetBubble({
         text,
@@ -140,10 +147,16 @@ export function usePetSpeech(deps: {
       console.warn("[pet] bubble failed", err);
     }
 
-    if (gen !== speakGen) return;
+    if (gen !== speakGen || !deps.settings.value.enabled) {
+      deps.speaking.value = false;
+      return;
+    }
 
     const audioMs = await ttsPromise;
-    if (gen !== speakGen) return;
+    if (gen !== speakGen || !deps.settings.value.enabled) {
+      deps.speaking.value = false;
+      return;
+    }
 
     const holdMs = Math.max(estimateMs, audioMs > 0 ? audioMs + 280 : 0);
     deps.clearTimer(deps.getBubbleTimer());
@@ -168,7 +181,15 @@ export function usePetSpeech(deps: {
 
     if (!fromAuto) playClickSound();
     deps.resetSleepTimer();
-    deps.scheduleAutoSpeak();
+    if (deps.settings.value.enabled) deps.scheduleAutoSpeak();
+  }
+
+  /** 退出召唤：作废在途 speak，避免 hide 后再弹 */
+  function cancelSpeech() {
+    speakGen += 1;
+    clearUsbFollowUpTimer();
+    cancelPetTts();
+    deps.speaking.value = false;
   }
 
   async function speak(fromAuto = false, options: SpeakOptions = {}) {
@@ -320,5 +341,6 @@ export function usePetSpeech(deps: {
     speakUsb,
     speakDeskWeather,
     clearUsbFollowUpTimer,
+    cancelSpeech,
   };
 }

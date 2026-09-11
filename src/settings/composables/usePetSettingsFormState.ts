@@ -20,6 +20,7 @@ import {
   clampCatchphraseChance,
 } from "@/pet/content/dialogue/catchphrases";
 import type { PetChatAiConfig } from "@/pet/chat/providers";
+import { normalizeXiaozhiPrefs } from "@/pet/chat/xiaozhi/prefs";
 import {
   DEFAULT_DESK_WEATHER,
   normalizeDeskWeather,
@@ -44,7 +45,7 @@ export function usePetSettingsFormState() {
   const nickname = ref("");
   const personality = ref<PetPersonality>("sunny");
   const usbWatchEnabled = ref(true);
-  const randomIdleEnabled = ref(true);
+  const randomIdleEnabled = ref(false);
   const playfulModeEnabled = ref(false);
   const deskWeather = ref<DeskWeatherConfig>(
     normalizeDeskWeather(DEFAULT_DESK_WEATHER)
@@ -87,6 +88,11 @@ export function usePetSettingsFormState() {
     ttsEnabled: Ref<boolean>;
     ttsVoiceUri: Ref<string>;
     savedChatAi: () => PetChatAiConfig;
+    /** 小智 UX 开关跟盘（同 mute/tts），凭证仍走 Save */
+    xiaozhiVoicePlayback: Ref<boolean>;
+    xiaozhiClickToggleListen: Ref<boolean>;
+    xiaozhiHotkey: Ref<string>;
+    xiaozhiTalkBarHideSec: Ref<number>;
     vrmModelName: Ref<string>;
     vrmModelRev: Ref<number>;
   }): PetSettings {
@@ -102,6 +108,7 @@ export function usePetSettingsFormState() {
     ) {
       persistedDemo = settingsBag.value.demoMotion;
     }
+    const savedChat = deps.savedChatAi();
     const base: PetSettings = {
       ...settingsBag.value,
       enabled: enabled.value,
@@ -109,7 +116,17 @@ export function usePetSettingsFormState() {
       ttsEnabled: deps.ttsEnabled.value,
       ttsVoiceUri: deps.ttsVoiceUri.value,
       chatEnabled: chatEnabled.value,
-      chatAi: deps.savedChatAi(),
+      chatAi: savedChat,
+      xiaozhi: normalizeXiaozhiPrefs(
+        {
+          ...settingsBag.value.xiaozhi,
+          voicePlayback: deps.xiaozhiVoicePlayback.value,
+          clickToggleListen: deps.xiaozhiClickToggleListen.value,
+          hotkey: deps.xiaozhiHotkey.value,
+          talkBarHideSec: deps.xiaozhiTalkBarHideSec.value,
+        },
+        savedChat
+      ),
       opacity: opacityPercent.value / 100,
       tone: tone.value,
       demoMotion: persistedDemo,

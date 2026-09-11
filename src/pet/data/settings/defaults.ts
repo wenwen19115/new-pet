@@ -9,6 +9,7 @@ import {
   defaultCatchphrasesForModel,
 } from "../../content/dialogue/catchphrases";
 import { DEFAULT_PET_CHAT_AI } from "../../chat/providers";
+import { DEFAULT_XIAOZHI_PREFS } from "../../chat/xiaozhi/prefs";
 import type {
   PetModelProfile,
   PetModelProfiles,
@@ -37,7 +38,7 @@ export function defaultProfileForModel(model: PetModelKind): PetModelProfile {
     chatAi: { ...DEFAULT_PET_CHAT_AI },
     opacity: 1,
     usbWatchEnabled: true,
-    randomIdleEnabled: true,
+    randomIdleEnabled: false,
     playfulModeEnabled: false,
     catchphrases: defaultCatchphrasesForModel(model),
     catchphraseChance: CATCHPHRASE_DEFAULT_CHANCE,
@@ -66,7 +67,7 @@ export const DEFAULT_PET_SETTINGS: PetSettings = {
   opacity: 1,
   modelKind: DEFAULT_PET_MODEL,
   usbWatchEnabled: true,
-  randomIdleEnabled: true,
+  randomIdleEnabled: false,
   playfulModeEnabled: false,
   vrmModelName: "",
   vrmModelRev: 0,
@@ -78,6 +79,7 @@ export const DEFAULT_PET_SETTINGS: PetSettings = {
   settingsAlwaysOnTop: false,
   sysStatsDefaultExpanded: false,
   chatAi: { ...DEFAULT_PET_CHAT_AI },
+  xiaozhi: { ...DEFAULT_XIAOZHI_PREFS },
   customVrmMotions: [],
   profiles: createDefaultProfiles(),
   tone: "cute",
@@ -95,6 +97,7 @@ export function createFactoryResetSettings(): PetSettings {
     theme: clonePetThemeSettings(DEFAULT_PET_SETTINGS.theme),
     profiles: createDefaultProfiles(),
     chatAi: { ...DEFAULT_PET_CHAT_AI, customModels: [] },
+    xiaozhi: { ...DEFAULT_XIAOZHI_PREFS },
     deskWeather: normalizeDeskWeather(DEFAULT_DESK_WEATHER),
     skyWeather: normalizeSkyWeather(DEFAULT_SKY_WEATHER),
     catchphrases: defaultCatchphrasesForModel(DEFAULT_PET_MODEL),

@@ -92,6 +92,9 @@ import {
   type PetThemeSettings,
 } from "@/theme";
 
+import { emit } from "@tauri-apps/api/event";
+import { PET_HOTKEY_SUSPEND_EVENT } from "@/pet/events/hotkey";
+
 const { t } = useI18n();
 const theme = ref<PetThemeSettings>(loadPetSettings().theme);
 const showSplash = ref(true);
@@ -280,12 +283,42 @@ function startSplash() {
   // 有自定义媒体：等 ready；随视频模式不加最长兜底
 }
 
+function isEditableTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  const tag = target.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+  if (target.isContentEditable) return true;
+  return Boolean(target.closest("input, textarea, select, [contenteditable='true']"));
+}
+
+function onHotkeyFocusIn(ev: FocusEvent) {
+  if (isEditableTarget(ev.target)) {
+    void emit(PET_HOTKEY_SUSPEND_EVENT, { suspend: true });
+  }
+}
+
+function onHotkeyFocusOut(ev: FocusEvent) {
+  if (isEditableTarget(ev.target)) {
+    // 下一焦点可能仍是输入框，延迟再判
+    window.setTimeout(() => {
+      const active = document.activeElement;
+      void emit(PET_HOTKEY_SUSPEND_EVENT, {
+        suspend: isEditableTarget(active),
+      });
+    }, 0);
+  }
+}
+
 onMounted(() => {
   theme.value = clonePetThemeSettings(loadPetSettings().theme);
   startSplash();
+  document.addEventListener("focusin", onHotkeyFocusIn, true);
+  document.addEventListener("focusout", onHotkeyFocusOut, true);
 });
 
 onUnmounted(() => {
+  document.removeEventListener("focusin", onHotkeyFocusIn, true);
+  document.removeEventListener("focusout", onHotkeyFocusOut, true);
   disposeHost?.();
   disposeHost = null;
   clearSplashTimer();

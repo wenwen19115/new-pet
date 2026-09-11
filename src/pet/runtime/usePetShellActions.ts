@@ -45,6 +45,8 @@ export function usePetShellActions(deps: {
   speakDragStart: () => void;
   speakDragLand: () => void;
   speak: (fromAuto?: boolean) => void | Promise<void>;
+  /** 小智回答中：点/拖不换气泡台词 */
+  suppressDialogueLines?: () => boolean;
   pointerOnPointerDown: (e: PointerEvent) => void;
   tryPlayfulCatch?: () => boolean;
   startPlayfulBurst?: () => boolean;
@@ -77,7 +79,9 @@ export function usePetShellActions(deps: {
       pool[Math.floor(Math.random() * pool.length)] ??
       deps.activeCharacter.value.runtime.tapFallbackMotion;
     deps.beginMotion(pick, { manual: true });
-    deps.speakTapEgg(model);
+    if (!deps.suppressDialogueLines?.()) {
+      deps.speakTapEgg(model);
+    }
   }
 
   function registerTapForEgg() {
@@ -98,6 +102,7 @@ export function usePetShellActions(deps: {
       deps.stopPlayful?.();
       deps.cancelActiveMotion();
       deps.clearMotionTimers();
+      if (deps.suppressDialogueLines?.()) return;
       deps.speaking.value = false;
       void hidePetBubble();
       void hidePetChat();
@@ -111,6 +116,7 @@ export function usePetShellActions(deps: {
         return;
       }
       bumpMoyuDay({ taps: 1 });
+      if (deps.suppressDialogueLines?.()) return;
       void deps.speak(false);
     },
     onAfterPointerUp: (info) => {
@@ -131,7 +137,9 @@ export function usePetShellActions(deps: {
             runtime.tapFallbackMotion;
           deps.beginMotion(pick, { manual: true });
         }
-        deps.speakDragLand();
+        if (!deps.suppressDialogueLines?.()) {
+          deps.speakDragLand();
+        }
         deps.ports.scheduleIdleAction();
       }
       deps.ports.resetSleepTimer();
@@ -215,6 +223,9 @@ export function usePetShellActions(deps: {
     }
     if (action === "dismiss") {
       clearPetIntroPending();
+      // 先本地关总闸，堵 patch 完成前的随机台词窗口
+      deps.settings.value = { ...deps.settings.value, enabled: false };
+      void hidePetBubble();
       void patchPetSettings({ enabled: false }).then((next) => {
         deps.settings.value = next;
         return syncPetWindow();

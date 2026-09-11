@@ -24,6 +24,8 @@ export function usePetLifeTimers(deps: {
   speak: (fromAuto: boolean) => void;
   speakUsb: (payload: PetUsbAnnouncePayload) => void;
   onEnterSleep: () => void;
+  /** 小智通话中勿插随机台词 */
+  suppressAutoSpeak?: () => boolean;
 }) {
   const blinking = ref(false);
   let sleepTimer: number | null = null;
@@ -69,11 +71,14 @@ export function usePetLifeTimers(deps: {
   function scheduleAutoSpeak() {
     deps.clearTimer(autoSpeakTimer);
     autoSpeakTimer = null;
+    if (!deps.settings.value.enabled) return;
     autoSpeakTimer = window.setTimeout(() => {
+      if (!deps.settings.value.enabled) return;
       if (
         deps.mood.value === "sleep" ||
         deps.speaking.value ||
-        deps.isDragging.value
+        deps.isDragging.value ||
+        deps.suppressAutoSpeak?.()
       ) {
         scheduleAutoSpeak();
         return;

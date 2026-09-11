@@ -6,6 +6,11 @@ import {
   getCharacter,
 } from "../characters";
 import { buildIdleMotionPool, resolveMotionPlay } from "../content/motion/motionPlayer";
+import {
+  isPetIdleMotion,
+  isScreenFlightMotion,
+} from "../content/motion/motions";
+import { isCustomVrmMotionId } from "../content/motion/customVrmMotions";
 
 export function usePetIdleLoop(deps: {
   settings: Ref<PetSettings>;
@@ -23,13 +28,13 @@ export function usePetIdleLoop(deps: {
 }) {
   function scheduleIdleAction() {
     deps.clearTimer(deps.getIdleActionTimer());
-    if (deps.isPaused?.() || !deps.settings.value.randomIdleEnabled) {
+    if (deps.isPaused?.()) {
       deps.setIdleActionTimer(null);
       return;
     }
     deps.setIdleActionTimer(
       window.setTimeout(() => {
-        if (deps.isPaused?.() || !deps.settings.value.randomIdleEnabled) {
+        if (deps.isPaused?.()) {
           deps.setIdleActionTimer(null);
           return;
         }
@@ -45,12 +50,19 @@ export function usePetIdleLoop(deps: {
         const model = deps.model.value;
         const profile = deps.settings.value.profiles[model];
         const character = getCharacter(model);
-        const pool = buildIdleMotionPool({
+        let pool = buildIdleMotionPool({
           idleMotions: character.idleMotions,
           allowCustomVrm: characterSupportsVrmAssets(model),
           disabledMotions: profile?.disabledMotions,
           customVrmMotions: deps.settings.value.customVrmMotions,
         });
+        // randomIdleEnabled：只控随机飞屏；关则留下原地动作
+        if (!deps.settings.value.randomIdleEnabled) {
+          pool = pool.filter((id) => {
+            if (isCustomVrmMotionId(id)) return true;
+            return isPetIdleMotion(id) && !isScreenFlightMotion(id);
+          });
+        }
         if (!pool.length) {
           scheduleIdleAction();
           return;

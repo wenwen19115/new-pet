@@ -1,9 +1,16 @@
 import type { PetModelKind } from "@/pet/skins/types";
 import { getCharacter } from "../characters";
 
+/** 设置滑条与落盘共用；+200 ≈ 本体 3 倍 */
+export const PET_ZOOM_MIN = -100;
+export const PET_ZOOM_MAX = 200;
+
 export function clampPetZoom(value: number): number {
   if (Number.isNaN(value)) return 0;
-  return Math.min(100, Math.max(-100, Math.round(value)));
+  return Math.min(
+    PET_ZOOM_MAX,
+    Math.max(PET_ZOOM_MIN, Math.round(value))
+  );
 }
 
 function petScaleFromZoom(zoomPercent: number): number {

@@ -29,6 +29,8 @@ export function usePetSettingsPersist(deps: {
   /** 本页天气防抖未落盘时，勿用桌宠包盖掉总闸草稿 */
   skyPersistPending?: () => boolean;
   applyLocalFromSettings: (s: PetSettings) => void;
+  /** 宠下绑定后刷新陪聊草稿（含小智凭证） */
+  applyChatAiDraft?: (raw: unknown) => void;
   refreshVrmPreview: () => void | Promise<void>;
 }) {
   let persistAndSyncImpl = async () => {};
@@ -66,7 +68,23 @@ export function usePetSettingsPersist(deps: {
     if (incoming.theme) {
       deps.theme.value = clonePetThemeSettings(incoming.theme);
     }
+    const prev = deps.settingsBag.value;
     deps.settingsBag.value = incoming;
+    const credChanged =
+      prev.chatAi?.provider !== incoming.chatAi?.provider ||
+      prev.chatAi?.apiKey !== incoming.chatAi?.apiKey ||
+      prev.chatAi?.baseUrl !== incoming.chatAi?.baseUrl ||
+      prev.xiaozhi?.token !== incoming.xiaozhi?.token ||
+      prev.xiaozhi?.wsUrl !== incoming.xiaozhi?.wsUrl ||
+      prev.xiaozhi?.otaUrl !== incoming.xiaozhi?.otaUrl;
+    const xzUxChanged =
+      prev.xiaozhi?.voicePlayback !== incoming.xiaozhi?.voicePlayback ||
+      prev.xiaozhi?.clickToggleListen !== incoming.xiaozhi?.clickToggleListen ||
+      prev.xiaozhi?.hotkey !== incoming.xiaozhi?.hotkey ||
+      prev.xiaozhi?.talkBarHideSec !== incoming.xiaozhi?.talkBarHideSec;
+    if (credChanged || xzUxChanged) {
+      deps.applyChatAiDraft?.(incoming.chatAi);
+    }
     syncSkyWeatherFromIncoming(incoming);
   }
 

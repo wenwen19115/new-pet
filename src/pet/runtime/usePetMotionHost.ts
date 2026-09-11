@@ -119,6 +119,7 @@ export function usePetMotionHost(deps: {
   }
 
   function clearMotionTimers() {
+    motionGen += 1;
     deps.clearTimer(idleHoldTimer);
     idleHoldTimer = null;
     deps.clearTimer(idleActionTimer);
@@ -170,12 +171,13 @@ export function usePetMotionHost(deps: {
     if (!isCustom) applyMoodForMotion(resolved as PetIdleMotion);
     else deps.applyMood("happy", "motion");
 
-    // VRM 只播原地片，不挪窗
+    // VRM 只播原地片，不挪窗。非手动且关了随机飞屏：只播动作、不挪 HWND
     if (
       !isCustom &&
       isPetIdleMotion(resolved) &&
       isScreenFlightMotion(resolved) &&
-      !deps.isDragging.value
+      !deps.isDragging.value &&
+      (manual || deps.settings.value.randomIdleEnabled)
     ) {
       const screenFlight = deps.activeCharacter.value.runtime.screenFlight;
       if (screenFlight === "wormhole") {

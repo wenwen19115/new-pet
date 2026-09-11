@@ -60,15 +60,20 @@ export function remapVrmMotion(motion: PetIdleMotion): PetIdleMotion {
     case "toon-wave":
       return "vrm-wave";
     case "bow-nod":
+      return "vrm-sad";
     case "toon-read":
+      return "vrm-think";
     case "toon-tea":
+      return "vrm-peace";
     case "toon-tilt":
-      return "vrm-greet";
+      return "vrm-think";
     case "stretch-up":
-      return "vrm-pose";
+      return "vrm-surprise";
     case "victory-burst":
     case "happy-bounce":
+      return "vrm-clap";
     case "tap-frenzy":
+      return "vrm-angry";
     case "toon-water":
     case "toon-grass":
     case "toon-fire":
@@ -82,11 +87,11 @@ export function remapVrmMotion(motion: PetIdleMotion): PetIdleMotion {
       return "vrm-twirl";
     case "side-hop":
     case "tip-toe":
-      return "vrm-squat";
+      return "vrm-blush";
     case "sway-step":
     case "toon-sway":
     case "toon-spin":
-      return "vrm-look";
+      return "vrm-relax";
     case "idle-float":
       return "vrm-idle";
     case "screen-dash":

@@ -5,10 +5,12 @@ import type { CustomVrmMotion } from "../content/motion/customVrmMotions";
 import type { PetCustomLine } from "../content/dialogue/customLines";
 import type { CharacterExtensions } from "./extensions";
 import type { PetChatAiConfig } from "../chat/providers";
+import type { XiaozhiPrefs } from "../chat/xiaozhi/prefs";
 import type { DeskWeatherConfig } from "./deskWeather";
 import type { SkyWeatherConfig } from "./skyWeather";
 
 export type { PetChatAiConfig, PetChatProviderId } from "../chat/providers";
+export type { XiaozhiPrefs } from "../chat/xiaozhi/prefs";
 export type {
   DeskWeatherConfig,
   DeskWeatherKind,
@@ -81,6 +83,8 @@ export interface PetSettings {
   chatEnabled: boolean;
   /** 从当前角色档案镜像出来的陪聊配置 */
   chatAi: PetChatAiConfig;
+  /** 小智：全应用共用绑定凭证 + 宠下语音 UX */
+  xiaozhi: XiaozhiPrefs;
   profiles: PetModelProfiles;
   /**
    * 顶层镜像，方便读写；权威数据在 profiles.vrm.extensions.vrm

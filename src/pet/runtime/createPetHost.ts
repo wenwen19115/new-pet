@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { hidePetBubble, syncPetBubbleToPet } from "@/pet/windows/bubble";
 import { hidePetChat } from "@/pet/windows/chat";
 import { hidePetMenu, isPetMenuOpen } from "@/pet/windows/menu";
@@ -14,6 +14,7 @@ import { useSkyWeatherPetBackdrop } from "./useSkyWeatherPetBackdrop";
 import { usePetHostLifecycle } from "./usePetHostLifecycle";
 import { usePetSettingsSync } from "./usePetSettingsSync";
 import { usePetShellActions } from "./usePetShellActions";
+import { useXiaozhiPetVoice, isXiaozhiTalkBusyPhase } from "./useXiaozhiPetVoice";
 import {
   dispatchPetHostIntent,
   type PetHostIntent,
@@ -61,6 +62,15 @@ function wirePetHost(s: PetHostShared) {
     cursor: { x: number; y: number },
     winCenter: { x: number; y: number }
   ) => void = () => {};
+  let tickXiaozhiProximity: (
+    cursor: { x: number; y: number },
+    winCenter: { x: number; y: number }
+  ) => void = () => {};
+  let isOverTalkBar: (
+    cursor: { x: number; y: number },
+    winCenter: { x: number; y: number },
+    winSize: { w: number; h: number }
+  ) => boolean = () => false;
 
   const pointerHost = usePetPointerHost({
     hostAlive: () => s.hostAlive,
@@ -79,7 +89,9 @@ function wirePetHost(s: PetHostShared) {
     },
     onCursorSample: (cursor, center) => {
       tickPlayfulProximity(cursor, center);
+      tickXiaozhiProximity(cursor, center);
     },
+    isOverExtra: (cursor, center, size) => isOverTalkBar(cursor, center, size),
   });
 
   const motionHost = usePetMotionHost({
@@ -198,6 +210,21 @@ function wirePetHost(s: PetHostShared) {
     getMoodResetTimer: () => s.moodResetTimer,
   });
 
+  let resizePetWindow: () => Promise<void> = async () => {};
+
+  const xiaozhiVoice = useXiaozhiPetVoice({
+    hostAlive: () => s.hostAlive,
+    settings,
+    muted: () => settings.value.muted,
+    applyMood,
+    getTone: () => settings.value.tone,
+    getBodyBox: () => bodyBox.value,
+    cancelSpeech: () => speech.cancelSpeech(),
+  });
+  isOverTalkBar = xiaozhiVoice.isCursorOverTalkBar;
+  tickXiaozhiProximity = xiaozhiVoice.tickProximity;
+  const xiaozhiCallBusy = () => isXiaozhiTalkBusyPhase(xiaozhiVoice.phase.value);
+
   const life = usePetLifeTimers({
     settings,
     mood,
@@ -212,6 +239,7 @@ function wirePetHost(s: PetHostShared) {
       motionHost.cancelActiveMotion({ resetVisuals: false });
       motionHost.clearMotionTimers();
     },
+    suppressAutoSpeak: xiaozhiCallBusy,
   });
 
   const deskWeather = usePetDeskWeather({
@@ -226,9 +254,6 @@ function wirePetHost(s: PetHostShared) {
       return spoke;
     },
   });
-
-  let resizePetWindow: () => Promise<void> =
-    async () => {};
 
   const skyBackdrop = useSkyWeatherPetBackdrop({
     settings,
@@ -253,7 +278,8 @@ function wirePetHost(s: PetHostShared) {
     isPaused: () =>
       s.chatPausesRandomIdle ||
       s.playfulPausesRandomIdle ||
-      s.peekPausesRandomIdle,
+      s.peekPausesRandomIdle ||
+      xiaozhiCallBusy(),
     beginMotion: motionHost.beginMotion,
     clearTimer: clearPetHostTimer,
     getIdleActionTimer: motionHost.getIdleActionTimer,
@@ -264,7 +290,6 @@ function wirePetHost(s: PetHostShared) {
 
   const intentFx: PetHostIntentEffects = {
     hostAlive: () => s.hostAlive,
-    randomIdleEnabled: () => settings.value.randomIdleEnabled,
     chatPausesRandomIdle: () => s.chatPausesRandomIdle,
     setChatPausesRandomIdle: (open) => {
       s.chatPausesRandomIdle = open;
@@ -322,6 +347,7 @@ function wirePetHost(s: PetHostShared) {
     speakDragStart: speech.speakDragStart,
     speakDragLand: speech.speakDragLand,
     speak: speech.speak,
+    suppressDialogueLines: xiaozhiCallBusy,
     pointerOnPointerDown: pointerHost.onPointerDown,
     tryPlayfulCatch: () => playful.tryCatchOnTap(),
     startPlayfulBurst: () => playful.startBurst(),
@@ -369,13 +395,18 @@ function wirePetHost(s: PetHostShared) {
       playful.stop();
       peek.clearPeek({ rescheduleIdle: false });
       dispatch({ type: "suspend-runtime" });
+      void xiaozhiVoice.suspend().catch((err) => {
+        console.warn("[pet] xiaozhi suspend failed", err);
+      });
     },
     clearLifeTimers: life.clearLifeTimers,
     clearUsbFollowUpTimer: speech.clearUsbFollowUpTimer,
+    cancelSpeech: speech.cancelSpeech,
     clearDeskWeather: deskWeather.clearDeskWeather,
     clearSkyWeatherBackdrop: skyBackdrop.clearSkyWeatherBackdrop,
     clearMotionTimers: motionHost.clearMotionTimers,
     resetDragState: pointerHost.resetDragState,
+
     syncWindowCenter: pointerHost.syncWindowCenter,
     initCursorLog: pointerHost.initCursorLog,
     setWinCenterFromResize: pointerHost.setWinCenterFromResize,
@@ -390,7 +421,10 @@ function wirePetHost(s: PetHostShared) {
     refreshUsbWatch: life.refreshUsbWatch,
     refreshDeskWeather: deskWeather.refreshDeskWeather,
     refreshSkyWeatherBackdrop: skyBackdrop.refreshSkyWeatherBackdrop,
-    applySettings: settingsSync.applySettings,
+    applySettings: (next, options) => {
+      settingsSync.applySettings(next, options);
+      void xiaozhiVoice.onSettingsChanged();
+    },
     speakIntro: speech.speakIntro,
     speakBubblePong: speech.speakBubblePong,
     isMotionLocked: motionHost.isMotionLocked,
@@ -429,8 +463,35 @@ function wirePetHost(s: PetHostShared) {
     onPointerMove: pointerHost.onPointerMove,
     onPointerUp: pointerHost.onPointerUp,
     onContextMenu: shell.onContextMenu,
-    mount: lifecycle.mount,
-    dispose: lifecycle.dispose,
+    mount: async () => {
+      await lifecycle.mount();
+      try {
+        await xiaozhiVoice.start();
+      } catch (err) {
+        console.warn("[pet] xiaozhi voice start failed", err);
+      }
+    },
+    dispose: () => {
+      void xiaozhiVoice.stop().catch((err) => {
+        console.warn("[pet] xiaozhi voice stop failed", err);
+      });
+      lifecycle.dispose();
+    },
+    xiaozhiVisible: xiaozhiVoice.visible,
+    xiaozhiBarRevealed: xiaozhiVoice.barRevealed,
+    xiaozhiPhase: xiaozhiVoice.phase,
+    xiaozhiBindCode: xiaozhiVoice.bindCode,
+    xiaozhiBindHint: xiaozhiVoice.bindHint,
+    xiaozhiErrorText: xiaozhiVoice.errorText,
+    xiaozhiStatusText: xiaozhiVoice.statusText,
+    xiaozhiClickToggle: computed(
+      () => settings.value.xiaozhi?.clickToggleListen ?? false
+    ),
+    xiaozhiHotkey: computed(
+      () => settings.value.xiaozhi?.hotkey ?? "Alt+Space"
+    ),
+    onXiaozhiBarPointerDown: xiaozhiVoice.onBarPointerDown,
+    onXiaozhiBarPointerUp: xiaozhiVoice.onBarPointerUp,
     skyBackdropEnabled: skyBackdrop.skyBackdropEnabled,
     skyHideableOnPet: skyBackdrop.skyHideableOnPet,
     skyHideEffectOnPet: skyBackdrop.skyHideEffectOnPet,

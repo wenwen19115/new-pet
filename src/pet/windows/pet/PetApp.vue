@@ -1,5 +1,10 @@
 <template>
-  <div class="pet-root" :style="rootStyle">
+  <div
+    class="pet-root"
+    :style="rootStyle"
+    :data-style="settings.theme.style"
+  >
+    <div class="pet-stage-slot" :style="stageSlotStyle">
     <div
       v-if="skySurfaceOn"
       class="pet-sky-vortex"
@@ -92,6 +97,20 @@
           aria-hidden="true"
         />
       </div>
+      <XiaozhiTalkBar
+        :visible="xiaozhiVisible"
+        :revealed="xiaozhiBarRevealed"
+        :phase="xiaozhiPhase"
+        :bind-code="xiaozhiBindCode"
+        :bind-hint="xiaozhiBindHint"
+        :error-text="xiaozhiErrorText"
+        :status-text="xiaozhiStatusText"
+        :click-toggle="xiaozhiClickToggle"
+        :hotkey-label="xiaozhiHotkey"
+        @pointerdown="onXiaozhiBarPointerDown"
+        @pointerup="onXiaozhiBarPointerUp"
+      />
+    </div>
     </div>
   </div>
 </template>
@@ -106,6 +125,8 @@ import HeroWindowWorld from "@/pet/models/preview/HeroWindowWorld.vue";
 import { resolvePetShellBobAnimation } from "@/pet/content/shell/petShellMotions";
 import { resolveTrailStyle } from "@/pet/content/motion/trailStyles";
 import { resolveNickname } from "@/pet/skins";
+import XiaozhiTalkBar from "./XiaozhiTalkBar.vue";
+import { themePackCssVars } from "@/theme/applyTheme";
 import "@/pet/content/shell/petShellMotions.css";
 import "./petSkySurface.css";
 
@@ -151,6 +172,17 @@ const {
   skyBackdropStyle,
   skyVisualHold,
   finishSkyDismiss,
+  xiaozhiVisible,
+  xiaozhiBarRevealed,
+  xiaozhiPhase,
+  xiaozhiBindCode,
+  xiaozhiBindHint,
+  xiaozhiErrorText,
+  xiaozhiStatusText,
+  xiaozhiClickToggle,
+  xiaozhiHotkey,
+  onXiaozhiBarPointerDown,
+  onXiaozhiBarPointerUp,
 } = host;
 
 const {
@@ -200,9 +232,22 @@ const chipSkinStyle = computed(() => {
   } as Record<string, string>;
 });
 
-const rootStyle = computed(() =>
-  settings.value.opacity < 0.995 ? { opacity: settings.value.opacity } : {}
+const stageSlotStyle = computed(
+  () =>
+    ({
+      "--pet-body-w": `${bodyBox.value.w}px`,
+      "--pet-body-h": `${bodyBox.value.h}px`,
+    }) as Record<string, string>
 );
+
+const rootStyle = computed(() => {
+  const themeVars = themePackCssVars(settings.value.theme.style);
+  const opacity =
+    settings.value.opacity < 0.995
+      ? { opacity: settings.value.opacity }
+      : {};
+  return { ...themeVars, ...opacity } as Record<string, string | number>;
+});
 
 const trailEnabled = computed(() =>
   characterHas(activeSkin.value.model, "pixel-fx")
@@ -274,9 +319,15 @@ onUnmounted(() => {
   height: 100%;
   box-sizing: border-box;
   background: transparent;
-  overflow: visible;
+  overflow: hidden;
   user-select: none;
   touch-action: none;
+  pointer-events: none;
+}
+
+.pet-stage-slot {
+  position: absolute;
+  inset: 0;
   pointer-events: none;
 }
 

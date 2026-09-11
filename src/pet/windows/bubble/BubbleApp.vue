@@ -120,6 +120,20 @@ async function applyPayload(payload: PetBubblePayload & { at?: number }) {
   clearHideTimer();
 
   const hold = Math.max(900, payload.durationMs - payload.text.length * 30);
+  // 同文已在屏上：只延长停留（TTS 结束后再留几秒），不重打字
+  if (displayText.value === payload.text && !typing.value) {
+    typing.value = false;
+    clearTypeTimer();
+    scheduleHide(Math.max(900, payload.durationMs));
+    return;
+  }
+  if (payload.instant) {
+    clearTypeTimer();
+    displayText.value = payload.text;
+    typing.value = false;
+    scheduleHide(Math.max(900, payload.durationMs));
+    return;
+  }
   typeOut(payload.text, hold);
 }
 

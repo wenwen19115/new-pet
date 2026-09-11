@@ -38,6 +38,8 @@ function bubbleUrl(): string {
 let activeBubble:
   | { w: number; h: number; until: number }
   | null = null;
+/** 隐藏/退出召唤时 bump，作废在途 show 与延迟补发 */
+let bubbleShowGen = 0;
 
 async function hideBubbleWindow(): Promise<void> {
   activeBubble = null;
@@ -295,13 +297,17 @@ export async function showPetBubble(options: {
   text: string;
   tone: PetTone;
   durationMs?: number;
+  /** 立刻整段上屏，跳过打字机与首包延迟 */
+  instant?: boolean;
 }): Promise<void> {
   const durationMs = options.durationMs ?? 4500;
+  const gen = ++bubbleShowGen;
   const win = await ensureBubbleWindow();
-  if (!win) return;
+  if (!win || gen !== bubbleShowGen) return;
 
   const box = resolveBubbleSize(options.text);
   const place = await resolveBubblePlacement(box.w, box.h);
+  if (gen !== bubbleShowGen) return;
   activeBubble = {
     w: box.w,
     h: box.h,
@@ -314,8 +320,43 @@ export async function showPetBubble(options: {
     h: box.h,
   });
 
+  const payload: PetBubblePayload & { at: number } = {
+    text: options.text,
+    tone: options.tone,
+    side: place.side,
+    durationMs,
+    at: Date.now(),
+    instant: options.instant ? true : undefined,
+  };
+
+  // 小智字幕：先推文案再摆窗，避免 Opus 已响气泡还在排队
+  if (options.instant) {
+    try {
+      await applyBubbleGeometry(win, box.w, box.h, place.x, place.y);
+      if (gen !== bubbleShowGen) return;
+      await win.setAlwaysOnTop(true);
+      try {
+        await win.setIgnoreCursorEvents(false);
+      } catch {
+        // ignore
+      }
+      await win.show();
+    } catch (err) {
+      console.warn("[pet] bubble place failed", err);
+    }
+    if (gen !== bubbleShowGen) return;
+    await pushBubblePayload(payload);
+    window.setTimeout(() => {
+      if (gen !== bubbleShowGen) return;
+      void pushBubblePayload(payload);
+      void applyBubbleGeometry(win, box.w, box.h, place.x, place.y);
+    }, 48);
+    return;
+  }
+
   try {
     await applyBubbleGeometry(win, box.w, box.h, place.x, place.y);
+    if (gen !== bubbleShowGen) return;
     await win.setAlwaysOnTop(true);
     try {
       await win.setIgnoreCursorEvents(false);
@@ -337,28 +378,26 @@ export async function showPetBubble(options: {
       // ignore
     }
     window.setTimeout(() => {
+      if (gen !== bubbleShowGen) return;
       void applyBubbleGeometry(win, box.w, box.h, place.x, place.y);
     }, 48);
   } catch (err) {
     console.warn("[pet] bubble place failed", err);
   }
 
-  const payload: PetBubblePayload & { at: number } = {
-    text: options.text,
-    tone: options.tone,
-    side: place.side,
-    durationMs,
-    at: Date.now(),
-  };
+  if (gen !== bubbleShowGen) return;
 
   await new Promise((r) => window.setTimeout(r, 80));
+  if (gen !== bubbleShowGen) return;
   await pushBubblePayload(payload);
   window.setTimeout(() => {
+    if (gen !== bubbleShowGen) return;
     void pushBubblePayload(payload);
   }, 220);
 }
 
 export async function hidePetBubble(): Promise<void> {
+  bubbleShowGen++;
   try {
     await emitTo(PET_BUBBLE_LABEL, PET_BUBBLE_HIDE_EVENT, null);
   } catch {
