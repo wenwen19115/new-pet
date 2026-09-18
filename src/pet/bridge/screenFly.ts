@@ -10,12 +10,93 @@ function clamp(n: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, n));
 }
 
-type WorkRect = {
+export type WorkRect = {
   left: number;
   top: number;
   right: number;
   bottom: number;
 };
+
+export type CrawlEdge = "top" | "right" | "bottom" | "left";
+
+const EDGE_ORDER: CrawlEdge[] = ["top", "right", "bottom", "left"];
+
+/** 窗左上角投影到最近工作区边（inset 已含窗尺寸）。 */
+export function projectOntoNearestEdge(
+  rect: WorkRect,
+  x: number,
+  y: number
+): { x: number; y: number; edge: CrawlEdge } {
+  const dTop = Math.abs(y - rect.top);
+  const dBottom = Math.abs(y - rect.bottom);
+  const dLeft = Math.abs(x - rect.left);
+  const dRight = Math.abs(x - rect.right);
+  const min = Math.min(dTop, dBottom, dLeft, dRight);
+  const cx = clamp(x, rect.left, rect.right);
+  const cy = clamp(y, rect.top, rect.bottom);
+  if (min === dTop) return { x: cx, y: rect.top, edge: "top" };
+  if (min === dBottom) return { x: cx, y: rect.bottom, edge: "bottom" };
+  if (min === dLeft) return { x: rect.left, y: cy, edge: "left" };
+  return { x: rect.right, y: cy, edge: "right" };
+}
+
+function pointOnEdge(
+  rect: WorkRect,
+  edge: CrawlEdge,
+  t: number
+): { x: number; y: number } {
+  const u = clamp(t, 0.08, 0.92);
+  if (edge === "top") {
+    return {
+      x: Math.round(rect.left + (rect.right - rect.left) * u),
+      y: rect.top,
+    };
+  }
+  if (edge === "bottom") {
+    return {
+      x: Math.round(rect.left + (rect.right - rect.left) * u),
+      y: rect.bottom,
+    };
+  }
+  if (edge === "left") {
+    return {
+      x: rect.left,
+      y: Math.round(rect.top + (rect.bottom - rect.top) * u),
+    };
+  }
+  return {
+    x: rect.right,
+    y: Math.round(rect.top + (rect.bottom - rect.top) * u),
+  };
+}
+
+/**
+ * 从当前位置贴边后，沿边折线爬若干段（纯函数，供 smoke / crawl 共用）。
+ * `rng` 缺省 Math.random。
+ */
+export function buildEdgeCrawlWaypoints(
+  rect: WorkRect,
+  from: { x: number; y: number },
+  segments = 3,
+  rng: () => number = Math.random
+): { x: number; y: number }[] {
+  const segs = Math.max(1, Math.min(6, Math.floor(segments)));
+  const start = projectOntoNearestEdge(rect, from.x, from.y);
+  const out: { x: number; y: number }[] = [
+    { x: Math.round(start.x), y: Math.round(start.y) },
+  ];
+  let edge = start.edge;
+  let edgeIdx = EDGE_ORDER.indexOf(edge);
+  for (let i = 0; i < segs; i++) {
+    const turn = rng() < 0.55 ? 1 : rng() < 0.5 ? -1 : 0;
+    if (turn !== 0) {
+      edgeIdx = (edgeIdx + turn + EDGE_ORDER.length) % EDGE_ORDER.length;
+      edge = EDGE_ORDER[edgeIdx]!;
+    }
+    out.push(pointOnEdge(rect, edge, rng()));
+  }
+  return out;
+}
 
 async function readWorkRect(
   winW: number,
@@ -176,6 +257,73 @@ export async function flyPetWindowRandom(
   const dest = await pickRandomWorkPoint(winW, winH);
   if (!dest) return false;
   await animatePetWindowTo(dest.x, dest.y, durationMs, signal, onFrame);
+  return !signal?.cancelled;
+}
+
+/** 沿工作区边框折线爬；每段分摊总时长。 */
+export async function crawlPetWindowAlongEdge(
+  winW: number,
+  winH: number,
+  durationMs = 2200,
+  signal?: { cancelled: boolean },
+  onFrame?: (info: FlyFrameInfo) => void,
+  segments = 3
+): Promise<boolean> {
+  const rect = await readWorkRect(winW, winH);
+  if (!rect) return false;
+  const win = getCurrentWindow();
+  const scale = await win.scaleFactor();
+  const from = (await win.outerPosition()).toLogical(scale);
+  const points = buildEdgeCrawlWaypoints(
+    rect,
+    { x: from.x, y: from.y },
+    segments
+  );
+  const legs = Math.max(1, points.length - 1);
+  const per = Math.max(280, durationMs / legs);
+  let cursor = { x: from.x, y: from.y };
+  for (let i = 0; i < points.length; i++) {
+    if (signal?.cancelled) return false;
+    const p = points[i]!;
+    // 已在起点边上则跳过零长度段
+    if (i === 0 && Math.hypot(p.x - cursor.x, p.y - cursor.y) < 4) {
+      cursor = p;
+      continue;
+    }
+    await animatePetWindowTo(p.x, p.y, per, signal, onFrame);
+    cursor = p;
+  }
+  return !signal?.cancelled;
+}
+
+/** 调皮躲开：先贴边，再往远离光标的边爬。 */
+export async function crawlPetWindowAway(
+  avoid: { x: number; y: number },
+  winW: number,
+  winH: number,
+  durationMs = 900,
+  signal?: { cancelled: boolean },
+  onFrame?: (info: FlyFrameInfo) => void
+): Promise<boolean> {
+  const rect = await readWorkRect(winW, winH);
+  if (!rect) return false;
+  const win = getCurrentWindow();
+  const scale = await win.scaleFactor();
+  const from = (await win.outerPosition()).toLogical(scale);
+  const start = projectOntoNearestEdge(rect, from.x, from.y);
+  const candidates = EDGE_ORDER.map((edge) => pointOnEdge(rect, edge, 0.5));
+  let best = candidates[0]!;
+  let bestDist = -1;
+  for (const p of candidates) {
+    const d = Math.hypot(p.x + winW / 2 - avoid.x, p.y + winH / 2 - avoid.y);
+    if (d > bestDist) {
+      best = p;
+      bestDist = d;
+    }
+  }
+  await animatePetWindowTo(start.x, start.y, durationMs * 0.35, signal, onFrame);
+  if (signal?.cancelled) return false;
+  await animatePetWindowTo(best.x, best.y, durationMs * 0.65, signal, onFrame);
   return !signal?.cancelled;
 }
 

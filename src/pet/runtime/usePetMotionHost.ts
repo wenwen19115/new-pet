@@ -14,6 +14,8 @@ import {
   type PetIdleMotion,
 } from "@/pet/content/motion/motions";
 import {
+  crawlPetWindowAlongEdge,
+  crawlPetWindowAway,
   flyPetWindowAway,
   flyPetWindowRandom,
   teleportPetWindowWormhole,
@@ -222,6 +224,32 @@ export function usePetMotionHost(deps: {
             flyVisualY.value = 0;
           }
         });
+      } else if (screenFlight === "crawl") {
+        const dur =
+          resolved === "screen-zip"
+            ? 1400
+            : resolved === "screen-dash"
+              ? 1800
+              : resolved === "screen-hop"
+                ? 2000
+                : 2400;
+        void crawlPetWindowAlongEdge(
+          deps.winSize.value.w,
+          deps.winSize.value.h,
+          dur,
+          flight,
+          (info) => {
+            flyVisualX.value = info.visualDx;
+            flyVisualY.value = info.visualDy;
+            if (deps.speaking.value) void syncPetBubbleToPet();
+          },
+          resolved === "screen-zip" ? 2 : 3
+        ).finally(() => {
+          if (!flight.cancelled) {
+            flyVisualX.value = 0;
+            flyVisualY.value = 0;
+          }
+        });
       }
     }
 
@@ -308,14 +336,13 @@ export function usePetMotionHost(deps: {
         }
       );
       if (!flight.cancelled) wormholePhase.value = "idle";
-    } else {
-      deps.idleMotion.value =
-        screenFlight === "fly" ? "screen-zip" : "idle-float";
-      ok = await flyPetWindowAway(
+    } else if (screenFlight === "crawl") {
+      deps.idleMotion.value = "screen-glide";
+      ok = await crawlPetWindowAway(
         cursor,
         w,
         h,
-        screenFlight === "fly" ? 780 : 620,
+        900,
         flight,
         (info) => {
           flyVisualX.value = info.visualDx;
@@ -327,6 +354,30 @@ export function usePetMotionHost(deps: {
         flyVisualX.value = 0;
         flyVisualY.value = 0;
       }
+    } else if (screenFlight === "fly") {
+      deps.idleMotion.value = "screen-zip";
+      ok = await flyPetWindowAway(
+        cursor,
+        w,
+        h,
+        780,
+        flight,
+        (info) => {
+          flyVisualX.value = info.visualDx;
+          flyVisualY.value = info.visualDy;
+          if (deps.speaking.value) void syncPetBubbleToPet();
+        }
+      );
+      if (!flight.cancelled) {
+        flyVisualX.value = 0;
+        flyVisualY.value = 0;
+      }
+    } else {
+      // screenFlight === "none"：不挪窗，原地吓一跳
+      const land =
+        deps.activeCharacter.value.runtime.tapFallbackMotion ?? "happy-bounce";
+      deps.idleMotion.value = land;
+      ok = true;
     }
 
     if (gen === motionGen && !deps.isDragging.value) {

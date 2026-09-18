@@ -96,9 +96,10 @@ export interface CharacterRuntimeSpec {
    * How screen-flight motions move the window:
    * - fly: random glide (chip / fig)
    * - wormhole: toon teleport
-   * - none: stay put (vrm walk handles itself)
+   * - crawl: along work-area edges
+   * - none: stay put (vrm / mug-cat 等)
    */
-  screenFlight: "fly" | "wormhole" | "none";
+  screenFlight: "fly" | "wormhole" | "none" | "crawl";
   dragLandMotions: readonly PetIdleMotion[];
   /**
    * 口音小规则：玩法同一套，反应分家。缺省字段 = 跟全局默认。
@@ -130,6 +131,8 @@ interface CharacterRuntimeBindCtx {
   motionPlayId?: number;
   pinColors: string[];
   figArtId?: string | null;
+  /** 精灵等：当前形象 id，模型内映射 atlas */
+  lookId?: string | null;
   toonDecor?: string | null;
   wormholePhase: string;
   vrmSrc: string | null;
@@ -144,6 +147,7 @@ interface CharacterPreviewBindCtx {
   motion: string;
   pinColors: string[];
   figArtId?: string | null;
+  lookId?: string | null;
   toonDecor?: string | null;
   vrmSrc: string | null;
   customMotions: unknown[];
