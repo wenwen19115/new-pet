@@ -2,7 +2,7 @@
 
 发版前回归清单，用于覆盖关键用户路径，而非追求测试覆盖率。代码改动后应先执行 `yarn test`，再按相关条目手测。
 
-自动化对照（`yarn test`）：`architecture.smoke.test.ts`、`petHost.smoke.test.ts`、`petHit.smoke.test.ts`、`floatOverlayRects.smoke.test.ts`、`toonPixels.smoke.test.ts`、`deskWeather.smoke.test.ts`、`skyWeather.smoke.test.ts`、`previewFit.smoke.test.ts`、`playfulPhysics.smoke.test.ts`、`bubblePong.smoke.test.ts`、`moyuDay.smoke.test.ts`、`xiaozhi.smoke.test.ts`。
+自动化对照（`yarn test`）：`architecture.smoke.test.ts`、`petHost.smoke.test.ts`、`petHit.smoke.test.ts`、`floatOverlayRects.smoke.test.ts`、`toonPixels.smoke.test.ts`、`deskWeather.smoke.test.ts`、`skyWeather.smoke.test.ts`、`previewFit.smoke.test.ts`、`playfulPhysics.smoke.test.ts`、`bubblePong.smoke.test.ts`、`moyuDay.smoke.test.ts`、`xiaozhi.smoke.test.ts`、`models/sprite/sprite.smoke.test.ts`、`bridge/screenFlyCrawl.smoke.test.ts`。
 
 | # | 路径 | 手测要点 | 自动化对照 |
 | --- | --- | --- | --- |
@@ -12,7 +12,7 @@
 | 4 | 随机 idle | 开启后一段时间切换动作；关闭后停止 | `random-idle-setting` |
 | 5 | 聊天开/关 | 聊天打开时暂停随机 idle 与飞行；关闭后恢复 | `chat-open` |
 | 6 | 睡眠/唤醒 | 睡眠状态粘滞；点击或 USB 可唤醒 | `sleep` / `wake` |
-| 7 | 切换形象 / 身份 | chip / fig / toon / vrm 均可切换且表现正常；**未召唤**时伙伴页仍可改身份，召唤后加载 | registry |
+| 7 | 切换形象 / 身份 | chip / fig / toon / vrm / mug-cat（杯杯）均可切换且表现正常；**未召唤**时伙伴页仍可改身份，召唤后加载 | registry |
 | 8 | 设置即时生效 | mute 停止 TTS；关闭 chat 隐藏窗口；randomIdle 即时响应 | settings sync |
 | 9 | 冒泡乒乓 | 说话时点击气泡有轻弹反馈；连点三次切换嫌弃句；说话期间仍可拖拽桌宠；气泡与右键菜单共存时互让不叠死 | `bubblePong.smoke.test.ts`；`floatOverlayRects.smoke.test.ts` |
 | 10 | dispose | 关闭桌宠或重载后监听与定时器无泄漏 | lifecycle |

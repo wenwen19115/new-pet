@@ -25,7 +25,8 @@ src/pet/
   chat/                # 陪聊领域（ai / providers / history / xiaozhi），不含窗口壳
   bridge/              # Tauri invoke 薄封装；窗几何 sizes / windowAnchor；主窗边框 windowChrome；小智 OTA/WS
   events/              # 跨窗事件名索引
-  models/              # toon / chip / fig-sci / preview / trail / vrm
+  models/              # toon / chip / fig-sci / preview / trail / vrm / sprite（Codex 8×9 播片）+ 概念角色薄包
+  assets/pets/         # mug-cat：pet.json + atlas（含 look 变体表）
   skins/               # look 表与文案
 src-tauri/             # 窗口、托盘、USB、工位气象传感、窗外气象拉取、TTS、FS、小智 OTA/WS
 ```
@@ -96,6 +97,9 @@ bridge → data 类型 + Tauri
 | chip | 壳变换、LED、飞窗 | 人形骨骼式表演 |
 | toon | 分部位像素、特效、wormhole | 仅靠整窗甩动代替小品 |
 | VRM | 骨骼与表情；少做飞窗 | 以整窗杂技作为主表演 |
+| mug-cat | 工位物件 Codex 精灵表 + look 整表换装 | 新增长驻 `model ===` |
+
+`runtime.screenFlight`：`fly` / `wormhole` / `none` / `crawl`（沿边折线，见 `bridge/screenFly`）。
 
 细则见 `.cursor/rules/coding.mdc`（角色与动作）。
 
@@ -105,6 +109,7 @@ bridge → data 类型 + Tauri
 | --- | --- |
 | Shell bob | `content/shell/`；`PetApp` 通过 `resolvePetShellBobAnimation` 设置，避免按 idle 堆叠 CSS 选择器 |
 | Toon / Chip / Fig / Trail / VRM / Preview | 各自 `models/<包>/` |
+| mug-cat（杯杯） | `models/mug-cat/` → 共用 `models/sprite/`；资源 `assets/pets/mug-cat/` |
 
 ## 设置页
 
