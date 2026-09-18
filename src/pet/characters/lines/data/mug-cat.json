@@ -1,0 +1,252 @@
+{
+  "byPersonality": {
+    "sunny": {
+      "idleCute": {
+        "zh": [
+          "杯猫热气腾腾。",
+          "再续一杯？我先趴着。",
+          "蒸汽画了个问号。",
+          "键盘旁最安全。"
+        ],
+        "en": [
+          "Mug-cat steaming.",
+          "Refill? I nap first.",
+          "Steam draws a ?.",
+          "Safest by the keyboard."
+        ]
+      },
+      "idleSnarky": {
+        "zh": [
+          "哼，杯猫热气腾腾。",
+          "哼，再续一杯？我先趴着。",
+          "哼，蒸汽画了个问号。",
+          "哼，键盘旁最安全。"
+        ],
+        "en": [
+          "Hmph—Mug-cat steaming.",
+          "Hmph—Refill? I nap first.",
+          "Hmph—Steam draws a ?.",
+          "Hmph—Safest by the keyboard."
+        ]
+      },
+      "tap": {
+        "zh": [
+          "叮。",
+          "别洒。",
+          "耳朵热乎。",
+          "轻敲杯沿。"
+        ],
+        "en": [
+          "Clink.",
+          "Do not spill.",
+          "Warm ears.",
+          "Tap the rim."
+        ]
+      },
+      "flavor": {
+        "zh": [
+          "杯猫热气腾腾。",
+          "再续一杯？我先趴着。",
+          "蒸汽画了个问号。"
+        ],
+        "en": [
+          "Mug-cat steaming.",
+          "Refill? I nap first.",
+          "Steam draws a ?."
+        ]
+      }
+    },
+    "shy": {
+      "idleCute": {
+        "zh": [
+          "杯猫热气腾腾。",
+          "再续一杯？我先趴着。",
+          "蒸汽画了个问号。",
+          "键盘旁最安全。"
+        ],
+        "en": [
+          "Mug-cat steaming.",
+          "Refill? I nap first.",
+          "Steam draws a ?.",
+          "Safest by the keyboard."
+        ]
+      },
+      "idleSnarky": {
+        "zh": [
+          "哼，杯猫热气腾腾。",
+          "哼，再续一杯？我先趴着。",
+          "哼，蒸汽画了个问号。",
+          "哼，键盘旁最安全。"
+        ],
+        "en": [
+          "Hmph—Mug-cat steaming.",
+          "Hmph—Refill? I nap first.",
+          "Hmph—Steam draws a ?.",
+          "Hmph—Safest by the keyboard."
+        ]
+      },
+      "tap": {
+        "zh": [
+          "叮。",
+          "别洒。",
+          "耳朵热乎。",
+          "轻敲杯沿。"
+        ],
+        "en": [
+          "Clink.",
+          "Do not spill.",
+          "Warm ears.",
+          "Tap the rim."
+        ]
+      },
+      "flavor": {
+        "zh": [
+          "杯猫热气腾腾。",
+          "再续一杯？我先趴着。",
+          "蒸汽画了个问号。"
+        ],
+        "en": [
+          "Mug-cat steaming.",
+          "Refill? I nap first.",
+          "Steam draws a ?."
+        ]
+      }
+    },
+    "cool": {
+      "idleCute": {
+        "zh": [
+          "杯猫热气腾腾。",
+          "再续一杯？我先趴着。",
+          "蒸汽画了个问号。",
+          "键盘旁最安全。"
+        ],
+        "en": [
+          "Mug-cat steaming.",
+          "Refill? I nap first.",
+          "Steam draws a ?.",
+          "Safest by the keyboard."
+        ]
+      },
+      "idleSnarky": {
+        "zh": [
+          "哼，杯猫热气腾腾。",
+          "哼，再续一杯？我先趴着。",
+          "哼，蒸汽画了个问号。",
+          "哼，键盘旁最安全。"
+        ],
+        "en": [
+          "Hmph—Mug-cat steaming.",
+          "Hmph—Refill? I nap first.",
+          "Hmph—Steam draws a ?.",
+          "Hmph—Safest by the keyboard."
+        ]
+      },
+      "tap": {
+        "zh": [
+          "叮。",
+          "别洒。",
+          "耳朵热乎。",
+          "轻敲杯沿。"
+        ],
+        "en": [
+          "Clink.",
+          "Do not spill.",
+          "Warm ears.",
+          "Tap the rim."
+        ]
+      },
+      "flavor": {
+        "zh": [
+          "杯猫热气腾腾。",
+          "再续一杯？我先趴着。",
+          "蒸汽画了个问号。"
+        ],
+        "en": [
+          "Mug-cat steaming.",
+          "Refill? I nap first.",
+          "Steam draws a ?."
+        ]
+      }
+    },
+    "fiery": {
+      "idleCute": {
+        "zh": [
+          "杯猫热气腾腾。",
+          "再续一杯？我先趴着。",
+          "蒸汽画了个问号。",
+          "键盘旁最安全。"
+        ],
+        "en": [
+          "Mug-cat steaming.",
+          "Refill? I nap first.",
+          "Steam draws a ?.",
+          "Safest by the keyboard."
+        ]
+      },
+      "idleSnarky": {
+        "zh": [
+          "哼，杯猫热气腾腾。",
+          "哼，再续一杯？我先趴着。",
+          "哼，蒸汽画了个问号。",
+          "哼，键盘旁最安全。"
+        ],
+        "en": [
+          "Hmph—Mug-cat steaming.",
+          "Hmph—Refill? I nap first.",
+          "Hmph—Steam draws a ?.",
+          "Hmph—Safest by the keyboard."
+        ]
+      },
+      "tap": {
+        "zh": [
+          "叮。",
+          "别洒。",
+          "耳朵热乎。",
+          "轻敲杯沿。"
+        ],
+        "en": [
+          "Clink.",
+          "Do not spill.",
+          "Warm ears.",
+          "Tap the rim."
+        ]
+      },
+      "flavor": {
+        "zh": [
+          "杯猫热气腾腾。",
+          "再续一杯？我先趴着。",
+          "蒸汽画了个问号。"
+        ],
+        "en": [
+          "Mug-cat steaming.",
+          "Refill? I nap first.",
+          "Steam draws a ?."
+        ]
+      }
+    }
+  },
+  "catchphrases": {
+    "zh": [
+      "续杯！",
+      "热乎乎。",
+      "喵一声。",
+      "泡沫开心。"
+    ],
+    "en": [
+      "Refill!",
+      "Toasty.",
+      "Meow.",
+      "Foam happy."
+    ]
+  },
+  "intro": {
+    "zh": {
+      "cute": "我是杯杯，会冒热气的猫杯。",
+      "snarky": "杯杯到。冷掉就怪你。"
+    },
+    "en": {
+      "cute": "I'm Steamy, the mug cat.",
+      "snarky": "Steamy here. Cold coffee is on you."
+    }
+  }
+}

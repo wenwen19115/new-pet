@@ -40,22 +40,22 @@
     transform: translateY(0) rotateZ(0) scale(1);
   }
   12% {
-    transform: translateY(-16px) rotateZ(-10deg) scale(1.08);
+    transform: translateY(-6px) rotateZ(-6deg) scale(1.04);
   }
   24% {
-    transform: translateY(2px) rotateZ(12deg) scale(0.94);
+    transform: translateY(2px) rotateZ(6deg) scale(0.97);
   }
   36% {
-    transform: translateY(-20px) rotateZ(-8deg) scale(1.1);
+    transform: translateY(-8px) rotateZ(-5deg) scale(1.05);
   }
   48% {
-    transform: translateY(0) rotateZ(14deg) scale(0.96);
+    transform: translateY(0) rotateZ(7deg) scale(0.98);
   }
   60% {
-    transform: translateY(-14px) rotateZ(-12deg) scale(1.06);
+    transform: translateY(-5px) rotateZ(-6deg) scale(1.03);
   }
   80% {
-    transform: translateY(-6px) rotateZ(6deg) scale(1.02);
+    transform: translateY(-2px) rotateZ(3deg) scale(1.01);
   }
 }
 
@@ -75,10 +75,10 @@
     transform: translateY(0) scale(1);
   }
   40% {
-    transform: translateY(-14px) scale(0.94, 1.06);
+    transform: translateY(-8px) scale(0.96, 1.04);
   }
   70% {
-    transform: translateY(0) scale(1.05, 0.95);
+    transform: translateY(0) scale(1.03, 0.97);
   }
 }
 
@@ -316,6 +316,172 @@
   }
   100% {
     transform: translateY(0) rotateY(360deg) scale(1);
+  }
+}
+
+@keyframes pet-shell-sprout-wilt {
+  0%,
+  100% {
+    transform: translateY(0) scaleY(1) rotateZ(0);
+  }
+  50% {
+    transform: translateY(6px) scaleY(0.88) rotateZ(-3deg);
+  }
+}
+
+@keyframes pet-shell-sprout-bloom {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  40% {
+    transform: translateY(-8px) scale(1.08);
+  }
+  70% {
+    transform: translateY(-2px) scale(1.04);
+  }
+}
+
+@keyframes pet-shell-sprout-shake {
+  0%,
+  100% {
+    transform: rotateZ(0);
+  }
+  20% {
+    transform: rotateZ(-10deg);
+  }
+  40% {
+    transform: rotateZ(10deg);
+  }
+  60% {
+    transform: rotateZ(-7deg);
+  }
+  80% {
+    transform: rotateZ(6deg);
+  }
+}
+
+@keyframes pet-shell-sprite-peek {
+  0%,
+  100% {
+    transform: translateY(0) rotateZ(0) scale(1);
+  }
+  30% {
+    transform: translateY(-4px) rotateZ(-10deg) scale(1.04);
+  }
+  60% {
+    transform: translateY(-2px) rotateZ(8deg) scale(1.02);
+  }
+}
+
+@keyframes pet-shell-sprite-hustle {
+  0%,
+  100% {
+    transform: translateY(0) rotateZ(-2deg) scale(1);
+  }
+  25% {
+    transform: translateY(-6px) rotateZ(4deg) scale(1.03);
+  }
+  50% {
+    transform: translateY(1px) rotateZ(-3deg) scale(0.98);
+  }
+  75% {
+    transform: translateY(-5px) rotateZ(3deg) scale(1.02);
+  }
+}
+
+@keyframes pet-shell-sprite-doze {
+  0%,
+  100% {
+    transform: translateY(0) scale(1, 1) rotateZ(0);
+  }
+  50% {
+    transform: translateY(3px) scale(1.04, 0.94) rotateZ(-2deg);
+  }
+}
+
+@keyframes pet-shell-sprite-sulk {
+  0%,
+  100% {
+    transform: translateY(0) rotateZ(0) scale(1);
+  }
+  40% {
+    transform: translateY(5px) rotateZ(-6deg) scale(0.94);
+  }
+  70% {
+    transform: translateY(3px) rotateZ(3deg) scale(0.97);
+  }
+}
+
+@keyframes pet-shell-sprite-cheer {
+  0%,
+  100% {
+    transform: translateY(0) rotateZ(0) scale(1);
+  }
+  20% {
+    transform: translateY(-6px) rotateZ(-5deg) scale(1.04);
+  }
+  40% {
+    transform: translateY(0) rotateZ(5deg) scale(0.97);
+  }
+  60% {
+    transform: translateY(-5px) rotateZ(-3deg) scale(1.03);
+  }
+  80% {
+    transform: translateY(-1px) rotateZ(2deg) scale(1.01);
+  }
+}
+
+@keyframes pet-shell-sprite-breath {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes pet-shell-sprite-side-hop {
+  /* 幅度压在宠物窗内，别甩出可视区 */
+  0%,
+  100% {
+    transform: translateX(0) translateY(0) rotateZ(0);
+  }
+  25% {
+    transform: translateX(5px) translateY(-5px) rotateZ(4deg);
+  }
+  50% {
+    transform: translateX(0) translateY(0) rotateZ(0);
+  }
+  75% {
+    transform: translateX(-5px) translateY(-5px) rotateZ(-4deg);
+  }
+}
+
+@keyframes pet-shell-sprite-bow {
+  0%,
+  100% {
+    transform: rotateX(0) translateY(0);
+  }
+  40% {
+    transform: rotateX(18deg) translateY(4px);
+  }
+  70% {
+    transform: rotateX(-4deg) translateY(-2px);
+  }
+}
+
+@keyframes pet-shell-sprite-stretch {
+  0%,
+  100% {
+    transform: scale(1, 1) translateY(0);
+  }
+  45% {
+    transform: scale(0.96, 1.06) translateY(-4px);
+  }
+  70% {
+    transform: scale(1.02, 0.98) translateY(1px);
   }
 }
 

@@ -18,6 +18,7 @@ export type PreviewOrbitProps = {
   mood?: PetMood;
   hint?: string;
   figArtId?: PetFigArtId | null;
+  lookId?: string | null;
   toonDecor?: PetToonDecorId | null;
   vrmSrc?: string | null;
   showBg?: boolean;
@@ -67,6 +68,7 @@ export function usePreviewOrbit(props: PreviewOrbitProps) {
       motion: vrmPreviewMotion.value,
       pinColors: pinColors.value,
       figArtId: props.figArtId ?? null,
+      lookId: props.lookId ?? null,
       toonDecor: props.toonDecor ?? null,
       vrmSrc: props.vrmSrc ?? null,
       customMotions: props.customMotions ?? [],

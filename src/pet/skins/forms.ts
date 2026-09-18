@@ -30,3 +30,9 @@ export const formVrm: PetFormDef = {
   nameKey: "pet.modelVrm",
   defaultNickname: { zh: "酥酥", en: "Susu" },
 };
+
+export const formMugCat: PetFormDef = {
+  model: "mug-cat",
+  nameKey: "pet.modelMugCat",
+  defaultNickname: { zh: "杯杯", en: "Steamy" },
+};

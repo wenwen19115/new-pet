@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div
     ref="stageRef"
     class="orbit-stage"
@@ -93,6 +93,7 @@ const props = withDefaults(
     mood?: PetMood;
     hint?: string;
     figArtId?: PetFigArtId | null;
+    lookId?: string | null;
     toonDecor?: PetToonDecorId | null;
     vrmSrc?: string | null;
     showBg?: boolean;
@@ -105,6 +106,7 @@ const props = withDefaults(
     mood: "idle",
     hint: "",
     figArtId: null,
+    lookId: null,
     toonDecor: null,
     vrmSrc: null,
     showBg: true,

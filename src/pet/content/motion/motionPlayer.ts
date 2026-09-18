@@ -15,6 +15,21 @@ interface MotionPlayRequest {
   custom?: CustomVrmMotion;
 }
 
+/** 共用摇摆降权；角色原生加权（A） */
+const SHARED_IDLE = new Set<string>([
+  "sway-step",
+  "happy-bounce",
+  "tip-toe",
+  "side-hop",
+  "tap-frenzy",
+  "idle-float",
+]);
+
+export function idleMotionPickWeight(id: string): number {
+  if (isCustomVrmMotionId(id)) return 2;
+  return SHARED_IDLE.has(id) ? 1 : 3;
+}
+
 /** 纯内容：调用方传入 idle 表与 VRM 能力，不查 characters registry。 */
 export function buildIdleMotionPool(opts: {
   idleMotions: readonly string[];
@@ -35,6 +50,25 @@ export function buildIdleMotionPool(opts: {
     }
   }
   return pool;
+}
+
+/** 加权抽 idle：角色原生 3，共用摇摆/蹦 1，自定义 VRM 2 */
+export function pickWeightedIdleMotion(
+  pool: readonly string[]
+): string | null {
+  if (!pool.length) return null;
+  let total = 0;
+  const weights = pool.map((id) => {
+    const w = idleMotionPickWeight(id);
+    total += w;
+    return w;
+  });
+  let r = Math.random() * total;
+  for (let i = 0; i < pool.length; i++) {
+    r -= weights[i]!;
+    if (r <= 0) return pool[i]!;
+  }
+  return pool[pool.length - 1]!;
 }
 
 export function resolveMotionPlay(

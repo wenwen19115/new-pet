@@ -15,6 +15,8 @@ export type PetShellAnimSpec = {
 
 const CHIP_ONLY = ["chip"] as const satisfies readonly PetModelKind[];
 
+const SPRITE_PETS = ["mug-cat"] as const satisfies readonly PetModelKind[];
+
 /**
  * `data-idle` → 壳层 bob。表里没有的交给模型内部（toon/fig/vrm）或不做 bob。
  */
@@ -33,7 +35,7 @@ export const PET_SHELL_IDLE_ANIMS: Partial<
     duration: "0.55s",
     easing: "ease-out",
     fill: "none",
-    onlyModels: CHIP_ONLY,
+    onlyModels: [...CHIP_ONLY, ...SPRITE_PETS],
   },
   "fly-orbit": {
     name: "pet-shell-fly-orbit",
@@ -77,6 +79,47 @@ export const PET_SHELL_IDLE_ANIMS: Partial<
     easing: "cubic-bezier(0.34, 1.15, 0.64, 1)",
     onlyModels: CHIP_ONLY,
   },
+  /** 精灵共用轻呼吸；短互动 gesture 不挂壳，交给 atlas */
+  "sway-step": {
+    name: "pet-shell-sprite-breath",
+    duration: "3.4s",
+    easing: "ease-in-out",
+    iteration: "infinite",
+    onlyModels: SPRITE_PETS,
+  },
+  "mug-purr": {
+    name: "pet-shell-sprite-hustle",
+    duration: "2.0s",
+    easing: "ease-in-out",
+    iteration: "infinite",
+    onlyModels: SPRITE_PETS,
+  },
+  "mug-tip": {
+    name: "pet-shell-sprite-sulk",
+    duration: "2.8s",
+    easing: "ease-in-out",
+    onlyModels: SPRITE_PETS,
+  },
+  "mug-sip": {
+    name: "pet-shell-happy-bounce",
+    duration: "0.8s",
+    easing: "ease-out",
+    fill: "none",
+    onlyModels: SPRITE_PETS,
+  },
+  "mug-nap": {
+    name: "pet-shell-sprite-doze",
+    duration: "3.4s",
+    easing: "ease-in-out",
+    iteration: "infinite",
+    onlyModels: SPRITE_PETS,
+  },
+  "mug-stare": {
+    name: "pet-shell-sprite-peek",
+    duration: "2.8s",
+    easing: "ease-in-out",
+    onlyModels: SPRITE_PETS,
+  },
   "screen-dash": {
     name: "pet-shell-screen-lean",
     duration: "0.95s",
@@ -101,6 +144,7 @@ export const PET_SHELL_IDLE_ANIMS: Partial<
     name: "pet-shell-tap-frenzy",
     duration: "1.8s",
     easing: "cubic-bezier(0.34, 1.3, 0.64, 1)",
+    onlyModels: CHIP_ONLY,
   },
 };
 

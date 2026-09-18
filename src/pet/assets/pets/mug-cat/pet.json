@@ -1,0 +1,7 @@
+﻿{
+  "id": "mug-cat",
+  "name": { "zh": "杯杯", "en": "Steamy" },
+  "spritesheet": "atlas-default.png",
+  "atlas": "codex",
+  "idleSwayPace": 1.25
+}

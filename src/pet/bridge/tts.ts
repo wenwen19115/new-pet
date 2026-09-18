@@ -35,6 +35,7 @@ const EDGE_DEFAULT: Record<PetModelKind, { zh: string; en: string }> = {
   "fig-sci": { zh: "zh-CN-XiaoxiaoNeural", en: "en-US-JennyNeural" },
   toon: { zh: "zh-CN-XiaoyiNeural", en: "en-US-AnaNeural" },
   vrm: { zh: "zh-CN-XiaoxiaoNeural", en: "en-US-AriaNeural" },
+  "mug-cat": { zh: "zh-CN-XiaoxiaoNeural", en: "en-US-JennyNeural" },
 };
 
 let edgeVoiceCache: PetTtsVoiceOption[] | null = null;

@@ -70,7 +70,14 @@ export type PetIdleMotion =
   | "vrm-accad-stand"
   | "vrm-accad-sway"
   | "vrm-accad-swing-arms"
-  | "vrm-accad-wait";
+  | "vrm-accad-wait"
+  /** 杯杯：冒汽 / 呼噜 / 倾斜 / 小啜 / 趴睡 / 盯人 */
+  | "mug-steam"
+  | "mug-purr"
+  | "mug-tip"
+  | "mug-sip"
+  | "mug-nap"
+  | "mug-stare";
 
 export const PET_CHIP_DEMO_MOTIONS: PetIdleMotion[] = [
   "screen-dash",
@@ -104,6 +111,17 @@ export const PET_TOON_DEMO_MOTIONS: PetIdleMotion[] = [
   "toon-sway",
   "happy-bounce",
   "screen-wormhole",
+];
+
+/** 杯杯：汽 / 呼噜 / 歪 / 啜 / 睡 / 盯 */
+export const PET_MUG_DEMO_MOTIONS: PetIdleMotion[] = [
+  "mug-steam",
+  "mug-purr",
+  "mug-tip",
+  "mug-sip",
+  "mug-nap",
+  "mug-stare",
+  "sway-step",
 ];
 
 export const PET_VRM_DEMO_MOTIONS: PetIdleMotion[] = [
@@ -176,6 +194,7 @@ const ALL_MOTIONS: PetIdleMotion[] = [
     ...PET_FIG_DEMO_MOTIONS,
     ...PET_TOON_DEMO_MOTIONS,
     ...PET_VRM_DEMO_MOTIONS,
+    ...PET_MUG_DEMO_MOTIONS,
     "idle-float",
     "happy-bounce",
     "tap-frenzy",
@@ -243,6 +262,18 @@ export function motionHoldMs(motion: PetIdleMotion): number {
       return 2800;
     case "happy-bounce":
       return 4800;
+    case "mug-steam":
+      return 2600;
+    case "mug-purr":
+      return 2400;
+    case "mug-sip":
+      return 2200;
+    case "mug-stare":
+      return 3200;
+    case "mug-nap":
+      return 4000;
+    case "mug-tip":
+      return 3000;
     default:
       return 1200;
   }

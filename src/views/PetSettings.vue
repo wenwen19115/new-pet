@@ -23,6 +23,7 @@
               :visual="v"
               :mood="tone === 'snarky' ? 'grumpy' : 'idle'"
               :fig-art-id="activeLook.figArtId"
+              :look-id="activeLook.lookId"
               :toon-decor="activeLook.toonDecor"
               :vrm-src="vrmSrc"
               :custom-motions="previewCustomMotions"

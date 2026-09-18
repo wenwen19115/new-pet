@@ -38,9 +38,18 @@ describe("architecture smoke", () => {
 
   it("character registry is the single model list", () => {
     const ids = listCharacters().map((c) => c.id);
-    expect(ids).toEqual(["chip", "fig-sci", "toon", "vrm"]);
+    expect(ids).toEqual(["chip", "fig-sci", "toon", "vrm", "mug-cat"]);
     expect(isPetModelKind("vrm")).toBe(true);
     expect(isPetModelKind("nope")).toBe(false);
+  });
+
+  it("mug-cat ships three look atlases", () => {
+    expect(getCharacter("mug-cat").lookIds).toEqual([
+      "mug-default",
+      "mug-matcha",
+      "mug-thermos",
+    ]);
+    expect(getCharacter("mug-cat").defaults.lookId).toBe("mug-default");
   });
 
   it("VRM 资源走 capability，不写死 id", () => {

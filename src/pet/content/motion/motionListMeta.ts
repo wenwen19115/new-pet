@@ -57,6 +57,13 @@ const SHELL_MOTION_LIST_META: Readonly<
   "toon-grass": { kind: "emotion", vibe: "soft" },
   "toon-fire": { kind: "emotion", vibe: "bold" },
   "toon-thunder": { kind: "emotion", vibe: "bold" },
+
+  "mug-steam": { kind: "talk", vibe: "soft" },
+  "mug-purr": { kind: "idle", vibe: "soft" },
+  "mug-tip": { kind: "emotion", vibe: "soft" },
+  "mug-sip": { kind: "gesture", vibe: "lively" },
+  "mug-nap": { kind: "idle", vibe: "soft" },
+  "mug-stare": { kind: "idle", vibe: "soft" },
 };
 
 const KIND_ORDER: MotionListKind[] = ["idle", "talk", "gesture", "emotion"];

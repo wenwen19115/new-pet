@@ -284,6 +284,7 @@ const runtimeModelProps = computed(() =>
     motionPlayId: motionPlayId.value,
     pinColors: pinColors.value,
     figArtId: activeSkin.value.figArtId,
+    lookId: activeSkin.value.lookId,
     toonDecor: activeSkin.value.toonDecor,
     wormholePhase: wormholePhase.value,
     vrmSrc: vrmSrc.value,

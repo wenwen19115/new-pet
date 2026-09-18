@@ -27,7 +27,13 @@ describe("preview fit per character", () => {
   });
 
   it("各角色有预览演员框与放大上限", () => {
-    for (const id of ["chip", "fig-sci", "toon", "vrm"] as const) {
+    for (const id of [
+      "chip",
+      "fig-sci",
+      "toon",
+      "vrm",
+      "mug-cat",
+    ] as const) {
       const size = getCharacter(id).size;
       expect(size.previewActor?.w).toBeGreaterThan(100);
       expect(size.previewActor?.h).toBeGreaterThan(100);

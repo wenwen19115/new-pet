@@ -151,3 +151,78 @@ export function remapFigMotion(motion: PetIdleMotion): PetIdleMotion {
       return motion;
   }
 }
+
+function remapToSoftBob(motion: PetIdleMotion): PetIdleMotion {
+  switch (motion) {
+    case "fly-orbit":
+    case "figure-eight":
+    case "toon-sway":
+    case "toon-grass":
+    case "idle-float":
+      return "sway-step";
+    case "fly-dash":
+    case "side-hop":
+    case "toon-splash":
+      return "side-hop";
+    case "barrel-roll":
+    case "cartwheel":
+    case "victory-burst":
+    case "toon-thunder":
+      return "happy-bounce";
+    case "toon-walk":
+    case "toon-tilt":
+    case "toon-dodge":
+      return "tip-toe";
+    case "toon-wave":
+    case "toon-water":
+      return "happy-bounce";
+    case "toon-read":
+    case "bow-nod":
+      return "bow-nod";
+    case "toon-tea":
+    case "toon-fire":
+    case "stretch-up":
+      return "stretch-up";
+    case "screen-dash":
+    case "screen-hop":
+    case "screen-zip":
+    case "screen-glide":
+    case "screen-wormhole":
+      return "sway-step";
+    default:
+      return motion;
+  }
+}
+
+/** 杯杯：无手无腿，禁止碎步/侧跳/招手语义 */
+export function remapMugCatMotion(motion: PetIdleMotion): PetIdleMotion {
+  switch (motion) {
+    case "mug-steam":
+    case "mug-purr":
+    case "mug-tip":
+    case "mug-sip":
+    case "mug-nap":
+    case "mug-stare":
+    case "sway-step":
+    case "happy-bounce":
+      return motion;
+    case "bow-nod":
+    case "tap-frenzy":
+    case "stretch-up":
+      return "mug-steam";
+    case "toon-sway":
+    case "idle-float":
+      return "mug-purr";
+    case "side-hop":
+    case "tip-toe":
+      return "mug-tip";
+    case "rocket-jump":
+      return "mug-sip";
+    case "toon-read":
+      return "mug-stare";
+    case "victory-burst":
+      return "happy-bounce";
+    default:
+      return remapToSoftBob(motion);
+  }
+}

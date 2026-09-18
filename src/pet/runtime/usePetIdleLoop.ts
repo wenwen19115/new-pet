@@ -5,7 +5,7 @@ import {
   characterSupportsVrmAssets,
   getCharacter,
 } from "../characters";
-import { buildIdleMotionPool, resolveMotionPlay } from "../content/motion/motionPlayer";
+import { buildIdleMotionPool, pickWeightedIdleMotion, resolveMotionPlay } from "../content/motion/motionPlayer";
 import {
   isPetIdleMotion,
   isScreenFlightMotion,
@@ -67,7 +67,11 @@ export function usePetIdleLoop(deps: {
           scheduleIdleAction();
           return;
         }
-        const next = pool[Math.floor(Math.random() * pool.length)]!;
+        const next = pickWeightedIdleMotion(pool);
+        if (!next) {
+          scheduleIdleAction();
+          return;
+        }
         deps.beginMotion(next, { withSpeakChance: 0.55 });
         const play = resolveMotionPlay(
           next,
