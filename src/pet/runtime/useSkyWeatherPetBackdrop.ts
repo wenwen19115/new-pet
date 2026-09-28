@@ -8,9 +8,11 @@ import {
   createDebouncedPersist,
   normalizeSkyWeather,
   SKY_WEATHER_FIRE_EVENT,
+  SKY_WEATHER_REFRESH_DONE_EVENT,
   SKY_WEATHER_REFRESH_EVENT,
   type SkyWeatherConfig,
   type SkyWeatherFirePayload,
+  type SkyWeatherRefreshDonePayload,
 } from "@/pet/data/skyWeather";
 import { publishPetSettings } from "@/pet/data/settings";
 import type { PetSettings } from "@/pet/data/types";
@@ -107,8 +109,11 @@ export function useSkyWeatherPetBackdrop(deps: {
       const gen = ++refreshListenGen;
       void listen(SKY_WEATHER_REFRESH_EVENT, () => {
         if (!running) return;
-        // 徽章刷新：只探测联网，不强制换实况天气
-        void session.refreshLinks({ syncWeather: false });
+        void (async () => {
+          const ok = await session.refreshLinks();
+          const payload: SkyWeatherRefreshDonePayload = { ok };
+          void emit(SKY_WEATHER_REFRESH_DONE_EVENT, payload);
+        })();
       }).then((un) => {
         if (gen !== refreshListenGen || !running) {
           un();

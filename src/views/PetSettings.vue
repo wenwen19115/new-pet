@@ -5,7 +5,17 @@
       :data-model="activeLook.model"
       :style="heroMergedStyle"
     >
-      <div class="hero-stage" :data-syncing="skyNetBusy ? '1' : '0'">
+      <div
+        class="hero-stage"
+        :data-syncing="skySyncBannerBusy ? '1' : '0'"
+        :data-sync-flash="
+          skySyncBannerVisible && !skySyncBannerBusy
+            ? skyNetBadgeOnline
+              ? 'ok'
+              : 'fail'
+            : undefined
+        "
+      >
         <HeroWindowWorld
           :tod="skyDisplayTod"
           :weather="skyDisplayWeather"
@@ -35,12 +45,16 @@
           </template>
         </HeroWindowWorld>
         <div
-          v-if="skyNetBusy"
+          v-if="skySyncBannerVisible"
           class="hero-sync-top"
           aria-live="polite"
         >
-          <span class="hero-net-badge" data-busy="1" data-online="0">
-            {{ $t("pet.skyWeatherUpdating") }}
+          <span
+            class="hero-net-badge"
+            :data-busy="skySyncBannerBusy ? '1' : '0'"
+            :data-online="skyNetBadgeOnline ? '1' : '0'"
+          >
+            {{ skySyncBannerText }}
           </span>
         </div>
         <p v-if="previewHint" class="hero-orbit-hint">{{ previewHint }}</p>
@@ -152,6 +166,9 @@ const {
   skyNetBusy,
   skyNetLabel,
   skyNetBadgeOnline,
+  skySyncBannerVisible,
+  skySyncBannerText,
+  skySyncBannerBusy,
   skyNetRefreshDisabled,
   refreshSkyNet,
   windowFamily,

@@ -169,25 +169,33 @@ export function createSkyWeatherLinkController(deps: {
     }
   }
 
-  /** 手动刷新联网；默认不强制拉实况（徽章刷新≠换天气） */
-  async function refreshLinks(opts?: { syncWeather?: boolean }) {
-    if (stopped) return;
+  /** 联网/实况是否算成功（供顶条提示） */
+  function judgeRefreshOk(): boolean {
+    const cfg = normalizeSkyWeather(deps.getConfig());
+    if (cfg.linkMode !== "online" || !netOnline.value) return false;
+    if (cfg.weatherMode === "sync") return Boolean(cfg.runtime.wxOnline);
+    return true;
+  }
+
+  /** 手动刷新：先探联网；仍在线再强制拉实况（syncWeather:false 可只探网） */
+  async function refreshLinks(opts?: { syncWeather?: boolean }): Promise<boolean> {
+    if (stopped) return false;
     clearWatchTimer();
     const gen = ++netGen;
-    const syncWeather = opts?.syncWeather === true;
+    const syncWeather = opts?.syncWeather !== false;
     holdBusy();
     try {
       await probeNet(true, gen);
-      if (isStale(gen)) return;
+      if (isStale(gen)) return false;
       fallbackOfflineIfNeeded();
-      if (isStale(gen)) return;
-      if (normalizeSkyWeather(deps.getConfig()).linkMode !== "online") return;
+      if (isStale(gen)) return false;
+      if (normalizeSkyWeather(deps.getConfig()).linkMode !== "online") return false;
       if (syncWeather) {
         await maybeSync({ force: true, gen });
       }
-      if (gen === netGen) {
-        deps.onRefreshDisplay(normalizeSkyWeather(deps.getConfig()));
-      }
+      if (isStale(gen)) return false;
+      deps.onRefreshDisplay(normalizeSkyWeather(deps.getConfig()));
+      return judgeRefreshOk();
     } finally {
       releaseBusyIfCurrent(gen);
     }

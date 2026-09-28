@@ -22,12 +22,14 @@ import {
   resolveTodFromDate,
   SKY_REGIONS,
   SKY_WEATHER_FIRE_EVENT,
+  SKY_WEATHER_REFRESH_DONE_EVENT,
   SKY_WEATHER_REFRESH_EVENT,
   type SkyEventId,
   type SkyTodId,
   type SkyWeatherConfig,
   type SkyWeatherFirePayload,
   type SkyWeatherId,
+  type SkyWeatherRefreshDonePayload,
 } from "@/pet/data/skyWeather";
 import {
   resolveDisplayTod,
@@ -242,8 +244,63 @@ export function useSkyWeatherPreview(opts: {
   const probeFailed = ref(false);
   /** 本页正在做 IP 探测（含镜像态，不全靠 session.linkBusy） */
   const localProbeBusy = ref(false);
+  /** 顶条/徽章：同步成功|失败，短亮 */
+  const syncFlash = ref<"ok" | "fail" | null>(null);
+  let flashTimer: ReturnType<typeof setTimeout> | null = null;
   let minBusyTimer: ReturnType<typeof setTimeout> | null = null;
   let minBusyUntil = 0;
+  /** probeSkyNet 自己收尾提示，避免和 linkBusy 下落重复闪 */
+  let flashOwnedByProbe = false;
+
+  const FLASH_MS = 2000;
+
+  function clearSyncFlashTimer() {
+    if (!flashTimer) return;
+    clearTimeout(flashTimer);
+    flashTimer = null;
+  }
+
+  function showSyncFlash(ok: boolean) {
+    syncFlash.value = ok ? "ok" : "fail";
+    minBusyUntil = 0;
+    minBusyTick.value += 1;
+    clearSyncFlashTimer();
+    flashTimer = setTimeout(() => {
+      flashTimer = null;
+      syncFlash.value = null;
+    }, FLASH_MS);
+  }
+
+  function judgeSyncFlashOk(): boolean {
+    const cfg = normalizeSkyWeather(skyConfig.value);
+    if (cfg.linkMode !== "online") return false;
+    const netOk = session.netOnline.value || Boolean(cfg.runtime.geoOnline);
+    if (!netOk) return false;
+    if (cfg.weatherMode === "sync") return Boolean(cfg.runtime.wxOnline);
+    return true;
+  }
+
+  function waitRefreshDone(ms: number): Promise<boolean> {
+    return new Promise((resolve) => {
+      let settled = false;
+      let un: UnlistenFn | null = null;
+      const finish = (ok: boolean) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        un?.();
+        resolve(ok);
+      };
+      const timer = setTimeout(() => finish(false), ms);
+      void listen(SKY_WEATHER_REFRESH_DONE_EVENT, (ev) => {
+        const payload = ev.payload as SkyWeatherRefreshDonePayload | undefined;
+        finish(Boolean(payload?.ok));
+      }).then((u) => {
+        un = u;
+        if (settled) u();
+      });
+    });
+  }
 
   /** 最短 busy 展示，避免探测瞬间完成看不到「同步中」 */
   const minBusyTick = ref(0);
@@ -276,7 +333,18 @@ export function useSkyWeatherPreview(opts: {
     if (online) probeFailed.value = false;
   });
 
+  // 切在线/换城等 linkBusy 收尾：顶条提示成败
+  watch(
+    () => session.linkBusy.value,
+    (busy, wasBusy) => {
+      if (mirroring || flashOwnedByProbe) return;
+      if (wasBusy && !busy) showSyncFlash(judgeSyncFlashOk());
+    }
+  );
+
   const skyNetLabel = computed(() => {
+    if (syncFlash.value === "ok") return t("pet.skyWeatherSyncOk");
+    if (syncFlash.value === "fail") return t("pet.skyWeatherSyncFail");
     if (skyNetBusy.value) return t("pet.skyWeatherUpdating");
     if (!netProbeOnline.value) {
       return probeFailed.value
@@ -293,6 +361,24 @@ export function useSkyWeatherPreview(opts: {
     return t("pet.skyWeatherLinkOnlineCity", { city });
   });
 
+  const skyNetBadgeOnline = computed(() => {
+    if (syncFlash.value === "ok") return true;
+    if (syncFlash.value === "fail") return false;
+    return netProbeOnline.value;
+  });
+
+  const skySyncBannerVisible = computed(
+    () => skyNetBusy.value || syncFlash.value != null
+  );
+  const skySyncBannerText = computed(() => {
+    if (syncFlash.value === "ok") return t("pet.skyWeatherSyncOk");
+    if (syncFlash.value === "fail") return t("pet.skyWeatherSyncFail");
+    return t("pet.skyWeatherUpdating");
+  });
+  const skySyncBannerBusy = computed(
+    () => skyNetBusy.value && syncFlash.value == null
+  );
+
   const skyNetCityId = computed(() => {
     const cfg = normalizeSkyWeather(skyConfig.value);
     if (cfg.regionId !== "system") return cfg.regionId;
@@ -304,46 +390,58 @@ export function useSkyWeatherPreview(opts: {
     );
   });
 
-  const skyNetRefreshDisabled = computed(() => skyNetBusy.value);
+  const skyNetRefreshDisabled = computed(
+    () => skyNetBusy.value && syncFlash.value == null
+  );
 
   /** 强制探测联网；返回是否成功（天气系统开在线前调用） */
   async function probeSkyNet(): Promise<boolean> {
     if (localProbeBusy.value) return netProbeOnline.value;
     localProbeBusy.value = true;
+    flashOwnedByProbe = true;
     armMinBusy(480);
     try {
       if (petOwnsTick.value) {
-        // 镜像：session 已停，本页本地探测并落盘徽章态；再通知桌宠拉实况
+        // 镜像：本页探网；成功则等桌宠拉实况结果
         const hit = await resolveSystemRegion({ force: true });
-        const ok = !hit.offline;
-        probeFailed.value = !ok;
+        const netOk = !hit.offline;
+        probeFailed.value = !netOk;
         const cfg = normalizeSkyWeather(skyConfig.value);
-        const located = ok ? hit.id : cfg.runtime.locatedRegionId;
+        const located = netOk ? hit.id : cfg.runtime.locatedRegionId;
         if (
-          cfg.runtime.geoOnline !== ok ||
+          cfg.runtime.geoOnline !== netOk ||
           cfg.runtime.locatedRegionId !== located
         ) {
           skyConfig.value = normalizeSkyWeather({
             ...cfg,
             runtime: {
               ...cfg.runtime,
-              geoOnline: ok,
+              geoOnline: netOk,
               locatedRegionId: located,
             },
           });
           schedulePersist();
         }
+        if (!netOk) {
+          showSyncFlash(false);
+          return false;
+        }
+        const doneP = waitRefreshDone(4000);
         void emit(SKY_WEATHER_REFRESH_EVENT);
+        const ok = await doneP;
+        probeFailed.value = !ok;
+        showSyncFlash(ok);
         return ok;
       }
 
-      // 本页 leader：只探测联网（徽章），不强制换实况
-      await session.refreshLinks({ syncWeather: false });
-      const ok = session.netOnline.value;
+      // 本页 leader：探通联网后再拉实况
+      const ok = await session.refreshLinks();
       probeFailed.value = !ok;
+      showSyncFlash(ok);
       return ok;
     } finally {
       localProbeBusy.value = false;
+      flashOwnedByProbe = false;
     }
   }
 
@@ -371,6 +469,7 @@ export function useSkyWeatherPreview(opts: {
       clearTimeout(minBusyTimer);
       minBusyTimer = null;
     }
+    clearSyncFlashTimer();
     stopMirror();
     session.stop();
     flushPersist();
@@ -385,7 +484,10 @@ export function useSkyWeatherPreview(opts: {
     skyNetCityId,
     skyNetBusy,
     skyNetLabel,
-    skyNetBadgeOnline: netProbeOnline,
+    skyNetBadgeOnline,
+    skySyncBannerVisible,
+    skySyncBannerText,
+    skySyncBannerBusy,
     skyNetRefreshDisabled,
     refreshSkyNet,
     probeSkyNet,

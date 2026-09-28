@@ -188,6 +188,11 @@ export const SKY_WEATHER_FIRE_EVENT = "pet://sky-weather-fire";
 /** 镜像窗请求 leader 刷新联网 */
 export const SKY_WEATHER_REFRESH_EVENT = "pet://sky-weather-refresh";
 
+/** leader 刷新结束（含是否拉到实况），给设置页顶条提示 */
+export const SKY_WEATHER_REFRESH_DONE_EVENT = "pet://sky-weather-refresh-done";
+
+export type SkyWeatherRefreshDonePayload = { ok: boolean };
+
 /** 设置页 / 桌宠 leader 共用落盘防抖 */
 export const SKY_WEATHER_PERSIST_DEBOUNCE_MS = 420;
 

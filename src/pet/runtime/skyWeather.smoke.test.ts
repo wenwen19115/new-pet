@@ -675,7 +675,7 @@ describe("sky weather session lifecycle", () => {
     app.unmount();
   });
 
-  it("徽章刷新默认不强制拉实况；syncWeather:true 才换天气", async () => {
+  it("徽章刷新：联网正常默认拉实况；syncWeather:false 可只探网", async () => {
     clearSystemRegionCache();
     fetchClientGeo.mockResolvedValue({
       ok: true,
@@ -741,12 +741,12 @@ describe("sky weather session lifecycle", () => {
     await nextTick();
 
     const meteoCallsBefore = fetchOpenMeteoWeather.mock.calls.length;
-    await refreshFn?.();
+    await refreshFn?.({ syncWeather: false });
     await nextTick();
     expect(fetchOpenMeteoWeather.mock.calls.length).toBe(meteoCallsBefore);
     expect(config.value.manualWeather).toBe("clear");
 
-    await refreshFn?.({ syncWeather: true });
+    await refreshFn?.();
     await nextTick();
     await new Promise((r) => setTimeout(r, 50));
     expect(fetchOpenMeteoWeather.mock.calls.length).toBeGreaterThan(
