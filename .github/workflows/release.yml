@@ -1,0 +1,138 @@
+# 版本号 bump 后自动打 Windows NSIS 安装包并创建 GitHub Release（含 What's Changed）。
+# 触发：main 上 package.json / tauri.conf.json / Cargo.toml 变更，或手动 Run workflow。
+#
+# 产物命名类似：new-pet-1.0.0-windows-x64-setup.exe
+# 本仓目前仅发 Windows（传感 / USB / 工位气象等依赖 Win32）。
+
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - package.json
+      - src-tauri/tauri.conf.json
+      - src-tauri/Cargo.toml
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Force release even if version equals previous commit
+        type: boolean
+        default: false
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.gate.outputs.should_release }}
+      version: ${{ steps.gate.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gate on version bump
+        id: gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(jq -r .version src-tauri/tauri.conf.json)"
+          PKG="$(jq -r .version package.json)"
+          CARGO="$(sed -n 's/^version = "\(.*\)"/\1/p' src-tauri/Cargo.toml | head -n1)"
+
+          if [[ -z "$VERSION" || "$VERSION" == "null" ]]; then
+            echo "::error::tauri.conf.json version missing"
+            exit 1
+          fi
+          if [[ "$VERSION" != "$PKG" || "$VERSION" != "$CARGO" ]]; then
+            echo "::error::version mismatch: tauri=$VERSION package=$PKG cargo=$CARGO"
+            echo "请三处对齐后再发版。"
+            exit 1
+          fi
+
+          PREV=""
+          if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+            PREV="$(git show HEAD^:src-tauri/tauri.conf.json 2>/dev/null | jq -r .version || true)"
+          fi
+
+          FORCE=false
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.force }}" == "true" ]]; then
+            FORCE=true
+          fi
+
+          SHOULD=false
+          if [[ "$FORCE" == "true" ]]; then
+            SHOULD=true
+          elif [[ -z "$PREV" || "$PREV" == "null" || "$PREV" != "$VERSION" ]]; then
+            SHOULD=true
+          fi
+
+          if git rev-parse -q --verify "refs/tags/v${VERSION}" >/dev/null; then
+            echo "::warning::tag v${VERSION} already exists — skip release"
+            SHOULD=false
+          fi
+
+          # 仅改了文件内容但版本未变：push paths 仍会触发，这里挡掉
+          if [[ "$SHOULD" != "true" ]]; then
+            echo "No version bump (prev=${PREV:-none} cur=${VERSION}); skip."
+          else
+            echo "Will release v${VERSION} (prev=${PREV:-none})"
+          fi
+
+          echo "should_release=${SHOULD}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+  publish-tauri:
+    needs: prepare
+    if: needs.prepare.outputs.should_release == 'true'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: yarn
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: ./src-tauri -> target
+
+      - name: Install frontend deps
+        run: yarn install --frozen-lockfile
+
+      - name: Build & upload to GitHub Release
+        uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: 新宠 v__VERSION__
+          # 自动生成 ## What's Changed（PR / commit）；下面正文会拼在前面
+          generateReleaseNotes: true
+          releaseBody: |
+            ## 下载
+
+            - **Windows**：`new-pet-*-windows-*-setup.exe`（NSIS 安装包）
+
+            当前仅提供 Windows 安装包。
+          releaseDraft: false
+          prerelease: false
+          args: --bundles nsis
+          releaseAssetNamePattern: "[mainBinaryName]-[version]-[platform]-[arch][setup].[ext]"
+          # 未接 Tauri updater 签名时不要强行传 latest.json / .sig
+          uploadUpdaterJson: false
+          uploadUpdaterSignatures: false
+          retryAttempts: 1
