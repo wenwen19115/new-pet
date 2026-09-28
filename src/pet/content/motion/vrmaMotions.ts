@@ -4,7 +4,6 @@ import idle2Url from "../../assets/vrm/motions/idle2.vrma?url";
 import idle3Url from "../../assets/vrm/motions/idle3.vrma?url";
 import idle4Url from "../../assets/vrm/motions/idle4.vrma?url";
 import idle5Url from "../../assets/vrm/motions/idle5.vrma?url";
-import idle6Url from "../../assets/vrm/motions/idle_loop.vrma?url";
 import talkUrl from "../../assets/vrm/motions/talk.vrma?url";
 import showcaseUrl from "../../assets/vrm/motions/showcase.vrma?url";
 import greetUrl from "../../assets/vrm/motions/greet.vrma?url";
@@ -30,10 +29,7 @@ import accadLiftBoxUrl from "../../assets/vrm/motions/accad_lift_box.vrma?url";
 import accadLookUrl from "../../assets/vrm/motions/accad_look.vrma?url";
 import accadPickUpBoxUrl from "../../assets/vrm/motions/accad_pick_up_box.vrma?url";
 import accadRandomGesturesUrl from "../../assets/vrm/motions/accad_random_gestures.vrma?url";
-import accadStandUrl from "../../assets/vrm/motions/accad_stand.vrma?url";
-import accadSwayUrl from "../../assets/vrm/motions/accad_sway.vrma?url";
 import accadSwingArmsUrl from "../../assets/vrm/motions/accad_swing_arms.vrma?url";
-import accadWaitUrl from "../../assets/vrm/motions/accad_wait.vrma?url";
 
 /**
  * 样例文件本身没有官方类型字段；本仓自标 kind / vibe。
@@ -61,7 +57,6 @@ export const BUILT_IN_VRMA_MOTIONS: readonly VrmaMotionDef[] = [
   { id: "vrm-idle3", url: idle3Url, durationMs: 4400, kind: "idle", vibe: "soft", loop: true },
   { id: "vrm-idle4", url: idle4Url, durationMs: 7000, kind: "idle", vibe: "soft", loop: true },
   { id: "vrm-idle5", url: idle5Url, durationMs: 6700, kind: "idle", vibe: "soft", loop: true },
-  { id: "vrm-idle6", url: idle6Url, durationMs: 10375, kind: "idle", vibe: "soft", loop: true },
   { id: "vrm-talk", url: talkUrl, durationMs: 5900, kind: "talk", vibe: "soft" },
   // —— VRoid Hub 7 种（经 aikeya VRMA_01–07）——
   { id: "vrm-showcase", url: showcaseUrl, durationMs: 11800, kind: "gesture", vibe: "soft" },
@@ -90,10 +85,7 @@ export const BUILT_IN_VRMA_MOTIONS: readonly VrmaMotionDef[] = [
   { id: "vrm-accad-look", url: accadLookUrl, durationMs: 21267, kind: "gesture", vibe: "soft" },
   { id: "vrm-accad-pick-up-box", url: accadPickUpBoxUrl, durationMs: 6267, kind: "gesture", vibe: "lively" },
   { id: "vrm-accad-random-gestures", url: accadRandomGesturesUrl, durationMs: 20067, kind: "gesture", vibe: "soft" },
-  { id: "vrm-accad-stand", url: accadStandUrl, durationMs: 3000, kind: "idle", vibe: "soft", loop: true },
-  { id: "vrm-accad-sway", url: accadSwayUrl, durationMs: 12033, kind: "idle", vibe: "soft", loop: true },
   { id: "vrm-accad-swing-arms", url: accadSwingArmsUrl, durationMs: 14500, kind: "gesture", vibe: "soft" },
-  { id: "vrm-accad-wait", url: accadWaitUrl, durationMs: 38533, kind: "idle", vibe: "soft", loop: true },
 ];
 
 const BY_ID = new Map(BUILT_IN_VRMA_MOTIONS.map((m) => [m.id, m]));

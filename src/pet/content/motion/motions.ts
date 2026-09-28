@@ -41,7 +41,6 @@ export type PetIdleMotion =
   | "vrm-idle3"
   | "vrm-idle4"
   | "vrm-idle5"
-  | "vrm-idle6"
   | "vrm-talk"
   | "vrm-wave"
   | "vrm-greet"
@@ -67,10 +66,7 @@ export type PetIdleMotion =
   | "vrm-accad-look"
   | "vrm-accad-pick-up-box"
   | "vrm-accad-random-gestures"
-  | "vrm-accad-stand"
-  | "vrm-accad-sway"
   | "vrm-accad-swing-arms"
-  | "vrm-accad-wait"
   /** 杯杯：冒汽 / 呼噜 / 倾斜 / 小啜 / 趴睡 / 盯人 */
   | "mug-steam"
   | "mug-purr"
@@ -131,7 +127,6 @@ export const PET_VRM_DEMO_MOTIONS: PetIdleMotion[] = [
   "vrm-idle3",
   "vrm-idle4",
   "vrm-idle5",
-  "vrm-idle6",
   "vrm-talk",
   // VRoid VRMA_01–07（经 aikeya）
   "vrm-showcase",
@@ -160,10 +155,7 @@ export const PET_VRM_DEMO_MOTIONS: PetIdleMotion[] = [
   "vrm-accad-look",
   "vrm-accad-pick-up-box",
   "vrm-accad-random-gestures",
-  "vrm-accad-stand",
-  "vrm-accad-sway",
   "vrm-accad-swing-arms",
-  "vrm-accad-wait",
 ];
 
 export function isScreenFlightMotion(motion: PetIdleMotion): boolean {
