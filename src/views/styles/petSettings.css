@@ -76,18 +76,23 @@
   text-align: center;
 }
 
-/* 压过主题包实色底；选中/未选中都约 20% 透明 */
+/* 压过主题包实色底；选中/未选中都约 20% 透明浅底 → 字必须用深色系，忌浅色/白字 */
 .pet-body.theme-shell .pet-nav > .pet-nav-item {
   background: color-mix(
     in srgb,
     var(--ui-surface-strong, #fff) 80%,
     transparent
   );
+  color: color-mix(in srgb, var(--ui-text) 82%, var(--ui-text-muted, #666));
 }
 
 .pet-body.theme-shell .pet-nav > .pet-nav-item:hover,
 .pet-body.theme-shell .pet-nav > .pet-nav-item[data-active="1"] {
   color: var(--ui-text);
+}
+
+.pet-body.theme-shell .pet-nav > .pet-nav-item .pet-nav-icon {
+  color: inherit;
 }
 
 .pet-nav-icon {
@@ -418,7 +423,8 @@
   flex-shrink: 0;
   font-size: 11px;
   padding: 5px 10px;
-  color: var(--ui-text-muted);
+  /* 整颗芯片同色；名字跟控件底对比，别再用 --ui-text 盖掉 pack 的浅字 */
+  color: var(--ui-text);
   background: var(--ui-surface);
   border: 1px solid var(--ui-border);
   border-radius: 999px;
@@ -428,7 +434,7 @@
 .theme-chip em {
   font-style: normal;
   font-weight: 700;
-  color: var(--ui-text);
+  color: inherit;
 }
 
 .item-stack {

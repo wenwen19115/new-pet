@@ -67,6 +67,17 @@
 [data-style="ukiyo"] .theme-chip em {
   font-style: normal;
   font-weight: 800;
+  color: #f4ebe0;
+}
+
+/* 侧栏已被全局浅底覆盖时，保证未选中也是深字（与公共层一致） */
+[data-style="ukiyo"] .pet-body.theme-shell .pet-nav > .pet-nav-item {
+  color: #1a2a48;
+}
+
+[data-style="ukiyo"] .pet-body.theme-shell .pet-nav > .pet-nav-item[data-active="1"] {
+  color: #1a2a48;
+  border-color: #1a2a48;
 }
 
 [data-style="ukiyo"] .theme-lab {
