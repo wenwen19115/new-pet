@@ -520,6 +520,8 @@ const messages = {
         "清除当前角色的昵称、性格、静音、透明度、大小、调性、口头禅、形象、提醒、随机动作、调皮模式等设置",
       resetProfile: "重置",
       resetProfileOk: "已重置当前角色设置",
+      appVersionTitle: "应用版本",
+      appVersionDesc: "当前安装的应用版本号",
       clearCacheTitle: "清除缓存",
       clearCacheDesc:
         "清掉可重建的内存缓存（VRM 预览、TTS 音色列表、USB/工位气象状态、今日摸鱼战绩等），不改设置与聊天",
@@ -1214,6 +1216,8 @@ const messages = {
         "Clear nickname, personality, mute, opacity, size, tone, catchphrases, look, USB alerts, random motions, playful mode, and more for the current character",
       resetProfile: "Reset",
       resetProfileOk: "Character settings reset",
+      appVersionTitle: "App version",
+      appVersionDesc: "Version of this installed build",
       clearCacheTitle: "Clear cache",
       clearCacheDesc:
         "Drop rebuildable memory caches (VRM preview, TTS voices, USB/desk-weather, today's moyu stats). Settings and chat stay.",

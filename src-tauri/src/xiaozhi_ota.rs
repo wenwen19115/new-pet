@@ -48,7 +48,7 @@ fn ota_check_blocking(
     // 桌宠当软设备：Activation-Version=1（无板端序列号/HMAC）
     let payload = json!({
         "application": {
-            "version": "0.1.0",
+            "version": env!("CARGO_PKG_VERSION"),
             "elf_sha256": "desktop-pet"
         },
         "board": {

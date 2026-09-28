@@ -184,13 +184,21 @@
           {{ $t("pet.factoryReset") }}
         </button>
       </SettingsItemRow>
+      <SettingsItemRow
+        :title="$t('pet.appVersionTitle')"
+        :description="$t('pet.appVersionDesc')"
+        tone="pet"
+      >
+        <span class="app-version" aria-live="polite">{{ appVersion }}</span>
+      </SettingsItemRow>
     </ThemeSection>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, inject } from "vue";
+import { computed, inject, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { getVersion } from "@tauri-apps/api/app";
 import SettingsItemRow from "@/components/SettingsItemRow.vue";
 import ThemePackPicker from "@/settings/components/ThemePackPicker.vue";
 import ThemeSection from "@/settings/components/ThemeSection.vue";
@@ -203,6 +211,7 @@ import { isPetLocale, setPetLocale } from "@/pet/bridge/locale";
 
 const ctx = inject(PET_SETTINGS_PAGE_KEY)!;
 const { t, locale } = useI18n();
+const appVersion = ref("…");
 
 const appLocale = computed(() =>
   String(locale.value).toLowerCase().startsWith("zh") ? "zh" : "en"
@@ -218,10 +227,28 @@ function onLanguage(value: string) {
   setPetLocale(value);
   locale.value = value;
 }
+
+onMounted(() => {
+  void getVersion()
+    .then((v) => {
+      appVersion.value = v;
+    })
+    .catch(() => {
+      appVersion.value = "—";
+    });
+});
 </script>
 
 <style scoped>
 .app-panel {
   display: contents;
+}
+
+.app-version {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  /* 跟标题同色：浅色主题是深字，深色主题仍可读 */
+  color: var(--ui-text, #1a2a48);
 }
 </style>
