@@ -1,8 +1,8 @@
 # 版本号 bump 后自动打 Windows NSIS 安装包并创建 GitHub Release（含 What's Changed）。
-# 触发：main 上 package.json / tauri.conf.json / Cargo.toml 变更，或手动 Run workflow。
+# 版本唯一来源：package.json；CI 会 yarn sync-version 写回 tauri.conf / Cargo。
+# 触发：main 上 package.json 变更，或手动 Run workflow。
 #
-# 产物命名类似：new-pet-1.0.0-windows-x64-setup.exe
-# 本仓目前仅发 Windows（传感 / USB / 工位气象等依赖 Win32）。
+# 产物命名类似：new-pet-1.0.1-windows-x64-setup.exe
 
 name: Release
 
@@ -11,8 +11,6 @@ on:
     branches: [main]
     paths:
       - package.json
-      - src-tauri/tauri.conf.json
-      - src-tauri/Cargo.toml
   workflow_dispatch:
     inputs:
       force:
@@ -38,28 +36,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Gate on version bump
+      - name: Gate on package.json version bump
         id: gate
         shell: bash
         run: |
           set -euo pipefail
-          VERSION="$(jq -r .version src-tauri/tauri.conf.json)"
-          PKG="$(jq -r .version package.json)"
-          CARGO="$(sed -n 's/^version = "\(.*\)"/\1/p' src-tauri/Cargo.toml | head -n1)"
+          VERSION="$(jq -r .version package.json)"
 
           if [[ -z "$VERSION" || "$VERSION" == "null" ]]; then
-            echo "::error::tauri.conf.json version missing"
-            exit 1
-          fi
-          if [[ "$VERSION" != "$PKG" || "$VERSION" != "$CARGO" ]]; then
-            echo "::error::version mismatch: tauri=$VERSION package=$PKG cargo=$CARGO"
-            echo "请三处对齐后再发版。"
+            echo "::error::package.json version missing"
             exit 1
           fi
 
           PREV=""
           if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
-            PREV="$(git show HEAD^:src-tauri/tauri.conf.json 2>/dev/null | jq -r .version || true)"
+            PREV="$(git show HEAD^:package.json 2>/dev/null | jq -r .version || true)"
           fi
 
           FORCE=false
@@ -79,7 +70,6 @@ jobs:
             SHOULD=false
           fi
 
-          # 仅改了文件内容但版本未变：push paths 仍会触发，这里挡掉
           if [[ "$SHOULD" != "true" ]]; then
             echo "No version bump (prev=${PREV:-none} cur=${VERSION}); skip."
           else
@@ -113,6 +103,9 @@ jobs:
       - name: Install frontend deps
         run: yarn install --frozen-lockfile
 
+      - name: Sync version from package.json
+        run: yarn sync-version
+
       - name: Build & upload to GitHub Release
         uses: tauri-apps/tauri-action@v1
         env:
@@ -120,7 +113,6 @@ jobs:
         with:
           tagName: v__VERSION__
           releaseName: 新宠 v__VERSION__
-          # 自动生成 ## What's Changed（PR / commit）；下面正文会拼在前面
           generateReleaseNotes: true
           releaseBody: |
             ## 下载
@@ -132,7 +124,6 @@ jobs:
           prerelease: false
           args: --bundles nsis
           releaseAssetNamePattern: "[mainBinaryName]-[version]-[platform]-[arch][setup].[ext]"
-          # 未接 Tauri updater 签名时不要强行传 latest.json / .sig
           uploadUpdaterJson: false
           uploadUpdaterSignatures: false
           retryAttempts: 1

@@ -1,6 +1,6 @@
 [package]
 name = "new-pet"
-version = "1.0.0"
+version = "1.0.1"
 description = "鏂板疇 / new-pet"
 authors = ["wen <1911542586@qq.com>"]
 license = "MIT"

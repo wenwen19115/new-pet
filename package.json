@@ -9,6 +9,7 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "sync-version": "node scripts/sync-version.mjs",
     "check:pre-commit": "node scripts/check-pre-commit.mjs",
     "tauri": "tauri"
   },

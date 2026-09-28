@@ -201,9 +201,17 @@ Windows 安装包：
 yarn tauri build --bundles nsis
 ```
 
-- 会先 `yarn build`，再编 Release 并打 NSIS 安装包。
+- 会先 `yarn sync-version && yarn build`，再编 Release 并打 NSIS 安装包。
 - 安装包通常在 `src-tauri/target/release/bundle/nsis/`，文件名随版本变化。
 - 安装后程序名「新宠」，主程序 `new-pet.exe`。
+
+### 版本号
+
+只改根目录 **`package.json` 的 `version`**。`yarn sync-version`（以及 `tauri dev` / `tauri build`）会写到 `src-tauri/tauri.conf.json` 与 `Cargo.toml`。发版工作流也只盯 `package.json` 是否 bump。
+
+### GitHub 自动发版
+
+工作流：[`.github/workflows/release.yml`](.github/workflows/release.yml)。`package.json` 版本相对上一提交变了并推到 `main` 后，会打 tag、构建 Windows NSIS，并生成带 What's Changed 的 Release。也可在 Actions 里手动 Run（勾选 force）。产物名形如 `new-pet-1.0.1-windows-x64-setup.exe`。仓库需打开 Actions **Read and write permissions**。
 
 ## 宠物动作图（可选）
 

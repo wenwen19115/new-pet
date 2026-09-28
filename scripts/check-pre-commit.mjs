@@ -119,6 +119,22 @@ for (const file of walk(join(root, "docs"))) {
   }
 }
 
+// 版本号：只认 package.json；另两处必须已被 sync-version 对齐
+{
+  const pkgVer = JSON.parse(read(join(root, "package.json"))).version;
+  const tauriVer = JSON.parse(read(join(root, "src-tauri/tauri.conf.json")))
+    .version;
+  const cargoMatch = read(join(root, "src-tauri/Cargo.toml")).match(
+    /^version = "([^"]+)"/m
+  );
+  const cargoVer = cargoMatch?.[1];
+  if (pkgVer !== tauriVer || pkgVer !== cargoVer) {
+    failures.push(
+      `版本未对齐: package=${pkgVer} tauri=${tauriVer} cargo=${cargoVer} → 先 yarn sync-version 再暂存`
+    );
+  }
+}
+
 if (failures.length) {
   console.error("pre-commit 检查未过:\n");
   for (const f of failures) console.error(`  - ${f}`);

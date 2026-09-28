@@ -1,13 +1,15 @@
 {
   "build": {
-    "beforeDevCommand": "yarn dev",
-    "beforeBuildCommand": "yarn build",
+    "beforeDevCommand": "yarn sync-version && yarn dev",
+    "beforeBuildCommand": "yarn sync-version && yarn build",
     "frontendDist": "../dist",
     "devUrl": "http://localhost:1421"
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis"],
+    "targets": [
+      "nsis"
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -26,7 +28,7 @@
   },
   "productName": "新宠",
   "mainBinaryName": "new-pet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "identifier": "com.wen.newpet",
   "app": {
     "withGlobalTauri": false,
@@ -49,7 +51,9 @@
     ],
     "security": {
       "assetProtocol": {
-        "scope": ["**"],
+        "scope": [
+          "**"
+        ],
         "enable": true
       },
       "csp": null
