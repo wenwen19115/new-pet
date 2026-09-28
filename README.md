@@ -1,5 +1,7 @@
 # 新宠 / new-pet
 
+**中文** | [English](README_en.md)
+
 Windows 桌宠「新宠」，仓库名 `new-pet`。Tauri 2 + Vue 3，桌宠、气泡、菜单、聊天、设置各占一个窗口。
 
 ## 演示
