@@ -302,9 +302,17 @@ export function useVrmRenderer(
     return false;
   }
 
-  /** 待机 VRMA 之上叠颈/头偏移（lookAt  alone 很多模型几乎看不出） */
+  /** 待机 VRMA 之上叠颈/头偏移（lookAt alone 很多模型几乎看不出） */
   function applyClipHeadGaze(gaze: { x: number; y: number }) {
     if (!vrm?.humanoid) return;
+    // 无 head 轨时 mixer 不重置；multiply 会按帧累乘把脑袋转飞
+    const clip = currentVrmaAction?.getClip();
+    if (
+      clip &&
+      !clip.tracks.some((t) => /head\.quaternion$/i.test(t.name))
+    ) {
+      return;
+    }
     const gx = Math.max(-1, Math.min(1, gaze.x / 2));
     const gy = Math.max(-1, Math.min(1, gaze.y / 2));
     const layers: Array<[VrmBoneName, number, number, number]> = [

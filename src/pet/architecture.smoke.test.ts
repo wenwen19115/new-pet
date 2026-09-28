@@ -199,6 +199,36 @@ describe("architecture smoke", () => {
     expect(softOnly.some((m) => m.id === "vrm-angry")).toBe(false);
   });
 
+  it("VRMA humanoid.head points at a bone with rotation (not ENDSITE tip)", async () => {
+    const { readdirSync } = await import("node:fs");
+    const root = join(
+      dirname(fileURLToPath(import.meta.url)),
+      "assets/vrm/motions"
+    );
+    const files = readdirSync(root).filter((f) => f.endsWith(".vrma"));
+    expect(files.length).toBeGreaterThan(10);
+    for (const name of files) {
+      const buf = readFileSync(join(root, name));
+      if (buf.toString("utf8", 0, 4) !== "glTF") continue;
+      const jsonLen = buf.readUInt32LE(12);
+      const g = JSON.parse(
+        buf.toString("utf8", 20, 20 + jsonLen).replace(/\0+$/, "")
+      );
+      const headIdx =
+        g.extensions?.VRMC_vrm_animation?.humanoid?.humanBones?.head?.node;
+      if (headIdx == null) continue;
+      const headName = String(g.nodes[headIdx]?.name ?? "");
+      expect(headName.toLowerCase(), `${name} head→ENDSITE`).not.toBe(
+        "endsite"
+      );
+      const hasRot = (g.animations?.[0]?.channels ?? []).some(
+        (c: { target: { node: number; path: string } }) =>
+          c.target.node === headIdx && c.target.path === "rotation"
+      );
+      expect(hasRot, `${name} head has no rotation track`).toBe(true);
+    }
+  });
+
   it("toon demo motions resolve to non-idle anim states (except happy-bounce)", () => {
     for (const m of PET_TOON_DEMO_MOTIONS) {
       const anim = resolveToonAnimState(m, "idle");

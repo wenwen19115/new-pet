@@ -14,8 +14,15 @@ Conversion tool:
 - Tool license: MIT
 - Conversion scale: `0.01`
 
-Generated files:
+In-repo files (`accad_*.vrma`):
 
-- `accad_female1_stand.vrma`
-- `accad_female1_sway.vrma`
-- `accad_female1_wait.vrma`
+- `accad_conversation_gestures.vrma`
+- `accad_crouch.vrma`
+- `accad_lift_box.vrma`
+- `accad_look.vrma`
+- `accad_pick_up_box.vrma`
+- `accad_random_gestures.vrma`
+- `accad_swing_arms.vrma`
+
+Note: bvh2vrma 会把 humanoid.head 指到 ENDSITE tip；本仓已改指真正 Head 骨
+（否则循环待机叠 gaze multiply 会把头转飞）。
