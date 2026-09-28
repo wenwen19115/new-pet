@@ -28,7 +28,7 @@
   },
   "productName": "新宠",
   "mainBinaryName": "new-pet",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "identifier": "com.wen.newpet",
   "app": {
     "withGlobalTauri": false,
