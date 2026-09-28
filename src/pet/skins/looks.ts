@@ -36,11 +36,7 @@ const FIG_LOOK_ID_SET = new Set<string>(FIG_LOOK_IDS);
 
 export const STANDARD_LOOK_IDS = ["cyan", "amber", "rose", "violet"] as const;
 
-export const MUG_LOOK_IDS = [
-  "mug-default",
-  "mug-matcha",
-  "mug-thermos",
-] as const;
+export const MUG_LOOK_IDS = ["mug-default"] as const;
 
 export function isPetFigArtId(value: unknown): value is PetFigArtId {
   return typeof value === "string" && FIG_LOOK_ID_SET.has(value);

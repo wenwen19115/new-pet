@@ -17,7 +17,7 @@ const messages = {
       formTitle: "角色",
       formDesc: "昵称、性格、静音、透明度、大小、调性、口头禅、提醒、随机动作等均按角色独立记忆",
       lookTitle: "形象",
-      lookDesc: "天问7号、狐青青可改配色；梨宝可选性格立绘与节日换装；杯杯可换整套形象；酥酥形象由 VRM 决定",
+      lookDesc: "天问7号、狐青青可改配色；梨宝可选性格立绘与节日换装；酥酥形象由 VRM 决定",
       modelChip: "天问7号",
       modelFig: "梨宝",
       modelToon: "狐青青",
@@ -589,8 +589,6 @@ const messages = {
         midautumn: "中秋限定",
         labor: "劳动节限定",
         mugDefault: "原杯",
-        mugMatcha: "抹茶",
-        mugThermos: "保温杯",
       },
       motion: {
         "fly-orbit": "环绕飞",
@@ -703,7 +701,7 @@ const messages = {
         "Nickname, personality, mute, opacity, size, tone, catchphrases, USB alerts, random motions, and more are saved per character",
       lookTitle: "Look",
       lookDesc:
-        "Tianwen-7 & Hu Qingqing: colors. Li Bao: mood/holiday art. Steamy: full outfit atlases. Susu: VRM look",
+        "Tianwen-7 & Hu Qingqing: colors. Li Bao: mood/holiday art. Susu: VRM look",
       modelChip: "Tianwen-7",
       modelFig: "Li Bao",
       modelToon: "Hu Qingqing",
@@ -1286,8 +1284,6 @@ const messages = {
         midautumn: "Mid-Autumn",
         labor: "Labor Day",
         mugDefault: "Classic",
-        mugMatcha: "Matcha",
-        mugThermos: "Thermos",
       },
       motion: {
         "fly-orbit": "Fly orbit",

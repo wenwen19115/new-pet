@@ -43,12 +43,8 @@ describe("architecture smoke", () => {
     expect(isPetModelKind("nope")).toBe(false);
   });
 
-  it("mug-cat ships three look atlases", () => {
-    expect(getCharacter("mug-cat").lookIds).toEqual([
-      "mug-default",
-      "mug-matcha",
-      "mug-thermos",
-    ]);
+  it("mug-cat ships the default look atlas", () => {
+    expect(getCharacter("mug-cat").lookIds).toEqual(["mug-default"]);
     expect(getCharacter("mug-cat").defaults.lookId).toBe("mug-default");
   });
 

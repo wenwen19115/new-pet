@@ -18,8 +18,6 @@ import type { PetSkinVisual } from "../../skins";
 import { PetSpriteModel } from "../sprite";
 import type { PetSpriteManifest } from "../sprite";
 import atlasDefault from "../../assets/pets/mug-cat/atlas-default.png";
-import atlasMatcha from "../../assets/pets/mug-cat/atlas-matcha.png";
-import atlasThermos from "../../assets/pets/mug-cat/atlas-thermos.png";
 import raw from "../../assets/pets/mug-cat/pet.json";
 
 const props = withDefaults(
@@ -34,14 +32,6 @@ const props = withDefaults(
   { motion: "idle-float", showShadow: true, lookId: "mug-default" }
 );
 
-const ATLAS: Record<string, string> = {
-  "mug-default": atlasDefault,
-  "mug-matcha": atlasMatcha,
-  "mug-thermos": atlasThermos,
-};
-
-const sheet = computed(
-  () => ATLAS[props.lookId || "mug-default"] ?? atlasDefault
-);
+const sheet = computed(() => atlasDefault);
 const manifest = raw as PetSpriteManifest;
 </script>

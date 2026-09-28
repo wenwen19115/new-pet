@@ -27,7 +27,7 @@ Five companions share the same “slacking / roasting / showing off” pet shell
 | Pearbao | `fig-sci` | 2D full-body art; personality / holiday looks |
 | Fox Qingqing | `toon` | Pixel parts + FX + wormhole |
 | Susu | `vrm` | Upload `.vrm`; VRMA / custom bones |
-| Beibei | `mug-cat` | Codex 8×9 spritesheet; whole-atlas look swap |
+| Beibei | `mug-cat` | Codex 8×9 spritesheet (Original mug only) |
 
 #### Tianwen-7 · `chip`
 
@@ -73,9 +73,9 @@ Pixel fox: head, body, tail, and flame assembled by part; cyan-flame style decor
 
 <img src="images/杯杯.png" alt="Beibei settings preview" width="720" />
 
-A steaming cat mug: desk-object vibe, driven by a Codex-compatible 8×9 spritesheet. Look swap replaces the whole atlas, not layered clothing pieces.
+A steaming cat mug: desk-object vibe, driven by a Codex-compatible 8×9 spritesheet (Original mug only for now).
 
-- **Looks**: Original / Matcha / Thermos — three full looks
+- **Looks**: Original mug (single atlas)
 - **Motions**: steam, purr, tip cup, sip, nap, stare, etc.; desk vignettes
 - **Notes**: no screen flight; workstation weather maps to drink / nap / steam style motions; assets under `assets/pets/mug-cat/`
 
@@ -93,7 +93,7 @@ A steaming cat mug: desk-object vibe, driven by a Codex-compatible 8×9 spritesh
 
 - ~64 Theme Packs (`src/theme/`): settings, bubbles, and menu colors follow the pack; independent of look
 - Wallpaper: optional image / GIF / video background with dimming; boot animation supports auto / media / manual duration
-- Tianwen-7 and Fox Qingqing can change color sets; Pearbao picks illustration looks; Beibei swaps atlas; Susu looks like the uploaded VRM
+- Tianwen-7 and Fox Qingqing can change color sets; Pearbao picks illustration looks; Susu looks like the uploaded VRM
 
 ### Chat & voice
 

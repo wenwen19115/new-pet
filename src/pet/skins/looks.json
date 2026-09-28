@@ -331,55 +331,5 @@
       "hairFrom": "#1a6878",
       "hairTo": "#5eefff"
     }
-  },
-  {
-    "id": "mug-matcha",
-    "nameKey": "pet.look.mugMatcha",
-    "visual": {
-      "bodyFrom": "#2a3344",
-      "bodyMid": "#151b26",
-      "bodyTo": "#0a0d14",
-      "dieFrom": "#1a3a4a",
-      "dieMid": "#0d2430",
-      "dieTo": "#07141c",
-      "accent": "#6fae3a",
-      "accentSoft": "#c5e89a",
-      "packageStroke": "#3d4a5c",
-      "dieStroke": "#1e4d5c",
-      "sideHi": "#5a7a8c",
-      "sideMid": "#2a4050",
-      "sideLo": "#0a1218",
-      "backGrid": "rgba(139, 195, 74, 0.35)",
-      "mark": "CHA",
-      "ledHue": 95,
-      "skinTone": "#f4c8b4",
-      "hairFrom": "#1a6878",
-      "hairTo": "#5eefff"
-    }
-  },
-  {
-    "id": "mug-thermos",
-    "nameKey": "pet.look.mugThermos",
-    "visual": {
-      "bodyFrom": "#2a3344",
-      "bodyMid": "#151b26",
-      "bodyTo": "#0a0d14",
-      "dieFrom": "#1a3a4a",
-      "dieMid": "#0d2430",
-      "dieTo": "#07141c",
-      "accent": "#90a4ae",
-      "accentSoft": "#cfd8dc",
-      "packageStroke": "#3d4a5c",
-      "dieStroke": "#1e4d5c",
-      "sideHi": "#5a7a8c",
-      "sideMid": "#2a4050",
-      "sideLo": "#0a1218",
-      "backGrid": "rgba(144, 164, 174, 0.35)",
-      "mark": "TRM",
-      "ledHue": 200,
-      "skinTone": "#f4c8b4",
-      "hairFrom": "#1a6878",
-      "hairTo": "#5eefff"
-    }
   }
 ]
